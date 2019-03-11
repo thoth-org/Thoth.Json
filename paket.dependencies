@@ -1,0 +1,23 @@
+version 5.193.0
+source https://www.nuget.org/api/v2
+
+storage:none
+
+nuget Fable.Core
+nuget FSharp.Core redirects:force
+
+group netcorebuild
+    source https://www.nuget.org/api/v2
+    framework: netstandard2.0
+
+    clitool dotnet-fake
+    nuget NETStandard.Library.NETFramework
+    nuget Fake.DotNet.Cli
+    nuget Fake.DotNet.Paket
+    nuget Fake.Core.Target
+    nuget Fake.Core.Process
+    nuget Fake.Core.String
+    nuget Fake.Core.ReleaseNotes
+    nuget Fake.IO.FileSystem
+    nuget Fake.Tools.Git
+    nuget Fake.JavaScript.Yarn
