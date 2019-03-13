@@ -6,7 +6,7 @@
         "@babel/preset-env": "^7.2.3",
         "@fortawesome/fontawesome-free": "^5.6.3",
         "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
-        "fable-compiler": "^2.1.12",
+        "fable-compiler": "^2.2.0-beta-018",
         "fable-splitter": "^2.1.2",
         "mocha": "^5.2.0"
     },
