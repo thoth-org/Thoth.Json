@@ -1,6 +1,5 @@
 module Tests.Decode
 
-open Fable.Import
 open Fable.Core
 open Fable.Core.JsInterop
 open Thoth.Json

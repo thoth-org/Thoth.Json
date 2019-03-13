@@ -5,9 +5,11 @@ module Encode =
 
     open System.Collections.Generic
     open System.Globalization
-    open Fable.Import
     open Fable.Core
     open Fable.Core.JsInterop
+
+    [<Emit("Array.from($0)")>]
+    let private arrayFrom(x: JsonValue seq): JsonValue = jsNative
 
     ///**Description**
     /// Encode a string
@@ -149,12 +151,12 @@ module Encode =
     ///
     ///**Exceptions**
     ///
-    let inline list (values : JsonValue list) : JsonValue =
+    let list (values : JsonValue list) : JsonValue =
         // Don't use List.toArray as it may create a typed array
-        box (JS.Array.from(box values :?> JS.Iterable<JsonValue>))
+        arrayFrom values
 
-    let inline seq (values : JsonValue seq) : JsonValue =
-        box (JS.Array.from(values :?> JS.Iterable<JsonValue>))
+    let seq (values : JsonValue seq) : JsonValue =
+        arrayFrom values
 
     ///**Description**
     /// Encode a dictionary
