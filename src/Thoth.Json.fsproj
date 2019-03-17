@@ -2,12 +2,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Elm-inspired encoder and decoder for JSON</Description>
-    <PackageProjectUrl>https://github.com/MangelMaxime/Thoth</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/MangelMaxime/Thoth/blob/master/LICENSE.md</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/MangelMaxime/Thoth</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/thoth-org/Thoth.Json</PackageProjectUrl>
+    <Packagelicense>https://github.com/thoth-org/Thoth.Json/blob/master/LICENSE.md</Packagelicense>
+    <RepositoryUrl>https://github.com/thoth-org/Thoth.Json</RepositoryUrl>
     <PackageTags>fable;fsharp;json</PackageTags>
     <Authors>Maxime Mangel</Authors>
-    <Version>3.0.0-beta-002</Version>
+    <Version>3.0.0-beta-003</Version>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
