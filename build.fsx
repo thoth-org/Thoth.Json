@@ -103,11 +103,12 @@ Target.create "MochaTest" (fun _ ->
     Yarn.exec ("run mocha " + projDirOutput) id
 )
 
-let needsPublishing (versionRegex: Regex) (releaseNotes: ReleaseNotes.ReleaseNotes) projFile =
+let needsPublishing (versionRegex: Regex) (newVersion: string) projFile =
     printfn "Project: %s" projFile
-    if releaseNotes.NugetVersion.ToUpper().EndsWith("NEXT")
+    if newVersion.ToUpper().EndsWith("NEXT")
+        || newVersion.ToUpper().EndsWith("UNRELEASED")
     then
-        Logger.warnfn "Version in Release Notes ends with NEXT, don't publish yet."
+        Logger.warnfn "Version marked as unreleased version in Changelog, don't publish yet."
         false
     else
         File.ReadLines(projFile)
@@ -117,15 +118,15 @@ let needsPublishing (versionRegex: Regex) (releaseNotes: ReleaseNotes.ReleaseNot
         |> function
             | None -> failwith "Couldn't find version in project file"
             | Some m ->
-                let sameVersion = m.Groups.[1].Value = releaseNotes.NugetVersion
+                let sameVersion = m.Groups.[1].Value = newVersion
                 if sameVersion then
-                    Logger.warnfn "Already version %s, no need to publish." releaseNotes.NugetVersion
+                    Logger.warnfn "Already version %s, no need to publish." newVersion
                 not sameVersion
 
-let pushNuget (releaseNotes: ReleaseNotes.ReleaseNotes) (projFile: string) =
+let pushNuget (newVersion: string) (projFile: string) =
     let versionRegex = Regex("<Version>(.*?)</Version>", RegexOptions.IgnoreCase)
 
-    if needsPublishing versionRegex releaseNotes projFile then
+    if needsPublishing versionRegex newVersion projFile then
         let projDir = Path.GetDirectoryName(projFile)
         let nugetKey =
             match Environment.environVarOrNone "NUGET_KEY" with
@@ -133,7 +134,7 @@ let pushNuget (releaseNotes: ReleaseNotes.ReleaseNotes) (projFile: string) =
             | None -> failwith "The Nuget API key must be set in a NUGET_KEY environmental variable"
 
         (versionRegex, projFile) ||> Util.replaceLines (fun line _ ->
-            versionRegex.Replace(line, "<Version>" + releaseNotes.NugetVersion + "</Version>") |> Some)
+            versionRegex.Replace(line, "<Version>" + newVersion + "</Version>") |> Some)
 
         DotNet.pack (fun p ->
             { p with
@@ -143,18 +144,29 @@ let pushNuget (releaseNotes: ReleaseNotes.ReleaseNotes) (projFile: string) =
 
         let files =
             Directory.GetFiles(projDir </> "bin" </> "Release", "*.nupkg")
-            |> Array.find (fun nupkg -> nupkg.Contains(releaseNotes.NugetVersion))
+            |> Array.find (fun nupkg -> nupkg.Contains(newVersion))
             |> fun x -> [x]
 
         Paket.pushFiles (fun o ->
             { o with ApiKey = nugetKey
-                     PublishUrl = "https://www.nuget.org/api/v2/package" })
+                     PublishUrl = "https://www.nuget.org/api/v2/package"
+                     WorkingDir = __SOURCE_DIRECTORY__ })
             files
 
 Target.create "Publish" (fun _ ->
-    let projDir = IO.Path.GetDirectoryName(projectFile)
-    let release = projDir </> "CHANGELOG.md" |> ReleaseNotes.load
-    pushNuget release projectFile
+    let versionRegex = Regex("^## ?\\[?v?([\\w\\d.-]+\\.[\\w\\d.-]+[a-zA-Z0-9])\\]?", RegexOptions.IgnoreCase)
+
+    let newVersion =
+        File.ReadLines("CHANGELOG.md")
+            |> Seq.tryPick (fun line ->
+                let m = versionRegex.Match(line)
+                if m.Success then Some m else None)
+            |> function
+                | None -> failwith "Couldn't find version in changelog file"
+                | Some m ->
+                    m.Groups.[1].Value
+
+    pushNuget newVersion projectFile
 )
 
 "Clean"
