@@ -145,11 +145,11 @@ let pushNuget (releaseNotes: ReleaseNotes.ReleaseNotes) (projFile: string) =
             Directory.GetFiles(projDir </> "bin" </> "Release", "*.nupkg")
             |> Array.find (fun nupkg -> nupkg.Contains(releaseNotes.NugetVersion))
             |> fun x -> [x]
-        ()
-        // Paket.pushFiles (fun o ->
-        //     { o with ApiKey = nugetKey
-        //              PublishUrl = "https://www.nuget.org/api/v2/package" })
-        //     files
+
+        Paket.pushFiles (fun o ->
+            { o with ApiKey = nugetKey
+                     PublishUrl = "https://www.nuget.org/api/v2/package" })
+            files
 
 Target.create "Publish" (fun _ ->
     let projDir = IO.Path.GetDirectoryName(projectFile)
