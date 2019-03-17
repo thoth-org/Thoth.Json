@@ -7,7 +7,6 @@ module Decode =
     open System.Globalization
     open Fable.Core
     open Fable.Core.JsInterop
-    open Fable.Import
 
     module internal Helpers =
         [<Emit("typeof $0")>]
@@ -951,7 +950,7 @@ module Decode =
             elif fullname = typeof<System.DateTimeOffset>.FullName then
                 boxDecoder datetimeOffset
             elif fullname = typeof<System.TimeSpan>.FullName then
-                boxDecoder timespan                
+                boxDecoder timespan
             elif fullname = typeof<System.Guid>.FullName then
                 boxDecoder guid
             elif fullname = typeof<obj>.FullName then
