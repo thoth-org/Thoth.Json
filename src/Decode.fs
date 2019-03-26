@@ -106,11 +106,25 @@ module Decode =
     // Runners ///
     /////////////
 
+    let private decodeValueError path (decoder : Decoder<'T>) =
+        fun value ->
+            try
+                match decoder path value with
+                | Ok success ->
+                    Ok success
+                | Error error ->
+                    Error error
+            with
+                | DecoderException error ->
+                    Error error
+
     let fromValue (path : string) (decoder : Decoder<'T>) =
         fun value ->
-            match decoder path value with
-            | Ok success -> Ok success
-            | Error error -> Error (errorToString error)
+            match decodeValueError path decoder value with
+            | Ok success ->
+                Ok success
+            | Error error ->
+                Error (errorToString error)
 
     let fromString (decoder : Decoder<'T>) =
         fun value ->

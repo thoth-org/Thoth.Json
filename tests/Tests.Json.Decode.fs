@@ -1005,6 +1005,24 @@ Expecting an array but instead got: 1
 
                 equal expected actual
 
+            testCase "oneOf works in combination with object builders" <| fun _ ->
+                let json = """{ "Bar": { "name": "maxime", "age": 25 } }"""
+                let expected = Ok(Choice2Of2 { fieldA = "maxime" })
+
+                let decoder1 =
+                    Decode.object (fun get ->
+                        { fieldA = get.Required.Field "name" Decode.string })
+
+                let decoder2 =
+                    Decode.oneOf [
+                        Decode.field "Foo" decoder1 |> Decode.map Choice1Of2
+                        Decode.field "Bar" decoder1 |> Decode.map Choice2Of2
+                    ]
+
+                let actual =
+                    Decode.fromString decoder2 json
+
+                equal expected actual
 
             testCase "oneOf output errors if all case fails" <| fun _ ->
                 let expected =
