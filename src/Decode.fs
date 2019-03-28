@@ -7,7 +7,6 @@ module Decode =
     open System.Globalization
     open Fable.Core
     open Fable.Core.JsInterop
-    open Fable.Import
 
     module internal Helpers =
         [<Emit("typeof $0")>]
