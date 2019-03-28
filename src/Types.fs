@@ -24,7 +24,7 @@ type BoxedEncoder = Encoder<obj>
 
 type ExtraCoders = Map<string, BoxedEncoder * BoxedDecoder>
 
-module internal Cache =
+module internal Util =
     open System.Collections.Generic
 
     type Cache<'Value>() =
@@ -39,5 +39,14 @@ module internal Cache =
 
     // Tree shaking will remove this if not used
     // so no need to make them lazy in Fable
-    let Encoders = Cache<BoxedEncoder>()
-    let Decoders = Cache<BoxedDecoder>()
+    let CachedEncoders = Cache<BoxedEncoder>()
+    let CachedDecoders = Cache<BoxedDecoder>()
+
+    /// If used from .NET the type resolver won't be injected,
+    /// throw a more informative error than just a null reference.
+    let inline resolveType (resolver: Fable.Core.ITypeResolver<'T> option): System.Type =
+#if !FABLE_COMPILER
+        failwith "Thoth.Json is only compatible with Fable, use Thoth.Json.Net"
+#else
+        resolver.Value.ResolveType()
+#endif

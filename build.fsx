@@ -88,10 +88,6 @@ Target.create "DotnetRestore" (fun _ ->
     DotNet.restore id testsFile
 )
 
-let build project framework =
-    DotNet.build (fun p ->
-        { p with Framework = Some framework } ) project
-
 Target.create "MochaTest" (fun _ ->
     let projDir = testsFile |> Path.getDirectory
     let configFile = projDir </> "splitter.config.js"
