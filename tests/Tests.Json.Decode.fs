@@ -1070,6 +1070,17 @@ Expecting an object but instead got:
 
                 equal expectedUndefinedField actualUndefinedField
 
+            testCase "optional returns Error value if decoder fails" <| fun _ ->
+                let json = """{ "name": 12, "age": 25 }"""
+                let expected = Error("""
+Error at: `$.name`
+Expecting a string but instead got: 12""".Trim())
+
+                let actual =
+                    Decode.fromString (Decode.optional "name" Decode.string) json
+
+                equal expected actual
+
             testCase "optionalAt works" <| fun _ ->
                 let json = """{ "data" : { "name": "maxime", "age": 25, "something_undefined": null } }"""
 
@@ -1484,6 +1495,19 @@ Expecting a string but instead got: 12
 
                 let actual =
                     Decode.fromString decoder json
+
+                equal expected actual
+
+            testCase "get.Optional.Field returns Error value if decoder fails" <| fun _ ->
+                let json = """{ "name": 12, "age": 25 }"""
+                let expected = Error("""
+Error at: `$.name`
+Expecting a string but instead got: 12""".Trim())
+
+                let decoder = Decode.object (fun get ->
+                    { optionalField = get.Optional.Field "name" Decode.string })
+
+                let actual = Decode.fromString decoder json
 
                 equal expected actual
 
