@@ -1083,12 +1083,11 @@ Expecting an object but instead got:
 
                 equal expectedMissingField actualMissingField
 
-                // TODO: Should this test pass? The field is present but not a string
-                // let expectedUndefinedField = Ok(None)
-                // let actualUndefinedField =
-                //     Decode.fromString (Decode.optional "something_undefined" Decode.string) json
+                let expectedUndefinedField = Ok(None)
+                let actualUndefinedField =
+                    Decode.fromString (Decode.optional "something_undefined" Decode.string) json
 
-                // equal expectedUndefinedField actualUndefinedField
+                equal expectedUndefinedField actualUndefinedField
 
             testCase "optional returns Error value if decoder fails" <| fun _ ->
                 let json = """{ "name": 12, "age": 25 }"""
@@ -1120,12 +1119,11 @@ Expecting a string but instead got: 12""".Trim())
 
                 equal expectedMissingField actualMissingField
 
-                // TODO: Should this test pass? The field is present but not a string
-                // let expectedUndefinedField = Ok(None)
-                // let actualUndefinedField =
-                //     Decode.fromString (Decode.optionalAt [ "data"; "something_undefined" ] Decode.string) json
+                let expectedUndefinedField = Ok(None)
+                let actualUndefinedField =
+                    Decode.fromString (Decode.optionalAt [ "data"; "something_undefined" ] Decode.string) json
 
-                // equal expectedUndefinedField actualUndefinedField
+                equal expectedUndefinedField actualUndefinedField
 
             testCase "combining field and option decoders works" <| fun _ ->
                 let json = """{ "name": "maxime", "age": 25, "something_undefined": null }"""
@@ -1505,21 +1503,20 @@ Expecting a string but instead got: 12
 
                 equal expected actual
 
-            // TODO: Should this test pass? The field is present but not a string
-            // testCase "get.Optional.Field returns None if field is null" <| fun _ ->
-            //     let json = """{ "name": null, "age": 25 }"""
-            //     let expected = Ok({ optionalField = None })
+            testCase "get.Optional.Field returns None if field is null" <| fun _ ->
+                let json = """{ "name": null, "age": 25 }"""
+                let expected = Ok({ optionalField = None })
 
-            //     let decoder =
-            //         Decode.object
-            //             (fun get ->
-            //                 { optionalField = get.Optional.Field "name" Decode.string }
-            //             )
+                let decoder =
+                    Decode.object
+                        (fun get ->
+                            { optionalField = get.Optional.Field "name" Decode.string }
+                        )
 
-            //     let actual =
-            //         Decode.fromString decoder json
+                let actual =
+                    Decode.fromString decoder json
 
-            //     equal expected actual
+                equal expected actual
 
             testCase "get.Optional.Field returns Error value if decoder fails" <| fun _ ->
                 let json = """{ "name": 12, "age": 25 }"""
@@ -1534,31 +1531,30 @@ Expecting a string but instead got: 12""".Trim())
 
                 equal expected actual
 
-            // TODO: Should this test pass? The field is present but not a user
-            // testCase "nested get.Optional.Field > get.Required.Field returns None if field is null" <| fun _ ->
-            //     let json = """{ "user": null, "field2": 25 }"""
-            //     let expected = Ok({ User = None; Field2 = 25 })
+            testCase "nested get.Optional.Field > get.Required.Field returns None if field is null" <| fun _ ->
+                let json = """{ "user": null, "field2": 25 }"""
+                let expected = Ok({ User = None; Field2 = 25 })
 
-            //     let userDecoder =
-            //         Decode.object
-            //             (fun get ->
-            //                 { Id = get.Required.Field "id" Decode.int
-            //                   Name = get.Required.Field "name" Decode.string
-            //                   Email = get.Required.Field "email" Decode.string
-            //                   Followers = 0 }
-            //             )
+                let userDecoder =
+                    Decode.object
+                        (fun get ->
+                            { Id = get.Required.Field "id" Decode.int
+                              Name = get.Required.Field "name" Decode.string
+                              Email = get.Required.Field "email" Decode.string
+                              Followers = 0 }
+                        )
 
-            //     let decoder =
-            //         Decode.object
-            //             (fun get ->
-            //                 { User = get.Optional.Field "user" userDecoder
-            //                   Field2 = get.Required.Field "field2" Decode.int }
-            //             )
+                let decoder =
+                    Decode.object
+                        (fun get ->
+                            { User = get.Optional.Field "user" userDecoder
+                              Field2 = get.Required.Field "field2" Decode.int }
+                        )
 
-            //     let actual =
-            //         Decode.fromString decoder json
+                let actual =
+                    Decode.fromString decoder json
 
-            //     equal expected actual
+                equal expected actual
 
             testCase "get.Optional.Field returns Error if type is incorrect" <| fun _ ->
                 let json = """{ "name": 12, "age": 25 }"""

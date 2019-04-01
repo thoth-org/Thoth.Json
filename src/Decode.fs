@@ -291,12 +291,24 @@ module Decode =
     // Object primitives ///
     ///////////////////////
 
+    let private decodeMaybeNull path (decoder : Decoder<'T>) value =
+        // The decoder may be an option decoder so give it an opportunity to check null values
+        try
+            match decoder path value with
+            | Ok v -> Ok(Some v)
+            | Error _ when Helpers.isNullValue value -> Ok None
+            | Error er -> Error er
+        with
+            | DecoderException error ->
+                if Helpers.isNullValue value then Ok None
+                else Error error
+
     let optional (fieldName : string) (decoder : Decoder<'value>) : Decoder<'value option> =
         fun path value ->
             if Helpers.isObject value then
                 let fieldValue = Helpers.getField fieldName value
                 if Helpers.isUndefined fieldValue then Ok None
-                else decoder (path + "." + fieldName) fieldValue |> Result.map Some
+                else decodeMaybeNull (path + "." + fieldName) decoder fieldValue
             else
                 Error(path, BadType("an object", value))
 
@@ -325,7 +337,7 @@ module Decode =
                 | _, _, Some res -> res
                 | lastPath, lastValue, None ->
                     if Helpers.isUndefined lastValue then Ok None
-                    else decoder lastPath lastValue |> Result.map Some
+                    else decodeMaybeNull lastPath decoder lastValue
 
     let field (fieldName: string) (decoder : Decoder<'value>) : Decoder<'value> =
         fun path value ->
