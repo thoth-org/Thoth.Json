@@ -1091,9 +1091,12 @@ Expecting an object but instead got:
 
             testCase "optional returns Error value if decoder fails" <| fun _ ->
                 let json = """{ "name": 12, "age": 25 }"""
-                let expected = Error("""
+                let expected =
+                    Error(
+                        """
 Error at: `$.name`
-Expecting a string but instead got: 12""".Trim())
+Expecting a string but instead got: 12
+                        """.Trim())
 
                 let actual =
                     Decode.fromString (Decode.optional "name" Decode.string) json
@@ -1137,6 +1140,34 @@ Expecting a string but instead got: 12""".Trim())
                 match Decode.fromString (Decode.field "name" (Decode.option Decode.int)) json with
                 | Error _ -> ()
                 | Ok _ -> failwith "Expected type error for `name` field"
+
+                match Decode.fromString (Decode.field "this_field_do_not_exist" (Decode.option Decode.int)) json with
+                | Error _ -> ()
+                | Ok _ -> failwith "Expected type error for `name` field"
+
+                match Decode.fromString (Decode.field "something_undefined" (Decode.option Decode.int)) json with
+                | Error _ -> ()
+                | Ok result -> equal None result
+
+                // Same tests as before but we are calling `option` then `field`
+
+                let expectedValid2 = Ok(Some "maxime")
+                let actualValid2 =
+                    Decode.fromString (Decode.option (Decode.field "name" Decode.string)) json
+
+                equal expectedValid2 actualValid2
+
+                match Decode.fromString (Decode.option (Decode.field "name" Decode.int)) json with
+                | Error _ -> ()
+                | Ok _ -> failwith "Expected type error for `name` field"
+
+                match Decode.fromString (Decode.option (Decode.field "this_field_do_not_exist" Decode.int)) json with
+                | Error _ -> ()
+                | Ok _ -> failwith "Expected type error for `name` field"
+
+                match Decode.fromString (Decode.option (Decode.field "something_undefined" Decode.int)) json with
+                | Error _ -> ()
+                | Ok result -> equal None result
 
                 // TODO: Should this test pass? We should use Decode.optional instead
                 // let expectedMissingField = Ok(None)
@@ -1520,9 +1551,12 @@ Expecting a string but instead got: 12
 
             testCase "get.Optional.Field returns Error value if decoder fails" <| fun _ ->
                 let json = """{ "name": 12, "age": 25 }"""
-                let expected = Error("""
+                let expected =
+                    Error(
+                        """
 Error at: `$.name`
-Expecting a string but instead got: 12""".Trim())
+Expecting a string but instead got: 12
+                        """.Trim())
 
                 let decoder = Decode.object (fun get ->
                     { optionalField = get.Optional.Field "name" Decode.string })
