@@ -92,34 +92,13 @@ module Decode =
         | _ ->
             "Error at: `" + path + "`\n" + reason
 
-    exception DecoderException of DecoderError
-
-    let private unwrap (path : string) (decoder : Decoder<'T>) (value : obj) : 'T =
-        match decoder path value with
-        | Ok success ->
-            success
-        | Error error ->
-            raise (DecoderException error)
-
     ///////////////
     // Runners ///
     /////////////
 
-    let private decodeValueError path (decoder : Decoder<'T>) =
-        fun value ->
-            try
-                match decoder path value with
-                | Ok success ->
-                    Ok success
-                | Error error ->
-                    Error error
-            with
-                | DecoderException error ->
-                    Error error
-
     let fromValue (path : string) (decoder : Decoder<'T>) =
         fun value ->
-            match decodeValueError path decoder value with
+            match decoder path value with
             | Ok success ->
                 Ok success
             | Error error ->
@@ -133,9 +112,6 @@ module Decode =
             with
                 | ex when Helpers.isSyntaxError ex ->
                     Error("Given an invalid JSON: " + ex.Message)
-                | DecoderException error ->
-                    errorToString error
-                    |> Error
 
     let unsafeFromString (decoder : Decoder<'T>) =
         fun value ->
@@ -293,15 +269,10 @@ module Decode =
 
     let private decodeMaybeNull path (decoder : Decoder<'T>) value =
         // The decoder may be an option decoder so give it an opportunity to check null values
-        try
-            match decoder path value with
-            | Ok v -> Ok(Some v)
-            | Error _ when Helpers.isNullValue value -> Ok None
-            | Error er -> Error er
-        with
-            | DecoderException error ->
-                if Helpers.isNullValue value then Ok None
-                else Error error
+        match decoder path value with
+        | Ok v -> Ok(Some v)
+        | Error _ when Helpers.isNullValue value -> Ok None
+        | Error er -> Error er
 
     let optional (fieldName : string) (decoder : Decoder<'value>) : Decoder<'value option> =
         fun path value ->
@@ -623,39 +594,58 @@ module Decode =
         abstract Required: IRequiredGetter
         abstract Optional: IOptionalGetter
 
+    let private unwrapWith (errors: ResizeArray<DecoderError>) path (decoder: Decoder<'T>) value: 'T =
+        match decoder path value with
+        | Ok v -> v
+        | Error er -> errors.Add(er); Unchecked.defaultof<'T>
+
+    type Getters<'T>(path: string, v: 'T) =
+        let mutable errors = ResizeArray<DecoderError>()
+        let required =
+            { new IRequiredGetter with
+                member __.Field (fieldName : string) (decoder : Decoder<_>) =
+                    unwrapWith errors path (field fieldName decoder) v
+                member __.At (fieldNames : string list) (decoder : Decoder<_>) =
+                    unwrapWith errors path (at fieldNames decoder) v
+                member __.Raw (decoder: Decoder<_>) =
+                    unwrapWith errors path decoder v }
+        let optional =
+            { new IOptionalGetter with
+                member __.Field (fieldName : string) (decoder : Decoder<_>) =
+                    unwrapWith errors path (optional fieldName decoder) v
+                member __.At (fieldNames : string list) (decoder : Decoder<_>) =
+                    unwrapWith errors path (optionalAt fieldNames decoder) v
+                member __.Raw (decoder: Decoder<_>) =
+                    match decoder path v with
+                    | Ok v -> Some v
+                    | Error((_, reason) as error) ->
+                        match reason with
+                        | BadPrimitive(_,v)
+                        | BadPrimitiveExtra(_,v,_)
+                        | BadType(_,v) ->
+                            if Helpers.isNullValue v then None
+                            else errors.Add(error); Unchecked.defaultof<_>
+                        | BadField _
+                        | BadPath _ -> None
+                        | TooSmallArray _
+                        | FailMessage _
+                        | BadOneOf _ -> errors.Add(error); Unchecked.defaultof<_> }
+        member __.Errors: _ list = Seq.toList errors
+        interface IGetters with
+            member __.Required = required
+            member __.Optional = optional
+
     let object (builder: IGetters -> 'value) : Decoder<'value> =
         fun path v ->
-            builder { new IGetters with
-                member __.Required =
-                    { new IRequiredGetter with
-                        member __.Field (fieldName : string) (decoder : Decoder<_>) =
-                            unwrap path (field fieldName decoder) v
-                        member __.At (fieldNames : string list) (decoder : Decoder<_>) =
-                            unwrap path (at fieldNames decoder) v
-                        member __.Raw (decoder: Decoder<_>) =
-                            unwrap path decoder v }
-                member __.Optional =
-                    { new IOptionalGetter with
-                        member __.Field (fieldName : string) (decoder : Decoder<_>) =
-                            unwrap path (optional fieldName decoder) v
-                        member __.At (fieldNames : string list) (decoder : Decoder<_>) =
-                            unwrap path (optionalAt fieldNames decoder) v
-                        member __.Raw (decoder: Decoder<_>) =
-                            match decoder path v with
-                            | Ok v -> Some v
-                            | Error((_, reason) as error) ->
-                                match reason with
-                                | BadPrimitive(_,v)
-                                | BadPrimitiveExtra(_,v,_)
-                                | BadType(_,v) ->
-                                    if Helpers.isNullValue v then None
-                                    else raise (DecoderException error)
-                                | BadField _
-                                | BadPath _ -> None
-                                | TooSmallArray _
-                                | FailMessage _
-                                | BadOneOf _ -> raise (DecoderException error) }
-            } |> Ok
+            let getters = Getters(path, v)
+            let result = builder getters
+            match getters.Errors with
+            | [] -> Ok result
+            | fst::_ as errors ->
+                // TODO: Aggregate errors as with oneOf?
+                // let errors = List.map errorToString errors
+                // (path, BadOneOf errors) |> Error
+                Error fst
 
     ///////////////////////
     // Tuples decoders ///
