@@ -1072,6 +1072,7 @@ I run into the following problems:
 
 Error at: `$.[0]`
 Expecting a string but instead got: 1
+
 Error at: `$.[0]`
 Expecting an object but instead got:
 1
@@ -2151,6 +2152,7 @@ Expecting an object with a field named `missing_field_1` but instead got:
         "sub_field": "not_a_boolean"
     }
 }
+
 Error at: `$.missing_field_2`
 Expecting an object with path `missing_field_2.sub_field` but instead got:
 {
@@ -2161,8 +2163,10 @@ Expecting an object with path `missing_field_2.sub_field` but instead got:
     }
 }
 Node `sub_field` is unkown.
+
 Error at: `$.fieldC`
 Expecting an int but instead got: "not_a_number"
+
 Error at: `$.fieldD.sub_field`
 Expecting a boolean but instead got: "not_a_boolean"
                         """.Trim())

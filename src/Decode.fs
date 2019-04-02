@@ -81,7 +81,7 @@ module Decode =
             | TooSmallArray (msg, value) ->
                 "Expecting " + msg + ".\n" + (Helpers.anyToString value)
             | BadOneOf messages ->
-                "I run into the following problems:\n\n" + String.concat "\n" messages
+                "I run into the following problems:\n\n" + String.concat "\n\n" messages
             | FailMessage msg ->
                 "I run into a `fail` decoder: " + msg
 
