@@ -7,7 +7,7 @@
     <RepositoryUrl>https://github.com/thoth-org/Thoth.Json</RepositoryUrl>
     <PackageTags>fable;fsharp;json</PackageTags>
     <Authors>Maxime Mangel</Authors>
-    <Version>3.0.0-beta-004</Version>
+    <Version>3.0.0-beta-005</Version>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
