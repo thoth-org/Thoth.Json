@@ -136,6 +136,12 @@ type SmallRecord =
             { fieldA = get.Required.Field "fieldA" Decode.string }
         )
 
+type MediumRecord =
+    { FieldA: string
+      FieldB: string
+      FieldC: int
+      FieldD: bool }
+
 type SmallRecord2 =
     { optionalField : string option }
 
@@ -221,6 +227,11 @@ type ParentRecord =
 
 type RecordWithPrivateConstructor = private { Foo1: int; Foo2: float }
 type UnionWithPrivateConstructor = private Bar of string | Baz
+
+type Price =
+    | Normal of float
+    | Reduced of float option
+    | Zero
 
 let tests : Test =
     testList "Thoth.Json.Decode" [
@@ -790,6 +801,21 @@ Expecting an int but instead got: "maxime"
 
                 equal expected actual
 
+            testCase "field output an error explaining why the prevents value is considered invalid" <| fun _ ->
+                let json = """{ "name": null, "age": 25 }"""
+                let expected =
+                    Error(
+                        """
+Error at: `$.name`
+Expecting an int but instead got: null
+                        """.Trim()
+                    )
+
+                let actual =
+                    Decode.fromString (Decode.field "name" Decode.int) json
+
+                equal expected actual
+
             testCase "field output an error when field is missing" <| fun _ ->
                 let json = """{ "name": "maxime", "age": 25 }"""
                 let expected =
@@ -1005,6 +1031,38 @@ Expecting an array but instead got: 1
 
                 equal expected actual
 
+            testCase "oneOf works in combination with object builders" <| fun _ ->
+                let json = """{ "Bar": { "name": "maxime", "age": 25 } }"""
+                let expected = Ok(Choice2Of2 { fieldA = "maxime" })
+
+                let decoder1 =
+                    Decode.object (fun get ->
+                        { fieldA = get.Required.Field "name" Decode.string })
+
+                let decoder2 =
+                    Decode.oneOf [
+                        Decode.field "Foo" decoder1 |> Decode.map Choice1Of2
+                        Decode.field "Bar" decoder1 |> Decode.map Choice2Of2
+                    ]
+
+                let actual =
+                    Decode.fromString decoder2 json
+
+                equal expected actual
+
+            testCase "oneOf works with optional" <| fun _ ->
+                let decoder =
+                    Decode.oneOf
+                        [
+                            Decode.field "Normal" Decode.float |> Decode.map Normal
+                            Decode.field "Reduced" (Decode.option Decode.float) |> Decode.map Reduced
+                            Decode.field "Zero" Decode.bool |> Decode.map (fun _ -> Zero)
+                        ]
+
+                """{"Normal": 4.5}""" |> Decode.fromString decoder |> equal (Ok(Normal 4.5))
+                """{"Reduced": 4.5}""" |> Decode.fromString decoder |> equal (Ok(Reduced(Some 4.5)))
+                """{"Reduced": null}""" |> Decode.fromString decoder |> equal (Ok(Reduced None))
+                """{"Zero": true}""" |> Decode.fromString decoder |> equal (Ok Zero)
 
             testCase "oneOf output errors if all case fails" <| fun _ ->
                 let expected =
@@ -1014,6 +1072,7 @@ I run into the following problems:
 
 Error at: `$.[0]`
 Expecting a string but instead got: 1
+
 Error at: `$.[0]`
 Expecting an object but instead got:
 1
@@ -1052,6 +1111,20 @@ Expecting an object but instead got:
 
                 equal expectedUndefinedField actualUndefinedField
 
+            testCase "optional returns Error value if decoder fails" <| fun _ ->
+                let json = """{ "name": 12, "age": 25 }"""
+                let expected =
+                    Error(
+                        """
+Error at: `$.name`
+Expecting a string but instead got: 12
+                        """.Trim())
+
+                let actual =
+                    Decode.fromString (Decode.optional "name" Decode.string) json
+
+                equal expected actual
+
             testCase "optionalAt works" <| fun _ ->
                 let json = """{ "data" : { "name": "maxime", "age": 25, "something_undefined": null } }"""
 
@@ -1087,14 +1160,105 @@ Expecting an object but instead got:
                 equal expectedValid actualValid
 
                 match Decode.fromString (Decode.field "name" (Decode.option Decode.int)) json with
-                | Error _ -> ()
+                | Error msg ->
+                    let expected =
+                        """
+Error at: `$.name`
+Expecting an int but instead got: "maxime"
+                        """.Trim()
+                    equal expected msg
+                | Ok _ -> failwith "Expected type error for `name` field #1"
+
+                match Decode.fromString (Decode.field "this_field_do_not_exist" (Decode.option Decode.int)) json with
+                | Error msg ->
+                    let expected =
+                        """
+Error at: `$`
+Expecting an object with a field named `this_field_do_not_exist` but instead got:
+{
+    "name": "maxime",
+    "age": 25,
+    "something_undefined": null
+}
+                        """.Trim()
+                    equal expected msg
+                | Ok _ ->
+                    failwith "Expected type error for `name` field #2"
+
+                match Decode.fromString (Decode.field "something_undefined" (Decode.option Decode.int)) json with
+                | Error _ -> failwith """`Decode.field "something_undefined" (Decode.option Decode.int)` test should pass"""
+                | Ok result -> equal None result
+
+                // Same tests as before but we are calling `option` then `field`
+
+                let expectedValid2 = Ok(Some "maxime")
+                let actualValid2 =
+                    Decode.fromString (Decode.option (Decode.field "name" Decode.string)) json
+
+                equal expectedValid2 actualValid2
+
+                match Decode.fromString (Decode.option (Decode.field "name" Decode.int)) json with
+                | Error msg ->
+                    let expected =
+                        """
+Error at: `$.name`
+Expecting an int but instead got: "maxime"
+                        """.Trim()
+                    equal expected msg
+                | Ok _ -> failwith "Expected type error for `name` field #3"
+
+                match Decode.fromString (Decode.option (Decode.field "this_field_do_not_exist" Decode.int)) json with
+                | Error msg ->
+                    let expected =
+                        """
+Error at: `$`
+Expecting an object with a field named `this_field_do_not_exist` but instead got:
+{
+    "name": "maxime",
+    "age": 25,
+    "something_undefined": null
+}
+                        """.Trim()
+                    equal expected msg
+                | Ok _ -> failwith "Expected type error for `name` field #4"
+
+                match Decode.fromString (Decode.option (Decode.field "something_undefined" Decode.int)) json with
+                | Error msg ->
+                    let expected =
+                        """
+Error at: `$.something_undefined`
+Expecting an int but instead got: null
+                        """.Trim()
+                    equal expected msg
                 | Ok _ -> failwith "Expected type error for `name` field"
 
-                let expectedMissingField = Ok(None)
-                let actualMissingField =
-                    Decode.fromString (Decode.field "height" (Decode.option Decode.int)) json
+                /// Alfonso: Should this test pass? We should use Decode.optional instead
+                /// - `Decode.fromString (Decode.field "height" (Decode.option Decode.int)) json` == `Ok(None)`
+                ///
+                /// Maxime here :)
+                /// I don't think this test should pass.
+                /// For me `Decode.field "height" (Decode.option Decode.int)` means:
+                /// 1. The field `height` is required
+                /// 2. If `height` exist then, it's value can be `Some X` where `X` is an `int` or `None`
+                ///
+                /// I am keep the comments here so we keep track of the explanation if we later need to give it a second though.
+                ///
+                match Decode.fromString (Decode.field "height" (Decode.option Decode.int)) json with
+                | Error msg ->
+                    let expected =
+                        """
+Error at: `$`
+Expecting an object with a field named `height` but instead got:
+{
+    "name": "maxime",
+    "age": 25,
+    "something_undefined": null
+}
+                        """.Trim()
 
-                equal expectedMissingField actualMissingField
+                    equal expected msg
+
+                | Ok _ -> failwith "Expected type error for `height` field"
 
                 let expectedUndefinedField = Ok(None)
                 let actualUndefinedField =
@@ -1469,6 +1633,22 @@ Expecting a string but instead got: 12
 
                 equal expected actual
 
+            testCase "get.Optional.Field returns Error value if decoder fails" <| fun _ ->
+                let json = """{ "name": 12, "age": 25 }"""
+                let expected =
+                    Error(
+                        """
+Error at: `$.name`
+Expecting a string but instead got: 12
+                        """.Trim())
+
+                let decoder = Decode.object (fun get ->
+                    { optionalField = get.Optional.Field "name" Decode.string })
+
+                let actual = Decode.fromString decoder json
+
+                equal expected actual
+
             testCase "nested get.Optional.Field > get.Required.Field returns None if field is null" <| fun _ ->
                 let json = """{ "user": null, "field2": 25 }"""
                 let expected = Ok({ User = None; Field2 = 25 })
@@ -1615,21 +1795,27 @@ Expecting a string but instead got: 12
 
                 equal expected actual
 
-            // REVIEW: Is this test right, I'd expect this to be a type error not a missing optional value
-            // testCase "get.Optional.At returns None if non-object in path" <| fun _ ->
-            //     let json = """{ "user": "maxime" }"""
-            //     let expected = Ok({ optionalField = None })
+            testCase "get.Optional.At returns 'type error' if non-object in path" <| fun _ ->
+                let json = """{ "user": "maxime" }"""
+                let expected =
+                    Error(
+                        """
+Error at: `$.user`
+Expecting an object but instead got:
+"maxime"
+                        """.Trim()
+                    )
 
-            //     let decoder =
-            //         Decode.object
-            //             (fun get ->
-            //                 { optionalField = get.Optional.At [ "user"; "name" ] Decode.string }
-            //             )
+                let decoder =
+                    Decode.object
+                        (fun get ->
+                            { optionalField = get.Optional.At [ "user"; "name" ] Decode.string }
+                        )
 
-            //     let actual =
-            //         Decode.fromString decoder json
+                let actual =
+                    Decode.fromString decoder json
 
-            //     equal expected actual
+                equal expected actual
 
             testCase "get.Optional.At returns None if field missing" <| fun _ ->
                 let json = """{ "user": { "name": "maxime", "age": 25 } }"""
@@ -1949,6 +2135,57 @@ Expecting an object with a field named `radius` but instead got:
                           Shape = None }
 
                 equal expected actual
+
+            testCase "Object builders returns all the Errors" <| fun _ ->
+                let json = """{ "age": 25, "fieldC": "not_a_number", "fieldD": { "sub_field": "not_a_boolean" } }"""
+                let expected =
+                    Error(
+                        """
+I run into the following problems:
+
+Error at: `$`
+Expecting an object with a field named `missing_field_1` but instead got:
+{
+    "age": 25,
+    "fieldC": "not_a_number",
+    "fieldD": {
+        "sub_field": "not_a_boolean"
+    }
+}
+
+Error at: `$.missing_field_2`
+Expecting an object with path `missing_field_2.sub_field` but instead got:
+{
+    "age": 25,
+    "fieldC": "not_a_number",
+    "fieldD": {
+        "sub_field": "not_a_boolean"
+    }
+}
+Node `sub_field` is unkown.
+
+Error at: `$.fieldC`
+Expecting an int but instead got: "not_a_number"
+
+Error at: `$.fieldD.sub_field`
+Expecting a boolean but instead got: "not_a_boolean"
+                        """.Trim())
+
+                let decoder =
+                    Decode.object (fun get ->
+                        { FieldA = get.Required.Field "missing_field_1" Decode.string
+                          FieldB = get.Required.At [ "missing_field_2"; "sub_field" ] Decode.string
+                          FieldC = get.Optional.Field "fieldC" Decode.int
+                                    |> Option.defaultValue -1
+                          FieldD = get.Optional.At [ "fieldD"; "sub_field" ] Decode.bool
+                                    |> Option.defaultValue false }
+                    )
+
+                let actual =
+                    Decode.fromString decoder json
+
+                equal expected actual
+
         ]
 
         testList "Auto" [

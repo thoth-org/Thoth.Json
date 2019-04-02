@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0-beta-004 - 2019-04-02
+### Fixed
+* Fix Decode.oneOf in combination with object builder (by @alfonsogarciacaro)
+* Make `Decode.field` consistant and report the exact error
+
+### Changed
+* Make Decode.object output 1 error or all the errors if there are severals
+* Improve BadOneOf errors readibility
+
 ## 3.0.0-beta-003 - 2019-03-17
 ### Changed
 * Upgrade to `Fable.Core` v3-beta
