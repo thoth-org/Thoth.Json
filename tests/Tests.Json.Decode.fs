@@ -136,6 +136,12 @@ type SmallRecord =
             { fieldA = get.Required.Field "fieldA" Decode.string }
         )
 
+type MediumRecord =
+    { FieldA: string
+      FieldB: string
+      FieldC: int
+      FieldD: bool }
+
 type SmallRecord2 =
     { optionalField : string option }
 
@@ -1053,9 +1059,9 @@ Expecting an array but instead got: 1
                             Decode.field "Zero" Decode.bool |> Decode.map (fun _ -> Zero)
                         ]
 
-                // """{"Normal": 4.5}""" |> Decode.fromString decoder |> equal (Ok(Normal 4.5))
-                // """{"Reduced": 4.5}""" |> Decode.fromString decoder |> equal (Ok(Reduced(Some 4.5)))
-                // """{"Reduced": null}""" |> Decode.fromString decoder |> equal (Ok(Reduced None))
+                """{"Normal": 4.5}""" |> Decode.fromString decoder |> equal (Ok(Normal 4.5))
+                """{"Reduced": 4.5}""" |> Decode.fromString decoder |> equal (Ok(Reduced(Some 4.5)))
+                """{"Reduced": null}""" |> Decode.fromString decoder |> equal (Ok(Reduced None))
                 """{"Zero": true}""" |> Decode.fromString decoder |> equal (Ok Zero)
 
             testCase "oneOf output errors if all case fails" <| fun _ ->
@@ -1788,21 +1794,27 @@ Expecting a string but instead got: 12
 
                 equal expected actual
 
-            // REVIEW: Is this test right, I'd expect this to be a type error not a missing optional value
-            // testCase "get.Optional.At returns None if non-object in path" <| fun _ ->
-            //     let json = """{ "user": "maxime" }"""
-            //     let expected = Ok({ optionalField = None })
+            testCase "get.Optional.At returns 'type error' if non-object in path" <| fun _ ->
+                let json = """{ "user": "maxime" }"""
+                let expected =
+                    Error(
+                        """
+Error at: `$.user`
+Expecting an object but instead got:
+"maxime"
+                        """.Trim()
+                    )
 
-            //     let decoder =
-            //         Decode.object
-            //             (fun get ->
-            //                 { optionalField = get.Optional.At [ "user"; "name" ] Decode.string }
-            //             )
+                let decoder =
+                    Decode.object
+                        (fun get ->
+                            { optionalField = get.Optional.At [ "user"; "name" ] Decode.string }
+                        )
 
-            //     let actual =
-            //         Decode.fromString decoder json
+                let actual =
+                    Decode.fromString decoder json
 
-            //     equal expected actual
+                equal expected actual
 
             testCase "get.Optional.At returns None if field missing" <| fun _ ->
                 let json = """{ "user": { "name": "maxime", "age": 25 } }"""
@@ -2122,6 +2134,54 @@ Expecting an object with a field named `radius` but instead got:
                           Shape = None }
 
                 equal expected actual
+
+            testCase "Object builders returns all the Errors" <| fun _ ->
+                let json = """{ "age": 25, "fieldC": "not_a_number", "fieldD": { "sub_field": "not_a_boolean" } }"""
+                let expected =
+                    Error(
+                        """
+I run into the following problems:
+
+Error at: `$`
+Expecting an object with a field named `missing_field_1` but instead got:
+{
+    "age": 25,
+    "fieldC": "not_a_number",
+    "fieldD": {
+        "sub_field": "not_a_boolean"
+    }
+}
+Error at: `$.missing_field_2`
+Expecting an object with path `missing_field_2.sub_field` but instead got:
+{
+    "age": 25,
+    "fieldC": "not_a_number",
+    "fieldD": {
+        "sub_field": "not_a_boolean"
+    }
+}
+Node `sub_field` is unkown.
+Error at: `$.fieldC`
+Expecting an int but instead got: "not_a_number"
+Error at: `$.fieldD.sub_field`
+Expecting a boolean but instead got: "not_a_boolean"
+                        """.Trim())
+
+                let decoder =
+                    Decode.object (fun get ->
+                        { FieldA = get.Required.Field "missing_field_1" Decode.string
+                          FieldB = get.Required.At [ "missing_field_2"; "sub_field" ] Decode.string
+                          FieldC = get.Optional.Field "fieldC" Decode.int
+                                    |> Option.defaultValue -1
+                          FieldD = get.Optional.At [ "fieldD"; "sub_field" ] Decode.bool
+                                    |> Option.defaultValue false }
+                    )
+
+                let actual =
+                    Decode.fromString decoder json
+
+                equal expected actual
+
         ]
 
         testList "Auto" [

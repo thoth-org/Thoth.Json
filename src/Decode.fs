@@ -647,10 +647,11 @@ module Decode =
             match getters.Errors with
             | [] -> Ok result
             | fst::_ as errors ->
-                // TODO: Aggregate errors as with oneOf?
-                // let errors = List.map errorToString errors
-                // (path, BadOneOf errors) |> Error
-                Error fst
+                if errors.Length > 1 then
+                    let errors = List.map errorToString errors
+                    (path, BadOneOf errors) |> Error
+                else
+                    Error fst
 
     ///////////////////////
     // Tuples decoders ///
