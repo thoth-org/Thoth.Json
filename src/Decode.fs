@@ -271,7 +271,8 @@ module Decode =
         // The decoder may be an option decoder so give it an opportunity to check null values
         match decoder path value with
         | Ok v -> Ok(Some v)
-        | Error _ when Helpers.isNullValue value -> Ok None
+        | Error _ when Helpers.isNullValue value ->
+            Ok None
         | Error er -> Error er
 
     let optional (fieldName : string) (decoder : Decoder<'value>) : Decoder<'value option> =
@@ -312,10 +313,14 @@ module Decode =
 
     let field (fieldName: string) (decoder : Decoder<'value>) : Decoder<'value> =
         fun path value ->
-            match optional fieldName decoder path value with
-            | Error er -> Error er
-            | Ok(Some x) -> Ok x
-            | Ok None -> Error(path, BadField ("an object with a field named `" + fieldName + "`", value))
+            if Helpers.isObject value then
+                let fieldValue = Helpers.getField fieldName value
+                if Helpers.isUndefined fieldValue then
+                    Error(path, BadField ("an object with a field named `" + fieldName + "`", value))
+                else
+                    decoder (path + "." + fieldName) fieldValue
+            else
+                Error(path, BadType("an object", value))
 
     let at (fieldNames: string list) (decoder : Decoder<'value>) : Decoder<'value> =
         fun path value ->
