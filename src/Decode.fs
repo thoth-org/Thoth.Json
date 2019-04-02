@@ -271,8 +271,7 @@ module Decode =
         // The decoder may be an option decoder so give it an opportunity to check null values
         match decoder path value with
         | Ok v -> Ok(Some v)
-        | Error _ when Helpers.isNullValue value ->
-            Ok None
+        | Error _ when Helpers.isNullValue value -> Ok None
         | Error er -> Error er
 
     let optional (fieldName : string) (decoder : Decoder<'value>) : Decoder<'value option> =
@@ -323,11 +322,29 @@ module Decode =
                 Error(path, BadType("an object", value))
 
     let at (fieldNames: string list) (decoder : Decoder<'value>) : Decoder<'value> =
-        fun path value ->
-            match optionalAt fieldNames decoder path value with
-            | Error er -> Error er
-            | Ok(Some x) -> Ok x
-            | Ok None -> badPathError fieldNames None value
+        fun firstPath firstValue ->
+            ((firstPath, firstValue, None), fieldNames)
+            ||> List.fold (fun (curPath, curValue, res) field ->
+                match res with
+                | Some _ -> curPath, curValue, res
+                | None ->
+                    if Helpers.isNullValue curValue then
+                        let res = badPathError fieldNames (Some curPath) firstValue
+                        curPath, curValue, Some res
+                    elif Helpers.isObject curValue then
+                        let curValue = Helpers.getField field curValue
+                        if Helpers.isUndefined curValue then
+                            let res = badPathError fieldNames None firstValue
+                            curPath, curValue, Some res
+                        else
+                            curPath + "." + field, curValue, None
+                    else
+                        let res = Error(curPath, BadType("an object", curValue))
+                        curPath, curValue, Some res)
+            |> function
+                | _, _, Some res -> res
+                | lastPath, lastValue, None ->
+                    decoder lastPath lastValue
 
     let index (requestedIndex: int) (decoder : Decoder<'value>) : Decoder<'value> =
         fun path value ->

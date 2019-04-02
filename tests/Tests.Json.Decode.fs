@@ -801,7 +801,7 @@ Expecting an int but instead got: "maxime"
 
                 equal expected actual
 
-            testCase "field output an error explaining why the prevents value is considered invalid" <| fun _ ->
+            testCase "field output an error explaining why the value is considered invalid" <| fun _ ->
                 let json = """{ "name": null, "age": 25 }"""
                 let expected =
                     Error(
@@ -862,6 +862,21 @@ Node `firstname` is unkown.
 
                 let actual =
                     Decode.fromString (Decode.at ["user"; "firstname"] Decode.string) json
+
+                equal expected actual
+
+            testCase "at output an error explaining why the value is considered invalid" <| fun _ ->
+                let json = """{ "name": null, "age": 25 }"""
+                let expected =
+                    Error(
+                        """
+Error at: `$.name`
+Expecting an int but instead got: null
+                        """.Trim()
+                    )
+
+                let actual =
+                    Decode.fromString (Decode.at [ "name" ] Decode.int) json
 
                 equal expected actual
 
@@ -2153,7 +2168,7 @@ Expecting an object with a field named `missing_field_1` but instead got:
     }
 }
 
-Error at: `$.missing_field_2`
+Error at: `$.missing_field_2.sub_field`
 Expecting an object with path `missing_field_2.sub_field` but instead got:
 {
     "age": 25,
