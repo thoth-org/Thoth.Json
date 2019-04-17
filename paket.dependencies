@@ -3,7 +3,7 @@ source https://www.nuget.org/api/v2
 
 storage:none
 
-nuget Fable.Core prerelease
+nuget Fable.Core
 nuget FSharp.Core redirects:force
 
 group netcorebuild

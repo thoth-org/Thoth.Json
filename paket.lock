@@ -1,7 +1,7 @@
 STORAGE: NONE
 NUGET
   remote: https://www.nuget.org/api/v2
-    Fable.Core (3.0.0-beta-004)
+    Fable.Core (3.0)
       FSharp.Core (>= 4.5.2) - restriction: >= netstandard2.0
     FSharp.Core (4.6.2) - redirects: force
       System.Collections (>= 4.0.11) - restriction: && (< net45) (>= netstandard1.6) (< netstandard2.0)
@@ -349,7 +349,7 @@ NUGET
       System.Runtime.InteropServices (>= 4.3) - restriction: && (< monoandroid) (< monotouch) (< net46) (>= netstandard1.3) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)
       System.Security.Cryptography.Primitives (>= 4.3) - restriction: && (< monoandroid) (< monotouch) (< net46) (>= netstandard1.3) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)
       System.Text.Encoding (>= 4.3) - restriction: && (< monoandroid) (< monotouch) (< net46) (>= netstandard1.3) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)
-    System.Security.Cryptography.OpenSsl (4.5) - redirects: force, restriction: || (&& (< monoandroid) (< monotouch) (< net45) (>= netstandard1.6) (< netstandard2.0) (< win8) (< wpa81) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (>= netstandard1.6) (< portable-net45+win8+wp8+wpa81))
+    System.Security.Cryptography.OpenSsl (4.5.1) - redirects: force, restriction: || (&& (< monoandroid) (< monotouch) (< net45) (>= netstandard1.6) (< netstandard2.0) (< win8) (< wpa81) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (>= netstandard1.6) (< portable-net45+win8+wp8+wpa81))
       System.Collections (>= 4.3) - restriction: && (>= netstandard1.6) (< netstandard2.0)
       System.IO (>= 4.3) - restriction: && (>= netstandard1.6) (< netstandard2.0)
       System.Resources.ResourceManager (>= 4.3) - restriction: && (>= netstandard1.6) (< netstandard2.0)
