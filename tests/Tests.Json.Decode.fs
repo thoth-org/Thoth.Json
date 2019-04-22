@@ -233,6 +233,20 @@ type Price =
     | Reduced of float option
     | Zero
 
+let decodeDictionary keyDecoder valueDecoder =
+    Decode.array (Decode.tuple2 keyDecoder valueDecoder)
+    |> Decode.map (fun kvs ->
+        let dic = System.Collections.Generic.Dictionary()
+        for (key, value) in kvs do
+            dic.Add(key, value)
+        dic)
+
+let encodeDictionary keyEncoder valueEncoder =
+    fun (value: System.Collections.Generic.Dictionary<'Key,'Value>) ->
+        value |> Seq.map (fun (KeyValue(k,v)) ->
+            Encode.array [|keyEncoder k; valueEncoder v|])
+        |> Encode.seq
+
 let tests : Test =
     testList "Thoth.Json.Decode" [
 
@@ -2496,6 +2510,20 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let expected = { ParentField = { ChildField = "bumbabon" } }
                 let actual = Decode.Auto.fromString("""{"ParentField":"bumbabon"}""", extra=extra)
                 equal (Ok expected) actual
+
+            testCase "Decoder.Auto.toString works with custom predicate extra" <| fun _ ->
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustomPredicate
+                        (fun encs -> encodeDictionary (Encode.unboxEncoder encs.[0]) (Encode.unboxEncoder encs.[1]))
+                        (fun decs -> decodeDictionary (Decode.unboxDecoder decs.[0]) (Decode.unboxDecoder decs.[1]))
+                        (fun typeName -> typeName.StartsWith("System.Collections.Generic.Dictionary`2"))
+
+                let actual: System.Collections.Generic.Dictionary<int,string> =
+                    Decode.Auto.unsafeFromString("""[[1,"foo"], [3,"bar"]]""", extra=extra)
+
+                actual.[1] |> equal "foo"
+                actual.[3] |> equal "bar"
 
             testCase "Auto.fromString works with records with private constructors" <| fun _ ->
                 let json = """{ "foo1": 5, "foo2": 7.8 }"""

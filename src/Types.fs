@@ -22,7 +22,7 @@ type BoxedDecoder = Decoder<obj>
 
 type BoxedEncoder = Encoder<obj>
 
-type ExtraCoders = Map<string, BoxedEncoder * BoxedDecoder>
+type ExtraCoders = List<(string -> bool) * ((BoxedEncoder[]->BoxedEncoder) * (BoxedDecoder[]->BoxedDecoder))>
 
 module internal Util =
     open System.Collections.Generic

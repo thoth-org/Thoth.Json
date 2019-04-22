@@ -419,6 +419,21 @@ let tests : Test =
                 let actual = Encode.Auto.toString(0, value, extra=extra)
                 equal expected actual
 
+            testCase "Encode.Auto.toString works with custom predicate extra" <| fun _ ->
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustomPredicate
+                        (fun encs -> encodeDictionary (Encode.unboxEncoder encs.[0]) (Encode.unboxEncoder encs.[1]))
+                        (fun decs -> decodeDictionary (Decode.unboxDecoder decs.[0]) (Decode.unboxDecoder decs.[1]))
+                        (fun typeName -> typeName.StartsWith("System.Collections.Generic.Dictionary`2"))
+
+                let expected = """[[1,"foo"],[3,"bar"]]"""
+                let value = System.Collections.Generic.Dictionary()
+                value.Add(1, "foo")
+                value.Add(3, "bar")
+                let actual = Encode.Auto.toString(0, value, extra=extra)
+                equal expected actual
+
             testCase "Encode.Auto.toString serializes maps with Guid keys as JSON objects" <| fun _ ->
                 let m = Map [Guid.NewGuid(), 1; Guid.NewGuid(), 2]
                 let json = Encode.Auto.toString(0, m)

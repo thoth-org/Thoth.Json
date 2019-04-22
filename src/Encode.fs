@@ -377,8 +377,13 @@ module Encode =
 
     and private autoEncoder (extra: ExtraCoders) isCamelCase (t: System.Type) : BoxedEncoder =
       let fullname = t.FullName
-      match Map.tryFind fullname extra with
-      | Some(encoder,_) -> encoder
+      match extra |> List.tryFind (fun (condition,_) -> condition fullname) with
+      | Some(_,(encoderGenerator,_)) ->
+        if t.IsGenericType then
+            t.GenericTypeArguments
+            |> Array.map (autoEncoder extra isCamelCase)
+            |> encoderGenerator
+        else encoderGenerator [||]
       | None ->
         if t.IsArray then
             let encoder = t.GetElementType() |> autoEncoder extra isCamelCase
@@ -461,12 +466,12 @@ module Encode =
             let t = Util.resolveType resolver
             Util.CachedEncoders.GetOrAdd(t.FullName, fun _ ->
                 let isCamelCase = defaultArg isCamelCase false
-                let extra = match extra with Some e -> e | None -> Map.empty
+                let extra = match extra with Some e -> e | None -> List.empty
                 autoEncoder extra isCamelCase t) |> unboxEncoder
 
         static member generateEncoder<'T>(?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
             let isCamelCase = defaultArg isCamelCase false
-            let extra = match extra with Some e -> e | None -> Map.empty
+            let extra = match extra with Some e -> e | None -> List.empty
             Util.resolveType resolver |> autoEncoder extra isCamelCase |> unboxEncoder
 
         static member toString(space : int, value : 'T, ?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>) : string =

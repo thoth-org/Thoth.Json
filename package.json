@@ -1,6 +1,9 @@
 {
     "private": true,
-    "scripts": {},
+    "scripts": {
+        "pretest": "fable-splitter -c tests/splitter.config.js",
+        "test": "mocha tests/bin"
+    },
     "devDependencies": {
         "@babel/core": "^7.2.2",
         "@babel/preset-env": "^7.2.3",

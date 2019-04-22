@@ -933,8 +933,13 @@ module Decode =
 
     and private autoDecoder (extra: ExtraCoders) isCamelCase (isOptional : bool) (t: System.Type) : BoxedDecoder =
       let fullname = t.FullName
-      match Map.tryFind fullname extra with
-      | Some(_,decoder) -> decoder
+      match extra |> List.tryFind (fun (condition,_) -> condition fullname) with
+      | Some(_,(_,decoderGenerator)) ->
+        if t.IsGenericType then
+            t.GenericTypeArguments
+            |> Array.map (autoDecoder extra isCamelCase false)
+            |> decoderGenerator
+        else decoderGenerator [||]
       | None ->
         if t.IsArray then
             let decoder = t.GetElementType() |> autoDecoder extra isCamelCase false
@@ -1008,12 +1013,12 @@ module Decode =
             let t = Util.resolveType resolver
             Util.CachedDecoders.GetOrAdd(t.FullName, fun _ ->
                 let isCamelCase = defaultArg isCamelCase false
-                let extra = match extra with Some e -> e | None -> Map.empty
+                let extra = match extra with Some e -> e | None -> List.empty
                 autoDecoder extra isCamelCase false t) |> unboxDecoder
 
         static member generateDecoder<'T>(?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Decoder<'T> =
             let isCamelCase = defaultArg isCamelCase false
-            let extra = match extra with Some e -> e | None -> Map.empty
+            let extra = match extra with Some e -> e | None -> List.empty
             Util.resolveType resolver |> autoDecoder extra isCamelCase false |> unboxDecoder
 
         static member fromString<'T>(json: string, ?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Result<'T, string> =
