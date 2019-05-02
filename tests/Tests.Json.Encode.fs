@@ -435,6 +435,12 @@ let tests : Test =
                 let x = [Baz; Bar "foo"]
                 Encode.Auto.toString(0, x, isCamelCase=true)
                 |> equal expected
+
+            testCase "Encode.Auto.toString works with decimal" <| fun _ ->
+                let expected = """[0.1,0.2]"""
+                let x = [0.1M; 0.2M]
+                Encode.Auto.toString(0, x)
+                |> equal expected
         ]
 
     ]

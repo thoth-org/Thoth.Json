@@ -2473,6 +2473,12 @@ Expecting a boolean but instead got: "not_a_boolean"
                           Must = "must value" } : TestMaybeRecord)
                 equal expected actual
 
+            testCase "Auto.fromString works with decimal" <| fun _ ->
+                let json = """[0.1,0.2]"""
+                let expected = [0.1M; 0.2M]
+                let actual = Decode.Auto.fromString json
+                equal (Ok expected) actual
+
             testCase "Auto.fromString works with maps encoded as objects" <| fun _ ->
                 let expected = Map [("oh", { a = 2.; b = 2. }); ("ah", { a = -1.5; b = 0. })]
                 let json = """{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}}"""
