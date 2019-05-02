@@ -32,6 +32,14 @@ type RecordWithStrangeType =
     { Id : int
       Thread : Thread option }
 
+
+type IAmAnInterface =
+    abstract member DoIt : unit -> unit
+
+type RecordWithInterface =
+    { Id : int
+      Interface : IAmAnInterface option }
+
 let tests : Test =
     testList "Thoth.Json.Encode" [
 
@@ -448,6 +456,17 @@ let tests : Test =
                 let value =
                     { Id = 0
                       Thread = None }
+
+                Encode.Auto.toString(0, value)
+                |> equal expected
+
+            testCase "Encode.Auto.toString works with interfaces if they are None" <| fun _ ->
+                let expected =
+                    """{"Id":0}"""
+
+                let value =
+                    { Id = 0
+                      Interface = None }
 
                 Encode.Auto.toString(0, value)
                 |> equal expected
