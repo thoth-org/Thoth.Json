@@ -17,10 +17,6 @@ steps:
   inputs:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
-- task: DotNetCoreInstaller@0
-  inputs:
-    version: '2.2.101' 
-  displayName: 'Install .NET Core'
 
 - script: ./fake.sh build -t MochaTest
   displayName: 'Run FAKE - MochaTest'
