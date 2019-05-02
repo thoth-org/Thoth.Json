@@ -1,4 +1,4 @@
-# Thoth.Json [![Build Status](https://dev.azure.com/Herebris/Thoth.Json/_apis/build/status/thoth-org.Thoth.Json?branchName=master)](https://dev.azure.com/Herebris/Thoth.Json/_build/latest?definitionId=1&branchName=master)
+# Thoth.Json [![Build Status](https://dev.azure.com/thoth-org/Thoth.Json/_apis/build/status/thoth-org.Thoth.Json?branchName=master)](https://dev.azure.com/thoth-org/Thoth.Json/_build/latest?definitionId=1&branchName=master)
 
 | Stable | Prerelease
 --- | ---
