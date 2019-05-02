@@ -6,6 +6,14 @@ open Thoth.Json
 open Util.Testing
 open System
 
+/// This function is needed because Windows is messing up the EOL
+/// and breaks the tests when running against .NET / .NET Core
+let normalizeEOL (txt : string) =
+    txt
+        .Replace("\r\n", "\n")
+        .Replace("\r", "\n")
+        .Trim()
+
 type Record2 =
     { a : float
       b : float }
@@ -356,11 +364,13 @@ let tests : Test =
 
             testCase "an int64 works output an error if incorrect string" <| fun _ ->
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$`
 Expecting an int64 but instead got: "maxime"
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
+
                 let actual =
                     Decode.fromString Decode.int64 "\"maxime\""
 
@@ -382,11 +392,12 @@ Expecting an int64 but instead got: "maxime"
 
             testCase "an uint32 output an error if incorrect string" <| fun _ ->
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$`
 Expecting an uint32 but instead got: "maxime"
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString Decode.uint32 "\"maxime\""
@@ -409,11 +420,12 @@ Expecting an uint32 but instead got: "maxime"
 
             testCase "an uint64 output an error if incorrect string" <| fun _ ->
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$`
 Expecting an uint64 but instead got: "maxime"
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString Decode.uint64 "\"maxime\""
@@ -436,11 +448,13 @@ Expecting an uint64 but instead got: "maxime"
 
             testCase "an bigint output an error if invalid string" <| fun _ ->
                 let expected =
-                    Error (
-                        """
+                    """
 Error at: `$`
 Expecting a bigint but instead got: "maxime"
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
+
                 let actual =
                     Decode.fromString Decode.bigint "\"maxime\""
 
@@ -455,11 +469,12 @@ Expecting a bigint but instead got: "maxime"
 
             testCase "a datetime output an error if invalid string" <| fun _ ->
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$`
 Expecting a datetime but instead got: "invalid_string"
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString Decode.datetime "\"invalid_string\""
@@ -487,11 +502,13 @@ Expecting a datetime but instead got: "invalid_string"
 
             testCase "a datetimeOffset returns Error if invalid format" <| fun _ ->
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$`
 Expecting a datetimeoffset but instead got: "NOT A DATETIMEOFFSET"
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
+
                 let json = "\"NOT A DATETIMEOFFSET\""
                 let actual =
                     Decode.fromString Decode.datetimeOffset json
@@ -509,11 +526,13 @@ Expecting a datetimeoffset but instead got: "NOT A DATETIMEOFFSET"
 
             testCase "a timespan returns Error if invalid format" <| fun _ ->
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$`
 Expecting a timespan but instead got: "NOT A TimeSpan"
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
+
                 let json = "\"NOT A TimeSpan\""
                 let actual =
                     Decode.fromString Decode.timespan json
@@ -627,11 +646,12 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
             testCase "tuple2 returns an error if invalid json" <| fun _ ->
                 let json = """[1, false, "unused value"]"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.[1]`
 Expecting a string but instead got: false
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString
@@ -644,11 +664,12 @@ Expecting a string but instead got: false
             testCase "tuple3 returns an error if invalid json" <| fun _ ->
                 let json = """[1, "maxime", false]"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.[2]`
 Expecting a float but instead got: false
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString
@@ -662,8 +683,7 @@ Expecting a float but instead got: false
             testCase "tuple4 returns an error if invalid json (missing index)" <| fun _ ->
                 let json = """[1, "maxime", 2.5]"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.[3]`
 Expecting a longer array. Need index `3` but there are only `3` entries.
 [
@@ -671,7 +691,9 @@ Expecting a longer array. Need index `3` but there are only `3` entries.
     "maxime",
     2.5
 ]
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString
@@ -686,11 +708,12 @@ Expecting a longer array. Need index `3` but there are only `3` entries.
             testCase "tuple4 returns an error if invalid json (error in the nested object)" <| fun _ ->
                 let json = """[1, "maxime", 2.5, { "fieldA" : false }]"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.[3].fieldA`
 Expecting a string but instead got: false
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString
@@ -705,11 +728,12 @@ Expecting a string but instead got: false
             testCase "tuple5 returns an error if invalid json" <| fun _ ->
                 let json = """[1, "maxime", 2.5, { "fieldA" : "test" }, false]"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.[4]`
 Expecting a datetime but instead got: false
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString
@@ -725,11 +749,12 @@ Expecting a datetime but instead got: false
             testCase "tuple6 returns an error if invalid json" <| fun _ ->
                 let json = """[1, "maxime", 2.5, { "fieldA" : "test" }, "2018-10-01T11:12:55.00Z", false]"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.[5]`
 Expecting null but instead got: false
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString
@@ -746,11 +771,12 @@ Expecting null but instead got: false
             testCase "tuple7 returns an error if invalid json" <| fun _ ->
                 let json = """[1, "maxime", 2.5, { "fieldA" : "test" }, "2018-10-01T11:12:55.00Z", null, false]"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.[6]`
 Expecting an int but instead got: false
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString
@@ -768,11 +794,12 @@ Expecting an int but instead got: false
             testCase "tuple8 returns an error if invalid json" <| fun _ ->
                 let json = """[1, "maxime", 2.5, { "fieldA" : "test" }, "2018-10-01T11:12:55.00Z", null, 56, "maxime"]"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.[7]`
 Expecting an int but instead got: "maxime"
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString
@@ -804,12 +831,12 @@ Expecting an int but instead got: "maxime"
             testCase "field output an error explaining why the value is considered invalid" <| fun _ ->
                 let json = """{ "name": null, "age": 25 }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.name`
 Expecting an int but instead got: null
-                        """.Trim()
-                    )
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString (Decode.field "name" Decode.int) json
@@ -819,15 +846,16 @@ Expecting an int but instead got: null
             testCase "field output an error when field is missing" <| fun _ ->
                 let json = """{ "name": "maxime", "age": 25 }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$`
 Expecting an object with a field named `height` but instead got:
 {
     "name": "maxime",
     "age": 25
 }
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString (Decode.field "height" Decode.float) json
@@ -847,8 +875,7 @@ Expecting an object with a field named `height` but instead got:
             testCase "at output an error if the path failed" <| fun _ ->
                 let json = """{ "user": { "name": "maxime", "age": 25 } }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.user.firstname`
 Expecting an object with path `user.firstname` but instead got:
 {
@@ -858,7 +885,9 @@ Expecting an object with path `user.firstname` but instead got:
     }
 }
 Node `firstname` is unkown.
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString (Decode.at ["user"; "firstname"] Decode.string) json
@@ -868,12 +897,12 @@ Node `firstname` is unkown.
             testCase "at output an error explaining why the value is considered invalid" <| fun _ ->
                 let json = """{ "name": null, "age": 25 }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.name`
 Expecting an int but instead got: null
-                        """.Trim()
-                    )
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString (Decode.at [ "name" ] Decode.int) json
@@ -892,8 +921,7 @@ Expecting an int but instead got: null
             testCase "index output an error if array is to small" <| fun _ ->
                 let json = """["maxime", "alfonso", "steffen"]"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.[5]`
 Expecting a longer array. Need index `5` but there are only `3` entries.
 [
@@ -901,7 +929,9 @@ Expecting a longer array. Need index `5` but there are only `3` entries.
     "alfonso",
     "steffen"
 ]
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString (Decode.index 5 Decode.string) json
@@ -911,11 +941,12 @@ Expecting a longer array. Need index `5` but there are only `3` entries.
             testCase "index output an error if value isn't an array" <| fun _ ->
                 let json = "1"
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.[5]`
 Expecting an array but instead got: 1
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString (Decode.index 5 Decode.string) json
@@ -1081,8 +1112,7 @@ Expecting an array but instead got: 1
 
             testCase "oneOf output errors if all case fails" <| fun _ ->
                 let expected =
-                    Error (
-                        """
+                    """
 I run into the following problems:
 
 Error at: `$.[0]`
@@ -1091,7 +1121,9 @@ Expecting a string but instead got: 1
 Error at: `$.[0]`
 Expecting an object but instead got:
 1
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let badInt =
                     Decode.oneOf [ Decode.string; Decode.field "test" Decode.string ]
@@ -1129,11 +1161,12 @@ Expecting an object but instead got:
             testCase "optional returns Error value if decoder fails" <| fun _ ->
                 let json = """{ "name": 12, "age": 25 }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.name`
 Expecting a string but instead got: 12
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let actual =
                     Decode.fromString (Decode.optional "name" Decode.string) json
@@ -1180,7 +1213,8 @@ Expecting a string but instead got: 12
                         """
 Error at: `$.name`
 Expecting an int but instead got: "maxime"
-                        """.Trim()
+                        """
+                        |> normalizeEOL
                     equal expected msg
                 | Ok _ -> failwith "Expected type error for `name` field #1"
 
@@ -1195,7 +1229,8 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
     "age": 25,
     "something_undefined": null
 }
-                        """.Trim()
+                        """
+                        |> normalizeEOL
                     equal expected msg
                 | Ok _ ->
                     failwith "Expected type error for `name` field #2"
@@ -1218,7 +1253,8 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
                         """
 Error at: `$.name`
 Expecting an int but instead got: "maxime"
-                        """.Trim()
+                        """
+                        |> normalizeEOL
                     equal expected msg
                 | Ok _ -> failwith "Expected type error for `name` field #3"
 
@@ -1233,7 +1269,8 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
     "age": 25,
     "something_undefined": null
 }
-                        """.Trim()
+                        """
+                        |> normalizeEOL
                     equal expected msg
                 | Ok _ -> failwith "Expected type error for `name` field #4"
 
@@ -1243,7 +1280,8 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
                         """
 Error at: `$.something_undefined`
 Expecting an int but instead got: null
-                        """.Trim()
+                        """
+                        |> normalizeEOL
                     equal expected msg
                 | Ok _ -> failwith "Expected type error for `name` field"
 
@@ -1269,7 +1307,8 @@ Expecting an object with a field named `height` but instead got:
     "age": 25,
     "something_undefined": null
 }
-                        """.Trim()
+                        """
+                        |> normalizeEOL
 
                     equal expected msg
 
@@ -1348,7 +1387,6 @@ Expecting an object with a field named `height` but instead got:
 
             testCase "andThen generate an error if an error occuered" <| fun _ ->
                 let expected =
-                    Error(
                         """
 Error at: `$`
 Expecting an object with a field named `version` but instead got:
@@ -1356,7 +1394,10 @@ Expecting an object with a field named `version` but instead got:
     "info": 3,
     "data": 2
 }
-                        """.Trim())
+                        """
+                        |> normalizeEOL
+                        |> Error
+
                 let infoHelp version : Decoder<int> =
                     match version with
                     | 4 ->
@@ -1563,14 +1604,15 @@ Expecting an object with a field named `version` but instead got:
             testCase "get.Required.Field returns Error if field is missing" <| fun _ ->
                 let json = """{ "age": 25 }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$`
 Expecting an object with a field named `name` but instead got:
 {
     "age": 25
 }
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let decoder =
                     Decode.object
@@ -1586,11 +1628,12 @@ Expecting an object with a field named `name` but instead got:
             testCase "get.Required.Field returns Error if type is incorrect" <| fun _ ->
                 let json = """{ "name": 12, "age": 25 }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.name`
 Expecting a string but instead got: 12
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let decoder =
                     Decode.object
@@ -1651,11 +1694,12 @@ Expecting a string but instead got: 12
             testCase "get.Optional.Field returns Error value if decoder fails" <| fun _ ->
                 let json = """{ "name": 12, "age": 25 }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.name`
 Expecting a string but instead got: 12
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let decoder = Decode.object (fun get ->
                     { optionalField = get.Optional.Field "name" Decode.string })
@@ -1692,11 +1736,12 @@ Expecting a string but instead got: 12
             testCase "get.Optional.Field returns Error if type is incorrect" <| fun _ ->
                 let json = """{ "name": 12, "age": 25 }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.name`
 Expecting a string but instead got: 12
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let decoder =
                     Decode.object
@@ -1729,12 +1774,13 @@ Expecting a string but instead got: 12
             testCase "get.Required.At returns Error if non-object in path" <| fun _ ->
                 let json = """{ "user": "maxime" }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.user`
 Expecting an object but instead got:
 "maxime"
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let decoder =
                     Decode.object
@@ -1750,8 +1796,7 @@ Expecting an object but instead got:
             testCase "get.Required.At returns Error if field missing" <| fun _ ->
                 let json = """{ "user": { "name": "maxime", "age": 25 } }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.user.firstname`
 Expecting an object with path `user.firstname` but instead got:
 {
@@ -1761,7 +1806,9 @@ Expecting an object with path `user.firstname` but instead got:
     }
 }
 Node `firstname` is unkown.
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let decoder =
                     Decode.object
@@ -1777,11 +1824,12 @@ Node `firstname` is unkown.
             testCase "get.Required.At returns Error if type is incorrect" <| fun _ ->
                 let json = """{ "user": { "name": 12, "age": 25 } }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.user.name`
 Expecting a string but instead got: 12
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let decoder =
                     Decode.object
@@ -1813,13 +1861,13 @@ Expecting a string but instead got: 12
             testCase "get.Optional.At returns 'type error' if non-object in path" <| fun _ ->
                 let json = """{ "user": "maxime" }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.user`
 Expecting an object but instead got:
 "maxime"
-                        """.Trim()
-                    )
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let decoder =
                     Decode.object
@@ -1850,11 +1898,12 @@ Expecting an object but instead got:
             testCase "get.Optional.At returns Error if type is incorrect" <| fun _ ->
                 let json = """{ "user": { "name": 12, "age": 25 } }"""
                 let expected =
-                    Error(
-                        """
+                    """
 Error at: `$.user.name`
 Expecting a string but instead got: 12
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let decoder =
                     Decode.object
@@ -1980,14 +2029,16 @@ Expecting a string but instead got: 12
                         json
 
                 let expected =
-                    Error (
-                        """
+                    """
 Error at: `$`
 Expecting an object with a field named `radius` but instead got:
 {
     "enabled": true,
     "shape": "circle"
-}                   """.Trim())
+}
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 equal expected actual
 
@@ -2154,8 +2205,7 @@ Expecting an object with a field named `radius` but instead got:
             testCase "Object builders returns all the Errors" <| fun _ ->
                 let json = """{ "age": 25, "fieldC": "not_a_number", "fieldD": { "sub_field": "not_a_boolean" } }"""
                 let expected =
-                    Error(
-                        """
+                    """
 I run into the following problems:
 
 Error at: `$`
@@ -2184,7 +2234,9 @@ Expecting an int but instead got: "not_a_number"
 
 Error at: `$.fieldD.sub_field`
 Expecting a boolean but instead got: "not_a_boolean"
-                        """.Trim())
+                    """
+                    |> normalizeEOL
+                    |> Error
 
                 let decoder =
                     Decode.object (fun get ->
