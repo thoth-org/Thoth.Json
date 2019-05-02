@@ -3,6 +3,15 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
+strategy:
+  matrix:
+    linux:
+      imageName: 'ubuntu-16.04'
+    mac:
+      imageName: 'macos-10.14'
+    windows:
+      imageName: 'vs2017-win2016'
+
 trigger:
 - master
 
@@ -10,7 +19,7 @@ pr:
 - master
 
 pool:
-  vmImage: 'ubuntu-16.04'
+  vmImage: $(imageName)
 
 steps:
 - task: NodeTool@0
