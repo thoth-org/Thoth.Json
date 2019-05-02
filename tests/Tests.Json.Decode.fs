@@ -5,6 +5,7 @@ open Fable.Core.JsInterop
 open Thoth.Json
 open Util.Testing
 open System
+open System.Threading
 
 type Record2 =
     { a : float
@@ -232,6 +233,11 @@ type Price =
     | Normal of float
     | Reduced of float option
     | Zero
+
+
+type RecordWithStrangeType =
+    { Id : int
+      Thread : Thread option }
 
 let tests : Test =
     testList "Thoth.Json.Decode" [
@@ -2517,5 +2523,10 @@ Expecting a boolean but instead got: "not_a_boolean"
                 equal expected actual1
                 equal expected actual2
                 equal actual1 actual2
+
+            testCase "Auto.fromString works with strange types if they are None" <| fun _ ->
+                let json = """{"Id":0}"""
+                Decode.Auto.fromString<RecordWithStrangeType>(json)
+                |> equal (Ok { Id = 0; Thread = None })
         ]
     ]

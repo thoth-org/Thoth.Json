@@ -4,6 +4,7 @@ open Thoth.Json
 open Util.Testing
 open System
 open Tests.Decode
+open System.Threading
 
 type User =
     { Id : int
@@ -26,6 +27,10 @@ type SmallRecord =
 
 type RecordWithPrivateConstructor = private { Foo1: int; Foo2: float }
 type UnionWithPrivateConstructor = private Bar of string | Baz
+
+type RecordWithStrangeType =
+    { Id : int
+      Thread : Thread option }
 
 let tests : Test =
     testList "Thoth.Json.Encode" [
@@ -434,6 +439,17 @@ let tests : Test =
                 let expected = """["Baz",["Bar","foo"]]"""
                 let x = [Baz; Bar "foo"]
                 Encode.Auto.toString(0, x, isCamelCase=true)
+                |> equal expected
+
+            testCase "Encode.Auto.toString works with strange types if they are None" <| fun _ ->
+                let expected =
+                    """{"Id":0}"""
+
+                let value =
+                    { Id = 0
+                      Thread = None }
+
+                Encode.Auto.toString(0, value)
                 |> equal expected
         ]
 
