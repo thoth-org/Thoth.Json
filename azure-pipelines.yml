@@ -18,5 +18,11 @@ steps:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
 
+# Linux and macOS
 - script: ./fake.sh build -t MochaTest
+  condition: or( eq( variables['Agent.OS'], 'Linux' ), eq( variables['Agent.OS'], 'Darwin' ) )
+  displayName: 'Run FAKE - MochaTest'
+# Windows
+- script: fake.cmd build -t MochaTest
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
   displayName: 'Run FAKE - MochaTest'
