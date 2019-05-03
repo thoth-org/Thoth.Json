@@ -1,8 +1,12 @@
 module Tests.Decode
 
+#if FABLE_COMPILER
 open Fable.Core
 open Fable.Core.JsInterop
 open Thoth.Json
+#else
+open Thoth.Json.Net
+#endif
 open Util.Testing
 open System
 
@@ -233,16 +237,63 @@ type Price =
     | Reduced of float option
     | Zero
 
-let decodeDictionary keyDecoder valueDecoder =
+open System.Collections.Generic
+
+let rec private genericDictionary keyDecoder valueDecoder =
+    // let keyType = t.GenericTypeArguments.[0]
+    // let valueType = t.GenericTypeArguments.[1]
+    // let valueDecoder = autoDecoder extra isCamelCase false valueType
+    // let keyDecoder = autoDecoder extra isCamelCase false keyType
+    let tupleType = typedefof<obj * obj>.MakeGenericType([|keyType; valueType|])
+    let listType = typedefof< ResizeArray<obj> >.MakeGenericType([|tupleType|])
+    let addMethod = listType.GetMethod("Add")
+    fun (path: string) (value: JsonValue) ->
+        let empty = System.Activator.CreateInstance(listType)
+        let kvs =
+            if Helpers.isArray value then
+                (Ok empty, value.Value<JArray>()) ||> Seq.fold (fun acc value ->
+                    match acc with
+                    | Error _ -> acc
+                    | Ok acc ->
+                        if not (Helpers.isArray value) then
+                            (path, BadPrimitive ("an array", value)) |> Error
+                        else
+                            let kv = value.Value<JArray>()
+                            match keyDecoder.Decode(path + "[0]", kv.[0]), valueDecoder.Decode(path + "[1]", kv.[1]) with
+                            | Error er, _ -> Error er
+                            | _, Error er -> Error er
+                            | Ok key, Ok value ->
+                                addMethod.Invoke(acc, [|FSharpValue.MakeTuple([|key; value|], tupleType)|]) |> ignore
+                                Ok acc)
+            else
+                match keyType with
+                | StringifiableType ofString when Helpers.isObject value ->
+                    (Ok empty, value :?> JObject |> Seq.cast<JProperty>)
+                    ||> Seq.fold (fun acc prop ->
+                        match acc with
+                        | Error _ -> acc
+                        | Ok acc ->
+                            match valueDecoder.Decode(path + "." + prop.Name, prop.Value) with
+                            | Error er -> Error er
+                            | Ok v ->
+                                addMethod.Invoke(acc, [|FSharpValue.MakeTuple([|ofString prop.Name; v|], tupleType)|]) |> ignore
+                                Ok acc)
+                | _ ->
+                    (path, BadPrimitive ("an array or an object", value)) |> Error
+        kvs |> Result.map (fun kvs -> System.Activator.CreateInstance(t, kvs))
+
+
+
+let decodeDictionary (keyDecoder: BoxedDecoder) (valueDecoder: BoxedDecoder): BoxedDecoder =
     Decode.array (Decode.tuple2 keyDecoder valueDecoder)
     |> Decode.map (fun kvs ->
-        let dic = System.Collections.Generic.Dictionary()
+        let dic = Dictionary()
         for (key, value) in kvs do
             dic.Add(key, value)
         dic)
 
-let encodeDictionary keyEncoder valueEncoder =
-    fun (value: System.Collections.Generic.Dictionary<'Key,'Value>) ->
+let encodeDictionary (keyEncoder: Encoder<'Key>) (valueEncoder: Encoder<'Value>): Encoder<Dictionary<'Key,'Value>> =
+    fun (value: Dictionary<'Key,'Value>) ->
         value |> Seq.map (fun (KeyValue(k,v)) ->
             Encode.array [|keyEncoder k; valueEncoder v|])
         |> Encode.seq
@@ -2515,8 +2566,10 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let extra =
                     Extra.empty
                     |> Extra.withCustomPredicate
-                        (fun encs -> encodeDictionary (Encode.unboxEncoder encs.[0]) (Encode.unboxEncoder encs.[1]))
-                        (fun decs -> decodeDictionary (Decode.unboxDecoder decs.[0]) (Decode.unboxDecoder decs.[1]))
+                        (fun encs ->
+                            let x = encodeDictionary (Encode.unboxEncoder encs.[0]) (Encode.unboxEncoder encs.[1])
+                            x |> Encode.boxEncoder)
+                        (fun decs -> decodeDictionary (Decode.unboxDecoder decs.[0]) (Decode.unboxDecoder decs.[1]) |> Decode.boxDecoder)
                         (fun typeName -> typeName.StartsWith("System.Collections.Generic.Dictionary`2"))
 
                 let actual: System.Collections.Generic.Dictionary<int,string> =

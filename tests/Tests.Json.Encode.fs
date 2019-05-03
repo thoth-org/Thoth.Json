@@ -1,6 +1,10 @@
 module Tests.Encode
 
+#if FABLE_COMPILER
 open Thoth.Json
+#else
+open Thoth.Json.Net
+#endif
 open Util.Testing
 open System
 open Tests.Decode
@@ -423,8 +427,8 @@ let tests : Test =
                 let extra =
                     Extra.empty
                     |> Extra.withCustomPredicate
-                        (fun encs -> encodeDictionary (Encode.unboxEncoder encs.[0]) (Encode.unboxEncoder encs.[1]))
-                        (fun decs -> decodeDictionary (Decode.unboxDecoder decs.[0]) (Decode.unboxDecoder decs.[1]))
+                        (fun encs -> encodeDictionary (Encode.unboxEncoder encs.[0]) (Encode.unboxEncoder encs.[1]) |> Encode.boxEncoder)
+                        (fun decs -> decodeDictionary (Decode.unboxDecoder decs.[0]) (Decode.unboxDecoder decs.[1]) |> Decode.boxDecoder)
                         (fun typeName -> typeName.StartsWith("System.Collections.Generic.Dictionary`2"))
 
                 let expected = """[[1,"foo"],[3,"bar"]]"""

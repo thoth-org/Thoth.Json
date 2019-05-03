@@ -19,8 +19,8 @@ let inline withBigInt (extra: ExtraCoders): ExtraCoders =
     withCustom Encode.bigint Decode.bigint extra
 
 let inline withCustomPredicate
-                (encoderGenerator: BoxedEncoder[] -> Encoder<'Value>)
-                (decoderGenerator: BoxedDecoder[] -> Decoder<'Value>)
+                (encoderGenerator: BoxedEncoder[] -> BoxedEncoder)
+                (decoderGenerator: BoxedDecoder[] -> BoxedDecoder)
                 (predicate: string->bool)
                 (extra: ExtraCoders): ExtraCoders =
-    (predicate, ((encoderGenerator >> Encode.boxEncoder), (decoderGenerator >> Decode.boxDecoder)))::extra
+    (predicate, (encoderGenerator, decoderGenerator))::extra
