@@ -7,8 +7,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Util.fs" />
-    <Compile Include="Tests.Json.Decode.fs" />
-    <Compile Include="Tests.Json.Encode.fs" />
+    <Compile Include="Types.fs" />
+    <Compile Include="Decoders.fs" />
+    <Compile Include="Encoders.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />

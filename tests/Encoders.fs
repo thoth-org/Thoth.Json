@@ -1,44 +1,12 @@
-module Tests.Encode
+module Tests.Encoders
 
 open Thoth.Json
 open Util.Testing
 open System
-open Tests.Decode
-open System.Threading
-
-type User =
-    { Id : int
-      Name : string
-      Email : string
-      followers : int }
-
-type SmallRecord =
-    { fieldA: string }
-
-    static member Decoder =
-        Decode.object (fun get ->
-            { fieldA = get.Required.Field "fieldA" Decode.string }
-        )
-
-    static member Encoder x =
-        Encode.object [
-            "fieldA", Encode.string x.fieldA
-        ]
+open Tests.Types
 
 type RecordWithPrivateConstructor = private { Foo1: int; Foo2: float }
 type UnionWithPrivateConstructor = private Bar of string | Baz
-
-type RecordWithStrangeType =
-    { Id : int
-      Thread : Thread option }
-
-
-type IAmAnInterface =
-    abstract member DoIt : unit -> unit
-
-type RecordWithInterface =
-    { Id : int
-      Interface : IAmAnInterface option }
 
 let tests : Test =
     testList "Thoth.Json.Encode" [
