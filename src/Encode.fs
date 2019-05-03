@@ -373,7 +373,10 @@ module Encode =
                         target.[i] <- encode fields.[i-1]
                     array target
         else
-            failwithf "Cannot generate auto encoder for %s. Please pass an extra encoder." t.FullName
+            // Don't use failwithf here, for some reason F#/Fable compiles it as a function
+            // when the return type is a function too, so it doesn't fail immediately
+            sprintf "Cannot generate auto encoder for %s. Please pass an extra encoder." t.FullName
+            |> failwith
 
     and private autoEncoder (extra: ExtraCoders) isCamelCase (t: System.Type) : BoxedEncoder =
       let fullname = t.FullName
@@ -395,7 +398,15 @@ module Encode =
             else
                 let fullname = t.GetGenericTypeDefinition().FullName
                 if fullname = typedefof<obj option>.FullName then
-                    t.GenericTypeArguments.[0] |> autoEncoder extra isCamelCase |> option |> boxEncoder
+                    // Evaluate lazily so we don't need to generate the encoder for null values
+                    let encoder = lazy
+                                    t.GenericTypeArguments.[0]
+                                    |> autoEncoder extra isCamelCase
+                                    |> option
+                                    |> boxEncoder
+                    boxEncoder(fun (value: obj) ->
+                        if isNull value then nil
+                        else encoder.Value value)
                 elif fullname = typedefof<obj list>.FullName
                     || fullname = typedefof<Set<string>>.FullName then
                     let encoder = t.GenericTypeArguments.[0] |> autoEncoder extra isCamelCase

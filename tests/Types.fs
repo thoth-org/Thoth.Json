@@ -1,6 +1,10 @@
 module Tests.Types
 
+#if FABLE_COMPILER
 open Thoth.Json
+#else
+open Thoth.Json.Net
+#endif
 open System.Threading
 
 

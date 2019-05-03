@@ -928,7 +928,8 @@ module Decode =
                 // See https://github.com/MangelMaxime/Thoth/pull/84#issuecomment-444837773
                 boxDecoder(fun path value -> Error(path, BadType("an extra coder for " + t.FullName, value)))
             else
-                // TODO: `failwithf "... %s" t.FullName` doesn't fail immediately in Fable, investigate
+                // Don't use failwithf here, for some reason F#/Fable compiles it as a function
+                // when the return type is a function too, so it doesn't fail immediately
                 sprintf "Cannot generate auto decoder for %s. Please pass an extra decoder." t.FullName |> failwith
 
     and private autoDecoder (extra: ExtraCoders) isCamelCase (isOptional : bool) (t: System.Type) : BoxedDecoder =

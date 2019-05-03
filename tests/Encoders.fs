@@ -1,6 +1,10 @@
 module Tests.Encoders
 
+#if FABLE_COMPILER
 open Thoth.Json
+#else
+open Thoth.Json.Net
+#endif
 open Util.Testing
 open System
 open Tests.Types

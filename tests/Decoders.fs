@@ -1,8 +1,12 @@
 module Tests.Decoders
 
+#if FABLE_COMPILER
 open Fable.Core
 open Fable.Core.JsInterop
 open Thoth.Json
+#else
+open Thoth.Json.Net
+#endif
 open Util.Testing
 open System
 
