@@ -124,6 +124,29 @@ let tests : Test =
 
                 equal expected actual
 
+            testCase "an invalid int (1.1) [not an integer] output an error" <| fun _ ->
+                let expected = Error("Error at: `$`\nExpecting an int but instead got: 1.1\nReason: Value is not an integral value")
+                let actual =
+                    Decode.fromString Decode.int "1.1"
+
+                equal expected actual
+
+            testCase "an invalid int from string (1.1) [not an integer] output an error" <| fun _ ->
+                let expected = Error("Error at: `$`\nExpecting an int but instead got: \"1.1\"")
+                let actual =
+                    Decode.fromString Decode.int "\"1.1\""
+
+                equal expected actual
+
+            // Note: the json spec defines that NaN, +INF, -INF are represented as NULL
+
+            testCase "an invalid int (Null) [not an integer] output an error" <| fun _ ->
+                let expected = Error("Error at: `$`\nExpecting an int but instead got: null")
+                let actual =
+                    Decode.fromString Decode.int (Encode.toString 0 (Encode.float System.Double.NaN))
+
+                equal expected actual
+
             testCase "an invalid int [invalid range: too big] output an error" <| fun _ ->
                 let expected = Error("Error at: `$`\nExpecting an int but instead got: 2147483648\nReason: Value was either too large or too small for an int")
                 let actual =

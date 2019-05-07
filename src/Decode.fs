@@ -31,6 +31,10 @@ module Decode =
 
         let inline isNullValue (o: JsonValue): bool = isNull o
 
+        /// is the value an integer? This returns false for 1.1, NaN, Infinite, ...
+        [<Emit("isFinite($0) && Math.floor($0) === $0")>]
+        let isIntegralValue (_: JsonValue) : bool = jsNative
+
         [<Emit("-2147483648 < $0 && $0 < 2147483647 && ($0 | 0) === $0")>]
         let isValidIntRange (_: JsonValue) : bool = jsNative
 
@@ -150,7 +154,10 @@ module Decode =
                 if Helpers.isValidIntRange value then
                     Ok(Helpers.asInt value)
                 else
-                    (path, BadPrimitiveExtra("an int", value, "Value was either too large or too small for an int")) |> Error
+                    if Helpers.isIntegralValue value then
+                        (path, BadPrimitiveExtra("an int", value, "Value was either too large or too small for an int")) |> Error
+                    else
+                        (path, BadPrimitiveExtra("an int", value, "Value is not an integral value")) |> Error
             elif Helpers.isString value then
                 match System.Int32.TryParse (Helpers.asString value) with
                 | true, x -> Ok x
