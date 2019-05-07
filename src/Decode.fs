@@ -152,11 +152,12 @@ module Decode =
                 | _ -> (path, BadPrimitive("a guid", value)) |> Error
             else (path, BadPrimitive("a guid", value)) |> Error
 
-    let inline private integral(name, tryParse : (string -> bool * 'T), min : 'T, max : 'T, conv : obj -> 'T) : Decoder< 'T > =
+    let inline private integral(name, tryParse : (string -> bool * 'T), min : 'T, max : 'T, conv : float -> 'T) : Decoder< 'T > =
         fun path value ->
             if Helpers.isNumber value then
+                let value : float = unbox value
                 if Helpers.isIntegralValue value then
-                    if Helpers.isBetweenInclusive(value, min, max) then
+                    if (float min) <= value && value <= (float max) then
                         Ok(conv value)
                     else
                         (path, BadPrimitiveExtra(name, value, "Value was either too large or too small for " + name)) |> Error
@@ -169,17 +170,17 @@ module Decode =
             else
                 (path, BadPrimitive(name, value)) |> Error
                 
-    let int8 : Decoder<int8> = integral("an int8", System.SByte.TryParse, System.SByte.MinValue, System.SByte.MaxValue, unbox)
-    let uint8 : Decoder<uint8> = integral("an uint8", System.Byte.TryParse, System.Byte.MinValue, System.Byte.MaxValue, unbox)
+    let int8 : Decoder<int8> = integral("an int8", System.SByte.TryParse, System.SByte.MinValue, System.SByte.MaxValue, int8)
+    let uint8 : Decoder<uint8> = integral("an uint8", System.Byte.TryParse, System.Byte.MinValue, System.Byte.MaxValue, uint8)
 
-    let int16 : Decoder<int16> = integral("an int16", System.Int16.TryParse, System.Int16.MinValue, System.Int16.MaxValue, unbox)
-    let uint16 : Decoder<uint16> = integral("an uint16", System.UInt16.TryParse, System.UInt16.MinValue, System.UInt16.MaxValue, unbox)
+    let int16 : Decoder<int16> = integral("an int16", System.Int16.TryParse, System.Int16.MinValue, System.Int16.MaxValue, int16)
+    let uint16 : Decoder<uint16> = integral("an uint16", System.UInt16.TryParse, System.UInt16.MinValue, System.UInt16.MaxValue, uint16)
 
-    let int : Decoder<int> = integral("an int", System.Int32.TryParse, System.Int32.MinValue, System.Int32.MaxValue, Helpers.asInt)
-    let uint32 : Decoder<uint32> = integral("an uint32", System.UInt32.TryParse, System.UInt32.MinValue, System.UInt32.MaxValue, Helpers.asInt >> uint32)
+    let int : Decoder<int> = integral("an int", System.Int32.TryParse, System.Int32.MinValue, System.Int32.MaxValue, int)
+    let uint32 : Decoder<uint32> = integral("an uint32", System.UInt32.TryParse, System.UInt32.MinValue, System.UInt32.MaxValue, uint32)
 
-    let int64 : Decoder<int64> = integral("an int64", System.Int64.TryParse, System.Int64.MinValue, System.Int64.MaxValue, Helpers.asInt >> int64)
-    let uint64 : Decoder<uint64> = integral("an uint64", System.UInt64.TryParse, System.UInt64.MinValue, System.UInt64.MaxValue, Helpers.asInt >> uint64)
+    let int64 : Decoder<int64> = integral("an int64", System.Int64.TryParse, System.Int64.MinValue, System.Int64.MaxValue, int64)
+    let uint64 : Decoder<uint64> = integral("an uint64", System.UInt64.TryParse, System.UInt64.MinValue, System.UInt64.MaxValue, uint64)
 
 
     let bigint : Decoder<bigint> =
