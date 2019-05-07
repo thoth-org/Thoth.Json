@@ -38,6 +38,9 @@ module Decode =
         [<Emit("-2147483648 < $0 && $0 < 2147483647 && ($0 | 0) === $0")>]
         let isValidIntRange (_: JsonValue) : bool = jsNative
 
+        [<Emit("$1 <= $0 && $0 < $2")>]
+        let isBetweenInclusive(_v: JsonValue, _min: obj, _max: obj) = jsNative
+
         [<Emit("isFinite($0) && !($0 % 1)")>]
         let isIntFinite (_: JsonValue) : bool = jsNative
 
@@ -148,61 +151,37 @@ module Decode =
                 | _ -> (path, BadPrimitive("a guid", value)) |> Error
             else (path, BadPrimitive("a guid", value)) |> Error
 
-    let int : Decoder<int> =
+    let inline private integral(name, min, max) : Decoder< ^T > =
         fun path value ->
             if Helpers.isNumber value then
-                if Helpers.isValidIntRange value then
-                    Ok(Helpers.asInt value)
-                else
-                    if Helpers.isIntegralValue value then
-                        (path, BadPrimitiveExtra("an int", value, "Value was either too large or too small for an int")) |> Error
+                if Helpers.isIntegralValue value then
+                    if Helpers.isBetweenInclusive(value, min, max) then
+                        Ok(unbox value)
                     else
-                        (path, BadPrimitiveExtra("an int", value, "Value is not an integral value")) |> Error
+                        (path, BadPrimitiveExtra(name, value, "Value was either too large or too small for " + name)) |> Error
+                else
+                    (path, BadPrimitiveExtra(name, value, "Value is not an integral value")) |> Error
             elif Helpers.isString value then
-                match System.Int32.TryParse (Helpers.asString value) with
+                let mutable out = Unchecked.defaultof< ^T >
+                let f =  (^T : (static member TryParse : string * byref< ^T > -> bool) (Helpers.asString value, &out))
+                match f, out with
                 | true, x -> Ok x
-                | _ -> (path, BadPrimitive("an int", value)) |> Error
+                | _ -> (path, BadPrimitive(name, value)) |> Error
             else
-                (path, BadPrimitive("an int", value)) |> Error
+                (path, BadPrimitive(name, value)) |> Error
+                
+    let int8 : Decoder<int8> = integral("an int8", System.SByte.MinValue, System.SByte.MaxValue)
+    let uint8 : Decoder<uint8> = integral("an uint8", System.Byte.MinValue, System.Byte.MaxValue)
 
+    let int16 : Decoder<int16> = integral("an int16", System.Int16.MinValue, System.Int16.MaxValue)
+    let uint16 : Decoder<uint16> = integral("an uint16", System.UInt16.MinValue, System.UInt16.MaxValue)
 
-    let int64 : Decoder<int64> =
-        fun path value ->
-            if Helpers.isNumber value then
-                Helpers.asInt value |> int64 |> Ok
-            elif Helpers.isString value then
-                match System.Int64.TryParse (Helpers.asString value) with
-                | true, x -> Ok x
-                | _ -> (path, BadPrimitive("an int64", value)) |> Error
-            else (path, BadPrimitive("an int64", value)) |> Error
+    let int : Decoder<int> = integral("an int", System.Int32.MinValue, System.Int32.MaxValue)
+    let uint32 : Decoder<uint32> = integral("an uint32", System.UInt32.MinValue, System.UInt32.MaxValue)
 
-    let uint32 : Decoder<uint32> =
-        fun path value ->
-            if Helpers.isNumber value then
-                let x = Helpers.asFloat value
-                if x >= 0. && x <= (float System.UInt32.MaxValue) then
-                    Helpers.asInt value |> uint32 |> Ok
-                else
-                    (path, BadPrimitiveExtra("an uint32", value, "Value was either too large or too small for an uint32")) |> Error
-            elif Helpers.isString value then
-                match System.UInt32.TryParse (Helpers.asString value) with
-                | true, x -> Ok x
-                | _ -> (path, BadPrimitive("an uint32", value)) |> Error
-            else (path, BadPrimitive("an uint32", value)) |> Error
+    let int64 : Decoder<int64> = integral("an int64", System.Int64.MinValue, System.Int64.MaxValue)
+    let uint64 : Decoder<uint64> = integral("an uint64", System.UInt64.MinValue, System.UInt64.MaxValue)
 
-    let uint64 : Decoder<uint64> =
-        fun path value ->
-            if Helpers.isNumber value then
-                let x = Helpers.asFloat value
-                if x >= 0. && x <= (float System.UInt64.MaxValue) then
-                    Helpers.asInt value |> uint64 |> Ok
-                else
-                    (path, BadPrimitiveExtra("an uint64", value, "Value was either too large or too small for an uint64")) |> Error
-            elif Helpers.isString value then
-                match System.UInt64.TryParse (Helpers.asString value) with
-                | true, x -> Ok x
-                | _ -> (path, BadPrimitive("an uint64", value)) |> Error
-            else (path, BadPrimitive("an uint64", value)) |> Error
 
     let bigint : Decoder<bigint> =
         fun path value ->
