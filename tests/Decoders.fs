@@ -214,6 +214,13 @@ Expecting an uint32 but instead got: "maxime"
 
                 equal expected actual
 
+            testCase "an invalid uint32 (1.1) [not an integer] output an error" <| fun _ ->
+                let expected = Error("Error at: `$`\nExpecting an uint32 but instead got: 1.1\nReason: Value is not an integral value")
+                let actual =
+                    Decode.fromString Decode.uint32 "1.1"
+
+                equal expected actual
+
             testCase "an uint64 works from number" <| fun _ ->
                 let expected = Ok 1000UL
                 let actual =

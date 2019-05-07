@@ -39,6 +39,18 @@ module Encode =
     let guid (value : System.Guid) : JsonValue =
         box (value.ToString())
 
+    let inline int8 (value : int8) : JsonValue =
+        box value
+
+    let inline uint8 (value : uint8) : JsonValue =
+        box value
+
+    let inline int16 (value : int16) : JsonValue =
+        box value
+
+    let inline uint16 (value : uint16) : JsonValue =
+        box value
+
     ///**Description**
     /// Encode an int
     ///
@@ -54,6 +66,9 @@ module Encode =
         box value
 
     let inline uint32 (value : uint32) : JsonValue =
+        box value
+
+    let inline float32 (value : float32) : JsonValue =
         box value
 
     ///**Description**

@@ -55,6 +55,7 @@ module Decode =
         let inline asBool (o: JsonValue): bool = unbox o
         let inline asInt (o: JsonValue): int = unbox o
         let inline asFloat (o: JsonValue): float = unbox o
+        let inline asFloat32 (o: JsonValue): float32 = unbox o
         let inline asString (o: JsonValue): string = unbox o
         let inline asArray (o: JsonValue): JsonValue[] = unbox o
 
@@ -151,36 +152,34 @@ module Decode =
                 | _ -> (path, BadPrimitive("a guid", value)) |> Error
             else (path, BadPrimitive("a guid", value)) |> Error
 
-    let inline private integral(name, min, max) : Decoder< ^T > =
+    let inline private integral(name, tryParse : (string -> bool * 'T), min : 'T, max : 'T, conv : obj -> 'T) : Decoder< 'T > =
         fun path value ->
             if Helpers.isNumber value then
                 if Helpers.isIntegralValue value then
                     if Helpers.isBetweenInclusive(value, min, max) then
-                        Ok(unbox value)
+                        Ok(conv value)
                     else
                         (path, BadPrimitiveExtra(name, value, "Value was either too large or too small for " + name)) |> Error
                 else
                     (path, BadPrimitiveExtra(name, value, "Value is not an integral value")) |> Error
             elif Helpers.isString value then
-                let mutable out = Unchecked.defaultof< ^T >
-                let f =  (^T : (static member TryParse : string * byref< ^T > -> bool) (Helpers.asString value, &out))
-                match f, out with
+                match tryParse (Helpers.asString value) with
                 | true, x -> Ok x
                 | _ -> (path, BadPrimitive(name, value)) |> Error
             else
                 (path, BadPrimitive(name, value)) |> Error
                 
-    let int8 : Decoder<int8> = integral("an int8", System.SByte.MinValue, System.SByte.MaxValue)
-    let uint8 : Decoder<uint8> = integral("an uint8", System.Byte.MinValue, System.Byte.MaxValue)
+    let int8 : Decoder<int8> = integral("an int8", System.SByte.TryParse, System.SByte.MinValue, System.SByte.MaxValue, unbox)
+    let uint8 : Decoder<uint8> = integral("an uint8", System.Byte.TryParse, System.Byte.MinValue, System.Byte.MaxValue, unbox)
 
-    let int16 : Decoder<int16> = integral("an int16", System.Int16.MinValue, System.Int16.MaxValue)
-    let uint16 : Decoder<uint16> = integral("an uint16", System.UInt16.MinValue, System.UInt16.MaxValue)
+    let int16 : Decoder<int16> = integral("an int16", System.Int16.TryParse, System.Int16.MinValue, System.Int16.MaxValue, unbox)
+    let uint16 : Decoder<uint16> = integral("an uint16", System.UInt16.TryParse, System.UInt16.MinValue, System.UInt16.MaxValue, unbox)
 
-    let int : Decoder<int> = integral("an int", System.Int32.MinValue, System.Int32.MaxValue)
-    let uint32 : Decoder<uint32> = integral("an uint32", System.UInt32.MinValue, System.UInt32.MaxValue)
+    let int : Decoder<int> = integral("an int", System.Int32.TryParse, System.Int32.MinValue, System.Int32.MaxValue, Helpers.asInt)
+    let uint32 : Decoder<uint32> = integral("an uint32", System.UInt32.TryParse, System.UInt32.MinValue, System.UInt32.MaxValue, Helpers.asInt >> uint32)
 
-    let int64 : Decoder<int64> = integral("an int64", System.Int64.MinValue, System.Int64.MaxValue)
-    let uint64 : Decoder<uint64> = integral("an uint64", System.UInt64.MinValue, System.UInt64.MaxValue)
+    let int64 : Decoder<int64> = integral("an int64", System.Int64.TryParse, System.Int64.MinValue, System.Int64.MaxValue, Helpers.asInt >> int64)
+    let uint64 : Decoder<uint64> = integral("an uint64", System.UInt64.TryParse, System.UInt64.MinValue, System.UInt64.MaxValue, Helpers.asInt >> uint64)
 
 
     let bigint : Decoder<bigint> =
@@ -210,6 +209,13 @@ module Decode =
                 Ok(Helpers.asFloat value)
             else
                 (path, BadPrimitive("a float", value)) |> Error
+    
+    let float32 : Decoder<float32> =
+        fun path value ->
+            if Helpers.isNumber value then
+                Ok(Helpers.asFloat32 value)
+            else
+                (path, BadPrimitive("a float32", value)) |> Error
 
     let decimal : Decoder<decimal> =
         fun path value ->
@@ -960,10 +966,20 @@ module Decode =
                 boxDecoder bool
             elif fullname = typeof<string>.FullName then
                 boxDecoder string
+            elif fullname = typeof<int8>.FullName then
+                boxDecoder int8
+            elif fullname = typeof<uint8>.FullName then
+                boxDecoder uint8
+            elif fullname = typeof<int16>.FullName then
+                boxDecoder int16
+            elif fullname = typeof<uint16>.FullName then
+                boxDecoder uint16
             elif fullname = typeof<int>.FullName then
                 boxDecoder int
             elif fullname = typeof<uint32>.FullName then
                 boxDecoder uint32
+            elif fullname = typeof<float32>.FullName then
+                boxDecoder float32
             elif fullname = typeof<float>.FullName then
                 boxDecoder float
             // These number types require extra libraries in Fable. To prevent penalizing
