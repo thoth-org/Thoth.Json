@@ -451,10 +451,20 @@ module Encode =
                 boxEncoder bool
             elif fullname = typeof<string>.FullName then
                 boxEncoder string
+            elif fullname = typeof<int8>.FullName then
+                boxEncoder int8
+            elif fullname = typeof<uint8>.FullName then
+                boxEncoder uint8
+            elif fullname = typeof<int16>.FullName then
+                boxEncoder int16
+            elif fullname = typeof<uint16>.FullName then
+                boxEncoder uint16
             elif fullname = typeof<int>.FullName then
                 boxEncoder int
             elif fullname = typeof<uint32>.FullName then
                 boxEncoder uint32
+            elif fullname = typeof<float32>.FullName then
+                boxEncoder float32
             elif fullname = typeof<float>.FullName then
                 boxEncoder float
             // These number types require extra libraries in Fable. To prevent penalizing
