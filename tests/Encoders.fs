@@ -438,6 +438,22 @@ let tests : Test =
 
                 Encode.Auto.toString(0, value)
                 |> equal expected
+
+            testCase "Encode.Auto.toString works with arrays of nested records" <| fun _ ->
+                let expected =
+                    """[{"Locations":[{"X":0.2,"Y":0.2,"Title":"title","City":"city","Street":"street"}],"Color":"red"}]"""
+
+                let location = {
+                    X = 0.2
+                    Y = 0.2
+                    Title = "title"
+                    City = "city"
+                    Street = "street"
+                }
+                let value : Cluster [] = [| { Locations = [| location |]; Color = "red" } |]
+
+                Encode.Auto.toString(0, value)
+                |> equal expected
         ]
 
     ]

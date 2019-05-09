@@ -230,3 +230,18 @@ type IAmAnInterface =
 type RecordWithInterface =
     { Id : int
       Interface : IAmAnInterface option }
+
+
+
+type M34Location = {
+    X : float
+    Y : float
+    Title : string
+    City : string
+    Street :string
+}
+
+type Cluster = {
+    Locations : M34Location []
+    Color : string
+}
