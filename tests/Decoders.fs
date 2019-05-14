@@ -244,6 +244,13 @@ Expecting a bigint but instead got: "maxime"
 
                 equal expected actual
 
+            testCase "a string representing a DateTime should be accepted as a string" <| fun _ ->
+                let expected = "2018-10-01T11:12:55.00Z"
+                let actual =
+                    Decode.fromString Decode.string "\"2018-10-01T11:12:55.00Z\""
+
+                equal (Ok expected) actual
+
             testCase "a datetime works" <| fun _ ->
                 let expected = new DateTime(2018, 10, 1, 11, 12, 55, DateTimeKind.Utc)
                 let actual =
