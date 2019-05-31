@@ -344,44 +344,50 @@ module Encode =
         !!d
 
     let rec private autoEncodeRecordsAndUnions extra (isCamelCase : bool) (t: System.Type) : BoxedEncoder =
-        if FSharpType.IsRecord(t, allowAccessToPrivateRepresentation=true) then
-            let setters =
-                FSharpType.GetRecordFields(t, allowAccessToPrivateRepresentation=true)
-                |> Array.map (fun fi ->
-                    let targetKey =
-                        if isCamelCase then fi.Name.[..0].ToLowerInvariant() + fi.Name.[1..]
-                        else fi.Name
-                    let encode = autoEncoder extra isCamelCase fi.PropertyType
-                    fun (source: obj) (target: JsonValue) ->
-                        let value = FSharpValue.GetRecordField(source, fi)
-                        if not(isNull value) then // Discard null fields
-                            target.[targetKey] <- encode value
-                        target)
-            fun (source: obj) ->
-                (JsonValue(), setters) ||> Seq.fold (fun target set -> set source target)
-        elif FSharpType.IsUnion(t, allowAccessToPrivateRepresentation=true) then
-            fun (value: obj) ->
-                let info, fields = FSharpValue.GetUnionFields(value, t, allowAccessToPrivateRepresentation=true)
-                match fields.Length with
-                | 0 -> string info.Name
-                | len ->
-                    let fieldTypes = info.GetFields()
-                    let target = Array.zeroCreate<JsonValue> (len + 1)
-                    target.[0] <- string info.Name
-                    for i = 1 to len do
-                        let encode = autoEncoder extra isCamelCase fieldTypes.[i-1].PropertyType
-                        target.[i] <- encode fields.[i-1]
-                    array target
-        else
-            // Don't use failwithf here, for some reason F#/Fable compiles it as a function
-            // when the return type is a function too, so it doesn't fail immediately
-            sprintf "Cannot generate auto encoder for %s. Please pass an extra encoder." t.FullName
-            |> failwith
+        // Add the encoder to extra in case one of the fields is recursive
+        let encoderRef = ref Unchecked.defaultof<_>
+        let extra = extra |> Map.add t.FullName encoderRef
+        let encoder =
+            if FSharpType.IsRecord(t, allowAccessToPrivateRepresentation=true) then
+                let setters =
+                    FSharpType.GetRecordFields(t, allowAccessToPrivateRepresentation=true)
+                    |> Array.map (fun fi ->
+                        let targetKey =
+                            if isCamelCase then fi.Name.[..0].ToLowerInvariant() + fi.Name.[1..]
+                            else fi.Name
+                        let encode = autoEncoder extra isCamelCase fi.PropertyType
+                        fun (source: obj) (target: JsonValue) ->
+                            let value = FSharpValue.GetRecordField(source, fi)
+                            if not(isNull value) then // Discard null fields
+                                target.[targetKey] <- encode value
+                            target)
+                fun (source: obj) ->
+                    (JsonValue(), setters) ||> Seq.fold (fun target set -> set source target)
+            elif FSharpType.IsUnion(t, allowAccessToPrivateRepresentation=true) then
+                fun (value: obj) ->
+                    let info, fields = FSharpValue.GetUnionFields(value, t, allowAccessToPrivateRepresentation=true)
+                    match fields.Length with
+                    | 0 -> string info.Name
+                    | len ->
+                        let fieldTypes = info.GetFields()
+                        let target = Array.zeroCreate<JsonValue> (len + 1)
+                        target.[0] <- string info.Name
+                        for i = 1 to len do
+                            let encode = autoEncoder extra isCamelCase fieldTypes.[i-1].PropertyType
+                            target.[i] <- encode fields.[i-1]
+                        array target
+            else
+                // Don't use failwithf here, for some reason F#/Fable compiles it as a function
+                // when the return type is a function too, so it doesn't fail immediately
+                sprintf "Cannot generate auto encoder for %s. Please pass an extra encoder." t.FullName
+                |> failwith
+        encoderRef := encoder
+        encoder
 
-    and private autoEncoder (extra: ExtraCoders) isCamelCase (t: System.Type) : BoxedEncoder =
+    and private autoEncoder (extra: Map<string, ref<BoxedEncoder>>) isCamelCase (t: System.Type) : BoxedEncoder =
       let fullname = t.FullName
       match Map.tryFind fullname extra with
-      | Some(encoder,_) -> encoder
+      | Some encoderRef -> fun v -> encoderRef.contents v
       | None ->
         if t.IsArray then
             let encoder = t.GetElementType() |> autoEncoder extra isCamelCase
@@ -466,19 +472,23 @@ module Encode =
             else
                 autoEncodeRecordsAndUnions extra isCamelCase t
 
+    let private makeExtra (extra: ExtraCoders option) =
+        match extra with
+        | None -> Map.empty
+        | Some e -> Map.map (fun _ (enc,_) -> ref enc) e
+
     type Auto =
         /// ATTENTION: Use this only when other arguments (isCamelCase, extra) don't change
         static member generateEncoderCached<'T>(?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
             let t = Util.resolveType resolver
             Util.CachedEncoders.GetOrAdd(t.FullName, fun _ ->
                 let isCamelCase = defaultArg isCamelCase false
-                let extra = match extra with Some e -> e | None -> Map.empty
-                autoEncoder extra isCamelCase t) |> unboxEncoder
+                autoEncoder (makeExtra extra) isCamelCase t) |> unboxEncoder
 
         static member generateEncoder<'T>(?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
             let isCamelCase = defaultArg isCamelCase false
-            let extra = match extra with Some e -> e | None -> Map.empty
-            Util.resolveType resolver |> autoEncoder extra isCamelCase |> unboxEncoder
+            Util.resolveType resolver
+            |> autoEncoder (makeExtra extra) isCamelCase |> unboxEncoder
 
         static member toString(space : int, value : 'T, ?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>) : string =
             let encoder = Auto.generateEncoder(?isCamelCase=isCamelCase, ?extra=extra, ?resolver=resolver)

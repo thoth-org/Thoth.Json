@@ -230,3 +230,7 @@ type IAmAnInterface =
 type RecordWithInterface =
     { Id : int
       Interface : IAmAnInterface option }
+
+type MyRecType =
+    { Name: string
+      Children: MyRecType List }

@@ -2327,5 +2327,14 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let json = """{"Id":0}"""
                 Decode.Auto.fromString<RecordWithStrangeType>(json)
                 |> equal (Ok { Id = 0; Thread = None })
+
+            testCase "Auto.fromString works with recursive types" <| fun _ ->
+                let vater =
+                    { Name = "Alfonso"
+                      Children = [ { Name = "Narumi"; Children = [] }
+                                   { Name = "Takumi"; Children = [] } ] }
+                let json = """{"Name":"Alfonso","Children":[{"Name":"Narumi","Children":[]},{"Name":"Takumi","Children":[]}]}"""
+                Decode.Auto.fromString<MyRecType>(json)
+                |> equal (Ok vater)
         ]
     ]

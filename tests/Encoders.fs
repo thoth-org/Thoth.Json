@@ -438,6 +438,15 @@ let tests : Test =
 
                 Encode.Auto.toString(0, value)
                 |> equal expected
+
+            testCase "Encode.Auto.toString works with recursive types" <| fun _ ->
+                let vater =
+                    { Name = "Alfonso"
+                      Children = [ { Name = "Narumi"; Children = [] }
+                                   { Name = "Takumi"; Children = [] } ] }
+                let json = """{"Name":"Alfonso","Children":[{"Name":"Narumi","Children":[]},{"Name":"Takumi","Children":[]}]}"""
+                Encode.Auto.toString(0, vater)
+                |> equal json
         ]
 
     ]
