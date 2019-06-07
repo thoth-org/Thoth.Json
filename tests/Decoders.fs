@@ -1,6 +1,9 @@
 module Tests.Decoders
 
+#if !NETFRAMEWORK
 open Fable.Core
+#endif
+
 open Fable.Core.JsInterop
 open Thoth.Json
 open Util.Testing

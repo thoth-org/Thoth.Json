@@ -448,6 +448,7 @@ let tests : Test =
                 Encode.Auto.toString(0, vater)
                 |> equal json
 
+            #if !NETFRAMEWORK
             testCase "Encode.Auto.toString works with [<StringEnum>]" <| fun _ ->
                 let expected = "\"firstPerson\""
                 let actual = Encode.Auto.toString(0, Camera.FirstPerson)
@@ -467,6 +468,7 @@ let tests : Test =
                 let expected = "\"C#\""
                 let actual = Encode.Auto.toString(0, Language.Csharp)
                 equal expected actual
+            #endif
 
         ]
 

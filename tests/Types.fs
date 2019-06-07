@@ -2,7 +2,9 @@ module Tests.Types
 
 open Thoth.Json
 open System.Threading
+#if !NETFRAMEWORK
 open Fable.Core
+#endif
 
 type Record2 =
     { a : float
@@ -236,6 +238,7 @@ type MyRecType =
     { Name: string
       Children: MyRecType List }
 
+#if !NETFRAMEWORK
 [<StringEnum>]
 type Camera =
     | FirstPerson
@@ -251,3 +254,4 @@ type Framework =
 type Language =
     | Fsharp
     | [<CompiledName("C#")>] Csharp
+#endif
