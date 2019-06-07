@@ -453,6 +453,11 @@ let tests : Test =
                 let actual = Encode.Auto.toString(0, Camera.FirstPerson)
                 equal expected actual
 
+            testCase "Encode.Auto.toString works with [<StringEnum(CaseRules.LowerFirst)>]" <| fun _ ->
+                let expected = "\"react\""
+                let actual = Encode.Auto.toString(0, Framework.React)
+                equal expected actual
+
             testCase "Encode.Auto.toString works with [<StringEnum(CaseRules.None)>]" <| fun _ ->
                 let expected = "\"Fsharp\""
                 let actual = Encode.Auto.toString(0, Language.Fsharp)

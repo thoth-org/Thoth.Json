@@ -242,6 +242,11 @@ type Camera =
     | ArcRotate
     | IsometricTopDown
 
+[<StringEnum(CaseRules.LowerFirst)>]
+type Framework =
+    | React
+    | VueJs
+
 [<StringEnum(CaseRules.None)>]
 type Language =
     | Fsharp
