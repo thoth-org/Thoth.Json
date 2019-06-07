@@ -2,6 +2,7 @@ module Tests.Types
 
 open Thoth.Json
 open System.Threading
+open Fable.Core
 
 type Record2 =
     { a : float
@@ -234,3 +235,14 @@ type RecordWithInterface =
 type MyRecType =
     { Name: string
       Children: MyRecType List }
+
+[<StringEnum>]
+type Camera =
+    | FirstPerson
+    | ArcRotate
+    | IsometricTopDown
+
+[<StringEnum(CaseRules.None)>]
+type Language =
+    | Fsharp
+    | [<CompiledName("C#")>] Csharp

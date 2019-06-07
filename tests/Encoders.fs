@@ -447,28 +447,22 @@ let tests : Test =
                 let json = """{"Name":"Alfonso","Children":[{"Name":"Narumi","Children":[]},{"Name":"Takumi","Children":[]}]}"""
                 Encode.Auto.toString(0, vater)
                 |> equal json
+
+            testCase "Encode.Auto.toString works with [<StringEnum>]" <| fun _ ->
+                let expected = "\"firstPerson\""
+                let actual = Encode.Auto.toString(0, Camera.FirstPerson)
+                equal expected actual
+
+            testCase "Encode.Auto.toString works with [<StringEnum(CaseRules.None)>]" <| fun _ ->
+                let expected = "\"Fsharp\""
+                let actual = Encode.Auto.toString(0, Language.Fsharp)
+                equal expected actual
+
+            testCase "Encode.Auto.toString works with [<StringEnum>] + [<CompiledName>]" <| fun _ ->
+                let expected = "\"C#\""
+                let actual = Encode.Auto.toString(0, Language.Csharp)
+                equal expected actual
+
         ]
 
     ]
-
-
-// Encode.bigint
-// Encode.datetime
-
-
-// Encode.datetimeOffset
-// Encode.decimal
-// Encode.guid
-// Encode.int64
-// Encode.keyValuePairs
-// Encode.list
-// Encode.nil
-// Encode.object
-// Encode.tuple2
-// Encode.tuple3
-// Encode.tuple4
-// Encode.tuple5
-// Encode.tuple6
-// Encode.tuple7
-// Encode.tuple8
-// Encode.uint64
