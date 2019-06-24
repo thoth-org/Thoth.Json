@@ -264,3 +264,5 @@ temp/
 \.DS_Store
 
 demos/Thoth\.Elmish\.Demo/output/
+
+\.ionide/

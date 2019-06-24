@@ -891,7 +891,7 @@ Expecting an array but instead got: 1
                 let expected =
                     Error (
                         """
-I run into the following problems:
+The following errors were found:
 
 Error at: `$.[0]`
 Expecting a string but instead got: 1
@@ -1127,7 +1127,7 @@ Expecting an object with a field named `height` but instead got:
 
             testCase "fail works" <| fun _ ->
                 let msg = "Failing because it's fun"
-                let expected = Error("Error at: `$`\nI run into a `fail` decoder: " + msg)
+                let expected = Error("Error at: `$`\nThe following `failure` occurred with the decoder: " + msg)
                 let actual =
                     Decode.fromString (Decode.fail msg) "true"
 
@@ -1757,7 +1757,7 @@ Expecting a string but instead got: 12
                         json
 
                 let expected =
-                    Error "Error at: `$`\nI run into a `fail` decoder: Unknown shape type custom_shape"
+                    Error "Error at: `$`\nThe following `failure` occurred with the decoder: Unknown shape type custom_shape"
 
                 equal expected actual
 
@@ -1891,7 +1891,7 @@ Expecting an object with a field named `radius` but instead got:
                         json
 
                 let expected =
-                    Error "Error at: `$`\nI run into a `fail` decoder: Unknown shape type invalid_shape"
+                    Error "Error at: `$`\nThe following `failure` occurred with the decoder: Unknown shape type invalid_shape"
 
                 equal expected actual
 
@@ -1964,7 +1964,7 @@ Expecting an object with a field named `radius` but instead got:
                 let expected =
                     Error(
                         """
-I run into the following problems:
+The following errors were found:
 
 Error at: `$`
 Expecting an object with a field named `missing_field_1` but instead got:
