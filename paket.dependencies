@@ -1,4 +1,4 @@
-version 5.193.0
+version 5.210.1
 source https://www.nuget.org/api/v2
 
 storage:none
@@ -9,9 +9,10 @@ nuget FSharp.Core redirects:force
 group netcorebuild
     source https://www.nuget.org/api/v2
     framework: netstandard2.0
+    storage:none
 
     clitool dotnet-fake
-    nuget NETStandard.Library.NETFramework
+    nuget System.Reactive.Compatibility
     nuget Fake.DotNet.Cli
     nuget Fake.DotNet.Paket
     nuget Fake.Core.Target
