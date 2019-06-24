@@ -16,7 +16,8 @@ open Fake.DotNet
 open Fake.IO
 open Fake.IO.Globbing.Operators
 open Fake.IO.FileSystemOperators
-open Fake.Tools.Git
+open Fake.Tools
+open Fake.Api
 open Fake.JavaScript
 
 let versionFromGlobalJson : DotNet.CliInstallOptions -> DotNet.CliInstallOptions = (fun o ->
@@ -31,8 +32,12 @@ let inline dtntWorkDir wd =
 let inline yarnWorkDir (ws : string) (yarnParams : Yarn.YarnParams) =
     { yarnParams with WorkingDirectory = ws }
 
+let root = __SOURCE_DIRECTORY__
 let projectFile = "./src/Thoth.Json.fsproj"
 let testsFile = "./tests/Thoth.Tests.fsproj"
+
+let gitOwner = "thoth-org"
+let repoName = "Thoth.Json"
 
 module Util =
 
@@ -122,22 +127,22 @@ let needsPublishing (versionRegex: Regex) (newVersion: string) projFile =
 let pushNuget (newVersion: string) (projFile: string) =
     let versionRegex = Regex("<Version>(.*?)</Version>", RegexOptions.IgnoreCase)
 
+    let projDir = Path.GetDirectoryName(projFile)
+    let nugetKey =
+        match Environment.environVarOrNone "NUGET_KEY" with
+        | Some nugetKey -> nugetKey
+        | None -> failwith "The Nuget API key must be set in a NUGET_KEY environmental variable"
+
+    (versionRegex, projFile) ||> Util.replaceLines (fun line _ ->
+        versionRegex.Replace(line, "<Version>" + newVersion + "</Version>") |> Some)
+
+    DotNet.pack (fun p ->
+        { p with
+            Configuration = DotNet.Release
+            Common = { p.Common with DotNetCliPath = "dotnet" } } )
+        projFile
+
     if needsPublishing versionRegex newVersion projFile then
-        let projDir = Path.GetDirectoryName(projFile)
-        let nugetKey =
-            match Environment.environVarOrNone "NUGET_KEY" with
-            | Some nugetKey -> nugetKey
-            | None -> failwith "The Nuget API key must be set in a NUGET_KEY environmental variable"
-
-        (versionRegex, projFile) ||> Util.replaceLines (fun line _ ->
-            versionRegex.Replace(line, "<Version>" + newVersion + "</Version>") |> Some)
-
-        DotNet.pack (fun p ->
-            { p with
-                Configuration = DotNet.Release
-                Common = { p.Common with DotNetCliPath = "dotnet" } } )
-            projFile
-
         let files =
             Directory.GetFiles(projDir </> "bin" </> "Release", "*.nupkg")
             |> Array.find (fun nupkg -> nupkg.Contains(newVersion))
@@ -149,20 +154,69 @@ let pushNuget (newVersion: string) (projFile: string) =
                      WorkingDir = __SOURCE_DIRECTORY__ })
             files
 
+let versionRegex = Regex("^## ?\\[?v?([\\w\\d.-]+\\.[\\w\\d.-]+[a-zA-Z0-9])\\]?", RegexOptions.IgnoreCase)
+
+let getLastVersion () =
+    File.ReadLines("CHANGELOG.md")
+        |> Seq.tryPick (fun line ->
+            let m = versionRegex.Match(line)
+            if m.Success then Some m else None)
+        |> function
+            | None -> failwith "Couldn't find version in changelog file"
+            | Some m ->
+                m.Groups.[1].Value
+
+let isPreRelease (version : string) =
+    let regex = Regex(".*(alpha|beta|rc).*", RegexOptions.IgnoreCase)
+    regex.IsMatch(version)
+
+let getNotes (version : string) =
+    File.ReadLines("CHANGELOG.md")
+    |> Seq.skipWhile(fun line ->
+        let m = versionRegex.Match(line)
+
+        if m.Success then
+            not (m.Groups.[1].Value = version)
+        else
+            true
+    )
+    // Remove the version line
+    |> Seq.skip 1
+    // Take all until the next version line
+    |> Seq.takeWhile (fun line ->
+        let m = versionRegex.Match(line)
+        not m.Success
+    )
+
 Target.create "Publish" (fun _ ->
-    let versionRegex = Regex("^## ?\\[?v?([\\w\\d.-]+\\.[\\w\\d.-]+[a-zA-Z0-9])\\]?", RegexOptions.IgnoreCase)
+    let version = getLastVersion()
+    pushNuget version projectFile
+)
 
-    let newVersion =
-        File.ReadLines("CHANGELOG.md")
-            |> Seq.tryPick (fun line ->
-                let m = versionRegex.Match(line)
-                if m.Success then Some m else None)
-            |> function
-                | None -> failwith "Couldn't find version in changelog file"
-                | Some m ->
-                    m.Groups.[1].Value
+Target.create "Release" (fun _ ->
+    let version = getLastVersion()
 
-    pushNuget newVersion projectFile
+    Git.Staging.stageAll root
+    let commitMsg = sprintf "Release version %s" version
+    Git.Commit.exec root commitMsg
+    Git.Branches.push root
+
+    let token =
+        match Environment.environVarOrDefault "GITHUB_TOKEN" "" with
+        | s when not (String.IsNullOrWhiteSpace s) -> s
+        | _ -> failwith "The Github token must be set in a GITHUB_TOKEN environmental variable"
+
+    let nupkg =
+        let projDir = Path.GetDirectoryName(projectFile)
+
+        Directory.GetFiles(projDir </> "bin" </> "Release", "*.nupkg")
+        |> Array.find (fun nupkg -> nupkg.Contains(version))
+
+    GitHub.createClientWithToken token
+    |> GitHub.draftNewRelease gitOwner repoName version (isPreRelease version) (getNotes version)
+    // |> GitHub.uploadFile nupkg
+    |> GitHub.publishDraft
+    |> Async.RunSynchronously
 )
 
 "Clean"
@@ -170,5 +224,6 @@ Target.create "Publish" (fun _ ->
     ==> "DotnetRestore"
     ==> "MochaTest"
     ==> "Publish"
+    ==> "Release"
 
 Target.runOrDefault "MochaTest"

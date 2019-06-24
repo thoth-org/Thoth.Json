@@ -22,3 +22,4 @@ group netcorebuild
     nuget Fake.IO.FileSystem
     nuget Fake.Tools.Git
     nuget Fake.JavaScript.Yarn
+    nuget Fake.Api.GitHub
