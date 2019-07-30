@@ -114,6 +114,7 @@ type Record9 =
       e: Map<string, Record2>
       f: System.DateTime
       g: Set<Record2>
+      h: System.TimeSpan
     }
 
 type User =

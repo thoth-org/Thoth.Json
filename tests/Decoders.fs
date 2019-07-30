@@ -2013,14 +2013,16 @@ Expecting a boolean but instead got: "not_a_boolean"
 
         testList "Auto" [
             testCase "Auto.Decode.fromString works" <| fun _ ->
+                let now = DateTime.Now
                 let value =
                     { a = 5
                       b = "bar"
                       c = [false, 3; true, 5; false, 10]
                       d = [|Some(Foo 14); None|]
                       e = Map [("oh", { a = 2.; b = 2. }); ("ah", { a = -1.5; b = 0. })]
-                      f = System.DateTime.Now
+                      f = now
                       g = set [{ a = 2.; b = 2. }; { a = -1.5; b = 0. }]
+                      h = TimeSpan.FromSeconds(5.)
                     }
                 let json = Encode.Auto.toString(4, value)
                 // printfn "AUTO ENCODED %s" json
@@ -2032,8 +2034,10 @@ Expecting a boolean but instead got: "not_a_boolean"
                 equal None r2.d.[1]
                 equal -1.5 (Map.find "ah" r2.e).a
                 equal 2.   (Map.find "oh" r2.e).b
+                equal (now.ToString())  (value.f.ToString())
                 equal true (Set.contains { a = -1.5; b = 0. } r2.g)
                 equal false (Set.contains { a = 1.5; b = 0. } r2.g)
+                equal 5000. value.h.TotalMilliseconds
 
             testCase "Auto serialization works with recursive types" <| fun _ ->
                 let len xs =
@@ -2157,7 +2161,6 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let value = TimeSpan(1,2,3,4,5)
                 let json = Encode.Auto.toString(4, value)
                 let res = Decode.Auto.unsafeFromString<TimeSpan>(json)
-                // printfn "SOURCE %A JSON %s OUTPUT %A" value json res
                 equal value.Days res.Days
                 equal value.Hours res.Hours
                 equal value.Minutes res.Minutes
