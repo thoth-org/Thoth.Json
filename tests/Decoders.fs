@@ -33,8 +33,6 @@ open Tests.Types
 
 type RecordWithPrivateConstructor = private { Foo1: int; Foo2: float }
 type UnionWithPrivateConstructor = private Bar of string | Baz
-type IntEnum = Zero=0 | One=1 | Two=2
-
 let tests : Test =
     testList "Thoth.Json.Decode" [
 
@@ -127,15 +125,6 @@ let tests : Test =
                     Decode.fromString Decode.int "25"
 
                 equal expected actual
-                    
-(*            #if NETFRAMEWORK
-            testCase "an Enum works" <| fun _ ->
-                let expected = Ok (IntEnum.Two)
-                let actual =
-                    Decode.fromString Decode.enum  "2"
-
-                equal expected actual
-            #endif *)
                   
             testCase "an invalid int [invalid range: too big] output an error" <| fun _ ->
                 let expected = Error("Error at: `$`\nExpecting an int but instead got: 2147483648\nReason: Value was either too large or too small for an int")
@@ -2208,6 +2197,14 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let json = Encode.Auto.toString(4, value)
                 let res = Decode.Auto.unsafeFromString<IntEnum>(json)
                 equal value res
+
+            #if NETFRAMEWORK
+            testCase "Auto decoders  works with char based Enums" <| fun _ ->
+                let value = CharEnum.A
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString<CharEnum>(json)
+                equal value res
+            #endif 
 
             testCase "Auto decoders works for null" <| fun _ ->
                 let value = null
