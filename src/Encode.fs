@@ -198,9 +198,6 @@ module Encode =
     let uint64 (value : uint64) : JsonValue =
         box (value.ToString())
 
-    let enum (value) : JsonValue =
-            value.ToString() |> string
-
     let tuple2
             (enc1 : Encoder<'T1>)
             (enc2 : Encoder<'T2>)
