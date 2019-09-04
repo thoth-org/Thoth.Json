@@ -256,3 +256,8 @@ type Language =
     | Fsharp
     | [<CompiledName("C#")>] Csharp
 #endif
+
+type IntEnum = Zero=0 | One=1 | Two=2
+#if NETFRAMEWORK
+type CharEnum = A='A' | B='B'
+#endif
