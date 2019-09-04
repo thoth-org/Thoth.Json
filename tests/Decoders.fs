@@ -35,10 +35,6 @@ type RecordWithPrivateConstructor = private { Foo1: int; Foo2: float }
 type UnionWithPrivateConstructor = private Bar of string | Baz
 type IntEnum = Zero=0 | One=1 | Two=2
 
-#if NETFRAMEWORK
-type CharEnum = A = 'A' | B ='B'
-#endif
-
 let tests : Test =
     testList "Thoth.Json.Decode" [
 
@@ -131,13 +127,23 @@ let tests : Test =
                     Decode.fromString Decode.int "25"
 
                 equal expected actual
+                    
+(*            #if NETFRAMEWORK
+            testCase "an Enum works" <| fun _ ->
+                let expected = Ok (IntEnum.Two)
+                let actual =
+                    Decode.fromString Decode.enum  "2"
 
+                equal expected actual
+            #endif *)
+                  
             testCase "an invalid int [invalid range: too big] output an error" <| fun _ ->
                 let expected = Error("Error at: `$`\nExpecting an int but instead got: 2147483648\nReason: Value was either too large or too small for an int")
                 let actual =
                     Decode.fromString Decode.int "2147483648"
-
+                    
                 equal expected actual
+                        
 
             testCase "an invalid int [invalid range: too small] output an error" <| fun _ ->
                 let expected = Error("Error at: `$`\nExpecting an int but instead got: -2147483649\nReason: Value was either too large or too small for an int")
@@ -259,6 +265,7 @@ Expecting a bigint but instead got: "maxime"
 
                 equal (Ok expected) actual
 
+          
             testCase "a datetime works" <| fun _ ->
                 let expected = new DateTime(2018, 10, 1, 11, 12, 55, DateTimeKind.Utc)
                 let actual =
