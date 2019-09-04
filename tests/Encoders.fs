@@ -7,6 +7,8 @@ open Tests.Types
 
 type RecordWithPrivateConstructor = private { Foo1: int; Foo2: float }
 type UnionWithPrivateConstructor = private Bar of string | Baz
+type IntEnum = Zero=0 | One=1 | Two=2
+type CharEnum = A = 'A' | B ='B'
 
 let tests : Test =
     testList "Thoth.Json.Encode" [
@@ -166,6 +168,24 @@ let tests : Test =
                 let actual =
                     7923209UL
                     |> Encode.uint64
+                    |> Encode.toString 0
+
+                equal expected actual
+                
+           testCase "an enum works" <| fun _ ->
+                let expected = "\"Two\""
+                let actual =
+                    IntEnum.Two
+                    |> Encode.enum
+                    |> Encode.toString 0
+
+                equal expected actual
+                
+            testCase "an Char enum works" <| fun _ ->
+                let expected = "\"A\""
+                let actual =
+                    CharEnum.A
+                    |> Encode.enum
                     |> Encode.toString 0
 
                 equal expected actual
@@ -471,6 +491,21 @@ let tests : Test =
                 let actual = Encode.Auto.toString(0, Language.Csharp)
                 equal expected actual
             #endif
+            
+            testCase "Encode.Auto.toString works with normal Enums" <| fun _ ->
+                let expected = "\"Two\""
+                let actual = Encode.Auto.toString(0, IntEnum.Two)
+                equal expected actual
+
+            testCase "Encode.Auto.toString works with char Enums" <| fun _ ->
+                let expected = "\"A\""
+                let actual = Encode.Auto.toString(0, CharEnum.A)
+                equal expected actual
+
+            testCase "Encode.Auto.toString works with System.DayOfWeek" <| fun _ ->
+                let expected = "\"Tuesday\""
+                let actual = Encode.Auto.toString(0, DayOfWeek.Tuesday)
+                equal expected actual
 
         ]
 
