@@ -34,7 +34,10 @@ open Tests.Types
 type RecordWithPrivateConstructor = private { Foo1: int; Foo2: float }
 type UnionWithPrivateConstructor = private Bar of string | Baz
 type IntEnum = Zero=0 | One=1 | Two=2
+
+#if NETFRAMEWORK
 type CharEnum = A = 'A' | B ='B'
+#endif
 
 let tests : Test =
     testList "Thoth.Json.Decode" [
