@@ -33,6 +33,8 @@ open Tests.Types
 
 type RecordWithPrivateConstructor = private { Foo1: int; Foo2: float }
 type UnionWithPrivateConstructor = private Bar of string | Baz
+type IntEnum = Zero=0 | One=1 | Two=2
+type CharEnum = A = 'A' | B ='B'
 
 let tests : Test =
     testList "Thoth.Json.Decode" [
@@ -2189,6 +2191,12 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let value = Some 5
                 let json = Encode.Auto.toString(4, value)
                 let res = Decode.Auto.unsafeFromString<int option>(json)
+                equal value res
+            
+            testCase "Auto decoders works for Enum" <| fun _ ->
+                let value = IntEnum.One
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString<IntEnum>(json)
                 equal value res
 
             testCase "Auto decoders works for null" <| fun _ ->
