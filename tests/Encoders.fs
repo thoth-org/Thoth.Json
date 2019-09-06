@@ -481,14 +481,14 @@ let tests : Test =
                 let expected = "2"
                 let actual = Encode.Auto.toString(0, DayOfWeek.Tuesday)
                 equal expected actual
-    
+    (* 
             #if NETFRAMEWORK
             testCase "Encode.Auto.toString works with char based Enums" <| fun _ ->
                 let expected = ((int) 'A').ToString()  // "65"
                 let actual = Encode.Auto.toString(0, CharEnum.A)
                 equal expected actual
             #endif 
-
-        ]
+    *)        
+      ]
 
     ]
