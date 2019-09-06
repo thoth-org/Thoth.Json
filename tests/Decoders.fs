@@ -2197,7 +2197,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let json = Encode.Auto.toString(4, value)
                 let res = Decode.Auto.unsafeFromString<IntEnum>(json)
                 equal value res
-
+    (*
             #if NETFRAMEWORK
             testCase "Auto decoders  works with char based Enums" <| fun _ ->
                 let value = CharEnum.A
@@ -2205,7 +2205,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let res = Decode.Auto.unsafeFromString<CharEnum>(json)
                 equal value res
             #endif 
-
+    *)
             testCase "Auto decoders works for null" <| fun _ ->
                 let value = null
                 let json = Encode.Auto.toString(4, value)
