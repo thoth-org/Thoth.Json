@@ -68,12 +68,14 @@ let tests : Test =
                     |> Encode.toString 0
                 equal expected actual
 
+#if !NETFRAMEWORK
             testCase "unit works" <| fun _ ->
                 let expected = ""
                 let actual =
                     Encode.unit ()
                     |> Encode.toString 0
                 equal expected actual
+#endif
 
             testCase "an object works" <| fun _ ->
                 let expected =
