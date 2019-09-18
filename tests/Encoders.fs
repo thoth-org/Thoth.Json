@@ -68,6 +68,13 @@ let tests : Test =
                     |> Encode.toString 0
                 equal expected actual
 
+            testCase "unit works" <| fun _ ->
+                let expected = ""
+                let actual =
+                    Encode.unit ()
+                    |> Encode.toString 0
+                equal expected actual
+
             testCase "an object works" <| fun _ ->
                 let expected =
                     """{"firstname":"maxime","age":25}"""

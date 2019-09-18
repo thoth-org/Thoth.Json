@@ -198,6 +198,9 @@ module Encode =
     let uint64 (value : uint64) : JsonValue =
         box (value.ToString())
 
+    let unit () : JsonValue =
+            box ("")
+
     let tuple2
             (enc1 : Encoder<'T1>)
             (enc2 : Encoder<'T2>)
@@ -314,7 +317,10 @@ module Encode =
     ///**Exceptions**
     ///
     let toString (space: int) (value: JsonValue) : string =
-        JS.JSON.stringify(value, !!null, space)
+        let isUnit value = unbox value = ""
+        if isUnit value then "" 
+        else
+           JS.JSON.stringify(value, !!null, space)
 
     ///**Description**
     /// Encode an option
@@ -376,6 +382,8 @@ module Encode =
                             let encode = autoEncoder extra isCamelCase fieldTypes.[i-1].PropertyType
                             target.[i] <- encode fields.[i-1]
                         array target
+            elif t.FullName = typedefof<unit>.FullName then
+                boxEncoder unit
             else
                 // Don't use failwithf here, for some reason F#/Fable compiles it as a function
                 // when the return type is a function too, so it doesn't fail immediately

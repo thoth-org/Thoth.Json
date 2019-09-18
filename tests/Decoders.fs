@@ -125,15 +125,22 @@ let tests : Test =
                     Decode.fromString Decode.int "25"
 
                 equal expected actual
-                  
+    
+            testCase "unit works" <| fun _ ->
+                let expected = Ok ()
+                let actual =
+                    Decode.fromString Decode.unit ""
+
+                equal expected actual 
+            
             testCase "an invalid int [invalid range: too big] output an error" <| fun _ ->
                 let expected = Error("Error at: `$`\nExpecting an int but instead got: 2147483648\nReason: Value was either too large or too small for an int")
                 let actual =
                     Decode.fromString Decode.int "2147483648"
                     
                 equal expected actual
-                        
 
+                
             testCase "an invalid int [invalid range: too small] output an error" <| fun _ ->
                 let expected = Error("Error at: `$`\nExpecting an int but instead got: -2147483649\nReason: Value was either too large or too small for an int")
                 let actual =
@@ -2081,7 +2088,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let json = Encode.Auto.toString(4, value, extra=extra)
                 let res = Decode.Auto.unsafeFromString<int64>(json, extra=extra)
                 equal value res
-
+                
             testCase "Auto decoders works for uint32" <| fun _ ->
                 let value = 12u
                 let json = Encode.Auto.toString(4, value)
@@ -2192,6 +2199,12 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let res = Decode.Auto.unsafeFromString<int option>(json)
                 equal value res
             
+            testCase "Auto decoders works for Unit" <| fun _ ->
+                let value = ()
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString(json)
+                equal value res
+
             testCase "Auto decoders works for Enum" <| fun _ ->
                 let value = IntEnum.One
                 let json = Encode.Auto.toString(4, value)
@@ -2357,5 +2370,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let json = """{"Name":"Alfonso","Children":[{"Name":"Narumi","Children":[]},{"Name":"Takumi","Children":[]}]}"""
                 Decode.Auto.fromString<MyRecType>(json)
                 |> equal (Ok vater)
+            
+            testCase "Auto.unsafeFromString works for unit" <| fun _ -> 
+                let res = Decode.Auto.unsafeFromString<unit>("")
+                equal () res
         ]
     ]
