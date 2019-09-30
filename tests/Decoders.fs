@@ -125,19 +125,19 @@ let tests : Test =
                     Decode.fromString Decode.int "25"
 
                 equal expected actual
-            
+
             testCase "unit works" <| fun _ ->
                 let expected = Ok ()
                 let actual =
-                    Decode.fromString Decode.unit ""
+                    Decode.fromString Decode.unit "null"
 
-                equal expected actual 
-            
+                equal expected actual
+
             testCase "an invalid int [invalid range: too big] output an error" <| fun _ ->
                 let expected = Error("Error at: `$`\nExpecting an int but instead got: 2147483648\nReason: Value was either too large or too small for an int")
                 let actual =
                     Decode.fromString Decode.int "2147483648"
-                    
+
                 equal expected actual
 
 
@@ -2371,8 +2371,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                 Decode.Auto.fromString<MyRecType>(json)
                 |> equal (Ok vater)
 
-            testCase "Auto.unsafeFromString works for unit" <| fun _ -> 
-                let res = Decode.Auto.unsafeFromString<unit>("")
+            testCase "Auto.unsafeFromString works for unit" <| fun _ ->
+                let json = Encode.unit () |> Encode.toString 4
+                let res = Decode.Auto.unsafeFromString<unit>(json)
                 equal () res
         ]
     ]

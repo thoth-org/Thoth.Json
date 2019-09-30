@@ -69,7 +69,7 @@ let tests : Test =
                 equal expected actual
 
             testCase "unit works" <| fun _ ->
-                let expected = ""
+                let expected = "null"
                 let actual =
                     Encode.unit ()
                     |> Encode.toString 0

@@ -107,12 +107,8 @@ module Decode =
     let fromString (decoder : Decoder<'T>) =
         fun value ->
             try
-               // an empty string is not valid JSON
-               // but indicates Unit
-               if value = "" then unbox () |> Ok 
-               else 
-                   let json = JS.JSON.parse value
-                   fromValue "$" decoder json
+               let json = JS.JSON.parse value
+               fromValue "$" decoder json
             with
                 | ex when Helpers.isSyntaxError ex ->
                     Error("Given an invalid JSON: " + ex.Message)
@@ -188,7 +184,11 @@ module Decode =
             else (path, BadPrimitive("an uint32", value)) |> Error
 
     let unit : Decoder<unit> =
-        fun _ _ -> () |> Ok
+        fun path value ->
+            if Helpers.isNullValue value then
+                Ok ()
+            else
+                (path, BadPrimitive("null", value)) |> Error
 
     let uint64 : Decoder<uint64> =
         fun path value ->

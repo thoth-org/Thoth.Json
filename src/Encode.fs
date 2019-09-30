@@ -199,7 +199,7 @@ module Encode =
         box (value.ToString())
 
     let unit () : JsonValue =
-            box ("")
+        box null
 
     let tuple2
             (enc1 : Encoder<'T1>)
@@ -317,10 +317,7 @@ module Encode =
     ///**Exceptions**
     ///
     let toString (space: int) (value: JsonValue) : string =
-        let isUnit value = unbox value = ""
-        if isUnit value then "" 
-        else
-           JS.JSON.stringify(value, !!null, space)
+       JS.JSON.stringify(value, !!null, space)
 
     ///**Description**
     /// Encode an option
