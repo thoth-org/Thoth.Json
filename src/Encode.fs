@@ -389,20 +389,20 @@ module Encode =
         encoderRef := encoder
         encoder
 
-    and private autoEncoder (extra: Map<string, ref<BoxedEncoder>>) isCamelCase (t: System.Type) : BoxedEncoder =
+    and private autoEncoder (extra: Map<string, ref<BoxedEncoder>>) isCamelCase (skipNullField : bool) (t: System.Type) : BoxedEncoder =
       let fullname = t.FullName
       match Map.tryFind fullname extra with
       | Some encoderRef -> fun v -> encoderRef.contents v
       | None ->
         if t.IsArray then
-            let encoder = t.GetElementType() |> autoEncoder extra isCamelCase
+            let encoder = t.GetElementType() |> autoEncoder extra isCamelCase skipNullField
             fun (value: obj) ->
                 value :?> obj seq |> Seq.map encoder |> seq
         elif t.IsGenericType then
             if FSharpType.IsTuple(t) then
                 let encoders =
                     FSharpType.GetTupleElements(t)
-                    |> Array.map (autoEncoder extra isCamelCase)
+                    |> Array.map (autoEncoder extra isCamelCase skipNullField)
                 fun (value: obj) ->
                     FSharpValue.GetTupleFields(value)
                     |> Seq.mapi (fun i x -> encoders.[i] x) |> seq
@@ -412,7 +412,7 @@ module Encode =
                     // Evaluate lazily so we don't need to generate the encoder for null values
                     let encoder = lazy
                                     t.GenericTypeArguments.[0]
-                                    |> autoEncoder extra isCamelCase
+                                    |> autoEncoder extra isCamelCase skipNullField
                                     |> option
                                     |> boxEncoder
                     boxEncoder(fun (value: obj) ->
@@ -420,12 +420,12 @@ module Encode =
                         else encoder.Value value)
                 elif fullname = typedefof<obj list>.FullName
                     || fullname = typedefof<Set<string>>.FullName then
-                    let encoder = t.GenericTypeArguments.[0] |> autoEncoder extra isCamelCase
+                    let encoder = t.GenericTypeArguments.[0] |> autoEncoder extra isCamelCase skipNullField
                     fun (value: obj) ->
                         value :?> obj seq |> Seq.map encoder |> seq
                 elif fullname = typedefof< Map<string, obj> >.FullName then
                     let keyType = t.GenericTypeArguments.[0]
-                    let valueEncoder = t.GenericTypeArguments.[1] |> autoEncoder extra isCamelCase
+                    let valueEncoder = t.GenericTypeArguments.[1] |> autoEncoder extra isCamelCase skipNullField
                     if keyType.FullName = typeof<string>.FullName
                         || keyType.FullName = typeof<System.Guid>.FullName then
                         fun value ->
@@ -436,12 +436,12 @@ module Encode =
                                 target.[k] <- valueEncoder v
                                 target)
                     else
-                        let keyEncoder = keyType |> autoEncoder extra isCamelCase
+                        let keyEncoder = keyType |> autoEncoder extra isCamelCase skipNullField
                         fun value ->
                             value :?> Map<string, obj> |> Seq.map (fun (KeyValue(k,v)) ->
                                 array [|keyEncoder k; valueEncoder v|]) |> seq
                 else
-                    autoEncodeRecordsAndUnions extra isCamelCase t
+                    autoEncodeRecordsAndUnions extra isCamelCase skipNullField t
         else
             if fullname = typeof<bool>.FullName then
                 boxEncoder bool
@@ -475,7 +475,7 @@ module Encode =
             elif fullname = typeof<obj>.FullName then
                 boxEncoder id
             else
-                autoEncodeRecordsAndUnions extra isCamelCase t
+                autoEncodeRecordsAndUnions extra isCamelCase skipNullField t
 
     let private makeExtra (extra: ExtraCoders option) =
         match extra with
@@ -484,19 +484,21 @@ module Encode =
 
     type Auto =
         /// ATTENTION: Use this only when other arguments (isCamelCase, extra) don't change
-        static member generateEncoderCached<'T>(?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
+        static member generateEncoderCached<'T>(?isCamelCase : bool, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
             let t = Util.resolveType resolver
             Util.CachedEncoders.GetOrAdd(t.FullName, fun _ ->
                 let isCamelCase = defaultArg isCamelCase false
-                autoEncoder (makeExtra extra) isCamelCase t) |> unboxEncoder
+                let skipNullField = defaultArg skipNullField true
+                autoEncoder (makeExtra extra) isCamelCase skipNullField t) |> unboxEncoder
 
-        static member generateEncoder<'T>(?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
+        static member generateEncoder<'T>(?isCamelCase : bool, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
             let isCamelCase = defaultArg isCamelCase false
+            let skipNullField = defaultArg skipNullField true
             Util.resolveType resolver
-            |> autoEncoder (makeExtra extra) isCamelCase |> unboxEncoder
+            |> autoEncoder (makeExtra extra) isCamelCase skipNullField |> unboxEncoder
 
-        static member toString(space : int, value : 'T, ?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>) : string =
-            let encoder = Auto.generateEncoder(?isCamelCase=isCamelCase, ?extra=extra, ?resolver=resolver)
+        static member toString(space : int, value : 'T, ?isCamelCase : bool, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>) : string =
+            let encoder = Auto.generateEncoder(?isCamelCase=isCamelCase, ?extra=extra, ?resolver=resolver, ?skipNullField=skipNullField)
             encoder value |> toString space
 
     ///**Description**
