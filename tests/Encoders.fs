@@ -159,6 +159,42 @@ let tests : Test =
 
                 equal expected actual
 
+            testCase "an byte works" <| fun _ ->
+                let expected = "\"99\""
+                let actual =
+                    99uy
+                    |> Encode.byte
+                    |> Encode.toString 0
+
+                equal expected actual
+
+            testCase "an sbyte works" <| fun _ ->
+                let expected = "\"99\""
+                let actual =
+                    99y
+                    |> Encode.sbyte
+                    |> Encode.toString 0
+
+                equal expected actual
+
+            testCase "an int16 works" <| fun _ ->
+                let expected = "\"99\""
+                let actual =
+                    99s
+                    |> Encode.int16
+                    |> Encode.toString 0
+
+                equal expected actual
+
+            testCase "an uint16 works" <| fun _ ->
+                let expected = "\"99\""
+                let actual =
+                    99us
+                    |> Encode.uint16
+                    |> Encode.toString 0
+
+                equal expected actual
+
             testCase "an int64 works" <| fun _ ->
                 let expected = "\"7923209\""
                 let actual =
@@ -174,6 +210,48 @@ let tests : Test =
                     7923209UL
                     |> Encode.uint64
                     |> Encode.toString 0
+
+                equal expected actual
+
+            testCase "an enum<sbyte> works" <| fun _ ->
+                let expected = "\"99\""
+                let actual =
+                    Encode.toString 0 (Encode.Enum.sbyte Enum_Int8.NinetyNine)
+
+                equal expected actual
+
+            testCase "an enum<byte> works" <| fun _ ->
+                let expected = "\"99\""
+                let actual =
+                    Encode.toString 0 (Encode.Enum.byte Enum_UInt8.NinetyNine)
+
+                equal expected actual
+
+            testCase "an enum<int> works" <| fun _ ->
+                let expected = "1"
+                let actual =
+                    Encode.toString 0 (Encode.Enum.int Enum_Int.One)
+
+                equal expected actual
+
+            testCase "an enum<uint32> works" <| fun _ ->
+                let expected = "99"
+                let actual =
+                    Encode.toString 0 (Encode.Enum.uint32 Enum_UInt32.NinetyNine)
+
+                equal expected actual
+
+            testCase "an enum<int16> works" <| fun _ ->
+                let expected = "\"99\""
+                let actual =
+                    Encode.toString 0 (Encode.Enum.int16 Enum_Int16.NinetyNine)
+
+                equal expected actual
+
+            testCase "an enum<uint16> works" <| fun _ ->
+                let expected = "\"99\""
+                let actual =
+                    Encode.toString 0 (Encode.Enum.uint16 Enum_UInt16.NinetyNine)
 
                 equal expected actual
 
@@ -352,38 +430,65 @@ let tests : Test =
 
             testCase "Encode.Auto.generateEncoder works" <| fun _ ->
                 let value =
-                    { a = 5
-                      b = "bar"
-                      c = [false, 3; true, 5; false, 10]
-                      d = [|Some(Foo 14); None|]
-                      e = Map [("oh", { a = 2.; b = 2. }); ("ah", { a = -1.5; b = 0. })]
-                      f = DateTime(2018, 11, 28, 11, 10, 29, DateTimeKind.Utc)
-                      g = set [{ a = 2.; b = 2. }; { a = -1.5; b = 0. }]
-                      h = TimeSpan.FromSeconds(5.)
+                    {
+                        a = 5
+                        b = "bar"
+                        c = [false, 3; true, 5; false, 10]
+                        d = [|Some(Foo 14); None|]
+                        e = Map [("oh", { a = 2.; b = 2. }); ("ah", { a = -1.5; b = 0. })]
+                        f = DateTime(2018, 11, 28, 11, 10, 29, DateTimeKind.Utc)
+                        g = set [{ a = 2.; b = 2. }; { a = -1.5; b = 0. }]
+                        h = TimeSpan.FromSeconds(5.)
+                        i = 120y
+                        j = 120uy
+                        k = 250s
+                        l = 250us
+                        m = 99u
+                        n = 99L
+                        o = 999UL
+                        p = ()
                     }
-                let encoder = Encode.Auto.generateEncoder<Record9>()
+                let extra =
+                    Extra.empty
+                    |> Extra.withInt64
+                    |> Extra.withUInt64
+                let encoder = Encode.Auto.generateEncoder<Record9>(extra = extra)
                 let actual = encoder value |> Encode.toString 0
-                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05"}"""
+                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":"120","j":"120","k":"250","l":"250","m":99,"n":"99","o":"999"}"""
                 // Don't fail because of non-meaningful decimal digits ("2" vs "2.0")
                 let actual = System.Text.RegularExpressions.Regex.Replace(actual, @"\.0+(?!\d)", "")
                 equal expected actual
 
             testCase "Encode.Auto.generateEncoderCached works" <| fun _ ->
                 let value =
-                    { a = 5
-                      b = "bar"
-                      c = [false, 3; true, 5; false, 10]
-                      d = [|Some(Foo 14); None|]
-                      e = Map [("oh", { a = 2.; b = 2. }); ("ah", { a = -1.5; b = 0. })]
-                      f = DateTime(2018, 11, 28, 11, 10, 29, DateTimeKind.Utc)
-                      g = set [{ a = 2.; b = 2. }; { a = -1.5; b = 0. }]
-                      h = TimeSpan.FromSeconds(5.)
+                    {
+                        a = 5
+                        b = "bar"
+                        c = [false, 3; true, 5; false, 10]
+                        d = [|Some(Foo 14); None|]
+                        e = Map [("oh", { a = 2.; b = 2. }); ("ah", { a = -1.5; b = 0. })]
+                        f = DateTime(2018, 11, 28, 11, 10, 29, DateTimeKind.Utc)
+                        g = set [{ a = 2.; b = 2. }; { a = -1.5; b = 0. }]
+                        h = TimeSpan.FromSeconds(5.)
+                        i = 120y
+                        j = 120uy
+                        k = 250s
+                        l = 250us
+                        m = 99u
+                        n = 99L
+                        o = 999UL
+                        p = ()
                     }
-                let encoder1 = Encode.Auto.generateEncoderCached<Record9>()
-                let encoder2 = Encode.Auto.generateEncoderCached<Record9>()
+                let extra =
+                    Extra.empty
+                    |> Extra.withInt64
+                    |> Extra.withUInt64
+
+                let encoder1 = Encode.Auto.generateEncoderCached<Record9>(extra = extra)
+                let encoder2 = Encode.Auto.generateEncoderCached<Record9>(extra = extra)
                 let actual1 = encoder1 value |> Encode.toString 0
                 let actual2 = encoder2 value |> Encode.toString 0
-                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05"}"""
+                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":"120","j":"120","k":"250","l":"250","m":99,"n":"99","o":"999"}"""
                 // Don't fail because of non-meaningful decimal digits ("2" vs "2.0")
                 let actual1 = System.Text.RegularExpressions.Regex.Replace(actual1, @"\.0+(?!\d)", "")
                 let actual2 = System.Text.RegularExpressions.Regex.Replace(actual2, @"\.0+(?!\d)", "")
@@ -484,24 +589,24 @@ let tests : Test =
                 let actual = Encode.Auto.toString(0, Language.Csharp)
                 equal expected actual
             #endif
-            
+
             testCase "Encode.Auto.toString works with normal Enums" <| fun _ ->
                 let expected = "2"
-                let actual = Encode.Auto.toString(0, IntEnum.Two)
+                let actual = Encode.Auto.toString(0, Enum_Int.Two)
                 equal expected actual
-          
+
             testCase "Encode.Auto.toString works with System.DayOfWeek" <| fun _ ->
                 let expected = "2"
                 let actual = Encode.Auto.toString(0, DayOfWeek.Tuesday)
                 equal expected actual
-    (* 
+    (*
             #if NETFRAMEWORK
             testCase "Encode.Auto.toString works with char based Enums" <| fun _ ->
                 let expected = ((int) 'A').ToString()  // "65"
                 let actual = Encode.Auto.toString(0, CharEnum.A)
                 equal expected actual
-            #endif 
-    *)        
+            #endif
+    *)
       ]
 
     ]

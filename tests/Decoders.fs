@@ -84,6 +84,13 @@ let tests : Test =
 
         testList "Primitives" [
 
+            testCase "unit works" <| fun _ ->
+                let expected = Ok ()
+                let actual =
+                    Decode.fromString Decode.unit "null"
+
+                equal expected actual
+
             testCase "a string works" <| fun _ ->
                 let expected = Ok("maxime")
                 let actual =
@@ -126,13 +133,6 @@ let tests : Test =
 
                 equal expected actual
 
-            testCase "unit works" <| fun _ ->
-                let expected = Ok ()
-                let actual =
-                    Decode.fromString Decode.unit "null"
-
-                equal expected actual
-
             testCase "an invalid int [invalid range: too big] output an error" <| fun _ ->
                 let expected = Error("Error at: `$`\nExpecting an int but instead got: 2147483648\nReason: Value was either too large or too small for an int")
                 let actual =
@@ -145,6 +145,110 @@ let tests : Test =
                 let expected = Error("Error at: `$`\nExpecting an int but instead got: -2147483649\nReason: Value was either too large or too small for an int")
                 let actual =
                     Decode.fromString Decode.int "-2147483649"
+
+                equal expected actual
+
+            testCase "an int16 works from number" <| fun _ ->
+                let expected = Ok(int16 25)
+                let actual =
+                    Decode.fromString Decode.int16 "25"
+
+                equal expected actual
+
+            testCase "an int16 works from string" <| fun _ ->
+                let expected = Ok(int16 -25)
+                let actual =
+                    Decode.fromString Decode.int16 "\"-25\""
+
+                equal expected actual
+
+            testCase "an int16 output an error if value is too big" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting an int16 but instead got: 32768
+Reason: Value was either too large or too small for an int16
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.int16 "32768"
+
+                equal expected actual
+
+            testCase "an int16 output an error if value is too small" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting an int16 but instead got: -32769
+Reason: Value was either too large or too small for an int16
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.int16 "-32769"
+
+                equal expected actual
+
+            testCase "an int16 output an error if incorrect string" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting an int16 but instead got: "maxime"
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.int16 "\"maxime\""
+
+                equal expected actual
+
+            testCase "an uint16 works from number" <| fun _ ->
+                let expected = Ok(uint16 25)
+                let actual =
+                    Decode.fromString Decode.uint16 "25"
+
+                equal expected actual
+
+            testCase "an uint16 works from string" <| fun _ ->
+                let expected = Ok(uint16 25)
+                let actual =
+                    Decode.fromString Decode.uint16 "\"25\""
+
+                equal expected actual
+
+            testCase "an uint16 output an error if value is too big" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting an uint16 but instead got: 65536
+Reason: Value was either too large or too small for an uint16
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.uint16 "65536"
+
+                equal expected actual
+
+            testCase "an uint16 output an error if value is too small" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting an uint16 but instead got: -1
+Reason: Value was either too large or too small for an uint16
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.uint16 "-1"
+
+                equal expected actual
+
+            testCase "an uint16 output an error if incorrect string" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting an uint16 but instead got: "maxime"
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.uint16 "\"maxime\""
 
                 equal expected actual
 
@@ -228,6 +332,111 @@ Expecting an uint64 but instead got: "maxime"
 
                 equal expected actual
 
+            testCase "a byte works from number" <| fun _ ->
+                let expected = Ok 25uy
+                let actual =
+                    Decode.fromString Decode.byte "25"
+
+                equal expected actual
+
+            testCase "a byte works from string" <| fun _ ->
+                let expected = Ok 25uy
+                let actual =
+                    Decode.fromString Decode.byte "\"25\""
+
+                equal expected actual
+
+            testCase "a byte output an error if value is too big" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a byte but instead got: 256
+Reason: Value was either too large or too small for a byte
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.byte "256"
+
+                equal expected actual
+
+            testCase "a byte output an error if value is too small" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a byte but instead got: -1
+Reason: Value was either too large or too small for a byte
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.byte "-1"
+
+                equal expected actual
+
+            testCase "a byte output an error if incorrect string" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a byte but instead got: "maxime"
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.byte "\"maxime\""
+
+                equal expected actual
+
+
+            testCase "a sbyte works from number" <| fun _ ->
+                let expected = Ok 25y
+                let actual =
+                    Decode.fromString Decode.sbyte "25"
+
+                equal expected actual
+
+            testCase "a sbyte works from string" <| fun _ ->
+                let expected = Ok -25y
+                let actual =
+                    Decode.fromString Decode.sbyte "\"-25\""
+
+                equal expected actual
+
+            testCase "a sbyte output an error if value is too big" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a sbyte but instead got: 128
+Reason: Value was either too large or too small for a sbyte
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.sbyte "128"
+
+                equal expected actual
+
+            testCase "a sbyte output an error if value is too small" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a sbyte but instead got: -129
+Reason: Value was either too large or too small for a sbyte
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.sbyte "-129"
+
+                equal expected actual
+
+            testCase "a sbyte output an error if incorrect string" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a sbyte but instead got: "maxime"
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.sbyte "\"maxime\""
+
+                equal expected actual
+
             testCase "an bigint works from number" <| fun _ ->
                 let expected = Ok 12I
                 let actual =
@@ -261,7 +470,6 @@ Expecting a bigint but instead got: "maxime"
 
                 equal (Ok expected) actual
 
-          
             testCase "a datetime works" <| fun _ ->
                 let expected = new DateTime(2018, 10, 1, 11, 12, 55, DateTimeKind.Utc)
                 let actual =
@@ -335,6 +543,49 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                     Decode.fromString Decode.timespan json
 
                 equal expected actual
+
+            testCase "an enum<sbyte> works" <| fun _ ->
+                let expected = Ok Enum_Int8.NinetyNine
+                let actual =
+                    Decode.fromString Decode.Enum.sbyte "99"
+
+                equal expected actual
+
+            testCase "an enum<byte> works" <| fun _ ->
+                let expected = Ok Enum_UInt8.NinetyNine
+                let actual =
+                    Decode.fromString Decode.Enum.byte "99"
+
+                equal expected actual
+
+            testCase "an enum<int> works" <| fun _ ->
+                let expected = Ok Enum_Int.One
+                let actual =
+                    Decode.fromString Decode.Enum.int "1"
+
+                equal expected actual
+
+            testCase "an enum<uint32> works" <| fun _ ->
+                let expected = Ok Enum_UInt32.NinetyNine
+                let actual =
+                    Decode.fromString Decode.Enum.uint32 "99"
+
+                equal expected actual
+
+            testCase "an enum<int16> works" <| fun _ ->
+                let expected = Ok Enum_Int16.NinetyNine
+                let actual =
+                    Decode.fromString Decode.Enum.int16 "99"
+
+                equal expected actual
+
+            testCase "an enum<uint16> works" <| fun _ ->
+                let expected = Ok Enum_UInt16.NinetyNine
+                let actual =
+                    Decode.fromString Decode.Enum.uint16 "99"
+
+                equal expected actual
+
         ]
 
         testList "Tuples" [
@@ -2022,19 +2273,32 @@ Expecting a boolean but instead got: "not_a_boolean"
         testList "Auto" [
             testCase "Auto.Decode.fromString works" <| fun _ ->
                 let now = DateTime.Now
-                let value =
-                    { a = 5
-                      b = "bar"
-                      c = [false, 3; true, 5; false, 10]
-                      d = [|Some(Foo 14); None|]
-                      e = Map [("oh", { a = 2.; b = 2. }); ("ah", { a = -1.5; b = 0. })]
-                      f = now
-                      g = set [{ a = 2.; b = 2. }; { a = -1.5; b = 0. }]
-                      h = TimeSpan.FromSeconds(5.)
+                let value : Record9 =
+                    {
+                        a = 5
+                        b = "bar"
+                        c = [false, 3; true, 5; false, 10]
+                        d = [|Some(Foo 14); None|]
+                        e = Map [("oh", { a = 2.; b = 2. }); ("ah", { a = -1.5; b = 0. })]
+                        f = now
+                        g = set [{ a = 2.; b = 2. }; { a = -1.5; b = 0. }]
+                        h = TimeSpan.FromSeconds(5.)
+                        i = 120y
+                        j = 120uy
+                        k = 250s
+                        l = 250us
+                        m = 99u
+                        n = 99L
+                        o = 999UL
+                        p = ()
                     }
-                let json = Encode.Auto.toString(4, value)
+                let extra =
+                    Extra.empty
+                    |> Extra.withInt64
+                    |> Extra.withUInt64
+                let json = Encode.Auto.toString(4, value, extra = extra)
                 // printfn "AUTO ENCODED %s" json
-                let r2 = Decode.Auto.unsafeFromString<Record9>(json)
+                let r2 = Decode.Auto.unsafeFromString<Record9>(json, extra = extra)
                 equal 5 r2.a
                 equal "bar" r2.b
                 equal [false, 3; true, 5; false, 10] r2.c
@@ -2046,6 +2310,14 @@ Expecting a boolean but instead got: "not_a_boolean"
                 equal true (Set.contains { a = -1.5; b = 0. } r2.g)
                 equal false (Set.contains { a = 1.5; b = 0. } r2.g)
                 equal 5000. value.h.TotalMilliseconds
+                equal 120y r2.i
+                equal 120uy r2.j
+                equal 250s r2.k
+                equal 250us r2.l
+                equal 99u r2.m
+                equal 99L r2.n
+                equal 999UL r2.o
+                equal () r2.p
 
             testCase "Auto serialization works with recursive types" <| fun _ ->
                 let len xs =
@@ -2088,7 +2360,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let json = Encode.Auto.toString(4, value, extra=extra)
                 let res = Decode.Auto.unsafeFromString<int64>(json, extra=extra)
                 equal value res
-                
+
             testCase "Auto decoders works for uint32" <| fun _ ->
                 let value = 12u
                 let json = Encode.Auto.toString(4, value)
@@ -2198,7 +2470,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let json = Encode.Auto.toString(4, value)
                 let res = Decode.Auto.unsafeFromString<int option>(json)
                 equal value res
-            
+
             testCase "Auto decoders works for Unit" <| fun _ ->
                 let value = ()
                 let json = Encode.Auto.toString(4, value)
@@ -2206,9 +2478,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                 equal value res
 
             testCase "Auto decoders works for Enum" <| fun _ ->
-                let value = IntEnum.One
+                let value = Enum_Int.One
                 let json = Encode.Auto.toString(4, value)
-                let res = Decode.Auto.unsafeFromString<IntEnum>(json)
+                let res = Decode.Auto.unsafeFromString<Enum_Int>(json)
                 equal value res
     (*
             #if NETFRAMEWORK
@@ -2217,7 +2489,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let json = Encode.Auto.toString(4, value)
                 let res = Decode.Auto.unsafeFromString<CharEnum>(json)
                 equal value res
-            #endif 
+            #endif
     *)
             testCase "Auto decoders works for null" <| fun _ ->
                 let value = null

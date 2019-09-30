@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Add supports for `byte`
+* Add supports for `sbyte`
+* Add supports for `int16>`
+* Add supports for `uint16`
+* Add supports for `uint32`
+* Add supports for `enum<byte>`
+* Add supports for `enum<sbyte>`
+* Add supports for `enum<int16>`
+* Add supports for `enum<uint16>`
+* Add supports for `enum<int>`
+* Add supports for `enum<uint32>`
+* Add support for `unit`
 * Allow to configure if `null` field should be omitted or no. Set `skipNullField` to `false` when using auto encoder, to include `myField: null` in your json output
 
 ## 3.3.0 - 2019-06-24

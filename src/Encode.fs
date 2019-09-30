@@ -40,23 +40,6 @@ module Encode =
         box (value.ToString())
 
     ///**Description**
-    /// Encode an int
-    ///
-    ///**Parameters**
-    ///  * `value` - parameter of type `int`
-    ///
-    ///**Output Type**
-    ///  * `Value`
-    ///
-    ///**Exceptions**
-    ///
-    let inline int (value : int) : JsonValue =
-        box value
-
-    let inline uint32 (value : uint32) : JsonValue =
-        box value
-
-    ///**Description**
     /// Encode a Float. `Infinity` and `NaN` are encoded as `null`.
     ///
     ///**Parameters**
@@ -68,6 +51,9 @@ module Encode =
     ///**Exceptions**
     ///
     let inline float (value : float) : JsonValue =
+        box value
+
+    let inline float32 (value : float32) : JsonValue =
         box value
 
     ///**Description**
@@ -192,11 +178,29 @@ module Encode =
     let timespan (value : System.TimeSpan) : JsonValue =
         value.ToString() |> string
 
+    let sbyte (value : sbyte) : JsonValue =
+        box (value.ToString(CultureInfo.InvariantCulture))
+
+    let byte (value : byte) : JsonValue =
+        box (value.ToString(CultureInfo.InvariantCulture))
+
+    let int16 (value : int16) : JsonValue =
+        box (value.ToString(CultureInfo.InvariantCulture))
+
+    let uint16 (value : uint16) : JsonValue =
+        box (value.ToString(CultureInfo.InvariantCulture))
+
+    let inline int (value : int) : JsonValue =
+        box value
+
+    let inline uint32 (value : uint32) : JsonValue =
+        box value
+
     let int64 (value : int64) : JsonValue =
         box (value.ToString(CultureInfo.InvariantCulture))
 
     let uint64 (value : uint64) : JsonValue =
-        box (value.ToString())
+        box (value.ToString(CultureInfo.InvariantCulture))
 
     let unit () : JsonValue =
         box null
@@ -292,6 +296,37 @@ module Encode =
                enc7 v7
                enc8 v8 |]
 
+
+    ////////////
+    // Enum ///
+    /////////
+
+    module Enum =
+
+        let byte<'TEnum when 'TEnum : enum<byte>> (value : 'TEnum) : JsonValue =
+            LanguagePrimitives.EnumToValue value
+            |> byte
+
+        let sbyte<'TEnum when 'TEnum : enum<sbyte>> (value : 'TEnum) : JsonValue =
+            LanguagePrimitives.EnumToValue value
+            |> sbyte
+
+        let int16<'TEnum when 'TEnum : enum<int16>> (value : 'TEnum) : JsonValue =
+            LanguagePrimitives.EnumToValue value
+            |> int16
+
+        let uint16<'TEnum when 'TEnum : enum<uint16>> (value : 'TEnum) : JsonValue =
+            LanguagePrimitives.EnumToValue value
+            |> uint16
+
+        let int<'TEnum when 'TEnum : enum<int>> (value : 'TEnum) : JsonValue =
+            LanguagePrimitives.EnumToValue value
+            |> int
+
+        let uint32<'TEnum when 'TEnum : enum<uint32>> (value : 'TEnum) : JsonValue =
+            LanguagePrimitives.EnumToValue value
+            |> uint32
+
     /// **Description**
     ///
     /// **Parameters**
@@ -346,7 +381,7 @@ module Encode =
     let inline unboxEncoder (d: BoxedEncoder): Encoder<'T> =
         !!d
 
-    let rec private autoEncodeRecordsAndUnions extra (isCamelCase : bool) (t: System.Type) : BoxedEncoder =
+    let rec private autoEncodeRecordsAndUnions extra (isCamelCase : bool) (skipNullField : bool) (t: System.Type) : BoxedEncoder =
         // Add the encoder to extra in case one of the fields is recursive
         let encoderRef = ref Unchecked.defaultof<_>
         let extra = extra |> Map.add t.FullName encoderRef
@@ -358,10 +393,10 @@ module Encode =
                         let targetKey =
                             if isCamelCase then fi.Name.[..0].ToLowerInvariant() + fi.Name.[1..]
                             else fi.Name
-                        let encode = autoEncoder extra isCamelCase fi.PropertyType
+                        let encode = autoEncoder extra isCamelCase skipNullField fi.PropertyType
                         fun (source: obj) (target: JsonValue) ->
                             let value = FSharpValue.GetRecordField(source, fi)
-                            if not(isNull value) then // Discard null fields
+                            if not skipNullField || (skipNullField && not (isNull value)) then // Discard null fields
                                 target.[targetKey] <- encode value
                             target)
                 fun (source: obj) ->
@@ -376,11 +411,9 @@ module Encode =
                         let target = Array.zeroCreate<JsonValue> (len + 1)
                         target.[0] <- string info.Name
                         for i = 1 to len do
-                            let encode = autoEncoder extra isCamelCase fieldTypes.[i-1].PropertyType
+                            let encode = autoEncoder extra isCamelCase skipNullField fieldTypes.[i-1].PropertyType
                             target.[i] <- encode fields.[i-1]
                         array target
-            elif t.FullName = typedefof<unit>.FullName then
-                boxEncoder unit
             else
                 // Don't use failwithf here, for some reason F#/Fable compiles it as a function
                 // when the return type is a function too, so it doesn't fail immediately
@@ -445,14 +478,26 @@ module Encode =
         else
             if fullname = typeof<bool>.FullName then
                 boxEncoder bool
+            elif t.FullName = typedefof<unit>.FullName then
+                boxEncoder unit
             elif fullname = typeof<string>.FullName then
                 boxEncoder string
+            elif fullname = typeof<sbyte>.FullName then
+                boxEncoder sbyte
+            elif fullname = typeof<byte>.FullName then
+                boxEncoder byte
+            elif fullname = typeof<int16>.FullName then
+                boxEncoder int16
+            elif fullname = typeof<uint16>.FullName then
+                boxEncoder uint16
             elif fullname = typeof<int>.FullName then
                 boxEncoder int
             elif fullname = typeof<uint32>.FullName then
                 boxEncoder uint32
             elif fullname = typeof<float>.FullName then
                 boxEncoder float
+            elif fullname = typeof<float32>.FullName then
+                boxEncoder float32
             // These number types require extra libraries in Fable. To prevent penalizing
             // all users, extra encoders (withInt64, etc) must be passed when they're needed.
 

@@ -107,14 +107,23 @@ type Record8 =
 type MyUnion = Foo of int
 
 type Record9 =
-    { a: int
-      b: string
-      c: (bool * int) list
-      d: (MyUnion option) []
-      e: Map<string, Record2>
-      f: System.DateTime
-      g: Set<Record2>
-      h: System.TimeSpan
+    {
+        a: int
+        b: string
+        c: (bool * int) list
+        d: (MyUnion option) []
+        e: Map<string, Record2>
+        f: System.DateTime
+        g: Set<Record2>
+        h: System.TimeSpan
+        i: sbyte
+        j: byte
+        k: int16
+        l: uint16
+        m: uint32
+        n: int64
+        o: uint64
+        p: unit
     }
 
 type User =
@@ -257,7 +266,29 @@ type Language =
     | [<CompiledName("C#")>] Csharp
 #endif
 
-type IntEnum = Zero=0 | One=1 | Two=2
-#if NETFRAMEWORK
+type Enum_Int8 =
+    | Zero = 0y
+    | NinetyNine = 99y
+
+type Enum_UInt8 =
+    | Zero = 0uy
+    | NinetyNine = 99uy
+
+type Enum_Int =
+    | Zero = 0
+    | One = 1
+    | Two = 2
+
+type Enum_Int16 =
+    | Zero = 0s
+    | NinetyNine = 99s
+
+type Enum_UInt16 =
+    | Zero = 0us
+    | NinetyNine = 99us
+
+type Enum_UInt32 =
+    | Zero = 0u
+    | NinetyNine = 99u
+
 type CharEnum = A='A' | B='B'
-#endif
