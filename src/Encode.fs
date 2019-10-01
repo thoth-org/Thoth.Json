@@ -329,6 +329,8 @@ module Encode =
 
     /// **Description**
     ///
+    /// The DateTime is always encoded using UTC representation
+    ///
     /// **Parameters**
     ///   * `value` - parameter of type `System.DateTime`
     ///
