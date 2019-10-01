@@ -449,6 +449,24 @@ module Decode =
                 (path, BadPrimitive ("a list", value))
                 |> Error
 
+    let seq (decoder : Decoder<'value>) : Decoder<'value seq> =
+        fun path value ->
+            if Helpers.isArray value then
+                let mutable i = -1
+                let tokens = Helpers.asArray value
+                (Ok (seq []), tokens) ||> Array.fold (fun acc value ->
+                    i <- i + 1
+                    match acc with
+                    | Error _ -> acc
+                    | Ok acc ->
+                        match decoder (path + ".[" + (i.ToString()) + "]") value with
+                        | Error er -> Error er
+                        | Ok value -> Ok (Seq.append [value] acc))
+                |> Result.map Seq.rev
+            else
+                (path, BadPrimitive ("a seq", value))
+                |> Error
+
     let array (decoder : Decoder<'value>) : Decoder<'value array> =
         fun path value ->
             if Helpers.isArray value then
@@ -1065,6 +1083,8 @@ module Decode =
                     t.GenericTypeArguments.[0] |> (autoDecoder extra isCamelCase true) |> option |> boxDecoder
                 elif fullname = typedefof<obj list>.FullName then
                     t.GenericTypeArguments.[0] |> (autoDecoder extra isCamelCase false) |> list |> boxDecoder
+                elif fullname = typedefof<obj seq>.FullName then
+                    t.GenericTypeArguments.[0] |> (autoDecoder extra isCamelCase false) |> seq |> boxDecoder
                 elif fullname = typedefof< Map<string, obj> >.FullName then
                     let keyDecoder = t.GenericTypeArguments.[0] |> autoDecoder extra isCamelCase false
                     let valueDecoder = t.GenericTypeArguments.[1] |> autoDecoder extra isCamelCase false

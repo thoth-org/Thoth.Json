@@ -2291,6 +2291,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                         n = 99L
                         o = 999UL
                         p = ()
+                        r = seq [ "item n°1"; "item n°2"]
                     }
                 let extra =
                     Extra.empty
@@ -2318,6 +2319,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                 equal 99L r2.n
                 equal 999UL r2.o
                 equal () r2.p
+                equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.r |> Seq.toList)
 
             testCase "Auto serialization works with recursive types" <| fun _ ->
                 let len xs =

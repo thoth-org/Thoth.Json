@@ -452,7 +452,8 @@ module Encode =
                         if isNull value then nil
                         else encoder.Value value)
                 elif fullname = typedefof<obj list>.FullName
-                    || fullname = typedefof<Set<string>>.FullName then
+                    || fullname = typedefof<Set<string>>.FullName
+                    || fullname = typedefof<obj seq>.FullName then
                     let encoder = t.GenericTypeArguments.[0] |> autoEncoder extra isCamelCase skipNullField
                     fun (value: obj) ->
                         value :?> obj seq |> Seq.map encoder |> seq
