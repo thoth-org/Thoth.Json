@@ -2649,5 +2649,11 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let json = Encode.unit () |> Encode.toString 4
                 let res = Decode.Auto.unsafeFromString<unit>(json)
                 equal () res
+
+            testCase "Erased single-case DUs works" <| fun _ ->
+                let expected = NoAllocAttributeId (Guid.NewGuid())
+                let json = Encode.Auto.toString(4, expected)
+                let actual = Decode.Auto.unsafeFromString<NoAllocAttributeId>(json)
+                equal expected actual
         ]
     ]
