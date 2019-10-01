@@ -300,3 +300,9 @@ type NoAlloc = StructAttribute
 
 [<NoAlloc>]
 type NoAllocAttributeId = NoAllocAttributeId of System.Guid
+
+type TestStringWithHTML =
+    {
+        FeedName : string
+        Content : string
+    }
