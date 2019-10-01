@@ -2479,11 +2479,96 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let res = Decode.Auto.unsafeFromString(json)
                 equal value res
 
-            testCase "Auto decoders works for Enum" <| fun _ ->
-                let value = Enum_Int.One
-                let json = Encode.Auto.toString(4, value)
-                let res = Decode.Auto.unsafeFromString<Enum_Int>(json)
+            testCase "Auto decoders works for enum<int8>" <| fun _ ->
+                let res = Decode.Auto.unsafeFromString<Enum_Int8>("99")
+                equal Enum_Int8.NinetyNine res
+
+            testCase "Auto decoders for enum<int8> returns an error if the Enum value is invalid" <| fun _ ->
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types+Enum_Int8 but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+                let res = Decode.Auto.fromString<Enum_Int8>("2")
                 equal value res
+
+            testCase "Auto decoders works for enum<uint8>" <| fun _ ->
+                let res = Decode.Auto.unsafeFromString<Enum_UInt8>("99")
+                equal Enum_UInt8.NinetyNine res
+
+            testCase "Auto decoders for enum<uint8> returns an error if the Enum value is invalid" <| fun _ ->
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types+Enum_UInt8 but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+                let res = Decode.Auto.fromString<Enum_UInt8>("2")
+                equal value res
+
+            testCase "Auto decoders works for enum<int16>" <| fun _ ->
+                let res = Decode.Auto.unsafeFromString<Enum_Int16>("99")
+                equal Enum_Int16.NinetyNine res
+
+            testCase "Auto decoders for enum<int16> returns an error if the Enum value is invalid" <| fun _ ->
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types+Enum_Int16 but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+                let res = Decode.Auto.fromString<Enum_Int16>("2")
+                equal value res
+
+            testCase "Auto decoders works for enum<uint16>" <| fun _ ->
+                let res = Decode.Auto.unsafeFromString<Enum_UInt16>("99")
+                equal Enum_UInt16.NinetyNine res
+
+            testCase "Auto decoders for enum<ºint16> returns an error if the Enum value is invalid" <| fun _ ->
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types+Enum_UInt16 but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+                let res = Decode.Auto.fromString<Enum_UInt16>("2")
+                equal value res
+
+            testCase "Auto decoders works for enum<int>" <| fun _ ->
+                let res = Decode.Auto.unsafeFromString<Enum_Int>("1")
+                equal Enum_Int.One res
+
+            testCase "Auto decoders for enum<int> returns an error if the Enum value is invalid" <| fun _ ->
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types+Enum_Int but instead got: 4
+Reason: Unkown value provided for the enum
+                        """.Trim())
+                let res = Decode.Auto.fromString<Enum_Int>("4")
+                equal value res
+
+            testCase "Auto decoders works for enum<uint32>" <| fun _ ->
+                let res = Decode.Auto.unsafeFromString<Enum_UInt32>("99")
+                equal Enum_UInt32.NinetyNine res
+
+            testCase "Auto decoders for enum<uint32> returns an error if the Enum value is invalid" <| fun _ ->
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types+Enum_UInt32 but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+                let res = Decode.Auto.fromString<Enum_UInt32>("2")
+                equal value res
+
     (*
             #if NETFRAMEWORK
             testCase "Auto decoders  works with char based Enums" <| fun _ ->

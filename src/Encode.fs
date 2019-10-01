@@ -481,7 +481,7 @@ module Encode =
         else
             if fullname = typeof<bool>.FullName then
                 boxEncoder bool
-            elif t.FullName = typedefof<unit>.FullName then
+            elif fullname = typeof<unit>.FullName then
                 boxEncoder unit
             elif fullname = typeof<string>.FullName then
                 boxEncoder string
@@ -546,7 +546,7 @@ module Encode =
             |> autoEncoder (makeExtra extra) isCamelCase skipNullField |> unboxEncoder
 
         static member toString(space : int, value : 'T, ?isCamelCase : bool, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>) : string =
-            let encoder = Auto.generateEncoder(?isCamelCase=isCamelCase, ?extra=extra, ?resolver=resolver, ?skipNullField=skipNullField)
+            let encoder = Auto.generateEncoder(?isCamelCase=isCamelCase, ?extra=extra, ?skipNullField=skipNullField, ?resolver=resolver)
             encoder value |> toString space
 
     ///**Description**

@@ -1052,8 +1052,6 @@ module Decode =
                     // The error will only happen at runtime if the value is not null
                     // See https://github.com/MangelMaxime/Thoth/pull/84#issuecomment-444837773
                     boxDecoder(fun path value -> Error(path, BadType("an extra coder for " + t.FullName, value)))
-                elif t.FullName = typedefof<unit>.FullName then
-                    boxDecoder unit
                 else
                     // Don't use failwithf here, for some reason F#/Fable compiles it as a function
                     // when the return type is a function too, so it doesn't fail immediately
@@ -1103,6 +1101,8 @@ module Decode =
         else
             if fullname = typeof<bool>.FullName then
                 boxDecoder bool
+            elif fullname = typedefof<unit>.FullName then
+                boxDecoder unit
             elif fullname = typeof<string>.FullName then
                 boxDecoder string
             elif fullname = typeof<sbyte>.FullName then
