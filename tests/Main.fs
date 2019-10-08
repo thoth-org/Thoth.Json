@@ -8,6 +8,7 @@ let [<Global>] it (msg: string) (f: unit->unit) = jsNative
 let run () =
     let tests = [ Tests.Decoders.tests
                   Tests.Encoders.tests
+                  Tests.ExtraCoders.tests
                 ] :> Util.Testing.Test seq
 
     for (moduleName, moduleTests) in tests do
