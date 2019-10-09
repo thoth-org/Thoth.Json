@@ -69,7 +69,7 @@ let tests : Test =
                 let actual =
                     Encode.Auto.toString (0, data, extra = pascalCaseCoder)
                     |> fun json -> 
-                    Decode.Auto.unsafeFromString (json,extra = pascalCaseCoder)
+                    Decode.Auto.unsafeFromString (json, extra = pascalCaseCoder)
                 equal expected actual
 
             testCase "auto coder are working in PascalCase" <| fun _ ->
@@ -127,7 +127,7 @@ let tests : Test =
                 let actual =
                     CachedCoder.encode ( data, extra = camelCaseCoder)
                     |> fun json -> 
-                    Decode.Auto.unsafeFromString (json,extra = camelCaseCoder)
+                    Decode.Auto.unsafeFromString (json, extra = camelCaseCoder)
                 equal expected actual
 
             testCase "auto coder are working in camelCase" <| fun _ ->
@@ -145,14 +145,14 @@ let tests : Test =
                 let actual =
                     CachedCoder.encode ( data, extra = pascalCaseCoder)
                     |> fun json -> 
-                    Decode.Auto.unsafeFromString (json,extra = pascalCaseCoder)
+                    Decode.Auto.unsafeFromString (json, extra = pascalCaseCoder)
                 equal expected actual
 
             testCase "auto coder are working in PascalCase" <| fun _ ->
                 let data = {Id = 1; Text ="Text"}
                 let expected = data
                 let actual =
-                    CachedCoder.encode ( data, isCamelCase = false)
+                    CachedCoder.encode ( data,  isCamelCase = false)
                     |> fun json -> 
                     Decode.Auto.unsafeFromString (json, isCamelCase = false)
                 equal expected actual

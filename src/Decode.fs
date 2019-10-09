@@ -1198,11 +1198,11 @@ If you can't use one of these types, please pass an extra decoder.
         | Some e -> Map.map (fun _ (_,dec) -> ref dec) e
 
     type Auto =
-        /// ATTENTION: Use this only when other arguments (isCamelCase, extra) don't change
         static member generateDecoderCached<'T>(?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Decoder<'T> =
             let t = Util.resolveType resolver
-            Util.CachedDecoders.GetOrAdd(t.FullName, fun _ ->
-                let isCamelCase = defaultArg isCamelCase false
+            let isCamelCase = defaultArg isCamelCase false
+            let key = t.FullName + isCamelCase.ToString() + extra.ToString() 
+            Util.CachedDecoders.GetOrAdd(key, fun _ ->
                 autoDecoder (makeExtra extra) isCamelCase false t) |> unboxDecoder
 
         static member generateDecoder<'T>(?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Decoder<'T> =
