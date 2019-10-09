@@ -282,7 +282,7 @@ let tests : Test =
                         ] |> Encode.toString 4
                 equal expected actual
 
-            testCase "complexe structure works" <| fun _ ->
+            testCase "complex structure works" <| fun _ ->
                 let expected =
                     "{\n    \"firstname\": \"maxime\",\n    \"age\": 25,\n    \"address\": {\n        \"street\": \"main road\",\n        \"city\": \"Bordeaux\"\n    }\n}"
 
