@@ -22,7 +22,9 @@ type BoxedDecoder = Decoder<obj>
 
 type BoxedEncoder = Encoder<obj>
 
-type ExtraCoders = Map<string, BoxedEncoder * BoxedDecoder>
+type ExtraCoders =
+    { Hash: System.Guid
+      Coders: Map<string, BoxedEncoder * BoxedDecoder> }
 
 module internal Util =
     open System.Collections.Generic
