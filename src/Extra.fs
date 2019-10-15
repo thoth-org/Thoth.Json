@@ -8,17 +8,17 @@ let empty: ExtraCoders =
       Coders = Map.empty }
 
 [<StringEnum>]
-type private InternalCoder =
+type internal InternalCoder =
     | Int64
     | Uint64
     | Decimal
     | Bigint
 
-type private Key =
+type internal Key =
     | Coder of InternalCoder
     | NewCoder
 
-let inline private withCustomAndKey (key: Key) (encoder: Encoder<'Value>) (decoder: Decoder<'Value>)
+let inline internal withCustomAndKey (key: Key) (encoder: Encoder<'Value>) (decoder: Decoder<'Value>)
            (extra: ExtraCoders): ExtraCoders =
     { extra with
           Hash =
