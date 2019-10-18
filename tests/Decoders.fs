@@ -33,7 +33,6 @@ open Tests.Types
 
 type RecordWithPrivateConstructor = private { Foo1: int; Foo2: float }
 type UnionWithPrivateConstructor = private Bar of string | Baz
-
 let tests : Test =
     testList "Thoth.Json.Decode" [
 
@@ -85,6 +84,13 @@ let tests : Test =
 
         testList "Primitives" [
 
+            testCase "unit works" <| fun _ ->
+                let expected = Ok ()
+                let actual =
+                    Decode.fromString Decode.unit "null"
+
+                equal expected actual
+
             testCase "a string works" <| fun _ ->
                 let expected = Ok("maxime")
                 let actual =
@@ -134,10 +140,115 @@ let tests : Test =
 
                 equal expected actual
 
+
             testCase "an invalid int [invalid range: too small] output an error" <| fun _ ->
                 let expected = Error("Error at: `$`\nExpecting an int but instead got: -2147483649\nReason: Value was either too large or too small for an int")
                 let actual =
                     Decode.fromString Decode.int "-2147483649"
+
+                equal expected actual
+
+            testCase "an int16 works from number" <| fun _ ->
+                let expected = Ok(int16 25)
+                let actual =
+                    Decode.fromString Decode.int16 "25"
+
+                equal expected actual
+
+            testCase "an int16 works from string" <| fun _ ->
+                let expected = Ok(int16 -25)
+                let actual =
+                    Decode.fromString Decode.int16 "\"-25\""
+
+                equal expected actual
+
+            testCase "an int16 output an error if value is too big" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting an int16 but instead got: 32768
+Reason: Value was either too large or too small for an int16
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.int16 "32768"
+
+                equal expected actual
+
+            testCase "an int16 output an error if value is too small" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting an int16 but instead got: -32769
+Reason: Value was either too large or too small for an int16
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.int16 "-32769"
+
+                equal expected actual
+
+            testCase "an int16 output an error if incorrect string" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting an int16 but instead got: "maxime"
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.int16 "\"maxime\""
+
+                equal expected actual
+
+            testCase "an uint16 works from number" <| fun _ ->
+                let expected = Ok(uint16 25)
+                let actual =
+                    Decode.fromString Decode.uint16 "25"
+
+                equal expected actual
+
+            testCase "an uint16 works from string" <| fun _ ->
+                let expected = Ok(uint16 25)
+                let actual =
+                    Decode.fromString Decode.uint16 "\"25\""
+
+                equal expected actual
+
+            testCase "an uint16 output an error if value is too big" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting an uint16 but instead got: 65536
+Reason: Value was either too large or too small for an uint16
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.uint16 "65536"
+
+                equal expected actual
+
+            testCase "an uint16 output an error if value is too small" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting an uint16 but instead got: -1
+Reason: Value was either too large or too small for an uint16
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.uint16 "-1"
+
+                equal expected actual
+
+            testCase "an uint16 output an error if incorrect string" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting an uint16 but instead got: "maxime"
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.uint16 "\"maxime\""
 
                 equal expected actual
 
@@ -218,6 +329,111 @@ Expecting an uint64 but instead got: "maxime"
 
                 let actual =
                     Decode.fromString Decode.uint64 "\"maxime\""
+
+                equal expected actual
+
+            testCase "a byte works from number" <| fun _ ->
+                let expected = Ok 25uy
+                let actual =
+                    Decode.fromString Decode.byte "25"
+
+                equal expected actual
+
+            testCase "a byte works from string" <| fun _ ->
+                let expected = Ok 25uy
+                let actual =
+                    Decode.fromString Decode.byte "\"25\""
+
+                equal expected actual
+
+            testCase "a byte output an error if value is too big" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a byte but instead got: 256
+Reason: Value was either too large or too small for a byte
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.byte "256"
+
+                equal expected actual
+
+            testCase "a byte output an error if value is too small" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a byte but instead got: -1
+Reason: Value was either too large or too small for a byte
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.byte "-1"
+
+                equal expected actual
+
+            testCase "a byte output an error if incorrect string" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a byte but instead got: "maxime"
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.byte "\"maxime\""
+
+                equal expected actual
+
+
+            testCase "a sbyte works from number" <| fun _ ->
+                let expected = Ok 25y
+                let actual =
+                    Decode.fromString Decode.sbyte "25"
+
+                equal expected actual
+
+            testCase "a sbyte works from string" <| fun _ ->
+                let expected = Ok -25y
+                let actual =
+                    Decode.fromString Decode.sbyte "\"-25\""
+
+                equal expected actual
+
+            testCase "a sbyte output an error if value is too big" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a sbyte but instead got: 128
+Reason: Value was either too large or too small for a sbyte
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.sbyte "128"
+
+                equal expected actual
+
+            testCase "a sbyte output an error if value is too small" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a sbyte but instead got: -129
+Reason: Value was either too large or too small for a sbyte
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.sbyte "-129"
+
+                equal expected actual
+
+            testCase "a sbyte output an error if incorrect string" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a sbyte but instead got: "maxime"
+                        """.Trim())
+                let actual =
+                    Decode.fromString Decode.sbyte "\"maxime\""
 
                 equal expected actual
 
@@ -327,6 +543,49 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                     Decode.fromString Decode.timespan json
 
                 equal expected actual
+
+            testCase "an enum<sbyte> works" <| fun _ ->
+                let expected = Ok Enum_Int8.NinetyNine
+                let actual =
+                    Decode.fromString Decode.Enum.sbyte "99"
+
+                equal expected actual
+
+            testCase "an enum<byte> works" <| fun _ ->
+                let expected = Ok Enum_UInt8.NinetyNine
+                let actual =
+                    Decode.fromString Decode.Enum.byte "99"
+
+                equal expected actual
+
+            testCase "an enum<int> works" <| fun _ ->
+                let expected = Ok Enum_Int.One
+                let actual =
+                    Decode.fromString Decode.Enum.int "1"
+
+                equal expected actual
+
+            testCase "an enum<uint32> works" <| fun _ ->
+                let expected = Ok Enum_UInt32.NinetyNine
+                let actual =
+                    Decode.fromString Decode.Enum.uint32 "99"
+
+                equal expected actual
+
+            testCase "an enum<int16> works" <| fun _ ->
+                let expected = Ok Enum_Int16.NinetyNine
+                let actual =
+                    Decode.fromString Decode.Enum.int16 "99"
+
+                equal expected actual
+
+            testCase "an enum<uint16> works" <| fun _ ->
+                let expected = Ok Enum_UInt16.NinetyNine
+                let actual =
+                    Decode.fromString Decode.Enum.uint16 "99"
+
+                equal expected actual
+
         ]
 
         testList "Tuples" [
@@ -2014,19 +2273,33 @@ Expecting a boolean but instead got: "not_a_boolean"
         testList "Auto" [
             testCase "Auto.Decode.fromString works" <| fun _ ->
                 let now = DateTime.Now
-                let value =
-                    { a = 5
-                      b = "bar"
-                      c = [false, 3; true, 5; false, 10]
-                      d = [|Some(Foo 14); None|]
-                      e = Map [("oh", { a = 2.; b = 2. }); ("ah", { a = -1.5; b = 0. })]
-                      f = now
-                      g = set [{ a = 2.; b = 2. }; { a = -1.5; b = 0. }]
-                      h = TimeSpan.FromSeconds(5.)
+                let value : Record9 =
+                    {
+                        a = 5
+                        b = "bar"
+                        c = [false, 3; true, 5; false, 10]
+                        d = [|Some(Foo 14); None|]
+                        e = Map [("oh", { a = 2.; b = 2. }); ("ah", { a = -1.5; b = 0. })]
+                        f = now
+                        g = set [{ a = 2.; b = 2. }; { a = -1.5; b = 0. }]
+                        h = TimeSpan.FromSeconds(5.)
+                        i = 120y
+                        j = 120uy
+                        k = 250s
+                        l = 250us
+                        m = 99u
+                        n = 99L
+                        o = 999UL
+                        p = ()
+                        // r = seq [ "item n°1"; "item n°2"]
                     }
-                let json = Encode.Auto.toString(4, value)
+                let extra =
+                    Extra.empty
+                    |> Extra.withInt64
+                    |> Extra.withUInt64
+                let json = Encode.Auto.toString(4, value, extra = extra)
                 // printfn "AUTO ENCODED %s" json
-                let r2 = Decode.Auto.unsafeFromString<Record9>(json)
+                let r2 = Decode.Auto.unsafeFromString<Record9>(json, extra = extra)
                 equal 5 r2.a
                 equal "bar" r2.b
                 equal [false, 3; true, 5; false, 10] r2.c
@@ -2038,6 +2311,15 @@ Expecting a boolean but instead got: "not_a_boolean"
                 equal true (Set.contains { a = -1.5; b = 0. } r2.g)
                 equal false (Set.contains { a = 1.5; b = 0. } r2.g)
                 equal 5000. value.h.TotalMilliseconds
+                equal 120y r2.i
+                equal 120uy r2.j
+                equal 250s r2.k
+                equal 250us r2.l
+                equal 99u r2.m
+                equal 99L r2.n
+                equal 999UL r2.o
+                equal () r2.p
+                // equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.r |> Seq.toList)
 
             testCase "Auto serialization works with recursive types" <| fun _ ->
                 let len xs =
@@ -2191,6 +2473,177 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let res = Decode.Auto.unsafeFromString<int option>(json)
                 equal value res
 
+            testCase "Auto decoders works for Unit" <| fun _ ->
+                let value = ()
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString(json)
+                equal value res
+
+            testCase "Auto decoders works for enum<int8>" <| fun _ ->
+                let res = Decode.Auto.unsafeFromString<Enum_Int8>("99")
+                equal Enum_Int8.NinetyNine res
+
+            testCase "Auto decoders for enum<int8> returns an error if the Enum value is invalid" <| fun _ ->
+#if FABLE_COMPILER
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types.Enum_Int8[System.SByte] but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#else
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types+Enum_Int8 but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#endif
+
+                let res = Decode.Auto.fromString<Enum_Int8>("2")
+                equal value res
+
+            testCase "Auto decoders works for enum<uint8>" <| fun _ ->
+                let res = Decode.Auto.unsafeFromString<Enum_UInt8>("99")
+                equal Enum_UInt8.NinetyNine res
+
+            testCase "Auto decoders for enum<uint8> returns an error if the Enum value is invalid" <| fun _ ->
+#if FABLE_COMPILER
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types.Enum_UInt8[System.Byte] but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#else
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types+Enum_UInt8 but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#endif
+
+                let res = Decode.Auto.fromString<Enum_UInt8>("2")
+                equal value res
+
+            testCase "Auto decoders works for enum<int16>" <| fun _ ->
+                let res = Decode.Auto.unsafeFromString<Enum_Int16>("99")
+                equal Enum_Int16.NinetyNine res
+
+            testCase "Auto decoders for enum<int16> returns an error if the Enum value is invalid" <| fun _ ->
+#if FABLE_COMPILER
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types.Enum_Int16[System.Int16] but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#else
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types+Enum_Int16 but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#endif
+
+                let res = Decode.Auto.fromString<Enum_Int16>("2")
+                equal value res
+
+            testCase "Auto decoders works for enum<uint16>" <| fun _ ->
+                let res = Decode.Auto.unsafeFromString<Enum_UInt16>("99")
+                equal Enum_UInt16.NinetyNine res
+
+            testCase "Auto decoders for enum<ºint16> returns an error if the Enum value is invalid" <| fun _ ->
+#if FABLE_COMPILER
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types.Enum_UInt16[System.UInt16] but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#else
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types+Enum_UInt16 but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#endif
+
+                let res = Decode.Auto.fromString<Enum_UInt16>("2")
+                equal value res
+
+            testCase "Auto decoders works for enum<int>" <| fun _ ->
+                let res = Decode.Auto.unsafeFromString<Enum_Int>("1")
+                equal Enum_Int.One res
+
+            testCase "Auto decoders for enum<int> returns an error if the Enum value is invalid" <| fun _ ->
+#if FABLE_COMPILER
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types.Enum_Int[System.Int32] but instead got: 4
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#else
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types+Enum_Int but instead got: 4
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#endif
+
+                let res = Decode.Auto.fromString<Enum_Int>("4")
+                equal value res
+
+            testCase "Auto decoders works for enum<uint32>" <| fun _ ->
+                let res = Decode.Auto.unsafeFromString<Enum_UInt32>("99")
+                equal Enum_UInt32.NinetyNine res
+
+            testCase "Auto decoders for enum<uint32> returns an error if the Enum value is invalid" <| fun _ ->
+#if FABLE_COMPILER
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types.Enum_UInt32[System.UInt32] but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#else
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types+Enum_UInt32 but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#endif
+
+                let res = Decode.Auto.fromString<Enum_UInt32>("2")
+                equal value res
+
+    (*
+            #if NETFRAMEWORK
+            testCase "Auto decoders  works with char based Enums" <| fun _ ->
+                let value = CharEnum.A
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString<CharEnum>(json)
+                equal value res
+            #endif
+    *)
             testCase "Auto decoders works for null" <| fun _ ->
                 let value = null
                 let json = Encode.Auto.toString(4, value)
@@ -2342,5 +2795,34 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let json = """{"Name":"Alfonso","Children":[{"Name":"Narumi","Children":[]},{"Name":"Takumi","Children":[]}]}"""
                 Decode.Auto.fromString<MyRecType>(json)
                 |> equal (Ok vater)
+
+            testCase "Auto.unsafeFromString works for unit" <| fun _ ->
+                let json = Encode.unit () |> Encode.toString 4
+                let res = Decode.Auto.unsafeFromString<unit>(json)
+                equal () res
+
+            testCase "Erased single-case DUs works" <| fun _ ->
+                let expected = NoAllocAttributeId (Guid.NewGuid())
+                let json = Encode.Auto.toString(4, expected)
+                let actual = Decode.Auto.unsafeFromString<NoAllocAttributeId>(json)
+                equal expected actual
+
+            testCase "Auto.unsafeFromString works with HTML inside of a string" <| fun _ ->
+                let expected =
+                    {
+                        FeedName = "Ars"
+                        Content = "<div><figure class=\"intro-image intro-left\"><img src=\"https://cdn.arstechnica.net/wp-content/uploads/2019/05/qualcomm-enforcer-800x450.jpg\" alt=\"How Qualcomm shook down the cell phone industry for almost 20 years\"><p class=\"caption\" style=\"font-size: 0.8em\"><a href=\"https://cdn.arstechnica.net/wp-content/uploads/2019/05/qualcomm-enforcer.jpg\" class=\"enlarge-link\">Enlarge</a> (credit: Getty / Aurich Lawson)</p>  </figure><div><a name=\"page-1\"></a></div><p>In 2005, Apple contacted Qualcomm as a potential supplier for modem chips in the first iPhone. Qualcomm's response was unusual: a letter demanding that Apple sign a patent licensing agreement before Qualcomm would even consider supplying chips.</p><p>\"I'd spent 20 years in the industry, I had never seen a letter like this,\" said Tony Blevins, Apple's vice president of procurement.</p><p>Most suppliers are eager to talk to new customers—especially customers as big and prestigious as Apple. But Qualcomm wasn't like other suppliers; it enjoyed a dominant position in the market for cellular chips. That gave Qualcomm a lot of leverage, and the company wasn't afraid to use it.</p></div><p><a href=\"https://arstechnica.com/?p=1510419#p3\">Read 70 remaining paragraphs</a> | <a href=\"https://arstechnica.com/?p=1510419&amp;comments=1\">Comments</a></p><div class=\"feedflare\"><a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:V_sGLiPBpWU\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?i=7NLlD3YvqFA:DF_-B3_cDwc:V_sGLiPBpWU\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:F7zBnMyn0Lo\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?i=7NLlD3YvqFA:DF_-B3_cDwc:F7zBnMyn0Lo\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:qj6IDK7rITs\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:yIl2AUoC8zA\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA\" border=\"0\"></a></div>"
+                    }
+
+                let articleJson =
+                    """
+                {
+                  "FeedName": "Ars",
+                  "Content": "<div><figure class=\"intro-image intro-left\"><img src=\"https://cdn.arstechnica.net/wp-content/uploads/2019/05/qualcomm-enforcer-800x450.jpg\" alt=\"How Qualcomm shook down the cell phone industry for almost 20 years\"><p class=\"caption\" style=\"font-size: 0.8em\"><a href=\"https://cdn.arstechnica.net/wp-content/uploads/2019/05/qualcomm-enforcer.jpg\" class=\"enlarge-link\">Enlarge</a> (credit: Getty / Aurich Lawson)</p>  </figure><div><a name=\"page-1\"></a></div><p>In 2005, Apple contacted Qualcomm as a potential supplier for modem chips in the first iPhone. Qualcomm's response was unusual: a letter demanding that Apple sign a patent licensing agreement before Qualcomm would even consider supplying chips.</p><p>\"I'd spent 20 years in the industry, I had never seen a letter like this,\" said Tony Blevins, Apple's vice president of procurement.</p><p>Most suppliers are eager to talk to new customers—especially customers as big and prestigious as Apple. But Qualcomm wasn't like other suppliers; it enjoyed a dominant position in the market for cellular chips. That gave Qualcomm a lot of leverage, and the company wasn't afraid to use it.</p></div><p><a href=\"https://arstechnica.com/?p=1510419#p3\">Read 70 remaining paragraphs</a> | <a href=\"https://arstechnica.com/?p=1510419&amp;comments=1\">Comments</a></p><div class=\"feedflare\"><a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:V_sGLiPBpWU\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?i=7NLlD3YvqFA:DF_-B3_cDwc:V_sGLiPBpWU\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:F7zBnMyn0Lo\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?i=7NLlD3YvqFA:DF_-B3_cDwc:F7zBnMyn0Lo\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:qj6IDK7rITs\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:yIl2AUoC8zA\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA\" border=\"0\"></a></div>"
+                }
+                    """
+
+                let actual : TestStringWithHTML = Decode.Auto.unsafeFromString(articleJson)
+                equal expected actual
         ]
     ]
