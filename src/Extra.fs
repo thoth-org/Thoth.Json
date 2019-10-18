@@ -1,19 +1,43 @@
 [<RequireQualifiedAccess>]
 module Thoth.Json.Extra
 
-let empty: ExtraCoders = Map.empty
+open Fable.Core
 
-let inline withInt64 (extra: ExtraCoders): ExtraCoders =
-    Map.add typeof<int64>.FullName (Encode.boxEncoder Encode.int64, Decode.boxDecoder Decode.int64) extra
+let empty: ExtraCoders =
+    { Hash = ""
+      Coders = Map.empty }
 
-let inline withUInt64 (extra: ExtraCoders): ExtraCoders =
-    Map.add typeof<uint64>.FullName (Encode.boxEncoder Encode.uint64, Decode.boxDecoder Decode.uint64) extra
+[<StringEnum>]
+type internal InternalCoder =
+    | Int64
+    | Uint64
+    | Decimal
+    | Bigint
 
-let inline withDecimal (extra: ExtraCoders): ExtraCoders =
-    Map.add typeof<decimal>.FullName (Encode.boxEncoder Encode.decimal, Decode.boxDecoder Decode.decimal) extra
+type internal Key =
+    | Coder of InternalCoder
+    | NewCoder
 
-let inline withBigInt (extra: ExtraCoders): ExtraCoders =
-    Map.add typeof<bigint>.FullName (Encode.boxEncoder Encode.bigint, Decode.boxDecoder Decode.bigint) extra
+let inline internal withCustomAndKey (key: Key) (encoder: Encoder<'Value>) (decoder: Decoder<'Value>)
+           (extra: ExtraCoders): ExtraCoders =
+    { extra with
+          Hash =
+              match key with
+              | Coder k -> extra.Hash + key.ToString()
+              | NewCoder -> System.Guid.NewGuid().ToString()
+          Coders =
+              extra.Coders |> Map.add typeof<'Value>.FullName (Encode.boxEncoder encoder, Decode.boxDecoder decoder) }
 
 let inline withCustom (encoder: Encoder<'Value>) (decoder: Decoder<'Value>) (extra: ExtraCoders): ExtraCoders =
-    Map.add typeof<'Value>.FullName (Encode.boxEncoder encoder, Decode.boxDecoder decoder) extra
+    withCustomAndKey NewCoder encoder decoder extra
+
+let inline withInt64 (extra: ExtraCoders): ExtraCoders = withCustomAndKey (Coder Int64) Encode.int64 Decode.int64 extra
+
+let inline withUInt64 (extra: ExtraCoders): ExtraCoders =
+    withCustomAndKey (Coder Uint64) Encode.uint64 Decode.uint64 extra
+
+let inline withDecimal (extra: ExtraCoders): ExtraCoders =
+    withCustomAndKey (Coder Decimal) Encode.decimal Decode.decimal extra
+
+let inline withBigInt (extra: ExtraCoders): ExtraCoders =
+    withCustomAndKey (Coder Bigint) Encode.bigint Decode.bigint extra
