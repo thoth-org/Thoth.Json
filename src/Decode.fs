@@ -906,42 +906,42 @@ module Decode =
 
     module Enum =
 
-        let byte<'TEnum when 'TEnum : enum<byte>> : Decoder<'TEnum> =
+        let inline byte<'TEnum when 'TEnum : enum<byte>> : Decoder<'TEnum> =
             byte
             |> andThen (fun value ->
                 LanguagePrimitives.EnumOfValue<byte, 'TEnum> value
                 |> succeed
             )
 
-        let sbyte<'TEnum when 'TEnum : enum<sbyte>> : Decoder<'TEnum> =
+        let inline sbyte<'TEnum when 'TEnum : enum<sbyte>> : Decoder<'TEnum> =
             sbyte
             |> andThen (fun value ->
                 LanguagePrimitives.EnumOfValue<sbyte, 'TEnum> value
                 |> succeed
             )
 
-        let int16<'TEnum when 'TEnum : enum<int16>> : Decoder<'TEnum> =
+        let inline int16<'TEnum when 'TEnum : enum<int16>> : Decoder<'TEnum> =
             int16
             |> andThen (fun value ->
                 LanguagePrimitives.EnumOfValue<int16, 'TEnum> value
                 |> succeed
             )
 
-        let uint16<'TEnum when 'TEnum : enum<uint16>> : Decoder<'TEnum> =
+        let inline uint16<'TEnum when 'TEnum : enum<uint16>> : Decoder<'TEnum> =
             uint16
             |> andThen (fun value ->
                 LanguagePrimitives.EnumOfValue<uint16, 'TEnum> value
                 |> succeed
             )
 
-        let int<'TEnum when 'TEnum : enum<int>> : Decoder<'TEnum> =
+        let inline int<'TEnum when 'TEnum : enum<int>> : Decoder<'TEnum> =
             int
             |> andThen (fun value ->
                 LanguagePrimitives.EnumOfValue<int, 'TEnum> value
                 |> succeed
             )
 
-        let uint32<'TEnum when 'TEnum : enum<uint32>> : Decoder<'TEnum> =
+        let inline uint32<'TEnum when 'TEnum : enum<uint32>> : Decoder<'TEnum> =
             uint32
             |> andThen (fun value ->
                 LanguagePrimitives.EnumOfValue<uint32, 'TEnum> value
@@ -976,6 +976,27 @@ module Decode =
                     Helpers.getField name value
                     |> decoder (path + "." + name)
                     |> Result.map (fun v -> v::result))
+
+    let inline private enumDecoder<'UnderlineType when 'UnderlineType : equality>
+        (decoder : Decoder<'UnderlineType>)
+        (toString : 'UnderlineType -> string)
+        (t: System.Type) =
+
+            fun path value ->
+                match decoder path value with
+                | Ok enumValue ->
+                    System.Enum.GetValues(t)
+                    |> Seq.cast<'UnderlineType>
+                    |> Seq.contains enumValue
+                    |> function
+                    | true ->
+                        System.Enum.Parse(t, toString enumValue)
+                        |> Ok
+                    | false ->
+                        (path, BadPrimitiveExtra(t.FullName, value, "Unkown value provided for the enum"))
+                        |> Error
+                | Error msg ->
+                    Error msg
 
     let private autoObject2 (keyDecoder: BoxedDecoder) (valueDecoder: BoxedDecoder) (path : string) (value: JsonValue) =
         if not (Helpers.isObject value) then
@@ -1067,6 +1088,32 @@ module Decode =
         if t.IsArray then
             let decoder = t.GetElementType() |> autoDecoder extra isCamelCase false
             array decoder |> boxDecoder
+        elif t.IsEnum then
+            let enumType = System.Enum.GetUnderlyingType(t).FullName
+            if enumType = typeof<sbyte>.FullName then
+                enumDecoder<sbyte> sbyte Operators.string t |> boxDecoder
+            elif enumType = typeof<byte>.FullName then
+                enumDecoder<byte> byte Operators.string t |> boxDecoder
+            elif enumType = typeof<int16>.FullName then
+                enumDecoder<int16> int16 Operators.string t |> boxDecoder
+            elif enumType = typeof<uint16>.FullName then
+                enumDecoder<uint16> uint16 Operators.string t |> boxDecoder
+            elif enumType = typeof<int>.FullName then
+                enumDecoder<int> int Operators.string t |> boxDecoder
+            elif enumType = typeof<uint32>.FullName then
+                enumDecoder<uint32> uint32 Operators.string t |> boxDecoder
+            else
+                failwithf
+                    """Cannot generate auto decoder for %s.
+Thoth.Json.Net only support the folluwing enum types:
+- sbyte
+- byte
+- int16
+- uint16
+- int
+- uint32
+If you can't use one of these types, please pass an extra decoder.
+                    """ t.FullName
         elif t.IsGenericType then
             if FSharpType.IsTuple(t) then
                 let decoders = FSharpType.GetTupleElements(t) |> Array.map (autoDecoder extra isCamelCase false)
@@ -1081,8 +1128,9 @@ module Decode =
                     t.GenericTypeArguments.[0] |> (autoDecoder extra isCamelCase true) |> option |> boxDecoder
                 elif fullname = typedefof<obj list>.FullName then
                     t.GenericTypeArguments.[0] |> (autoDecoder extra isCamelCase false) |> list |> boxDecoder
-                elif fullname = typedefof<obj seq>.FullName then
-                    t.GenericTypeArguments.[0] |> (autoDecoder extra isCamelCase false) |> seq |> boxDecoder
+                // Disable seq support because I don't know how to implement it on Thoth.Json.Net side
+                // elif fullname = typedefof<obj seq>.FullName then
+                //     t.GenericTypeArguments.[0] |> (autoDecoder extra isCamelCase false) |> seq |> boxDecoder
                 elif fullname = typedefof< Map<string, obj> >.FullName then
                     let keyDecoder = t.GenericTypeArguments.[0] |> autoDecoder extra isCamelCase false
                     let valueDecoder = t.GenericTypeArguments.[1] |> autoDecoder extra isCamelCase false

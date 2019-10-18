@@ -124,7 +124,7 @@ type Record9 =
         n: int64
         o: uint64
         p: unit
-        r: string seq
+        // r: string seq
     }
 
 type User =

@@ -433,6 +433,32 @@ module Encode =
             let encoder = t.GetElementType() |> autoEncoder extra isCamelCase skipNullField
             fun (value: obj) ->
                 value :?> obj seq |> Seq.map encoder |> seq
+        elif t.IsEnum then
+            let enumType = System.Enum.GetUnderlyingType(t).FullName
+            if enumType = typeof<sbyte>.FullName then
+                boxEncoder sbyte
+            elif enumType = typeof<byte>.FullName then
+                boxEncoder byte
+            elif enumType = typeof<int16>.FullName then
+                boxEncoder int16
+            elif enumType = typeof<uint16>.FullName then
+                boxEncoder uint16
+            elif enumType = typeof<int>.FullName then
+                boxEncoder int
+            elif enumType = typeof<uint32>.FullName then
+                boxEncoder uint32
+            else
+                failwithf
+                    """Cannot generate auto encoder for %s.
+Thoth.Json.Net only support the folluwing enum types:
+- sbyte
+- byte
+- int16
+- uint16
+- int
+- uint32
+If you can't use one of these types, please pass an extra encoder.
+                    """ t.FullName
         elif t.IsGenericType then
             if FSharpType.IsTuple(t) then
                 let encoders =
@@ -454,8 +480,9 @@ module Encode =
                         if isNull value then nil
                         else encoder.Value value)
                 elif fullname = typedefof<obj list>.FullName
-                    || fullname = typedefof<Set<string>>.FullName
-                    || fullname = typedefof<obj seq>.FullName then
+                    || fullname = typedefof<Set<string>>.FullName then
+                    // Disable seq support for now because I don't know how to implements to on Thoth.Json.Net
+                    // || fullname = typedefof<obj seq>.FullName then
                     let encoder = t.GenericTypeArguments.[0] |> autoEncoder extra isCamelCase skipNullField
                     fun (value: obj) ->
                         value :?> obj seq |> Seq.map encoder |> seq

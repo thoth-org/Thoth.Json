@@ -2291,7 +2291,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                         n = 99L
                         o = 999UL
                         p = ()
-                        r = seq [ "item n°1"; "item n°2"]
+                        // r = seq [ "item n°1"; "item n°2"]
                     }
                 let extra =
                     Extra.empty
@@ -2319,7 +2319,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                 equal 99L r2.n
                 equal 999UL r2.o
                 equal () r2.p
-                equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.r |> Seq.toList)
+                // equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.r |> Seq.toList)
 
             testCase "Auto serialization works with recursive types" <| fun _ ->
                 let len xs =
@@ -2484,6 +2484,15 @@ Expecting a boolean but instead got: "not_a_boolean"
                 equal Enum_Int8.NinetyNine res
 
             testCase "Auto decoders for enum<int8> returns an error if the Enum value is invalid" <| fun _ ->
+#if FABLE_COMPILER
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types.Enum_Int8[System.SByte] but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#else
                 let value =
                     Error(
                         """
@@ -2491,6 +2500,8 @@ Error at: `$`
 Expecting Tests.Types+Enum_Int8 but instead got: 2
 Reason: Unkown value provided for the enum
                         """.Trim())
+#endif
+
                 let res = Decode.Auto.fromString<Enum_Int8>("2")
                 equal value res
 
@@ -2499,6 +2510,15 @@ Reason: Unkown value provided for the enum
                 equal Enum_UInt8.NinetyNine res
 
             testCase "Auto decoders for enum<uint8> returns an error if the Enum value is invalid" <| fun _ ->
+#if FABLE_COMPILER
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types.Enum_UInt8[System.Byte] but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#else
                 let value =
                     Error(
                         """
@@ -2506,6 +2526,8 @@ Error at: `$`
 Expecting Tests.Types+Enum_UInt8 but instead got: 2
 Reason: Unkown value provided for the enum
                         """.Trim())
+#endif
+
                 let res = Decode.Auto.fromString<Enum_UInt8>("2")
                 equal value res
 
@@ -2514,6 +2536,15 @@ Reason: Unkown value provided for the enum
                 equal Enum_Int16.NinetyNine res
 
             testCase "Auto decoders for enum<int16> returns an error if the Enum value is invalid" <| fun _ ->
+#if FABLE_COMPILER
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types.Enum_Int16[System.Int16] but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#else
                 let value =
                     Error(
                         """
@@ -2521,6 +2552,8 @@ Error at: `$`
 Expecting Tests.Types+Enum_Int16 but instead got: 2
 Reason: Unkown value provided for the enum
                         """.Trim())
+#endif
+
                 let res = Decode.Auto.fromString<Enum_Int16>("2")
                 equal value res
 
@@ -2529,6 +2562,15 @@ Reason: Unkown value provided for the enum
                 equal Enum_UInt16.NinetyNine res
 
             testCase "Auto decoders for enum<ºint16> returns an error if the Enum value is invalid" <| fun _ ->
+#if FABLE_COMPILER
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types.Enum_UInt16[System.UInt16] but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#else
                 let value =
                     Error(
                         """
@@ -2536,6 +2578,8 @@ Error at: `$`
 Expecting Tests.Types+Enum_UInt16 but instead got: 2
 Reason: Unkown value provided for the enum
                         """.Trim())
+#endif
+
                 let res = Decode.Auto.fromString<Enum_UInt16>("2")
                 equal value res
 
@@ -2544,6 +2588,15 @@ Reason: Unkown value provided for the enum
                 equal Enum_Int.One res
 
             testCase "Auto decoders for enum<int> returns an error if the Enum value is invalid" <| fun _ ->
+#if FABLE_COMPILER
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types.Enum_Int[System.Int32] but instead got: 4
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#else
                 let value =
                     Error(
                         """
@@ -2551,6 +2604,8 @@ Error at: `$`
 Expecting Tests.Types+Enum_Int but instead got: 4
 Reason: Unkown value provided for the enum
                         """.Trim())
+#endif
+
                 let res = Decode.Auto.fromString<Enum_Int>("4")
                 equal value res
 
@@ -2559,6 +2614,15 @@ Reason: Unkown value provided for the enum
                 equal Enum_UInt32.NinetyNine res
 
             testCase "Auto decoders for enum<uint32> returns an error if the Enum value is invalid" <| fun _ ->
+#if FABLE_COMPILER
+                let value =
+                    Error(
+                        """
+Error at: `$`
+Expecting Tests.Types.Enum_UInt32[System.UInt32] but instead got: 2
+Reason: Unkown value provided for the enum
+                        """.Trim())
+#else
                 let value =
                     Error(
                         """
@@ -2566,6 +2630,8 @@ Error at: `$`
 Expecting Tests.Types+Enum_UInt32 but instead got: 2
 Reason: Unkown value provided for the enum
                         """.Trim())
+#endif
+
                 let res = Decode.Auto.fromString<Enum_UInt32>("2")
                 equal value res
 
