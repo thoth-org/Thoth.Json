@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add supports for `int16>`
 * Add supports for `uint16`
 * Add supports for `uint32`
+* Add supports for `float32`
 * Add supports for `enum<byte>`
 * Add supports for `enum<sbyte>`
 * Add supports for `enum<int16>`
