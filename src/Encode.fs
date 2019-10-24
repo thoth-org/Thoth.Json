@@ -561,8 +561,13 @@ If you can't use one of these types, please pass an extra encoder.
         static member generateEncoderCached<'T>(?isCamelCase : bool, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
             let t = Util.resolveType resolver
             let isCamelCase = defaultArg isCamelCase false
-            let key = t.FullName + isCamelCase.ToString() + (extra |> Option.map (fun e -> e.Hash) |>  Option.defaultValue "")
             let skipNullField = defaultArg skipNullField true
+
+            let key =
+                t.FullName
+                |> (+) (Operators.string isCamelCase)
+                |> (+) (extra |> Option.map (fun e -> e.Hash) |> Option.defaultValue "")
+
             Util.CachedEncoders.GetOrAdd(key , fun _ ->
                 autoEncoder (makeExtra extra) isCamelCase skipNullField t) |> unboxEncoder
 
