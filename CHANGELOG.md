@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Fix #18: Remove the cache limitation when using generateDecoderCached (by &SCullman)
+* Fix #18: Remove the cache limitation when using generateDecoderCached (by @SCullman)
 * Fix Encode.decimal comment (by @alfonsogarciacaro)
 
 ## 3.3.0 - 2019-06-24
