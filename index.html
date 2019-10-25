@@ -1,0 +1,590 @@
+<html class="has-navbar-fixed-top"><head><title>Thoth.Json · Thoth.Json</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" type="text/css" href="/Thoth.Json/style.css"/><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"/><script src="https://polyfill.app/api/polyfill?features=scroll-behavior"></script><script type="text/javascript">
+var nacara = {};
+                                    </script><script type="text/javascript">window.addEventListener("DOMContentLoaded", () => {
+    /*
+     * Initialize the menu state
+     */
+
+    // Set as active the menu for the current page
+    document
+        .querySelectorAll(`.menu [data-menu-id='${nacara.pageId}']`)
+        .forEach(function (menuItem) {
+            menuItem.classList.add("is-active")
+        });
+
+    // Collapse menu-group which doesn't concerns the current page
+    document
+        .querySelectorAll(`.menu .menu-group`)
+        .forEach(function (menuGroup) {
+            var parentChildren = Array.from(menuGroup.parentElement.children);
+            var subItems = parentChildren.find(function (child) {
+                return child.nodeName === "UL";
+            });
+
+            var activeMenu =
+                Array.from(subItems.children)
+                    .find(function (child) {
+                        return child.firstChild.classList.contains("is-active")
+                    });
+
+            if (activeMenu === undefined) {
+                menuGroup.classList.remove("is-expanded");
+                subItems.style.display = "none";
+            } else {
+                menuGroup.classList.add("is-expanded");
+                subItems.style.display = "block";
+            }
+        });
+
+    // Register listener to handle menu-group
+    document
+        .querySelectorAll(`.menu .menu-group`)
+        .forEach(function (menuGroup) {
+            menuGroup.addEventListener("click", function (ev) {
+                // All the menu "calculation" are done relative to the .menu-group element
+                var menuGroup =
+                    ev.target.classList.contains("menu-group")
+                        ? ev.target
+                        : ev.target.closest(".menu-group");
+
+                var parentChildren = Array.from(menuGroup.parentElement.children);
+
+                var subItems =
+                    parentChildren.find(function (child) {
+                        return child.nodeName === "UL";
+                    });
+
+                if (menuGroup.classList.contains("is-expanded")) {
+                    menuGroup.classList.remove("is-expanded");
+                    subItems.style.display = "none";
+                } else {
+                    menuGroup.classList.add("is-expanded");
+                    subItems.style.display = "block";
+                }
+
+            });
+        });
+
+    /*
+     * Setup menu navigation via Next and Previous button
+     */
+
+    // Start the counter from -1, but the first menu item will be 0
+    let computedMaxRank = -1;
+
+    document
+        .querySelectorAll(`.menu [data-menu-id]`)
+        .forEach(function (menuItem) {
+            computedMaxRank++;
+            menuItem.setAttribute("data-menu-rank", computedMaxRank);
+        });
+
+    document
+        .querySelector(".navigate-to-previous")
+        .addEventListener("click", () => {
+            const currentMenuRank =
+                document
+                    .querySelector(`.menu [data-menu-id='${nacara.pageId}']`)
+                    .getAttribute("data-menu-rank");
+
+            const previousRank = parseInt(currentMenuRank) - 1;
+
+            if (previousRank >= 0) {
+                document
+                    .querySelector(`.menu [data-menu-rank='${previousRank}']`)
+                    .click();
+            }
+        });
+
+    document
+        .querySelector(".navigate-to-next")
+        .addEventListener("click", () => {
+            const currentMenuRank =
+                document
+                    .querySelector(`.menu [data-menu-id='${nacara.pageId}']`)
+                    .getAttribute("data-menu-rank")
+
+            const nextRank = parseInt(currentMenuRank) + 1;
+
+            if (nextRank <= computedMaxRank) {
+                document
+                    .querySelector(`.menu [data-menu-rank='${nextRank}']`)
+                    .click();
+            }
+        });
+
+    // IIFE function in order to not pollute the function scope
+    (() => {
+
+        // The menu is an optional element, if no menu found then hide the Next & Previous buttons
+        if (document.querySelector(".menu") === null) {
+            document.querySelector(".navigate-to-next").style.visibility = "hidden"
+            document.querySelector(".navigate-to-previous").style.visibility = "hidden"
+            return;
+        }
+
+        const currentMenuRank =
+            parseInt(
+                document
+                    .querySelector(`.menu [data-menu-id='${nacara.pageId}']`)
+                    .getAttribute("data-menu-rank")
+            );
+
+        // Initialize the text of the Previous button
+        if (currentMenuRank >= 1) {
+            const previousText =
+                document
+                    .querySelector(`.menu [data-menu-rank='${currentMenuRank - 1}']`)
+                    .textContent;
+
+            document
+                .querySelector(".navigate-to-previous .text")
+                .textContent = previousText;
+        }
+
+        // Initialize the text of the Next button
+        if (currentMenuRank < computedMaxRank) {
+            const previousText =
+                document
+                    .querySelector(`.menu [data-menu-rank='${currentMenuRank + 1}']`)
+                    .textContent;
+
+            document
+                .querySelector(".navigate-to-next .text")
+                .textContent = previousText;
+        }
+
+        // Hide the navigation button depending on the page rank
+        if (currentMenuRank == 0) {
+            document.querySelector(".navigate-to-previous").style.visibility = "hidden";
+        } else if (currentMenuRank == computedMaxRank) {
+            document.querySelector(".navigate-to-next").style.visibility = "visibile";
+        }
+    })();
+
+
+    /*
+     * Setup menu burger behaviour
+     */
+
+    // Code copied from Bulma documentation
+    // https://bulma.io/documentation/components/navbar/#navbar-menu
+
+    // Get all "navbar-burger" elements
+    const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+    // Check if there are any navbar burgers
+    if ($navbarBurgers.length > 0) {
+
+        // Add a click event on each of them
+        $navbarBurgers.forEach(el => {
+            el.addEventListener('click', () => {
+
+                // Get the target from the "data-target" attribute
+                const target = el.dataset.target;
+                const $target = document.getElementById(target);
+
+                // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+                el.classList.toggle('is-active');
+                $target.classList.toggle('is-active');
+
+            });
+        });
+    }
+
+    const mobileMenuTrigger = document.querySelector(".mobile-menu .menu-trigger");
+
+    if (mobileMenuTrigger !== null) {
+        mobileMenuTrigger
+            .addEventListener("click", () => {
+                document
+                    .querySelector(".is-menu-column")
+                    .classList
+                    .toggle("force-show");
+        });
+    }
+
+});
+</script></head><body><nav class="navbar is-fixed-top"><div class="container"><div class="navbar-brand"><a class="navbar-item title is-4" href="https://thoth-org.github.io//Thoth.Json/">Thoth.Json</a><a class="navbar-item is-hidden-desktop" href="https://github.com/thoth-org/Thoth.Json" target="_blank"><span class="icon"><i class=" fab fa-github fa-lg"></i></span></a><a class="navbar-item is-hidden-desktop" href="https://twitter.com/MangelMaxime" target="_blank" style="color:#55acee"><span class="icon"><i class=" fab fa-twitter fa-lg"></i></span></a><div class="navbar-burger" data-target="nav-menu"><span></span><span></span><span></span></div></div><div class="navbar-menu" id="nav-menu"><div class="navbar-start"><a class="navbar-item">3.4.0</a></div><div class="navbar-end"><a class="navbar-item" href="/Thoth.Json/index.html" target="_self"><span class="icon"><i class=" fas fa-book fa-lg"></i></span><span>Documentation</span></a><a class="navbar-item" href="/Thoth.Json/changelog.html" target="_self"><span class="icon"><i class=" fas fa-tasks fa-lg"></i></span><span>Changelog</span></a><a class="navbar-item" href="https://gitter.im/fable-compiler/Fable" target="_blank"><span class="icon"><i class=" fab fa-gitter fa-lg"></i></span><span>Support</span></a><a class="navbar-item is-hidden-touch" href="https://github.com/thoth-org/Thoth.Json" target="_blank"><span class="icon"><i class=" fab fa-github fa-lg"></i></span></a><a class="navbar-item is-hidden-touch" href="https://twitter.com/MangelMaxime" target="_blank" style="color:#55acee"><span class="icon"><i class=" fab fa-twitter fa-lg"></i></span></a></div></div></div></nav><div class="container"><div><div class="columns is-mobile is-gapless"><div class="column is-hidden-touch is-menu-column is-2-desktop" style="padding-left:1.5rem !important"></div><div class="column full-height-scrollable-content toc-scrollable-container is-main-content is-full-touch is-8-desktop" style="scroll-behavior:smooth;overflow-x:hidden"><section class="section"><div class="content"><header class="page-header"><a class="button is-pulled-right is-primary is-outlined is-hidden-touch" target="_blank" href="https://github.com/thoth-org/Thoth.Json/edit/master/docs/index.md">Edit</a><h1>Thoth.Json</h1></header><div><p></p>
+<p>This documentation is for Thoth.Json v3, documentation for olders version can be found here:</p>
+<ul>
+<li><a href="/Thoth.Json/legacy/v1.html">Thoth.Json v1</a></li>
+<li><a href="/Thoth.Json/legacy/v2.html">Thoth.Json v2</a></li>
+</ul>
+<h2>Decoder <a href="#Decoder" aria-hidden="true"><span class="anchor" id="Decoder"></span>#</a></h2>
+<p>Turn JSON values into F# values.</p>
+<p>By using a Decoder, you will be guaranteed that the JSON structure is correct.
+This is especially useful if you use Fable without sharing your domain with the server.</p>
+<p><em>This module is inspired by <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Json-Decode">Json.Decode from Elm</a>
+and <a href="http://package.elm-lang.org/packages/NoRedInk/elm-decode-pipeline/latest">elm-decode-pipeline</a>.</em></p>
+<p>As so, to complete this documentation, you can also take a look at the <a href="https://guide.elm-lang.org/interop/json.html">Elm documentation</a>.</p>
+<h3>What is a Decoder ? <a href="#What-is-a-Decoder" aria-hidden="true"><span class="anchor" id="What-is-a-Decoder"></span>#</a></h3>
+<p>Here is the signature of a <code>Decoder</code>:</p>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A626A4">type</span><span> </span><span style="color: #C18401">Decoder</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">&#039;T</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> string </span><span style="color: #A626A4">-&gt;</span><span> obj </span><span style="color: #A626A4">-&gt;</span><span> Result</span><span style="color: #A626A4">&lt;</span><span>&#039;T</span><span style="color: #A626A4">,</span><span> DecoderError</span><span style="color: #A626A4">&gt;</span></code></pre>
+<p>This is taking two arguments:</p>
+<ul>
+<li>the traveled path</li>
+<li>an &quot;untyped&quot; value and checking if it has the expected structure.</li>
+</ul>
+<p>If the structure is correct, then you get an <code>Ok</code> result, otherwise an <code>Error</code> explaining why and where the decoder failed.</p>
+<p>Example of error:</p>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span>Error at</span><span style="color: #A626A4">:</span><span> `$.user.firstname`</span>
+<span>Expecting an object </span><span style="color: #A626A4">with</span><span> path `user.firstname` but instead got</span><span style="color: #A626A4">:</span>
+<span style="color: #A626A4">{</span>
+<span>    </span><span style="color: #50A14F">&quot;user&quot;</span><span style="color: #A626A4">:</span><span> </span><span style="color: #A626A4">{</span>
+<span>        </span><span style="color: #50A14F">&quot;name&quot;</span><span style="color: #A626A4">:</span><span> &quot;</span><span style="color: #C18401">maxime</span><span>&quot;</span><span style="color: #A626A4">,</span>
+<span>        </span><span style="color: #50A14F">&quot;age&quot;</span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">25</span>
+<span>    </span><span style="color: #A626A4">}</span>
+<span style="color: #A626A4">}</span>
+<span>Node `firstname` is unknown.</span></code></pre>
+<p>The path generated is a valid <code>JSONPath</code>, so you can use tools like <a href="http://jsonpath.com/">JSONPath Online Evaluator</a> to explore your JSON.</p>
+<h3>Primitives decoders <a href="#Primitives-decoders" aria-hidden="true"><span class="anchor" id="Primitives-decoders"></span>#</a></h3>
+<ul>
+<li><code>string : Decoder&lt;string&gt;</code></li>
+<li><code>guid : Decoder&lt;System.Guid&gt;</code></li>
+<li><code>int : Decoder&lt;int&gt;</code></li>
+<li><code>int64 : Decoder&lt;int64&gt;</code></li>
+<li><code>uint64 : Decoder&lt;uint64&gt;</code></li>
+<li><code>bigint : Decoder&lt;bigint&gt;</code></li>
+<li><code>bool : Decoder&lt;bool&gt;</code></li>
+<li><code>float : Decoder&lt;float&gt;</code></li>
+<li><code>decimal : Decoder&lt;decimal&gt;</code></li>
+<li><code>datetime : Decoder&lt;System.DateTime&gt;</code></li>
+<li><code>datetimeOffset : Decoder&lt;System.DateTimeOffset&gt;</code></li>
+<li><code>timespan : Decoder&lt;System.TimeSpan&gt;</code></li>
+</ul>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A626A4">open</span><span> </span><span style="color: #4078F2">Thoth.Json</span>
+
+<span style="color: #A626A4">&gt;</span><span> Decode.fromString Decode.string </span><span style="color: #50A14F">&quot;\&quot;maxime\&quot;&quot;</span>
+<span style="color: #A626A4">val</span><span> </span><span style="color: #E45649">it</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Result</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">string</span><span style="color: #A626A4">,</span><span> </span><span style="color: #C18401">string</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #383A42">Ok </span><span>&quot;</span><span style="color: #383A42">maxime</span><span>&quot;</span>
+
+<span style="color: #A626A4">&gt;</span><span> Decode.fromString Decode.int </span><span style="color: #50A14F">&quot;25&quot;</span>
+<span style="color: #A626A4">val</span><span> </span><span style="color: #E45649">it</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Result</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">int</span><span style="color: #A626A4">,</span><span> </span><span style="color: #C18401">string</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #383A42">Ok 25</span>
+
+<span style="color: #A626A4">&gt;</span><span> Decode.fromString Decode.bool </span><span style="color: #50A14F">&quot;true&quot;</span>
+<span style="color: #A626A4">val</span><span> </span><span style="color: #E45649">it</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Result</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">bool</span><span style="color: #A626A4">,</span><span> </span><span style="color: #C18401">string</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #383A42">Ok true</span>
+
+<span style="color: #A626A4">&gt;</span><span> Decode.fromString Decode.float </span><span style="color: #50A14F">&quot;true&quot;</span>
+<span style="color: #A626A4">val</span><span> </span><span style="color: #E45649">it</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Result</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">float</span><span style="color: #A626A4">,</span><span> </span><span style="color: #C18401">string</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #383A42">Error </span><span>&quot;</span><span style="color: #383A42">Error at</span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">`</span><span>$`\</span><span style="color: #383A42">n Expecting a float but instead got</span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">true</span><span>&quot;</span></code></pre>
+<p>With these primitives decoders we can handle the basic JSON values.</p>
+<h3>Collections <a href="#Collections" aria-hidden="true"><span class="anchor" id="Collections"></span>#</a></h3>
+<p>There are special decoders for the following collections.</p>
+<ul>
+<li><code>list : Decoder&lt;'value&gt; -&gt; Decoder&lt;'value list&gt;</code></li>
+<li><code>array : Decoder&lt;'value&gt; -&gt; Decoder&lt;'value array&gt;</code></li>
+<li><code>index : -&gt; int -&gt; Decoder&lt;'value&gt; -&gt; Decoder&lt;'value&gt;</code></li>
+</ul>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A626A4">open</span><span> </span><span style="color: #4078F2">Thoth.Json</span>
+
+<span style="color: #A626A4">&gt;</span><span> Decode.fromString </span><span style="color: #A626A4">(</span><span>array int</span><span style="color: #A626A4">)</span><span> </span><span style="color: #50A14F">&quot;[1, 2, 3]&quot;</span>
+<span style="color: #A626A4">val</span><span> </span><span style="color: #E45649">it</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Result</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">int</span><span> </span><span style="color: #A626A4">[],</span><span> </span><span style="color: #C18401">string</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span>  </span><span style="color: #383A42">Ok </span><span style="color: #A626A4">[|</span><span style="color: #383A42">1</span><span style="color: #A626A4">,</span><span> </span><span style="color: #383A42">2</span><span style="color: #A626A4">,</span><span> </span><span style="color: #383A42">3</span><span style="color: #A626A4">|]</span>
+
+<span style="color: #A626A4">&gt;</span><span> Decode.fromString </span><span style="color: #A626A4">(</span><span>list string</span><span style="color: #A626A4">)</span><span> </span><span style="color: #50A14F">&quot;&quot;&quot;[&quot;Maxime&quot;, &quot;Alfonso&quot;, &quot;Vesper&quot;]&quot;&quot;&quot;</span>
+<span style="color: #A626A4">val</span><span> </span><span style="color: #E45649">it</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Result</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">string</span><span> </span><span style="color: #C18401">list</span><span style="color: #A626A4">,</span><span> </span><span style="color: #C18401">string</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #383A42">Ok </span><span style="color: #A626A4">[</span><span>&quot;</span><span style="color: #383A42">Maxime</span><span>&quot;</span><span style="color: #A626A4">,</span><span> &quot;</span><span style="color: #383A42">Alfonso</span><span>&quot;</span><span style="color: #A626A4">,</span><span> &quot;</span><span style="color: #383A42">Vesper</span><span>&quot;</span><span style="color: #A626A4">]</span>
+
+<span style="color: #A626A4">&gt;</span><span> Decode.fromString </span><span style="color: #A626A4">(</span><span>Decode.index </span><span style="color: #986801">1</span><span> Decode.string</span><span style="color: #A626A4">)</span><span> </span><span style="color: #50A14F">&quot;&quot;&quot;[&quot;maxime&quot;, &quot;alfonso&quot;, &quot;steffen&quot;]&quot;&quot;&quot;</span>
+<span style="color: #A626A4">val</span><span> </span><span style="color: #E45649">it</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Result</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">string</span><span style="color: #A626A4">,</span><span> </span><span style="color: #C18401">string</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #383A42">Ok</span><span style="color: #A626A4">(</span><span>&quot;</span><span style="color: #383A42">alfonso</span><span>&quot;</span><span style="color: #A626A4">)</span></code></pre>
+<h3>Decoding Objects <a href="#Decoding-Objects" aria-hidden="true"><span class="anchor" id="Decoding-Objects"></span>#</a></h3>
+<p>In order to decode objects, you can use:</p>
+<ul>
+<li><code>field : string -&gt; Decoder&lt;'value&gt; -&gt; Decoder&lt;'value&gt;</code>
+<ul>
+<li>Decode a JSON object, requiring a particular field.</li>
+</ul>
+</li>
+<li><code>at : string list -&gt; Decoder&lt;'value&gt; -&gt; Decoder&lt;'value&gt;</code>
+<ul>
+<li>Decode a JSON object, requiring certain path.</li>
+</ul>
+</li>
+</ul>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A626A4">open</span><span> </span><span style="color: #4078F2">Thoth.Json</span>
+
+<span style="color: #A626A4">&gt;</span><span> Decode.fromString </span><span style="color: #A626A4">(</span><span>field </span><span style="color: #50A14F">&quot;x&quot;</span><span> int</span><span style="color: #A626A4">)</span><span> </span><span style="color: #50A14F">&quot;&quot;&quot;{&quot;x&quot;: 10, &quot;y&quot;: 21}&quot;&quot;&quot;</span>
+<span style="color: #A626A4">val</span><span> </span><span style="color: #E45649">it</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Result</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">int</span><span style="color: #A626A4">,</span><span> </span><span style="color: #C18401">string</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #383A42">Ok 10</span>
+
+<span style="color: #A626A4">&gt;</span><span> Decode.fromString </span><span style="color: #A626A4">(</span><span>field </span><span style="color: #50A14F">&quot;y&quot;</span><span> int</span><span style="color: #A626A4">)</span><span> </span><span style="color: #50A14F">&quot;&quot;&quot;{&quot;x&quot;: 10, &quot;y&quot;: 21}&quot;&quot;&quot;</span>
+<span style="color: #A626A4">val</span><span> </span><span style="color: #E45649">it</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Result</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">int</span><span style="color: #A626A4">,</span><span> </span><span style="color: #C18401">string</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #383A42">Ok 21</span></code></pre>
+<p><strong>Important:</strong></p>
+<p>These two decoders only take into account the provided field or path. The object can have other fields/paths with other content.</p>
+<h4>Map functions <a href="#Map-functions" aria-hidden="true"><span class="anchor" id="Map-functions"></span>#</a></h4>
+<p>To get data from several fields and convert them into a record you will need to use the <code>map</code> functions
+like <code>map2</code>, <code>map3</code>, ..., <code>map8</code>.</p>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A626A4">open</span><span> </span><span style="color: #4078F2">Thoth.Json</span>
+
+<span style="color: #A626A4">type</span><span> </span><span style="color: #C18401">Point</span><span> </span><span style="color: #A626A4">=</span>
+<span>    </span><span style="color: #A626A4">{</span><span> X </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">int</span>
+<span>      Y </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">int </span><span style="color: #A626A4">}</span>
+
+<span>    </span><span style="color: #A626A4">static member</span><span> </span><span style="color: #E45649">Decoder</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Decoder</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">Point</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span>
+<span>        Decode.map2 </span><span style="color: #A626A4">(fun</span><span style="color: #383A42"> x y </span><span style="color: #A626A4">-&gt;</span>
+<span>                </span><span style="color: #A626A4">{</span><span> X </span><span style="color: #A626A4">=</span><span> x</span>
+<span>                  Y </span><span style="color: #A626A4">=</span><span> y </span><span style="color: #A626A4">}</span><span> </span><span style="color: #A626A4">:</span><span> Point</span><span style="color: #A626A4">)</span>
+<span>             </span><span style="color: #A626A4">(</span><span>Decode.field </span><span style="color: #50A14F">&quot;x&quot;</span><span> Decode.int</span><span style="color: #A626A4">)</span>
+<span>             </span><span style="color: #A626A4">(</span><span>Decode.field </span><span style="color: #50A14F">&quot;y&quot;</span><span> Decode.int</span><span style="color: #A626A4">)</span>
+
+<span style="color: #A626A4">&gt;</span><span> Decode.fromString Point.Decoder </span><span style="color: #50A14F">&quot;&quot;&quot;{&quot;x&quot;: 10, &quot;y&quot;: 21}&quot;&quot;&quot;</span>
+<span style="color: #A626A4">val</span><span> </span><span style="color: #E45649">it</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Result</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">Point</span><span style="color: #A626A4">,</span><span> </span><span style="color: #C18401">string</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #383A42">Ok </span><span style="color: #A626A4">{</span><span> X </span><span style="color: #A626A4">=</span><span style="color: #383A42"> 10</span><span style="color: #A626A4">;</span><span> Y </span><span style="color: #A626A4">=</span><span style="color: #383A42"> 21 </span><span style="color: #A626A4">}</span></code></pre>
+<h4>Object builder style <a href="#Object-builder-style" aria-hidden="true"><span class="anchor" id="Object-builder-style"></span>#</a></h4>
+<p>When working with a larger object, you can use the object builder helper.</p>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A626A4">open</span><span> </span><span style="color: #4078F2">Thoth.Json</span>
+
+<span style="color: #A626A4">type</span><span> </span><span style="color: #C18401">User</span><span> </span><span style="color: #A626A4">=</span>
+<span>    </span><span style="color: #A626A4">{</span><span> Id </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">int</span>
+<span>      Name </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">string</span>
+<span>      Email </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">string</span>
+<span>      Followers </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">int </span><span style="color: #A626A4">}</span>
+
+<span>    </span><span style="color: #A626A4">static member</span><span> </span><span style="color: #E45649">Decoder</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Decoder</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">User</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span>
+<span>        Decode.object</span>
+<span>            </span><span style="color: #A626A4">(fun</span><span style="color: #383A42"> get </span><span style="color: #A626A4">-&gt;</span>
+<span>                </span><span style="color: #A626A4">{</span><span> Id </span><span style="color: #A626A4">=</span><span> get.Required.Field </span><span style="color: #50A14F">&quot;id&quot;</span><span> Decode.int</span>
+<span>                    Name </span><span style="color: #A626A4">=</span><span> get.Optional.Field </span><span style="color: #50A14F">&quot;name&quot;</span><span> Decode.string</span>
+<span>                            </span><span style="color: #A626A4">|&gt;</span><span> Option.defaultValue </span><span style="color: #50A14F">&quot;&quot;</span>
+<span>                    Email </span><span style="color: #A626A4">=</span><span> get.Required.Field </span><span style="color: #50A14F">&quot;email&quot;</span><span> Decode.string</span>
+<span>                    Followers </span><span style="color: #A626A4">=</span><span> </span><span style="color: #986801">0</span><span> </span><span style="color: #A626A4">}</span>
+<span>            </span><span style="color: #A626A4">)</span>
+
+<span style="color: #A626A4">&gt;</span><span> Decode.fromString User.Decoder </span><span style="color: #50A14F">&quot;&quot;&quot;{ &quot;id&quot;: 67, &quot;email&quot;: &quot;user@mail.com&quot; }&quot;&quot;&quot;</span>
+<span style="color: #A626A4">val</span><span> </span><span style="color: #E45649">it</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Result</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">User</span><span style="color: #A626A4">,</span><span> </span><span style="color: #C18401">string</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #383A42">Ok </span><span style="color: #A626A4">{</span><span> Id </span><span style="color: #A626A4">=</span><span style="color: #383A42"> 67</span><span style="color: #A626A4">;</span><span> Name </span><span style="color: #A626A4">=</span><span style="color: #383A42"> </span><span>&quot;&quot;</span><span style="color: #A626A4">;</span><span> Email </span><span style="color: #A626A4">=</span><span style="color: #383A42"> </span><span>&quot;user</span><span style="color: #A626A4">@</span><span>mail.com&quot;</span><span style="color: #A626A4">;</span><span> Followers </span><span style="color: #A626A4">=</span><span style="color: #383A42"> 0 </span><span style="color: #A626A4">}</span></code></pre>
+<h2>Encoder <a href="#Encoder" aria-hidden="true"><span class="anchor" id="Encoder"></span>#</a></h2>
+<p>Module for turning F# values into JSON values.</p>
+<p><em>This module is inspired by <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Json-Encode">Json.Encode from Elm</a>.</em></p>
+<h3>How to use it ? <a href="#How-to-use-it" aria-hidden="true"><span class="anchor" id="How-to-use-it"></span>#</a></h3>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span>    </span><span style="color: #A626A4">open</span><span> </span><span style="color: #4078F2">Thoth.Json</span>
+
+<span>    </span><span style="color: #A626A4">let</span><span> </span><span style="color: #E45649">person</span><span> </span><span style="color: #A626A4">=</span>
+<span>        Encode.object</span>
+<span>            </span><span style="color: #A626A4">[</span><span> </span><span style="color: #50A14F">&quot;firstname&quot;</span><span style="color: #A626A4">,</span><span> Encode.string </span><span style="color: #50A14F">&quot;maxime&quot;</span>
+<span>              </span><span style="color: #50A14F">&quot;surname&quot;</span><span style="color: #A626A4">,</span><span> Encode.string </span><span style="color: #50A14F">&quot;mangel&quot;</span>
+<span>              </span><span style="color: #50A14F">&quot;age&quot;</span><span style="color: #A626A4">,</span><span> Encode.int </span><span style="color: #986801">25</span>
+<span>              </span><span style="color: #50A14F">&quot;address&quot;</span><span style="color: #A626A4">,</span><span> Encode.object</span>
+<span>                            </span><span style="color: #A626A4">[</span><span> </span><span style="color: #50A14F">&quot;street&quot;</span><span style="color: #A626A4">,</span><span> Encode.string </span><span style="color: #50A14F">&quot;main street&quot;</span>
+<span>                              </span><span style="color: #50A14F">&quot;city&quot;</span><span style="color: #A626A4">,</span><span> Encode.string </span><span style="color: #50A14F">&quot;Bordeaux&quot;</span><span> </span><span style="color: #A626A4">]</span>
+<span>            </span><span style="color: #A626A4">]</span>
+
+<span>    </span><span style="color: #A626A4">let</span><span> </span><span style="color: #E45649">compact</span><span> </span><span style="color: #A626A4">=</span><span> Encode.toString </span><span style="color: #986801">0</span><span> person</span>
+<span>    </span><span style="color: #A0A1A7;font-style: italic">// {&quot;firstname&quot;:&quot;maxime&quot;,&quot;surname&quot;:&quot;mangel&quot;,&quot;age&quot;:25,&quot;address&quot;:{&quot;street&quot;:&quot;main street&quot;,&quot;city&quot;:&quot;Bordeaux&quot;}}</span>
+
+<span>    </span><span style="color: #A626A4">let</span><span> </span><span style="color: #E45649">readable</span><span> </span><span style="color: #A626A4">=</span><span> Encode.toString </span><span style="color: #986801">4</span><span> person</span>
+<span>    </span><span style="color: #A0A1A7;font-style: italic">// {</span>
+<span>    </span><span style="color: #A0A1A7;font-style: italic">//     &quot;firstname&quot;: &quot;maxime&quot;,</span>
+<span>    </span><span style="color: #A0A1A7;font-style: italic">//     &quot;surname&quot;: &quot;mangel&quot;,</span>
+<span>    </span><span style="color: #A0A1A7;font-style: italic">//     &quot;age&quot;: 25,</span>
+<span>    </span><span style="color: #A0A1A7;font-style: italic">//     &quot;address&quot;: {</span>
+<span>    </span><span style="color: #A0A1A7;font-style: italic">//         &quot;street&quot;: &quot;main street&quot;,</span>
+<span>    </span><span style="color: #A0A1A7;font-style: italic">//         &quot;city&quot;: &quot;Bordeaux&quot;</span>
+<span>    </span><span style="color: #A0A1A7;font-style: italic">//     }</span>
+<span>    </span><span style="color: #A0A1A7;font-style: italic">// }</span></code></pre>
+<h2>Auto coders <a href="#Auto-coders" aria-hidden="true"><span class="anchor" id="Auto-coders"></span>#</a></h2>
+<article class="message is-info">
+  <div class="message-body">
+<p>When using <strong>auto coders</strong>, we are referring to both <strong>auto encoder</strong> and <strong>auto decoders</strong>.</p>
+  </div>
+</article>
+<p>If your JSON structure is a one to one match with your F# type, you can use auto coders.</p>
+<h3>Auto encoder <a href="#Auto-encoder" aria-hidden="true"><span class="anchor" id="Auto-encoder"></span>#</a></h3>
+<p>Auto decoders will generate the decoder at runtime for you and still guarantee that the JSON structure is correct.</p>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">let</span><span> </span><span style="color: #E45649">json</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #50A14F">&quot;&quot;&quot;{ &quot;Id&quot; : 0, &quot;Name&quot;: &quot;maxime&quot;, &quot;Email&quot;: &quot;mail@domain.com&quot;, &quot;Followers&quot;: 0 }&quot;&quot;&quot;</span>
+<span style="color: #A626A4">&gt;</span><span> Decode.Auto.fromString</span><span style="color: #A626A4">&lt;</span><span>User</span><span style="color: #A626A4">&gt;(</span><span>json</span><span style="color: #A626A4">)</span>
+<span style="color: #A626A4">val</span><span> </span><span style="color: #E45649">it</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Result</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">User</span><span style="color: #A626A4">,</span><span> </span><span style="color: #C18401">string</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #383A42">Ok </span><span style="color: #A626A4">{</span><span> Id </span><span style="color: #A626A4">=</span><span style="color: #383A42"> 0</span><span style="color: #A626A4">;</span><span> Name </span><span style="color: #A626A4">=</span><span style="color: #383A42"> </span><span>&quot;maxime&quot;</span><span style="color: #A626A4">;</span><span> Email </span><span style="color: #A626A4">=</span><span style="color: #383A42"> </span><span>&quot;mail</span><span style="color: #A626A4">@</span><span>domain.com&quot;</span><span style="color: #A626A4">;</span><span> Followers </span><span style="color: #A626A4">=</span><span style="color: #383A42"> 0 </span><span style="color: #A626A4">}</span></code></pre>
+<p><code>Decode.Auto</code> helpers accept an optional argument <code>isCamelCase</code>:</p>
+<ul>
+<li>if <code>true</code>, then the keys in the JSON are considered <code>camelCase</code></li>
+<li>if <code>false</code>, then the keys in the JSON are considered <code>PascalCase</code></li>
+</ul>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">let</span><span> </span><span style="color: #E45649">json</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #50A14F">&quot;&quot;&quot;{ &quot;id&quot; : 0, &quot;name&quot;: &quot;maxime&quot;, &quot;email&quot;: &quot;mail@domain.com&quot;, &quot;followers&quot;: 0 }&quot;&quot;&quot;</span>
+<span style="color: #A626A4">&gt;</span><span> Decode.Auto.fromString</span><span style="color: #A626A4">&lt;</span><span>User</span><span style="color: #A626A4">&gt;(</span><span>json</span><span style="color: #A626A4">,</span><span> isCamelCase</span><span style="color: #A626A4">=</span><span style="color: #986801">true</span><span style="color: #A626A4">)</span>
+<span style="color: #A626A4">val</span><span> </span><span style="color: #E45649">it</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Result</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">User</span><span style="color: #A626A4">,</span><span> </span><span style="color: #C18401">string</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #383A42">Ok </span><span style="color: #A626A4">{</span><span> Id </span><span style="color: #A626A4">=</span><span style="color: #383A42"> 0</span><span style="color: #A626A4">;</span><span> Name </span><span style="color: #A626A4">=</span><span style="color: #383A42"> </span><span>&quot;maxime&quot;</span><span style="color: #A626A4">;</span><span> Email </span><span style="color: #A626A4">=</span><span style="color: #383A42"> </span><span>&quot;mail</span><span style="color: #A626A4">@</span><span>domain.com&quot;</span><span style="color: #A626A4">;</span><span> Followers </span><span style="color: #A626A4">=</span><span style="color: #383A42"> 0 </span><span style="color: #A626A4">}</span></code></pre>
+<h3>Auto encoder <a href="#Auto-encoder-2" aria-hidden="true"><span class="anchor" id="Auto-encoder-2"></span>#</a></h3>
+<p>Auto decoders will generate the encoder at runtime for you.</p>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A626A4">type</span><span> </span><span style="color: #C18401">User</span><span> </span><span style="color: #A626A4">=</span>
+<span>    </span><span style="color: #A626A4">{</span><span> Id </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">int</span>
+<span>      Name </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">string</span>
+<span>      Email </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">string</span>
+<span>      Followers </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">int </span><span style="color: #A626A4">}</span>
+
+<span style="color: #A626A4">let</span><span> </span><span style="color: #E45649">user</span><span> </span><span style="color: #A626A4">=</span>
+<span>    </span><span style="color: #A626A4">{</span><span> Id </span><span style="color: #A626A4">=</span><span> </span><span style="color: #986801">0</span>
+<span>      Name </span><span style="color: #A626A4">=</span><span> </span><span style="color: #50A14F">&quot;maxime&quot;</span>
+<span>      Email </span><span style="color: #A626A4">=</span><span> </span><span style="color: #50A14F">&quot;mail@domain.com&quot;</span>
+<span>      Followers </span><span style="color: #A626A4">=</span><span> </span><span style="color: #986801">0</span><span> </span><span style="color: #A626A4">}</span>
+
+<span style="color: #A626A4">let</span><span> </span><span style="color: #E45649">json</span><span> </span><span style="color: #A626A4">=</span><span> Encode.Auto.toString</span><span style="color: #A626A4">(</span><span style="color: #986801">4</span><span style="color: #A626A4">,</span><span> user</span><span style="color: #A626A4">)</span>
+<span style="color: #A0A1A7;font-style: italic">// {</span>
+<span style="color: #A0A1A7;font-style: italic">//     &quot;Id&quot;: 0,</span>
+<span style="color: #A0A1A7;font-style: italic">//     &quot;Name&quot;: &quot;maxime&quot;,</span>
+<span style="color: #A0A1A7;font-style: italic">//     &quot;Email&quot;: &quot;mail@domain.com&quot;,</span>
+<span style="color: #A0A1A7;font-style: italic">//     &quot;Followers&quot;: 0</span>
+<span style="color: #A0A1A7;font-style: italic">// }</span></code></pre>
+<h3>Extra coders <a href="#Extra-coders" aria-hidden="true"><span class="anchor" id="Extra-coders"></span>#</a></h3>
+<p>When generating an auto coder, sometimes you want to use a manual coder for a type nested in your domain hierarchy.</p>
+<p>In those cases you can pass <strong>extra coders</strong> that will replace the default (or missing) coders. Use the <code>Extra</code> module to build the map for extra coders (see example below).</p>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A626A4">let</span><span> </span><span style="color: #E45649">myExtraCoders</span><span> </span><span style="color: #A626A4">=</span>
+<span>    Extra.empty</span>
+<span>    </span><span style="color: #A626A4">|&gt;</span><span> Extra.withCustom MyType.Encode MyType.Decode</span></code></pre>
+<h3>Decoding int64, decimal or bigint <a href="#Decoding-int64-decimal-or-bigint" aria-hidden="true"><span class="anchor" id="Decoding-int64-decimal-or-bigint"></span>#</a></h3>
+<p>Coders for <code>int64</code>, <code>decimal</code> or <code>bigint</code> won't be automatically generated by default. If their were, the bundle size would increase significantly even if you don't use these types.</p>
+<p>If necessary, you can easily include them in your extra coders with the helpers in the <code>Extra</code> module:</p>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A626A4">let</span><span> </span><span style="color: #E45649">myExtraCoders</span><span> </span><span style="color: #A626A4">=</span>
+<span>    Extra.empty</span>
+<span>    </span><span style="color: #A626A4">|&gt;</span><span> Extra.withInt64</span>
+<span>    </span><span style="color: #A626A4">|&gt;</span><span> Extra.withDecimal</span>
+<span>    </span><span style="color: #A626A4">|&gt;</span><span> Extra.withCustom MyType.Encode MyType.Decode</span></code></pre>
+<h3>Caching <a href="#Caching" aria-hidden="true"><span class="anchor" id="Caching"></span>#</a></h3>
+<p>To avoid having to regenerate your auto coders every time you need them, you can use the helpers with the <code>Cached</code> suffix instead (please note in these cases you shouldn't change the value of extra parameters like <code>isCamelCase</code> or <code>extra</code>).</p>
+<p>The easiest way to do it is to include some helpers in your app to easily generate (or retrieve from cache) coders whenever you need them. For example:</p>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A0A1A7;font-style: italic">// Note the helpers must be inlined to resolve generic parameters in Fable</span>
+<span style="color: #A626A4">let inline</span><span> </span><span style="color: #E45649">encoder</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">&#039;T</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> Encode.Auto.generateEncoderCached</span><span style="color: #A626A4">&lt;</span><span>&#039;T</span><span style="color: #A626A4">&gt;(</span><span>isCamelCase </span><span style="color: #A626A4">=</span><span> </span><span style="color: #986801">true</span><span style="color: #A626A4">,</span><span> extra </span><span style="color: #A626A4">=</span><span> myExtraCoders</span><span style="color: #A626A4">)</span>
+<span style="color: #A626A4">let inline</span><span> </span><span style="color: #E45649">decoder</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">&#039;T</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span><span> Decode.Auto.generateDecoderCached</span><span style="color: #A626A4">&lt;</span><span>&#039;T</span><span style="color: #A626A4">&gt;(</span><span>isCamelCase </span><span style="color: #A626A4">=</span><span> </span><span style="color: #986801">true</span><span style="color: #A626A4">,</span><span> extra </span><span style="color: #A626A4">=</span><span> myExtraCoders</span><span style="color: #A626A4">)</span></code></pre>
+<p>Now you can easily invoke the helpers whenever you need a coder. Most of the times you can omit the generic argument as it will be inferred.</p>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A626A4">let</span><span> </span><span style="color: #E45649">demo</span><span style="color: #A626A4">(</span><span style="color: #383A42">x </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">RequestType</span><span style="color: #A626A4">)</span><span> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">ResponseType </span><span style="color: #A626A4">=</span>
+<span>    </span><span style="color: #A626A4">let</span><span> </span><span style="color: #E45649">requestJson</span><span> </span><span style="color: #A626A4">=</span><span> encoder x </span><span style="color: #A626A4">|&gt;</span><span> Encode.toString </span><span style="color: #986801">4</span>
+<span>    </span><span style="color: #A626A4">let</span><span> </span><span style="color: #E45649">responseJson</span><span> </span><span style="color: #A626A4">=</span><span> </span><span style="color: #A0A1A7;font-style: italic">(* Send JSON to server and receive response *)</span>
+<span>    Decode.unsafeFromString decoder responseJson</span></code></pre>
+<h2>.Net &amp; NetCore support <a href="#.Net-and-NetCore-support" aria-hidden="true"><span class="anchor" id=".Net-and-NetCore-support"></span>#</a></h2>
+<p>You can share your decoders and encoders <strong>between your client and server</strong>.</p>
+<p>In order to use Thoth.Json API on .Net or NetCore you need to use the <code>Thoth.Json.Net</code> package.</p>
+<h3>Code sample <a href="#Code-sample" aria-hidden="true"><span class="anchor" id="Code-sample"></span>#</a></h3>
+<pre style="background-color: #FAFAFA;color: ;padding: 1em"><code><span style="color: #A0A1A7;font-style: italic">// By adding this condition, you can share your code between your client and server</span>
+<span>#if FABLE</span><span style="color: #A626A4">_</span><span>COMPILER</span>
+<span style="color: #A626A4">open</span><span> </span><span style="color: #4078F2">Thoth.Json</span>
+<span>#else</span>
+<span style="color: #A626A4">open</span><span> </span><span style="color: #4078F2">Thoth.Json.Net</span>
+<span>#endif</span>
+
+<span style="color: #A626A4">type</span><span> </span><span style="color: #C18401">User</span><span> </span><span style="color: #A626A4">=</span>
+<span>    </span><span style="color: #A626A4">{</span><span> Id </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">int</span>
+<span>      Name </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">string</span>
+<span>      Email </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">string</span>
+<span>      Followers </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">int </span><span style="color: #A626A4">}</span>
+
+<span>    </span><span style="color: #A626A4">static member</span><span> </span><span style="color: #E45649">Decoder</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Decode.Decoder</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">User</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span>
+<span>        Decode.object</span>
+<span>            </span><span style="color: #A626A4">(fun</span><span style="color: #383A42"> get </span><span style="color: #A626A4">-&gt;</span>
+<span>                </span><span style="color: #A626A4">{</span><span> Id </span><span style="color: #A626A4">=</span><span> get.Required.Field </span><span style="color: #50A14F">&quot;id&quot;</span><span> Decode.int</span>
+<span>                    Name </span><span style="color: #A626A4">=</span><span> get.Optional.Field </span><span style="color: #50A14F">&quot;name&quot;</span><span> Decode.string</span>
+<span>                            </span><span style="color: #A626A4">|&gt;</span><span> Option.defaultValue </span><span style="color: #50A14F">&quot;&quot;</span>
+<span>                    Email </span><span style="color: #A626A4">=</span><span> get.Required.Field </span><span style="color: #50A14F">&quot;email&quot;</span><span> Decode.string</span>
+<span>                    Followers </span><span style="color: #A626A4">=</span><span> </span><span style="color: #986801">0</span><span> </span><span style="color: #A626A4">}</span>
+<span>            </span><span style="color: #A626A4">)</span>
+
+<span>    </span><span style="color: #A626A4">static member</span><span> </span><span style="color: #E45649">Encoder</span><span style="color: #383A42"> </span><span style="color: #A626A4">(</span><span style="color: #383A42">user </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">User</span><span style="color: #A626A4">)</span><span> </span><span style="color: #A626A4">=</span>
+<span>        Encode.object</span>
+<span>            </span><span style="color: #A626A4">[</span><span> </span><span style="color: #50A14F">&quot;id&quot;</span><span style="color: #A626A4">,</span><span> Encode.int user.Id</span>
+<span>              </span><span style="color: #50A14F">&quot;name&quot;</span><span style="color: #A626A4">,</span><span> Encode.string user.Name</span>
+<span>              </span><span style="color: #50A14F">&quot;email&quot;</span><span style="color: #A626A4">,</span><span> Encode.string user.Email</span>
+<span>              </span><span style="color: #50A14F">&quot;followers&quot;</span><span style="color: #A626A4">,</span><span> Encode.int user.Followers</span>
+<span>            </span><span style="color: #A626A4">]</span></code></pre>
+<h3>Giraffe <a href="#Giraffe" aria-hidden="true"><span class="anchor" id="Giraffe"></span>#</a></h3>
+<p>If you're using the <a href="https://github.com/giraffe-fsharp/Giraffe">Giraffe</a> or <a href="https://saturnframework.org/">Saturn</a> web servers, you can use the <code>Thoth.Json.Giraffe</code> package to enable automatic JSON serialization with Thoth in your responses. Check <a href="https://github.com/giraffe-fsharp/Giraffe/blob/master/DOCUMENTATION.md#using-a-different-json-serializer">how to add a custom serializer</a> to Giraffe.</p>
+<blockquote>
+<p>The <code>ThothSerializer</code> type also include some static helpers to deal with JSON directly for the request and response streams.</p>
+</blockquote>
+</div></div></section><div class="navigation-container"><button class="button is-outlined is-primary navigate-to-previous"><span class="icon"><i class=" fas fa-arrow-left"></i></span><span class="is-uppercase text">Previous</span></button><button class="button is-outlined is-primary navigate-to-next"><span class="is-uppercase text">Next</span><span class="icon"><i class=" fas fa-arrow-right"></i></span></button></div></div><div class="column full-height-scrollable-content toc-column is-hidden-touch is-2-desktop"><div><nav class="toc-container"><ul class="toc-headings"><div class="toc-label"><a href="#Decoder">Decoder</a></div><ul class="toc-headings"><li><a href="#What-is-a-Decoder">What is a Decoder ?</a></li><li><a href="#Primitives-decoders">Primitives decoders</a></li><li><a href="#Collections">Collections</a></li><li><a href="#Decoding-Objects">Decoding Objects</a><ul class="toc-headings"><li><a href="#Map-functions">Map functions</a></li><li><a href="#Object-builder-style">Object builder style</a></li></ul></li></ul></li><div class="toc-label"><a href="#Encoder">Encoder</a></div><ul class="toc-headings"><li><a href="#How-to-use-it">How to use it ?</a></li></ul></li><div class="toc-label"><a href="#Auto-coders">Auto coders</a></div><ul class="toc-headings"><li><a href="#Auto-encoder">Auto encoder</a></li><li><a href="#Auto-encoder-2">Auto encoder</a></li><li><a href="#Extra-coders">Extra coders</a></li><li><a href="#Decoding-int64-decimal-or-bigint">Decoding int64, decimal or bigint</a></li><li><a href="#Caching">Caching</a></li></ul></li><div class="toc-label"><a href="#.Net-and-NetCore-support">.Net & NetCore support</a></div><ul class="toc-headings"><li><a href="#Code-sample">Code sample</a></li><li><a href="#Giraffe">Giraffe</a></li></ul></li></ul></nav></div></div></div><div class="is-hidden-touch material-like-container is-for-desktop"><div class="material-like-button scroll-to-top"><span class="icon is-medium"><i class=" fas fa-angle-up fa-lg"></i></span></div></div><div class="is-hidden-desktop material-like-container is-for-touch"><div class="material-like-container-body"><div class="material-like-button toggle-toc"><span class="icon is-medium"><i class=" fas fa-ellipsis-v fa-lg"></i></span><div class="material-like-button-label">Table of content</div></div><div class="material-like-button scroll-to-top"><span class="icon is-medium"><i class=" fas fa-angle-up fa-lg"></i></span><div class="material-like-button-label">Scroll to top</div></div></div><div class="material-like-button close-open-button"><span class="icon is-medium"><i class=" fas fa-plus fa-lg"></i></span></div></div></div><script type="text/javascript">
+nacara.pageId = 'index';
+                                        </script><script type="text/javascript">window.addEventListener("DOMContentLoaded", () => {
+
+    const refContainer = document.querySelector(".toc-scrollable-container");
+
+    // Listener used to update the active section in the TOC
+    refContainer.addEventListener("scroll", () => {
+        const headers = document.querySelectorAll("h2, h3, h4");
+
+        // In order tof in the active section, we iterate over all the header
+        // from the bottom to the top.
+        // We take the first header that is "above" the top position of the window + 60px
+        const inversedHeaders =
+            [...headers]
+                .sort( (headerA, headerB) => {
+                    return headerB.getBoundingClientRect().top - headerA.getBoundingClientRect().top;
+                });
+
+        let activeHeader = null;
+
+        for (let index = 0; index < inversedHeaders.length; index++) {
+            const header = inversedHeaders[index];
+            if (header.getBoundingClientRect().top < 60) {
+                activeHeader = header;
+                break;
+            }
+        }
+
+
+        if (activeHeader === null)
+            return;
+
+        const anchorTag = activeHeader.querySelector("a").getAttribute("href");
+
+        // Make sure to remove `is-active` to all the TOC anchor elements
+        document
+            .querySelectorAll(".toc-container a")
+            .forEach(anchor => {
+                anchor.classList.remove("is-active");
+            });
+
+        // Set `is-active` to the current section
+        document
+            .querySelector(`.toc-container a[href="${anchorTag}"]`)
+            .classList.add("is-active");
+    });
+
+    document
+        .querySelector(".material-like-button.toggle-toc")
+        .addEventListener("click", () => {
+            document
+                .querySelector(".toc-container")
+                .classList.toggle("force-show");
+
+            document
+                .querySelector(".column.toc-column")
+                .classList.toggle("force-show");
+        });
+
+});
+</script><script type="text/javascript">window.addEventListener("DOMContentLoaded", () => {
+
+    const refContainer = document.querySelector(".toc-scrollable-container");
+
+    // Register scroll to top button
+    document
+        .querySelectorAll(".scroll-to-top")
+        .forEach(element => {
+            element.addEventListener("click", () => {
+                document
+                    .querySelector(".toc-scrollable-container")
+                    .scrollTo(0, 0);
+            });
+        });
+
+    // Listener used to update the position of TOC button at the bottom of the page
+    refContainer.addEventListener("scroll", () => {
+
+        // If we are at the end of the element
+        // Source: https://developer.mozilla.org/fr/docs/Web/API/Element/scrollHeight#D%C3%A9terminer_si_un_%C3%A9l%C3%A9ment_a_compl%C3%A8tement_%C3%A9t%C3%A9_d%C3%A9fil%C3%A9
+        if (refContainer.scrollTop > 30) {
+            document
+                .querySelector(".material-like-container.is-for-desktop")
+                .classList
+                .remove("hide");
+        } else {
+            document
+                .querySelector(".material-like-container.is-for-desktop")
+                .classList
+                .add("hide");
+        }
+    });
+
+    const bodyContainer = document.querySelector(".material-like-container.is-for-touch .material-like-container-body");
+
+    document
+        .querySelector(".material-like-button.close-open-button")
+        .addEventListener("click", () => {
+            bodyContainer.classList.toggle("show");
+            document
+                .querySelector(".material-like-button.close-open-button")
+                .classList.toggle("is-open");
+    });
+
+});
+</script></div></body></html>
