@@ -198,7 +198,27 @@ let publish = BuildTask.create "Publish" [ clean; dotnetRestore ] {
     pushNuget version projectFile
 }
 
-let _release = BuildTask.create "Release" [ publish ] {
+let buildDocs = BuildTask.create "BuildDocs" [ clean; yarnInstall ] {
+    Yarn.exec "nacara" id
+}
+
+Target.description "Start a local webserver allowing you to work on the docs site locally"
+let _watchDocs = BuildTask.create "WatchDocs" [ ] {
+    Yarn.exec "nacara --watch" id
+}
+
+Target.description "Publish a new version of the documentation on github"
+let publishDocs = BuildTask.create "PublishDocs" [ buildDocs ] {
+    let version = getLastVersion()
+    let versionRegex = Regex("version: \"(.*)\",", RegexOptions.IgnoreCase)
+
+    (versionRegex, "./nacara.js") ||> Util.replaceLines (fun line _ ->
+        versionRegex.Replace(line, "version: \"" + version + "\",") |> Some)
+
+    Yarn.exec "gh-pages -d docs_deploy" id
+}
+
+let _release = BuildTask.create "Release" [ publish; publishDocs ] {
     let version = getLastVersion()
 
     Git.Staging.stageAll root
@@ -224,24 +244,5 @@ let _release = BuildTask.create "Release" [ publish ] {
     |> Async.RunSynchronously
 }
 
-let buildDocs = BuildTask.create "BuildDocs" [ clean; yarnInstall ] {
-    Yarn.exec "nacara" id
-}
-
-Target.description "Start a local webserver allowing you to work on the docs site locally"
-let _watchDocs = BuildTask.create "WatchDocs" [ ] {
-    Yarn.exec "nacara --watch" id
-}
-
-Target.description "Publish a new version of the documentation on github"
-let _publishDocs = BuildTask.create "PublishDocs" [ buildDocs ] {
-    let version = getLastVersion()
-    let versionRegex = Regex("version: \"(.*)\",", RegexOptions.IgnoreCase)
-
-    (versionRegex, "./nacara.js") ||> Util.replaceLines (fun line _ ->
-        versionRegex.Replace(line, "version: \"" + version + "\",") |> Some)
-
-    Yarn.exec "gh-pages -d docs_deploy" id
-}
 
 BuildTask.runOrList ()
