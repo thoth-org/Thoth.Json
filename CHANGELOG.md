@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 3.4.1 - 2019-10-25
+
+### Changed
+
+* Fix #27: Add a note to the package description about runtime support
+
 ## 3.4.0 - 2019-10-24
 
 ### Added
