@@ -133,6 +133,8 @@ let pushNuget (newVersion: string) (projFile: string) =
         | Some nugetKey -> nugetKey
         | None -> failwith "The Nuget API key must be set in a NUGET_KEY environmental variable"
 
+    let needsPublishing = needsPublishing versionRegex newVersion projFile
+
     (versionRegex, projFile) ||> Util.replaceLines (fun line _ ->
         versionRegex.Replace(line, "<Version>" + newVersion + "</Version>") |> Some)
 
@@ -142,7 +144,7 @@ let pushNuget (newVersion: string) (projFile: string) =
             Common = { p.Common with DotNetCliPath = "dotnet" } } )
         projFile
 
-    if needsPublishing versionRegex newVersion projFile then
+    if needsPublishing then
         let files =
             Directory.GetFiles(projDir </> "bin" </> "Release", "*.nupkg")
             |> Array.find (fun nupkg -> nupkg.Contains(newVersion))
