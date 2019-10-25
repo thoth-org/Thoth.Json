@@ -266,3 +266,5 @@ temp/
 demos/Thoth\.Elmish\.Demo/output/
 
 \.ionide/
+
+docs_deploy/

@@ -6,12 +6,15 @@ storage:none
 nuget Fable.Core
 nuget FSharp.Core redirects:force
 
+group Grammars
+    github akamud/vscode-theme-onelight themes/OneLight.json
+    github ionide/ionide-fsgrammar grammar/fsharp.json
+
 group netcorebuild
     source https://www.nuget.org/api/v2
     framework: netstandard2.0
     storage:none
 
-    clitool dotnet-fake
     nuget System.Reactive.Compatibility
     nuget Fake.DotNet.Cli
     nuget Fake.DotNet.Paket
@@ -23,3 +26,4 @@ group netcorebuild
     nuget Fake.Tools.Git
     nuget Fake.JavaScript.Yarn
     nuget Fake.Api.GitHub
+    nuget BlackFox.Fake.BuildTask

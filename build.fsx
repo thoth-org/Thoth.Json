@@ -19,6 +19,7 @@ open Fake.IO.FileSystemOperators
 open Fake.Tools
 open Fake.Api
 open Fake.JavaScript
+open BlackFox.Fake
 
 let versionFromGlobalJson : DotNet.CliInstallOptions -> DotNet.CliInstallOptions = (fun o ->
         { o with Version = DotNet.Version (DotNet.getSDKVersionFromGlobalJson()) }
@@ -76,33 +77,6 @@ let run (cmd:string) dir args  =
     |> Proc.run
     |> ignore
 
-Target.create "Clean" (fun _ ->
-    !! "src/**/bin"
-    ++ "src/**/obj"
-    ++ "tests/**/bin"
-    ++ "tests/**/obj"
-    |> Shell.cleanDirs
-)
-
-Target.create "YarnInstall"(fun _ ->
-    Yarn.install id
-)
-
-Target.create "DotnetRestore" (fun _ ->
-    DotNet.restore id projectFile
-    DotNet.restore id testsFile
-)
-
-Target.create "MochaTest" (fun _ ->
-    let projDir = testsFile |> Path.getDirectory
-    let configFile = projDir </> "splitter.config.js"
-    //Compile to JS
-    Yarn.exec ("fable-splitter -c " + configFile) id
-
-    //Run mocha tests
-    let projDirOutput = projDir </> "bin"
-    Yarn.exec ("run mocha " + projDirOutput) id
-)
 
 let needsPublishing (versionRegex: Regex) (newVersion: string) projFile =
     printfn "Project: %s" projFile
@@ -190,12 +164,41 @@ let getNotes (version : string) =
         not m.Success
     )
 
-Target.create "Publish" (fun _ ->
+let clean = BuildTask.create "Clean" [] {
+    !! "src/**/bin"
+    ++ "src/**/obj"
+    ++ "tests/**/bin"
+    ++ "tests/**/obj"
+    ++ "docs_deploy"
+    |> Shell.cleanDirs
+}
+
+let yarnInstall = BuildTask.create "YarnInstall" [ ] {
+    Yarn.install id
+}
+
+let dotnetRestore = BuildTask.create "DotnetRestore" [ clean.IfNeeded ] {
+    DotNet.restore id projectFile
+    DotNet.restore id testsFile
+}
+
+let mochaTest = BuildTask.create "MochaTest" [ clean.IfNeeded; yarnInstall; dotnetRestore ] {
+    let projDir = testsFile |> Path.getDirectory
+    let configFile = projDir </> "splitter.config.js"
+    //Compile to JS
+    Yarn.exec ("fable-splitter -c " + configFile) id
+
+    //Run mocha tests
+    let projDirOutput = projDir </> "bin"
+    Yarn.exec ("run mocha " + projDirOutput) id
+}
+
+let publish = BuildTask.create "Publish" [ clean; dotnetRestore ] {
     let version = getLastVersion()
     pushNuget version projectFile
-)
+}
 
-Target.create "Release" (fun _ ->
+let _release = BuildTask.create "Release" [ publish ] {
     let version = getLastVersion()
 
     Git.Staging.stageAll root
@@ -219,13 +222,26 @@ Target.create "Release" (fun _ ->
     // |> GitHub.uploadFile nupkg
     |> GitHub.publishDraft
     |> Async.RunSynchronously
-)
+}
 
-"Clean"
-    ==> "YarnInstall"
-    ==> "DotnetRestore"
-    ==> "MochaTest"
-    ==> "Publish"
-    ==> "Release"
+let buildDocs = BuildTask.create "BuildDocs" [ clean; yarnInstall ] {
+    Yarn.exec "nacara" id
+}
 
-Target.runOrDefault "MochaTest"
+Target.description "Start a local webserver allowing you to work on the docs site locally"
+let _watchDocs = BuildTask.create "WatchDocs" [ ] {
+    Yarn.exec "nacara --watch" id
+}
+
+Target.description "Publish a new version of the documentation on github"
+let _publishDocs = BuildTask.create "PublishDocs" [ buildDocs ] {
+    let version = getLastVersion()
+    let versionRegex = Regex("version: \"(.*)\",", RegexOptions.IgnoreCase)
+
+    (versionRegex, "./nacara.js") ||> Util.replaceLines (fun line _ ->
+        versionRegex.Replace(line, "version: \"" + version + "\",") |> Some)
+
+    Yarn.exec "gh-pages -d docs_deploy" id
+}
+
+BuildTask.runOrList ()
