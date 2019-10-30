@@ -10,7 +10,7 @@ strategy:
     mac:
       imageName: 'macos-10.14'
     windows:
-      imageName: 'vs2017-win2016'
+      imageName: 'vs2017-win2019'
 
 trigger:
 - master
