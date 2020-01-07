@@ -1,5 +1,6 @@
 
 namespace Thoth.Json
+open System.Text.RegularExpressions
 
 [<RequireQualifiedAccess>]
 module Decode =
@@ -1026,7 +1027,7 @@ module Decode =
                 | Error _ -> acc
                 | Ok result -> decoder path value |> Result.map (fun v -> v::result))
 
-    let rec private makeUnion extra isCamelCase t name (path : string) (values: JsonValue[]) =
+    let rec private makeUnion extra caseStrategy t name (path : string) (values: JsonValue[]) =
         let uci =
             FSharpType.GetUnionCases(t, allowAccessToPrivateRepresentation=true)
             |> Array.tryFind (fun x -> x.Name = name)
@@ -1036,11 +1037,11 @@ module Decode =
             if values.Length = 0 then
                 FSharpValue.MakeUnion(uci, [||], allowAccessToPrivateRepresentation=true) |> Ok
             else
-                let decoders = uci.GetFields() |> Array.map (fun fi -> autoDecoder extra isCamelCase false fi.PropertyType)
+                let decoders = uci.GetFields() |> Array.map (fun fi -> autoDecoder extra caseStrategy false fi.PropertyType)
                 mixedArray "union fields" decoders path values
                 |> Result.map (fun values -> FSharpValue.MakeUnion(uci, List.toArray values, allowAccessToPrivateRepresentation=true))
 
-    and private autoDecodeRecordsAndUnions extra (isCamelCase : bool) (isOptional : bool) (t: System.Type) : BoxedDecoder =
+    and private autoDecodeRecordsAndUnions extra (caseStrategy : CaseStrategy) (isOptional : bool) (t: System.Type) : BoxedDecoder =
         // Add the decoder to extra in case one of the fields is recursive
         let decoderRef = ref Unchecked.defaultof<_>
         let extra = extra |> Map.add t.FullName decoderRef
@@ -1050,9 +1051,9 @@ module Decode =
                     FSharpType.GetRecordFields(t, allowAccessToPrivateRepresentation=true)
                     |> Array.map (fun fi ->
                         let name =
-                            if isCamelCase then fi.Name.[..0].ToLowerInvariant() + fi.Name.[1..]
+                            if caseStrategy = CamelCase then fi.Name.[..0].ToLowerInvariant() + fi.Name.[1..]
                             else fi.Name
-                        name, autoDecoder extra isCamelCase false fi.PropertyType)
+                        name, autoDecoder extra caseStrategy false fi.PropertyType)
                 fun path value ->
                     autoObject decoders path value
                     |> Result.map (fun xs -> FSharpValue.MakeRecord(t, List.toArray xs, allowAccessToPrivateRepresentation=true))
@@ -1061,11 +1062,11 @@ module Decode =
                 fun path (value: JsonValue) ->
                     if Helpers.isString(value) then
                         let name = Helpers.asString value
-                        makeUnion extra isCamelCase t name path [||]
+                        makeUnion extra caseStrategy t name path [||]
                     elif Helpers.isArray(value) then
                         let values = Helpers.asArray value
                         let name = Helpers.asString values.[0]
-                        makeUnion extra isCamelCase t name path values.[1..]
+                        makeUnion extra caseStrategy t name path values.[1..]
                     else (path, BadPrimitive("a string or array", value)) |> Error
 
             else
@@ -1080,13 +1081,13 @@ module Decode =
         decoderRef := decoder
         decoder
 
-    and private autoDecoder (extra: Map<string, ref<BoxedDecoder>>) isCamelCase (isOptional : bool) (t: System.Type) : BoxedDecoder =
+    and private autoDecoder (extra: Map<string, ref<BoxedDecoder>>) caseStrategy (isOptional : bool) (t: System.Type) : BoxedDecoder =
       let fullname = t.FullName
       match Map.tryFind fullname extra with
       | Some decoderRef -> fun path value -> decoderRef.contents path value
       | None ->
         if t.IsArray then
-            let decoder = t.GetElementType() |> autoDecoder extra isCamelCase false
+            let decoder = t.GetElementType() |> autoDecoder extra caseStrategy false
             array decoder |> boxDecoder
         elif t.IsEnum then
             let enumType = System.Enum.GetUnderlyingType(t).FullName
@@ -1116,7 +1117,7 @@ If you can't use one of these types, please pass an extra decoder.
                     """ t.FullName
         elif t.IsGenericType then
             if FSharpType.IsTuple(t) then
-                let decoders = FSharpType.GetTupleElements(t) |> Array.map (autoDecoder extra isCamelCase false)
+                let decoders = FSharpType.GetTupleElements(t) |> Array.map (autoDecoder extra caseStrategy false)
                 fun path value ->
                     if Helpers.isArray value then
                         mixedArray "tuple elements" decoders path (Helpers.asArray value)
@@ -1125,27 +1126,27 @@ If you can't use one of these types, please pass an extra decoder.
             else
                 let fullname = t.GetGenericTypeDefinition().FullName
                 if fullname = typedefof<obj option>.FullName then
-                    t.GenericTypeArguments.[0] |> (autoDecoder extra isCamelCase true) |> option |> boxDecoder
+                    t.GenericTypeArguments.[0] |> (autoDecoder extra caseStrategy true) |> option |> boxDecoder
                 elif fullname = typedefof<obj list>.FullName then
-                    t.GenericTypeArguments.[0] |> (autoDecoder extra isCamelCase false) |> list |> boxDecoder
+                    t.GenericTypeArguments.[0] |> (autoDecoder extra caseStrategy false) |> list |> boxDecoder
                 // Disable seq support because I don't know how to implement it on Thoth.Json.Net side
                 // elif fullname = typedefof<obj seq>.FullName then
-                //     t.GenericTypeArguments.[0] |> (autoDecoder extra isCamelCase false) |> seq |> boxDecoder
+                //     t.GenericTypeArguments.[0] |> (autoDecoder extra caseStrategy false) |> seq |> boxDecoder
                 elif fullname = typedefof< Map<string, obj> >.FullName then
-                    let keyDecoder = t.GenericTypeArguments.[0] |> autoDecoder extra isCamelCase false
-                    let valueDecoder = t.GenericTypeArguments.[1] |> autoDecoder extra isCamelCase false
+                    let keyDecoder = t.GenericTypeArguments.[0] |> autoDecoder extra caseStrategy false
+                    let valueDecoder = t.GenericTypeArguments.[1] |> autoDecoder extra caseStrategy false
                     oneOf [
                         autoObject2 keyDecoder valueDecoder
                         list (tuple2 keyDecoder valueDecoder)
                     ] |> map (fun ar -> toMap (unbox ar) |> box)
                 elif fullname = typedefof< Set<string> >.FullName then
-                    let decoder = t.GenericTypeArguments.[0] |> autoDecoder extra isCamelCase false
+                    let decoder = t.GenericTypeArguments.[0] |> autoDecoder extra caseStrategy false
                     fun path value ->
                         match array decoder path value with
                         | Error er -> Error er
                         | Ok ar -> toSet (unbox ar) |> box |> Ok
                 else
-                    autoDecodeRecordsAndUnions extra isCamelCase isOptional t
+                    autoDecodeRecordsAndUnions extra caseStrategy isOptional t
         else
             if fullname = typeof<bool>.FullName then
                 boxDecoder bool
@@ -1190,7 +1191,7 @@ If you can't use one of these types, please pass an extra decoder.
                 boxDecoder guid
             elif fullname = typeof<obj>.FullName then
                 fun _ v -> Ok v
-            else autoDecodeRecordsAndUnions extra isCamelCase isOptional t
+            else autoDecodeRecordsAndUnions extra caseStrategy isOptional t
 
     let private makeExtra (extra: ExtraCoders option) =
         match extra with
@@ -1198,29 +1199,29 @@ If you can't use one of these types, please pass an extra decoder.
         | Some e -> Map.map (fun _ (_,dec) -> ref dec) e.Coders
 
     type Auto =
-        static member generateDecoderCached<'T>(?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Decoder<'T> =
+        static member generateDecoderCached<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Decoder<'T> =
             let t = Util.resolveType resolver
-            let isCamelCase = defaultArg isCamelCase false
+            let caseStrategy = defaultArg caseStrategy PascalCase
 
             let key =
                 t.FullName
-                |> (+) (Operators.string isCamelCase)
+                |> (+) (Operators.string caseStrategy)
                 |> (+) (extra |> Option.map (fun e -> e.Hash) |> Option.defaultValue "")
 
             Util.CachedDecoders.GetOrAdd(key, fun _ ->
-                autoDecoder (makeExtra extra) isCamelCase false t) |> unboxDecoder
+                autoDecoder (makeExtra extra) caseStrategy false t) |> unboxDecoder
 
-        static member generateDecoder<'T>(?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Decoder<'T> =
-            let isCamelCase = defaultArg isCamelCase false
+        static member generateDecoder<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Decoder<'T> =
+            let caseStrategy = defaultArg caseStrategy PascalCase
             Util.resolveType resolver
-            |> autoDecoder (makeExtra extra) isCamelCase false |> unboxDecoder
+            |> autoDecoder (makeExtra extra) caseStrategy false |> unboxDecoder
 
-        static member fromString<'T>(json: string, ?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Result<'T, string> =
-            let decoder = Auto.generateDecoder(?isCamelCase=isCamelCase, ?extra=extra, ?resolver=resolver)
+        static member fromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Result<'T, string> =
+            let decoder = Auto.generateDecoder(?caseStrategy=caseStrategy, ?extra=extra, ?resolver=resolver)
             fromString decoder json
 
-        static member unsafeFromString<'T>(json: string, ?isCamelCase : bool, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): 'T =
-            let decoder = Auto.generateDecoder(?isCamelCase=isCamelCase, ?extra=extra, ?resolver=resolver)
+        static member unsafeFromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): 'T =
+            let decoder = Auto.generateDecoder(?caseStrategy=caseStrategy, ?extra=extra, ?resolver=resolver)
             match fromString decoder json with
             | Ok x -> x
             | Error msg -> failwith msg

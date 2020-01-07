@@ -12,6 +12,10 @@ type ErrorReason =
     | FailMessage of string
     | BadOneOf of string list
 
+type CaseStrategy =
+    | PascalCase
+    | CamelCase
+
 type DecoderError = string * ErrorReason
 
 type Decoder<'T> = string -> JsonValue -> Result<'T, DecoderError>

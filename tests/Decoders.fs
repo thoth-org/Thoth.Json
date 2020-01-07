@@ -2658,7 +2658,7 @@ Reason: Unkown value provided for the enum
 
             testCase "Auto.unsafeFromString works with camelCase" <| fun _ ->
                 let json = """{ "id" : 0, "name": "maxime", "email": "mail@domain.com", "followers": 0 }"""
-                let user = Decode.Auto.unsafeFromString<User>(json, isCamelCase=true)
+                let user = Decode.Auto.unsafeFromString<User>(json, caseStrategy=CamelCase)
                 equal "maxime" user.Name
                 equal 0 user.Id
                 equal 0 user.Followers
@@ -2666,13 +2666,13 @@ Reason: Unkown value provided for the enum
 
             testCase "Auto.fromString works with camelCase" <| fun _ ->
                 let json = """{ "id" : 0, "name": "maxime", "email": "mail@domain.com", "followers": 0 }"""
-                let user = Decode.Auto.fromString<User>(json, isCamelCase=true)
+                let user = Decode.Auto.fromString<User>(json, caseStrategy=CamelCase)
                 let expected = Ok { Id = 0; Name = "maxime"; Email = "mail@domain.com"; Followers = 0 }
                 equal expected user
 
             testCase "Auto.fromString works for records with an actual value for the optional field value" <| fun _ ->
                 let json = """{ "maybe" : "maybe value", "must": "must value"}"""
-                let actual = Decode.Auto.fromString<TestMaybeRecord>(json, isCamelCase=true)
+                let actual = Decode.Auto.fromString<TestMaybeRecord>(json, caseStrategy=CamelCase)
                 let expected =
                     Ok ({ Maybe = Some "maybe value"
                           Must = "must value" } : TestMaybeRecord)
@@ -2680,7 +2680,7 @@ Reason: Unkown value provided for the enum
 
             testCase "Auto.fromString works for records with `null` for the optional field value" <| fun _ ->
                 let json = """{ "maybe" : null, "must": "must value"}"""
-                let actual = Decode.Auto.fromString<TestMaybeRecord>(json, isCamelCase=true)
+                let actual = Decode.Auto.fromString<TestMaybeRecord>(json, caseStrategy=CamelCase)
                 let expected =
                     Ok ({ Maybe = None
                           Must = "must value" } : TestMaybeRecord)
@@ -2688,7 +2688,7 @@ Reason: Unkown value provided for the enum
 
             testCase "Auto.fromString works for records with `null` for the optional field value on classes" <| fun _ ->
                 let json = """{ "maybeClass" : null, "must": "must value"}"""
-                let actual = Decode.Auto.fromString<RecordWithOptionalClass>(json, isCamelCase=true)
+                let actual = Decode.Auto.fromString<RecordWithOptionalClass>(json, caseStrategy=CamelCase)
                 let expected =
                     Ok ({ MaybeClass = None
                           Must = "must value" } : RecordWithOptionalClass)
@@ -2696,7 +2696,7 @@ Reason: Unkown value provided for the enum
 
             testCase "Auto.fromString works for records missing optional field value on classes" <| fun _ ->
                 let json = """{ "must": "must value"}"""
-                let actual = Decode.Auto.fromString<RecordWithOptionalClass>(json, isCamelCase=true)
+                let actual = Decode.Auto.fromString<RecordWithOptionalClass>(json, caseStrategy=CamelCase)
                 let expected =
                     Ok ({ MaybeClass = None
                           Must = "must value" } : RecordWithOptionalClass)
@@ -2706,7 +2706,7 @@ Reason: Unkown value provided for the enum
                 let expected = "Cannot generate auto decoder for Tests.Types.BaseClass. Please pass an extra decoder."
                 let errorMsg =
                     try
-                        let decoder = Decode.Auto.generateDecoder<RecordWithRequiredClass>(isCamelCase=true)
+                        let decoder = Decode.Auto.generateDecoder<RecordWithRequiredClass>(caseStrategy=CamelCase)
                         ""
                     with ex ->
                         ex.Message
@@ -2715,7 +2715,7 @@ Reason: Unkown value provided for the enum
             testCase "Auto.fromString works for Class marked as optional" <| fun _ ->
                 let json = """null"""
 
-                let actual = Decode.Auto.fromString<BaseClass option>(json, isCamelCase=true)
+                let actual = Decode.Auto.fromString<BaseClass option>(json, caseStrategy=CamelCase)
                 let expected = Ok None
                 equal expected actual
 
@@ -2723,7 +2723,7 @@ Reason: Unkown value provided for the enum
                 let expected = "Cannot generate auto decoder for Tests.Types.BaseClass. Please pass an extra decoder."
                 let errorMsg =
                     try
-                        let decoder = Decode.Auto.generateDecoder<BaseClass>(isCamelCase=true)
+                        let decoder = Decode.Auto.generateDecoder<BaseClass>(caseStrategy=CamelCase)
                         ""
                     with ex ->
                         ex.Message
@@ -2731,7 +2731,7 @@ Reason: Unkown value provided for the enum
 
             testCase "Auto.fromString works for records missing an optional field" <| fun _ ->
                 let json = """{ "must": "must value"}"""
-                let actual = Decode.Auto.fromString<TestMaybeRecord>(json, isCamelCase=true)
+                let actual = Decode.Auto.fromString<TestMaybeRecord>(json, caseStrategy=CamelCase)
                 let expected =
                     Ok ({ Maybe = None
                           Must = "must value" } : TestMaybeRecord)
@@ -2763,19 +2763,19 @@ Reason: Unkown value provided for the enum
 
             testCase "Auto.fromString works with records with private constructors" <| fun _ ->
                 let json = """{ "foo1": 5, "foo2": 7.8 }"""
-                Decode.Auto.fromString(json, isCamelCase=true)
+                Decode.Auto.fromString(json, caseStrategy=CamelCase)
                 |> equal (Ok ({ Foo1 = 5; Foo2 = 7.8 }: RecordWithPrivateConstructor))
 
             testCase "Auto.fromString works with unions with private constructors" <| fun _ ->
                 let json = """[ "Baz", ["Bar", "foo"]]"""
-                Decode.Auto.fromString<UnionWithPrivateConstructor list>(json, isCamelCase=true)
+                Decode.Auto.fromString<UnionWithPrivateConstructor list>(json, caseStrategy=CamelCase)
                 |> equal (Ok [Baz; Bar "foo"])
 
             testCase "Auto.generateDecoderCached works" <| fun _ ->
                 let expected = Ok { Id = 0; Name = "maxime"; Email = "mail@domain.com"; Followers = 0 }
                 let json = """{ "id" : 0, "name": "maxime", "email": "mail@domain.com", "followers": 0 }"""
-                let decoder1 = Decode.Auto.generateDecoderCached<User>(isCamelCase=true)
-                let decoder2 = Decode.Auto.generateDecoderCached<User>(isCamelCase=true)
+                let decoder1 = Decode.Auto.generateDecoderCached<User>(caseStrategy=CamelCase)
+                let decoder2 = Decode.Auto.generateDecoderCached<User>(caseStrategy=CamelCase)
                 let actual1 = Decode.fromString decoder1 json
                 let actual2 = Decode.fromString decoder2 json
                 equal expected actual1

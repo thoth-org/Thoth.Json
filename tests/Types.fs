@@ -306,3 +306,5 @@ type TestStringWithHTML =
         FeedName : string
         Content : string
     }
+
+type RecordForCharacterCase = { One : int; TwoPart : int; ThreePartField : int }

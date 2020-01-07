@@ -425,7 +425,7 @@ let tests : Test =
                       Email = "mail@test.com"
                       followers = 33 }
 
-                let actual = Encode.Auto.toString(0, value, true)
+                let actual = Encode.Auto.toString(0, value, CamelCase)
                 equal expected actual
 
             testCase "Encode.Auto.generateEncoder works" <| fun _ ->
@@ -529,13 +529,13 @@ let tests : Test =
             testCase "Encode.Auto.toString works with records with private constructors" <| fun _ ->
                 let expected = """{"foo1":5,"foo2":7.8}"""
                 let x = { Foo1 = 5; Foo2 = 7.8 }: RecordWithPrivateConstructor
-                Encode.Auto.toString(0, x, isCamelCase=true)
+                Encode.Auto.toString(0, x, caseStrategy=CamelCase)
                 |> equal expected
 
             testCase "Encode.Auto.toString works with unions with private constructors" <| fun _ ->
                 let expected = """["Baz",["Bar","foo"]]"""
                 let x = [Baz; Bar "foo"]
-                Encode.Auto.toString(0, x, isCamelCase=true)
+                Encode.Auto.toString(0, x, caseStrategy=CamelCase)
                 |> equal expected
 
             testCase "Encode.Auto.toString works with strange types if they are None" <| fun _ ->
