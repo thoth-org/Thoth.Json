@@ -2664,6 +2664,12 @@ Reason: Unkown value provided for the enum
                 equal 0 user.Followers
                 equal "mail@domain.com" user.Email
 
+            testCase "Auto.fromString works with snake_case" <| fun _ ->
+                let json = """{ "one" : 1, "two_part": 2, "three_part_field": 3 }"""
+                let decoded = Decode.Auto.fromString<RecordForCharacterCase>(json, caseStrategy=SnakeCase)
+                let expected = Ok { One = 1; TwoPart = 2; ThreePartField = 3 }
+                equal expected decoded
+
             testCase "Auto.fromString works with camelCase" <| fun _ ->
                 let json = """{ "id" : 0, "name": "maxime", "email": "mail@domain.com", "followers": 0 }"""
                 let user = Decode.Auto.fromString<User>(json, caseStrategy=CamelCase)

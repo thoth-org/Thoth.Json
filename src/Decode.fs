@@ -1049,10 +1049,8 @@ module Decode =
             if FSharpType.IsRecord(t, allowAccessToPrivateRepresentation=true) then
                 let decoders =
                     FSharpType.GetRecordFields(t, allowAccessToPrivateRepresentation=true)
-                    |> Array.map (fun fi ->
-                        let name =
-                            if caseStrategy = CamelCase then fi.Name.[..0].ToLowerInvariant() + fi.Name.[1..]
-                            else fi.Name
+                    |> Array.map (fun fi -> 
+                        let name = Util.Casing.convert caseStrategy fi.Name
                         name, autoDecoder extra caseStrategy false fi.PropertyType)
                 fun path value ->
                     autoObject decoders path value

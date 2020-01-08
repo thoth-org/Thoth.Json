@@ -1,4 +1,5 @@
 namespace Thoth.Json
+open System.Text.RegularExpressions
 
 [<RequireQualifiedAccess>]
 module Encode =
@@ -392,9 +393,7 @@ module Encode =
                 let setters =
                     FSharpType.GetRecordFields(t, allowAccessToPrivateRepresentation=true)
                     |> Array.map (fun fi ->
-                        let targetKey =
-                            if caseStrategy = CamelCase then fi.Name.[..0].ToLowerInvariant() + fi.Name.[1..]
-                            else fi.Name
+                        let targetKey = Util.Casing.convert caseStrategy fi.Name
                         let encode = autoEncoder extra caseStrategy skipNullField fi.PropertyType
                         fun (source: obj) (target: JsonValue) ->
                             let value = FSharpValue.GetRecordField(source, fi)
