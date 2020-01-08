@@ -237,10 +237,11 @@ Auto decoders will generate the decoder at runtime for you and still guarantee t
 val it : Result<User, string> = Ok { Id = 0; Name = "maxime"; Email = "mail@domain.com"; Followers = 0 }
 ```
 
-`Decode.Auto` helpers accept an optional argument `isCamelCase`:
+`Decode.Auto` helpers accept an optional argument `caseStrategy` that applies to keys:
 
-- if `true`, then the keys in the JSON are considered `camelCase`
-- if `false`, then the keys in the JSON are considered `PascalCase`
+- `CamelCase`, then the keys in the JSON are considered `camelCase`
+- `PascalCase`, then the keys in the JSON are considered `PascalCase`
+- `SnakeCase`, then the keys in the JSON are considered `snake_cases`
 
 ```fsharp
 > let json = """{ "id" : 0, "name": "maxime", "email": "mail@domain.com", "followers": 0 }"""
@@ -302,14 +303,14 @@ let myExtraCoders =
 
 ### Caching
 
-To avoid having to regenerate your auto coders every time you need them, you can use the helpers with the `Cached` suffix instead (please note in these cases you shouldn't change the value of extra parameters like `isCamelCase` or `extra`).
+To avoid having to regenerate your auto coders every time you need them, you can use the helpers with the `Cached` suffix instead (please note in these cases you shouldn't change the value of extra parameters like `caseStrategy` or `extra`).
 
 The easiest way to do it is to include some helpers in your app to easily generate (or retrieve from cache) coders whenever you need them. For example:
 
 ```fsharp
 // Note the helpers must be inlined to resolve generic parameters in Fable
-let inline encoder<'T> = Encode.Auto.generateEncoderCached<'T>(isCamelCase = true, extra = myExtraCoders)
-let inline decoder<'T> = Decode.Auto.generateDecoderCached<'T>(isCamelCase = true, extra = myExtraCoders)
+let inline encoder<'T> = Encode.Auto.generateEncoderCached<'T>(caseStrategy = CamelCase, extra = myExtraCoders)
+let inline decoder<'T> = Decode.Auto.generateDecoderCached<'T>(caseStrategy = CamelCase, extra = myExtraCoders)
 ```
 
 Now you can easily invoke the helpers whenever you need a coder. Most of the times you can omit the generic argument as it will be inferred.
