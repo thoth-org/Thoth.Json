@@ -10,7 +10,7 @@ module.exports = {
     editUrl: "https://github.com/thoth-org/Thoth.Json/edit/master/docs",
     title: "Thoth.Json",
     debug: true,
-    version: "3.4.1",
+    version: "3.5.0",
     navbar: {
         showVersion: true,
         links: [
