@@ -8,6 +8,7 @@ This documentation is for `Thoth.Json` v3, documentation for older versions can 
 
 - [Thoth.Json v1](/Thoth.Json/legacy/v1.html)
 - [Thoth.Json v2](/Thoth.Json/legacy/v2.html)
+- [Thoth.Json v3](/Thoth.Json/legacy/v3.html)
 
 ## Decoder
 
