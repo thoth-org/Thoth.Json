@@ -227,7 +227,7 @@ When using **auto coders**, we are referring to both **auto encoders** and **aut
 
 If your JSON structure is a one to one match with your F# type, then you can use auto coders.
 
-### Auto encoder
+### Auto decoder
 
 Auto decoders will generate the decoder at runtime for you and still guarantee that the JSON structure is correct.
 
