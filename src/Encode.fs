@@ -1,4 +1,5 @@
 namespace Thoth.Json
+open System.Text.RegularExpressions
 
 [<RequireQualifiedAccess>]
 module Encode =
@@ -383,7 +384,7 @@ module Encode =
     let inline unboxEncoder (d: BoxedEncoder): Encoder<'T> =
         !!d
 
-    let rec private autoEncodeRecordsAndUnions extra (isCamelCase : bool) (skipNullField : bool) (t: System.Type) : BoxedEncoder =
+    let rec private autoEncodeRecordsAndUnions extra (caseStrategy : CaseStrategy) (skipNullField : bool) (t: System.Type) : BoxedEncoder =
         // Add the encoder to extra in case one of the fields is recursive
         let encoderRef = ref Unchecked.defaultof<_>
         let extra = extra |> Map.add t.FullName encoderRef
@@ -392,10 +393,8 @@ module Encode =
                 let setters =
                     FSharpType.GetRecordFields(t, allowAccessToPrivateRepresentation=true)
                     |> Array.map (fun fi ->
-                        let targetKey =
-                            if isCamelCase then fi.Name.[..0].ToLowerInvariant() + fi.Name.[1..]
-                            else fi.Name
-                        let encode = autoEncoder extra isCamelCase skipNullField fi.PropertyType
+                        let targetKey = Util.Casing.convert caseStrategy fi.Name
+                        let encode = autoEncoder extra caseStrategy skipNullField fi.PropertyType
                         fun (source: obj) (target: JsonValue) ->
                             let value = FSharpValue.GetRecordField(source, fi)
                             if not skipNullField || (skipNullField && not (isNull value)) then // Discard null fields
@@ -413,7 +412,7 @@ module Encode =
                         let target = Array.zeroCreate<JsonValue> (len + 1)
                         target.[0] <- string info.Name
                         for i = 1 to len do
-                            let encode = autoEncoder extra isCamelCase skipNullField fieldTypes.[i-1].PropertyType
+                            let encode = autoEncoder extra caseStrategy skipNullField fieldTypes.[i-1].PropertyType
                             target.[i] <- encode fields.[i-1]
                         array target
             else
@@ -424,13 +423,13 @@ module Encode =
         encoderRef := encoder
         encoder
 
-    and private autoEncoder (extra: Map<string, ref<BoxedEncoder>>) isCamelCase (skipNullField : bool) (t: System.Type) : BoxedEncoder =
+    and private autoEncoder (extra: Map<string, ref<BoxedEncoder>>) caseStrategy (skipNullField : bool) (t: System.Type) : BoxedEncoder =
       let fullname = t.FullName
       match Map.tryFind fullname extra with
       | Some encoderRef -> fun v -> encoderRef.contents v
       | None ->
         if t.IsArray then
-            let encoder = t.GetElementType() |> autoEncoder extra isCamelCase skipNullField
+            let encoder = t.GetElementType() |> autoEncoder extra caseStrategy skipNullField
             fun (value: obj) ->
                 value :?> obj seq |> Seq.map encoder |> seq
         elif t.IsEnum then
@@ -463,7 +462,7 @@ If you can't use one of these types, please pass an extra encoder.
             if FSharpType.IsTuple(t) then
                 let encoders =
                     FSharpType.GetTupleElements(t)
-                    |> Array.map (autoEncoder extra isCamelCase skipNullField)
+                    |> Array.map (autoEncoder extra caseStrategy skipNullField)
                 fun (value: obj) ->
                     FSharpValue.GetTupleFields(value)
                     |> Seq.mapi (fun i x -> encoders.[i] x) |> seq
@@ -473,7 +472,7 @@ If you can't use one of these types, please pass an extra encoder.
                     // Evaluate lazily so we don't need to generate the encoder for null values
                     let encoder = lazy
                                     t.GenericTypeArguments.[0]
-                                    |> autoEncoder extra isCamelCase skipNullField
+                                    |> autoEncoder extra caseStrategy skipNullField
                                     |> option
                                     |> boxEncoder
                     boxEncoder(fun (value: obj) ->
@@ -483,12 +482,12 @@ If you can't use one of these types, please pass an extra encoder.
                     || fullname = typedefof<Set<string>>.FullName then
                     // Disable seq support for now because I don't know how to implements to on Thoth.Json.Net
                     // || fullname = typedefof<obj seq>.FullName then
-                    let encoder = t.GenericTypeArguments.[0] |> autoEncoder extra isCamelCase skipNullField
+                    let encoder = t.GenericTypeArguments.[0] |> autoEncoder extra caseStrategy skipNullField
                     fun (value: obj) ->
                         value :?> obj seq |> Seq.map encoder |> seq
                 elif fullname = typedefof< Map<string, obj> >.FullName then
                     let keyType = t.GenericTypeArguments.[0]
-                    let valueEncoder = t.GenericTypeArguments.[1] |> autoEncoder extra isCamelCase skipNullField
+                    let valueEncoder = t.GenericTypeArguments.[1] |> autoEncoder extra caseStrategy skipNullField
                     if keyType.FullName = typeof<string>.FullName
                         || keyType.FullName = typeof<System.Guid>.FullName then
                         fun value ->
@@ -499,12 +498,12 @@ If you can't use one of these types, please pass an extra encoder.
                                 target.[k] <- valueEncoder v
                                 target)
                     else
-                        let keyEncoder = keyType |> autoEncoder extra isCamelCase skipNullField
+                        let keyEncoder = keyType |> autoEncoder extra caseStrategy skipNullField
                         fun value ->
                             value :?> Map<string, obj> |> Seq.map (fun (KeyValue(k,v)) ->
                                 array [|keyEncoder k; valueEncoder v|]) |> seq
                 else
-                    autoEncodeRecordsAndUnions extra isCamelCase skipNullField t
+                    autoEncodeRecordsAndUnions extra caseStrategy skipNullField t
         else
             if fullname = typeof<bool>.FullName then
                 boxEncoder bool
@@ -550,7 +549,7 @@ If you can't use one of these types, please pass an extra encoder.
             elif fullname = typeof<obj>.FullName then
                 boxEncoder id
             else
-                autoEncodeRecordsAndUnions extra isCamelCase skipNullField t
+                autoEncodeRecordsAndUnions extra caseStrategy skipNullField t
 
     let private makeExtra (extra: ExtraCoders option) =
         match extra with
@@ -558,27 +557,27 @@ If you can't use one of these types, please pass an extra encoder.
         | Some e -> Map.map (fun _ (enc,_) -> ref enc) e.Coders
 
     type Auto =
-        static member generateEncoderCached<'T>(?isCamelCase : bool, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
+        static member generateEncoderCached<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
             let t = Util.resolveType resolver
-            let isCamelCase = defaultArg isCamelCase false
+            let caseStrategy = defaultArg caseStrategy PascalCase
             let skipNullField = defaultArg skipNullField true
 
             let key =
                 t.FullName
-                |> (+) (Operators.string isCamelCase)
+                |> (+) (Operators.string caseStrategy)
                 |> (+) (extra |> Option.map (fun e -> e.Hash) |> Option.defaultValue "")
 
             Util.CachedEncoders.GetOrAdd(key , fun _ ->
-                autoEncoder (makeExtra extra) isCamelCase skipNullField t) |> unboxEncoder
+                autoEncoder (makeExtra extra) caseStrategy skipNullField t) |> unboxEncoder
 
-        static member generateEncoder<'T>(?isCamelCase : bool, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
-            let isCamelCase = defaultArg isCamelCase false
+        static member generateEncoder<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
+            let caseStrategy = defaultArg caseStrategy PascalCase
             let skipNullField = defaultArg skipNullField true
             Util.resolveType resolver
-            |> autoEncoder (makeExtra extra) isCamelCase skipNullField |> unboxEncoder
+            |> autoEncoder (makeExtra extra) caseStrategy skipNullField |> unboxEncoder
 
-        static member toString(space : int, value : 'T, ?isCamelCase : bool, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>) : string =
-            let encoder = Auto.generateEncoder(?isCamelCase=isCamelCase, ?extra=extra, ?skipNullField=skipNullField, ?resolver=resolver)
+        static member toString(space : int, value : 'T, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>) : string =
+            let encoder = Auto.generateEncoder(?caseStrategy=caseStrategy, ?extra=extra, ?skipNullField=skipNullField, ?resolver=resolver)
             encoder value |> toString space
 
     ///**Description**

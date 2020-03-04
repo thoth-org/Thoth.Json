@@ -416,6 +416,13 @@ let tests : Test =
                 let actual = Encode.Auto.toString(0, value)
                 equal expected actual
 
+            testCase "force_snake_case works" <| fun _ ->
+                let expected =
+                    """{"one":1,"two_part":2,"three_part_field":3}"""
+                let value = { One = 1; TwoPart = 2; ThreePartField = 3 }
+                let actual = Encode.Auto.toString(0, value, SnakeCase)
+                equal expected actual
+
             testCase "forceCamelCase works" <| fun _ ->
                 let expected =
                     """{"id":0,"name":"Maxime","email":"mail@test.com","followers":33}"""
@@ -425,7 +432,7 @@ let tests : Test =
                       Email = "mail@test.com"
                       followers = 33 }
 
-                let actual = Encode.Auto.toString(0, value, true)
+                let actual = Encode.Auto.toString(0, value, CamelCase)
                 equal expected actual
 
             testCase "Encode.Auto.generateEncoder works" <| fun _ ->
@@ -529,13 +536,13 @@ let tests : Test =
             testCase "Encode.Auto.toString works with records with private constructors" <| fun _ ->
                 let expected = """{"foo1":5,"foo2":7.8}"""
                 let x = { Foo1 = 5; Foo2 = 7.8 }: RecordWithPrivateConstructor
-                Encode.Auto.toString(0, x, isCamelCase=true)
+                Encode.Auto.toString(0, x, caseStrategy=CamelCase)
                 |> equal expected
 
             testCase "Encode.Auto.toString works with unions with private constructors" <| fun _ ->
                 let expected = """["Baz",["Bar","foo"]]"""
                 let x = [Baz; Bar "foo"]
-                Encode.Auto.toString(0, x, isCamelCase=true)
+                Encode.Auto.toString(0, x, caseStrategy=CamelCase)
                 |> equal expected
 
             testCase "Encode.Auto.toString works with strange types if they are None" <| fun _ ->

@@ -1,4 +1,5 @@
 namespace Thoth.Json
+open System.Text.RegularExpressions
 
 type JsonValue = obj
 
@@ -11,6 +12,11 @@ type ErrorReason =
     | TooSmallArray of string * JsonValue
     | FailMessage of string
     | BadOneOf of string list
+
+type CaseStrategy =
+    | PascalCase
+    | CamelCase
+    | SnakeCase
 
 type DecoderError = string * ErrorReason
 
@@ -52,3 +58,12 @@ module internal Util =
 #else
         resolver.Value.ResolveType()
 #endif
+
+
+    module Casing =
+        let lowerFirst (str : string) = str.[..0].ToLowerInvariant() + str.[1..]
+        let convert caseStrategy fieldName =
+            match caseStrategy with
+            | CamelCase -> lowerFirst fieldName 
+            | SnakeCase -> Regex.Replace(lowerFirst fieldName, "[A-Z]","_$0").ToLowerInvariant()
+            | PascalCase -> fieldName 

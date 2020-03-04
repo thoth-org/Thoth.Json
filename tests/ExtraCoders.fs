@@ -31,21 +31,21 @@ let pascalCaseCoder = Extra.withCustom
                         Extra.empty
 #if FABLE_COMPILER
 type CachedCoder =
-    static member internal encode<'Data>(data:'Data, ?isCamelCase:bool, ?extra:ExtraCoders, [<Inject>]?dataResolver: ITypeResolver<'Data>) =
-        let encode = Encode.Auto.generateEncoderCached<'Data>(?isCamelCase = isCamelCase, ?extra = extra, ?resolver = dataResolver)
+    static member internal encode<'Data>(data:'Data, ?caseStrategy:CaseStrategy, ?extra:ExtraCoders, [<Inject>]?dataResolver: ITypeResolver<'Data>) =
+        let encode = Encode.Auto.generateEncoderCached<'Data>(?caseStrategy = caseStrategy, ?extra = extra, ?resolver = dataResolver)
         encode data |> Encode.toString 0
 
-    static member internal decode<'Response>(value:string, ?isCamelCase:bool, ?extra:ExtraCoders, [<Inject>]?responseResolver: ITypeResolver<'Response>) =
-        let decoder = Decode.Auto.generateDecoderCached<'Response>(?isCamelCase = isCamelCase, ?extra = extra, ?resolver = responseResolver)
+    static member internal decode<'Response>(value:string, ?caseStrategy:CaseStrategy, ?extra:ExtraCoders, [<Inject>]?responseResolver: ITypeResolver<'Response>) =
+        let decoder = Decode.Auto.generateDecoderCached<'Response>(?caseStrategy = caseStrategy, ?extra = extra, ?resolver = responseResolver)
         Decode.unsafeFromString decoder value
 #else
 type CachedCoder =
-    static member internal encode<'Data>(data:'Data, ?isCamelCase:bool, ?extra:ExtraCoders) =
-        let encode = Encode.Auto.generateEncoderCached<'Data>(?isCamelCase = isCamelCase, ?extra = extra)
+    static member internal encode<'Data>(data:'Data, ?caseStrategy:CaseStrategy, ?extra:ExtraCoders) =
+        let encode = Encode.Auto.generateEncoderCached<'Data>(?caseStrategy = caseStrategy, ?extra = extra)
         encode data |> Encode.toString 0
 
-    static member internal decode<'Response>(value:string, ?isCamelCase:bool, ?extra:ExtraCoders) =
-        let decoder = Decode.Auto.generateDecoderCached<'Response>(?isCamelCase = isCamelCase, ?extra = extra)
+    static member internal decode<'Response>(value:string, ?caseStrategy:CaseStrategy, ?extra:ExtraCoders) =
+        let decoder = Decode.Auto.generateDecoderCached<'Response>(?caseStrategy = caseStrategy, ?extra = extra)
         Decode.unsafeFromString decoder value
 #endif
 
@@ -68,9 +68,9 @@ let tests : Test =
                 let expected = data
 
                 let actual =
-                    Encode.Auto.toString (0, data, isCamelCase = true)
+                    Encode.Auto.toString (0, data, caseStrategy = CamelCase)
                     |> fun json ->
-                    Decode.Auto.unsafeFromString (json, isCamelCase = true)
+                    Decode.Auto.unsafeFromString (json, caseStrategy = CamelCase)
                 equal expected actual
 
             testCase "coder in PasalCase works'" <| fun _ ->
@@ -88,9 +88,9 @@ let tests : Test =
                 let expected = data
 
                 let actual =
-                    Encode.Auto.toString (0, data, isCamelCase = false)
+                    Encode.Auto.toString (0, data, caseStrategy = PascalCase)
                     |> fun json ->
-                    Decode.Auto.unsafeFromString (json, isCamelCase = false)
+                    Decode.Auto.unsafeFromString (json, caseStrategy = PascalCase)
 
                 equal expected actual
         ]
@@ -108,9 +108,9 @@ let tests : Test =
                 let data = {Id = 1; Text ="Text"}
                 let expected = data
                 let actual =
-                    CachedCoder.encode ( data, isCamelCase = true)
+                    CachedCoder.encode ( data, caseStrategy = CamelCase)
                     |> fun json ->
-                    CachedCoder.decode (json, isCamelCase = true)
+                    CachedCoder.decode (json, caseStrategy = CamelCase)
                 equal expected actual
 
             testCase "coder in PascalCase works" <| fun _ ->
@@ -126,9 +126,9 @@ let tests : Test =
                 let data = {Id = 1; Text ="Text"}
                 let expected = data
                 let actual =
-                    CachedCoder.encode ( data, isCamelCase = false)
+                    CachedCoder.encode ( data, caseStrategy = PascalCase)
                     |> fun json ->
-                    CachedCoder.decode (json, isCamelCase = false)
+                    CachedCoder.decode (json, caseStrategy = PascalCase)
                 equal expected actual
         ]
         testList "Cached encoding/ normal decoding" [
@@ -145,9 +145,9 @@ let tests : Test =
                 let data = {Id = 1; Text ="Text"}
                 let expected = data
                 let actual =
-                    CachedCoder.encode ( data, isCamelCase = true)
+                    CachedCoder.encode ( data, caseStrategy = CamelCase)
                     |> fun json ->
-                    Decode.Auto.unsafeFromString (json, isCamelCase = true)
+                    Decode.Auto.unsafeFromString (json, caseStrategy = CamelCase)
                 equal expected actual
 
             testCase "coder in PascalCase works" <| fun _ ->
@@ -163,9 +163,9 @@ let tests : Test =
                 let data = {Id = 1; Text ="Text"}
                 let expected = data
                 let actual =
-                    CachedCoder.encode ( data,  isCamelCase = false)
+                    CachedCoder.encode ( data,  caseStrategy = PascalCase)
                     |> fun json ->
-                    Decode.Auto.unsafeFromString (json, isCamelCase = false)
+                    Decode.Auto.unsafeFromString (json, caseStrategy = PascalCase)
                 equal expected actual
         ]
         testList "Normal encoding/ cached decoding" [
@@ -182,9 +182,9 @@ let tests : Test =
                 let data = {Id = 1; Text ="Text"}
                 let expected = data
                 let actual =
-                    Encode.Auto.toString (0, data, isCamelCase = true)
+                    Encode.Auto.toString (0, data, caseStrategy = CamelCase)
                     |> fun json ->
-                    CachedCoder.decode (json, isCamelCase = true)
+                    CachedCoder.decode (json, caseStrategy = CamelCase)
                 equal expected actual
 
             testCase "coder in PascalCase works" <| fun _ ->
@@ -200,9 +200,9 @@ let tests : Test =
                 let data = {Id = 1; Text ="Text"}
                 let expected = data
                 let actual =
-                    Encode.Auto.toString (0, data, isCamelCase = false)
+                    Encode.Auto.toString (0, data, caseStrategy = PascalCase)
                     |> fun json ->
-                    CachedCoder.decode (json, isCamelCase = false)
+                    CachedCoder.decode (json, caseStrategy = PascalCase)
                 equal expected actual
         ]
     ]
