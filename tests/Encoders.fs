@@ -607,6 +607,41 @@ let tests : Test =
                 let expected = "2"
                 let actual = Encode.Auto.toString(0, DayOfWeek.Tuesday)
                 equal expected actual
+
+            testCase "Encode.Auto.toString generate `null` if skipNullField is true and the optional field value of type classes is None" <| fun _ ->
+                let value =
+                    {
+                        MaybeClass = None
+                        Must = "must value"
+                    } : RecordWithOptionalClass
+
+                let actual = Encode.Auto.toString(0, value, isCamelCase = true, skipNullField = false)
+                let expected =
+                    """{"maybeClass":null,"must":"must value"}"""
+                equal expected actual
+
+            testCase "Encode.Auto.toString doesn't generate the optional field of type classe if it's value is None" <| fun _ ->
+                let value =
+                    {
+                        MaybeClass = None
+                        Must = "must value"
+                    } : RecordWithOptionalClass
+
+                let actual = Encode.Auto.toString(0, value, isCamelCase = true)
+                let expected =
+                    """{"must":"must value"}"""
+                equal expected actual
+
+            testCase "Encode.Auto.generateEncoder throws for field using a non optional class" <| fun _ ->
+                let expected = "Cannot generate auto encoder for Tests.Types.BaseClass. Please pass an extra encoder."
+                let errorMsg =
+                    try
+                        let encoder = Encode.Auto.generateEncoder<RecordWithRequiredClass>(isCamelCase=true)
+                        ""
+                    with ex ->
+                        ex.Message
+                errorMsg.Replace("+", ".") |> equal expected
+
     (*
             #if NETFRAMEWORK
             testCase "Encode.Auto.toString works with char based Enums" <| fun _ ->

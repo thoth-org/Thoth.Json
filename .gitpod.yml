@@ -7,7 +7,7 @@ ports:
 tasks:
   - before: >
       rm -rf paket-files &&
-      ./fake.snh build -t DotnetRestore
+      ./fake.sh build -t DotnetRestore
 
 vscode:
   extensions:
