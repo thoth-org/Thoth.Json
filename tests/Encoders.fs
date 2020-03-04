@@ -615,7 +615,7 @@ let tests : Test =
                         Must = "must value"
                     } : RecordWithOptionalClass
 
-                let actual = Encode.Auto.toString(0, value, isCamelCase = true, skipNullField = false)
+                let actual = Encode.Auto.toString(0, value, caseStrategy = CamelCase, skipNullField = false)
                 let expected =
                     """{"maybeClass":null,"must":"must value"}"""
                 equal expected actual
@@ -627,7 +627,7 @@ let tests : Test =
                         Must = "must value"
                     } : RecordWithOptionalClass
 
-                let actual = Encode.Auto.toString(0, value, isCamelCase = true)
+                let actual = Encode.Auto.toString(0, value, caseStrategy = CamelCase)
                 let expected =
                     """{"must":"must value"}"""
                 equal expected actual
@@ -636,7 +636,7 @@ let tests : Test =
                 let expected = "Cannot generate auto encoder for Tests.Types.BaseClass. Please pass an extra encoder."
                 let errorMsg =
                     try
-                        let encoder = Encode.Auto.generateEncoder<RecordWithRequiredClass>(isCamelCase=true)
+                        let encoder = Encode.Auto.generateEncoder<RecordWithRequiredClass>(caseStrategy = CamelCase)
                         ""
                     with ex ->
                         ex.Message
