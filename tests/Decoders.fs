@@ -1594,6 +1594,20 @@ Expecting an object with a field named `version` but instead got:
                     Decode.fromString decodePoint jsonRecord
 
                 equal expected actual
+            
+            testCase "andMap works" <| fun _ ->
+                let expected = Ok({ a = 1.
+                                    b = 2. } : Record2)
+
+                let decodePoint =
+                    Decode.succeed Record2.Create
+                        |> Decode.andMap (Decode.field "a" Decode.float)
+                        |> Decode.andMap (Decode.field "b" Decode.float)
+
+                let actual =
+                    Decode.fromString decodePoint jsonRecord
+                printfn "############### %A" decodePoint
+                equal expected actual
 
             testCase "map2 generate an error if invalid" <| fun _ ->
                 let expected = Error("Error at: `$.a`\nExpecting a float but instead got: \"invalid_a_field\"")
@@ -1607,7 +1621,6 @@ Expecting an object with a field named `version` but instead got:
                     Decode.fromString decodePoint jsonRecordInvalid
 
                 equal expected actual
-
         ]
 
         testList "object builder" [

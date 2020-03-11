@@ -669,6 +669,14 @@ module Decode =
             | _,_,_,_,_,_,Error er,_ -> Error er
             | _,_,_,_,_,_,_,Error er -> Error er
 
+    (* A direct port from Elm:
+       Can be helpful when decoding large objects incrementally.
+       See [the `andMap` docs](https://github.com/elm-community/json-extra/blob/2.0.0/docs/andMap.md)
+       for an explanation of how `andMap` works and how to use it. *)
+
+    let andMap<'a, 'b> : 'a Decoder -> ('a -> 'b) Decoder -> 'b Decoder =
+        map2 (|>)
+
     let dict (decoder : Decoder<'value>) : Decoder<Map<string, 'value>> =
         map Map.ofList (keyValuePairs decoder)
 
