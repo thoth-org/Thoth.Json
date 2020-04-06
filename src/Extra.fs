@@ -5,7 +5,8 @@ open Fable.Core
 
 let empty: ExtraCoders =
     { Hash = ""
-      Coders = Map.empty }
+      Coders = Map.empty
+      DefaultFields = Map.empty }
 
 let inline internal withCustomAndKey (encoder: Encoder<'Value>) (decoder: Decoder<'Value>)
            (extra: ExtraCoders): ExtraCoders =
@@ -27,3 +28,14 @@ let inline withDecimal (extra: ExtraCoders): ExtraCoders =
 
 let inline withBigInt (extra: ExtraCoders): ExtraCoders =
     withCustomAndKey Encode.bigint Decode.bigint extra
+
+let __withDefaultFieldAndKey typeName fieldName (defaultValue: obj) (extra: ExtraCoders) =
+    { extra with Hash = System.Guid.NewGuid().ToString()
+                 DefaultFields =
+                    Map.tryFind typeName extra.DefaultFields
+                    |> Option.defaultValue Map.empty
+                    |> Map.add fieldName defaultValue
+                    |> fun m -> Map.add typeName m extra.DefaultFields }
+
+let inline withDefaultField<'T> (fieldName: string) (defaultValue: obj) (extra: ExtraCoders) =
+    __withDefaultFieldAndKey typeof<'T>.FullName fieldName defaultValue extra

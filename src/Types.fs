@@ -30,7 +30,8 @@ type BoxedEncoder = Encoder<obj>
 
 type ExtraCoders =
     { Hash: string
-      Coders: Map<string, BoxedEncoder * BoxedDecoder> }
+      Coders: Map<string, BoxedEncoder * BoxedDecoder>
+      DefaultFields: Map<string, Map<string, obj>> }
 
 module internal Util =
     open System.Collections.Generic
@@ -64,6 +65,6 @@ module internal Util =
         let lowerFirst (str : string) = str.[..0].ToLowerInvariant() + str.[1..]
         let convert caseStrategy fieldName =
             match caseStrategy with
-            | CamelCase -> lowerFirst fieldName 
+            | CamelCase -> lowerFirst fieldName
             | SnakeCase -> Regex.Replace(lowerFirst fieldName, "[A-Z]","_$0").ToLowerInvariant()
-            | PascalCase -> fieldName 
+            | PascalCase -> fieldName
