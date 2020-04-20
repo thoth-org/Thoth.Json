@@ -533,6 +533,21 @@ let tests : Test =
                 let json = Encode.Auto.toString(0, m)
                 json.[0] = '{' |> equal true
 
+            testCase "Encode.Auto.toString serializes mutable dictionaries" <| fun _ ->
+                let d = System.Collections.Generic.Dictionary()
+                d.Add("Foo", 1)
+                d.Add("Bar", 2)
+                Encode.Auto.toString(0, d)
+                |> equal """{"Foo":1,"Bar":2}"""
+
+            testCase "Encode.Auto.toString serializes mutable hashsets" <| fun _ ->
+                let s = System.Collections.Generic.HashSet()
+                s.Add(1) |> ignore
+                s.Add(1) |> ignore
+                s.Add(2) |> ignore
+                Encode.Auto.toString(0, s)
+                |> equal """[1,2]"""
+
             testCase "Encode.Auto.toString works with records with private constructors" <| fun _ ->
                 let expected = """{"foo1":5,"foo2":7.8}"""
                 let x = { Foo1 = 5; Foo2 = 7.8 }: RecordWithPrivateConstructor

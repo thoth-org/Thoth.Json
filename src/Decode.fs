@@ -83,7 +83,7 @@ module Decode =
             | BadField (msg, value) ->
                 genericMsg msg value true
             | BadPath (msg, value, fieldName) ->
-                genericMsg msg value true + ("\nNode `" + fieldName + "` is unkown.")
+                genericMsg msg value true + ("\nNode `" + fieldName + "` is unknown.")
             | TooSmallArray (msg, value) ->
                 "Expecting " + msg + ".\n" + (Helpers.anyToString value)
             | BadOneOf messages ->
@@ -971,6 +971,16 @@ module Decode =
     let private toMap<'key, 'value when 'key: comparison> (xs: ('key*'value) seq) = Map.ofSeq xs
     let private toSet<'key when 'key: comparison> (xs: 'key seq) = Set.ofSeq xs
 
+    let private toDict<'key, 'value when 'key: comparison> (xs: ('key*'value) seq) =
+        let dic = System.Collections.Generic.Dictionary<'key, 'value>()
+        for (k, v) in xs do dic.Add(k, v)
+        dic
+
+    let private toHashSet<'key when 'key: comparison> (xs: 'key seq) =
+        let set = System.Collections.Generic.HashSet<'key>()
+        for x in xs do set.Add(x) |> ignore
+        set
+
     let private autoObject (decoderInfos: (string * BoxedDecoder)[]) (fieldDecoders: Map<string, FieldDecoder>) (path : string) (value: JsonValue) =
         if not (Helpers.isObject value) then
             (path, BadPrimitive ("an object", value)) |> Error
@@ -1094,6 +1104,21 @@ module Decode =
         decoderRef := decoder
         decoder
 
+    and private autoDecodeMapOrDict constructor (extra: DecodeAutoExtra) (t: System.Type) : BoxedDecoder =
+        let keyDecoder = t.GenericTypeArguments.[0] |> autoDecoder extra false
+        let valueDecoder = t.GenericTypeArguments.[1] |> autoDecoder extra false
+        oneOf [
+            autoObject2 keyDecoder valueDecoder
+            list (tuple2 keyDecoder valueDecoder)
+        ] |> map constructor
+
+    and private autoDecodeSetOrHashset constructor (extra: DecodeAutoExtra) (t: System.Type) : BoxedDecoder =
+        let decoder = t.GenericTypeArguments.[0] |> autoDecoder extra false
+        fun path value ->
+            match array decoder path value with
+            | Error er -> Error er
+            | Ok ar -> constructor ar |> Ok
+
     and private autoDecoder (extra: DecodeAutoExtra) (isOptional : bool) (t: System.Type) : BoxedDecoder =
       let fullname = t.FullName
       match Map.tryFind fullname extra.Decoders with
@@ -1146,18 +1171,13 @@ module Decode =
                 // elif fullname = typedefof<obj seq>.FullName then
                 //     t.GenericTypeArguments.[0] |> (autoDecoder extra false) |> seq |> boxDecoder
                 elif fullname = typedefof< Map<string, obj> >.FullName then
-                    let keyDecoder = t.GenericTypeArguments.[0] |> autoDecoder extra false
-                    let valueDecoder = t.GenericTypeArguments.[1] |> autoDecoder extra false
-                    oneOf [
-                        autoObject2 keyDecoder valueDecoder
-                        list (tuple2 keyDecoder valueDecoder)
-                    ] |> map (fun ar -> toMap (unbox ar) |> box)
+                    autoDecodeMapOrDict (fun ar -> toMap (unbox ar) |> box) extra t
+                elif fullname = typedefof< System.Collections.Generic.Dictionary<string, obj> >.FullName then
+                    autoDecodeMapOrDict (fun ar -> toDict (unbox ar) |> box) extra t
                 elif fullname = typedefof< Set<string> >.FullName then
-                    let decoder = t.GenericTypeArguments.[0] |> autoDecoder extra false
-                    fun path value ->
-                        match array decoder path value with
-                        | Error er -> Error er
-                        | Ok ar -> toSet (unbox ar) |> box |> Ok
+                    autoDecodeSetOrHashset (fun ar -> toSet (unbox ar) |> box) extra t
+                elif fullname = typedefof< System.Collections.Generic.HashSet<string> >.FullName then
+                    autoDecodeSetOrHashset (fun ar -> toHashSet (unbox ar) |> box) extra t
                 else
                     autoDecodeRecordsAndUnions extra isOptional t
         else

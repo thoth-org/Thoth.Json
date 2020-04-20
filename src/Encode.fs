@@ -437,6 +437,24 @@ module Encode =
         encoderRef := encoder
         encoder
 
+    and private autoEncodeMapOrDict (extra: EncodeAutoExtra) (skipNullField : bool) (t: System.Type) : BoxedEncoder =
+        let keyType = t.GenericTypeArguments.[0]
+        let valueEncoder = t.GenericTypeArguments.[1] |> autoEncoder extra skipNullField
+        if keyType.FullName = typeof<string>.FullName
+            || keyType.FullName = typeof<System.Guid>.FullName then
+            fun value ->
+                // Fable compiles Guids as strings so this works, but maybe we should make the conversion explicit
+                // (see dotnet version) in case Fable implementation of Guids change
+                (JsonValue(), value :?> seq<KeyValuePair<string, obj>>)
+                ||> Seq.fold (fun target (KeyValue(k, v)) ->
+                    target.[k] <- valueEncoder v
+                    target)
+        else
+            let keyEncoder = keyType |> autoEncoder extra skipNullField
+            fun value ->
+                value :?> seq<KeyValuePair<string, obj>> |> Seq.map (fun (KeyValue(k, v)) ->
+                    array [|keyEncoder k; valueEncoder v|]) |> seq
+
     and private autoEncoder (extra: EncodeAutoExtra) (skipNullField : bool) (t: System.Type) : BoxedEncoder =
       let fullname = t.FullName
       match Map.tryFind fullname extra.Encoders with
@@ -493,29 +511,16 @@ If you can't use one of these types, please pass an extra encoder.
                         if isNull value then nil
                         else encoder.Value value)
                 elif fullname = typedefof<obj list>.FullName
-                    || fullname = typedefof<Set<string>>.FullName then
+                    || fullname = typedefof<Set<string>>.FullName
+                    || fullname = typedefof<HashSet<string>>.FullName then
                     // Disable seq support for now because I don't know how to implements to on Thoth.Json.Net
                     // || fullname = typedefof<obj seq>.FullName then
                     let encoder = t.GenericTypeArguments.[0] |> autoEncoder extra skipNullField
                     fun (value: obj) ->
                         value :?> obj seq |> Seq.map encoder |> seq
-                elif fullname = typedefof< Map<string, obj> >.FullName then
-                    let keyType = t.GenericTypeArguments.[0]
-                    let valueEncoder = t.GenericTypeArguments.[1] |> autoEncoder extra skipNullField
-                    if keyType.FullName = typeof<string>.FullName
-                        || keyType.FullName = typeof<System.Guid>.FullName then
-                        fun value ->
-                            // Fable compiles Guids as strings so this works, but maybe we should make the conversion explicit
-                            // (see dotnet version) in case Fable implementation of Guids change
-                            (JsonValue(), value :?> Map<string, obj>)
-                            ||> Seq.fold (fun target (KeyValue(k,v)) ->
-                                target.[k] <- valueEncoder v
-                                target)
-                    else
-                        let keyEncoder = keyType |> autoEncoder extra skipNullField
-                        fun value ->
-                            value :?> Map<string, obj> |> Seq.map (fun (KeyValue(k,v)) ->
-                                array [|keyEncoder k; valueEncoder v|]) |> seq
+                elif fullname = typedefof< Map<string, obj> >.FullName
+                    || fullname = typedefof< Dictionary<string, obj> >.FullName then
+                    autoEncodeMapOrDict extra skipNullField t
                 else
                     autoEncodeRecordsAndUnions extra skipNullField t
         else
