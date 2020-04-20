@@ -1173,7 +1173,15 @@ module Decode =
                 elif fullname = typedefof< Map<string, obj> >.FullName then
                     autoDecodeMapOrDict (fun ar -> toMap (unbox ar) |> box) extra t
                 elif fullname = typedefof< System.Collections.Generic.Dictionary<string, obj> >.FullName then
-                    autoDecodeMapOrDict (fun ar -> toDict (unbox ar) |> box) extra t
+                    autoDecodeMapOrDict (fun ar ->
+                        // For generic keys, Fable creates a structure with a custom equality comparer.
+                        // Deal with string keys separately to let Fable generate native JS Maps
+                        if t.GenericTypeArguments.[0].FullName = typeof<string>.FullName then
+                            let dic = System.Collections.Generic.Dictionary<string, obj>()
+                            for (k, v) in (unbox ar) do dic.Add(k, v)
+                            box dic
+                        else
+                            toDict (unbox ar) |> box) extra t
                 elif fullname = typedefof< Set<string> >.FullName then
                     autoDecodeSetOrHashset (fun ar -> toSet (unbox ar) |> box) extra t
                 elif fullname = typedefof< System.Collections.Generic.HashSet<string> >.FullName then
