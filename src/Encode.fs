@@ -377,6 +377,11 @@ module Encode =
     open FSharp.Reflection
     open Fable.Core.DynamicExtensions
 
+    type private EncodeAutoExtra =
+        { Encoders: Map<string, ref<BoxedEncoder>>
+          FieldEncoders: Map<string, Map<string, BoxedFieldEncoder>>
+          CaseStrategy: CaseStrategy }
+
     // As generics are erased by Fable, let's just do an unsafe cast for performance
     let inline boxEncoder (d: Encoder<'T>): BoxedEncoder =
         !!d
@@ -384,21 +389,30 @@ module Encode =
     let inline unboxEncoder (d: BoxedEncoder): Encoder<'T> =
         !!d
 
-    let rec private autoEncodeRecordsAndUnions extra (caseStrategy : CaseStrategy) (skipNullField : bool) (t: System.Type) : BoxedEncoder =
+    let rec private autoEncodeRecordsAndUnions (extra: EncodeAutoExtra) (skipNullField : bool) (t: System.Type) : BoxedEncoder =
         // Add the encoder to extra in case one of the fields is recursive
         let encoderRef = ref Unchecked.defaultof<_>
-        let extra = extra |> Map.add t.FullName encoderRef
+        let extra = { extra with Encoders = extra.Encoders |> Map.add t.FullName encoderRef }
         let encoder =
             if FSharpType.IsRecord(t, allowAccessToPrivateRepresentation=true) then
+                let fieldEncoders =
+                    Map.tryFind t.FullName extra.FieldEncoders
+                    |> Option.defaultValue Map.empty
                 let setters =
                     FSharpType.GetRecordFields(t, allowAccessToPrivateRepresentation=true)
                     |> Array.map (fun fi ->
-                        let targetKey = Util.Casing.convert caseStrategy fi.Name
-                        let encode = autoEncoder extra caseStrategy skipNullField fi.PropertyType
+                        let targetKey = Util.Casing.convert extra.CaseStrategy fi.Name
+                        let encode = autoEncoder extra skipNullField fi.PropertyType
                         fun (source: obj) (target: JsonValue) ->
                             let value = FSharpValue.GetRecordField(source, fi)
                             if not skipNullField || (skipNullField && not (isNull value)) then // Discard null fields
-                                target.[targetKey] <- encode value
+                                match Map.tryFind fi.Name fieldEncoders with
+                                | None -> target.[targetKey] <- encode value
+                                | Some fieldEncoder ->
+                                    match fieldEncoder value with
+                                    | UseAutoEncoder -> target.[targetKey] <- encode value
+                                    | UseJsonValue v -> target.[targetKey] <- v
+                                    | IgnoreField -> ()
                             target)
                 fun (source: obj) ->
                     (JsonValue(), setters) ||> Seq.fold (fun target set -> set source target)
@@ -412,7 +426,7 @@ module Encode =
                         let target = Array.zeroCreate<JsonValue> (len + 1)
                         target.[0] <- string info.Name
                         for i = 1 to len do
-                            let encode = autoEncoder extra caseStrategy skipNullField fieldTypes.[i-1].PropertyType
+                            let encode = autoEncoder extra skipNullField fieldTypes.[i-1].PropertyType
                             target.[i] <- encode fields.[i-1]
                         array target
             else
@@ -423,13 +437,13 @@ module Encode =
         encoderRef := encoder
         encoder
 
-    and private autoEncoder (extra: Map<string, ref<BoxedEncoder>>) caseStrategy (skipNullField : bool) (t: System.Type) : BoxedEncoder =
+    and private autoEncoder (extra: EncodeAutoExtra) (skipNullField : bool) (t: System.Type) : BoxedEncoder =
       let fullname = t.FullName
-      match Map.tryFind fullname extra with
+      match Map.tryFind fullname extra.Encoders with
       | Some encoderRef -> fun v -> encoderRef.contents v
       | None ->
         if t.IsArray then
-            let encoder = t.GetElementType() |> autoEncoder extra caseStrategy skipNullField
+            let encoder = t.GetElementType() |> autoEncoder extra skipNullField
             fun (value: obj) ->
                 value :?> obj seq |> Seq.map encoder |> seq
         elif t.IsEnum then
@@ -462,7 +476,7 @@ If you can't use one of these types, please pass an extra encoder.
             if FSharpType.IsTuple(t) then
                 let encoders =
                     FSharpType.GetTupleElements(t)
-                    |> Array.map (autoEncoder extra caseStrategy skipNullField)
+                    |> Array.map (autoEncoder extra skipNullField)
                 fun (value: obj) ->
                     FSharpValue.GetTupleFields(value)
                     |> Seq.mapi (fun i x -> encoders.[i] x) |> seq
@@ -472,7 +486,7 @@ If you can't use one of these types, please pass an extra encoder.
                     // Evaluate lazily so we don't need to generate the encoder for null values
                     let encoder = lazy
                                     t.GenericTypeArguments.[0]
-                                    |> autoEncoder extra caseStrategy skipNullField
+                                    |> autoEncoder extra skipNullField
                                     |> option
                                     |> boxEncoder
                     boxEncoder(fun (value: obj) ->
@@ -482,12 +496,12 @@ If you can't use one of these types, please pass an extra encoder.
                     || fullname = typedefof<Set<string>>.FullName then
                     // Disable seq support for now because I don't know how to implements to on Thoth.Json.Net
                     // || fullname = typedefof<obj seq>.FullName then
-                    let encoder = t.GenericTypeArguments.[0] |> autoEncoder extra caseStrategy skipNullField
+                    let encoder = t.GenericTypeArguments.[0] |> autoEncoder extra skipNullField
                     fun (value: obj) ->
                         value :?> obj seq |> Seq.map encoder |> seq
                 elif fullname = typedefof< Map<string, obj> >.FullName then
                     let keyType = t.GenericTypeArguments.[0]
-                    let valueEncoder = t.GenericTypeArguments.[1] |> autoEncoder extra caseStrategy skipNullField
+                    let valueEncoder = t.GenericTypeArguments.[1] |> autoEncoder extra skipNullField
                     if keyType.FullName = typeof<string>.FullName
                         || keyType.FullName = typeof<System.Guid>.FullName then
                         fun value ->
@@ -498,12 +512,12 @@ If you can't use one of these types, please pass an extra encoder.
                                 target.[k] <- valueEncoder v
                                 target)
                     else
-                        let keyEncoder = keyType |> autoEncoder extra caseStrategy skipNullField
+                        let keyEncoder = keyType |> autoEncoder extra skipNullField
                         fun value ->
                             value :?> Map<string, obj> |> Seq.map (fun (KeyValue(k,v)) ->
                                 array [|keyEncoder k; valueEncoder v|]) |> seq
                 else
-                    autoEncodeRecordsAndUnions extra caseStrategy skipNullField t
+                    autoEncodeRecordsAndUnions extra skipNullField t
         else
             if fullname = typeof<bool>.FullName then
                 boxEncoder bool
@@ -549,12 +563,18 @@ If you can't use one of these types, please pass an extra encoder.
             elif fullname = typeof<obj>.FullName then
                 boxEncoder id
             else
-                autoEncodeRecordsAndUnions extra caseStrategy skipNullField t
+                autoEncodeRecordsAndUnions extra skipNullField t
 
-    let private makeExtra (extra: ExtraCoders option) =
-        match extra with
-        | None -> Map.empty
-        | Some e -> Map.map (fun _ (enc,_) -> ref enc) e.Coders
+    let private makeExtra (extra: ExtraCoders option) caseStrategy =
+        let encoders =
+            extra |> Option.map (fun e -> e.Coders |> Map.map (fun _ (enc,_) -> ref enc))
+        let fieldEncoders =
+            extra |> Option.map (fun e -> e.FieldEncoders)
+        {
+            CaseStrategy = caseStrategy
+            Encoders = defaultArg encoders Map.empty
+            FieldEncoders = defaultArg fieldEncoders Map.empty
+        }
 
     type Auto =
         static member generateEncoderCached<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
@@ -568,13 +588,13 @@ If you can't use one of these types, please pass an extra encoder.
                 |> (+) (extra |> Option.map (fun e -> e.Hash) |> Option.defaultValue "")
 
             Util.CachedEncoders.GetOrAdd(key , fun _ ->
-                autoEncoder (makeExtra extra) caseStrategy skipNullField t) |> unboxEncoder
+                autoEncoder (makeExtra extra caseStrategy) skipNullField t) |> unboxEncoder
 
         static member generateEncoder<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
             let caseStrategy = defaultArg caseStrategy PascalCase
             let skipNullField = defaultArg skipNullField true
             Util.resolveType resolver
-            |> autoEncoder (makeExtra extra) caseStrategy skipNullField |> unboxEncoder
+            |> autoEncoder (makeExtra extra caseStrategy) skipNullField |> unboxEncoder
 
         static member toString(space : int, value : 'T, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>) : string =
             let encoder = Auto.generateEncoder(?caseStrategy=caseStrategy, ?extra=extra, ?skipNullField=skipNullField, ?resolver=resolver)

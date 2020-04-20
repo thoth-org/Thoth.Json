@@ -957,7 +957,7 @@ module Decode =
 
     type private DecodeAutoExtra =
         { Decoders: Map<string, ref<BoxedDecoder>>
-          DefaultFields: Map<string, Map<string, obj>>
+          FieldDecoders: Map<string, Map<string, FieldDecoder>>
           CaseStrategy: CaseStrategy }
 
     // As generics are erased by Fable, let's just do an unsafe cast for performance
@@ -971,7 +971,7 @@ module Decode =
     let private toMap<'key, 'value when 'key: comparison> (xs: ('key*'value) seq) = Map.ofSeq xs
     let private toSet<'key when 'key: comparison> (xs: 'key seq) = Set.ofSeq xs
 
-    let private autoObject (decoderInfos: (string * BoxedDecoder)[]) (defaultFields: Map<string, obj>) (path : string) (value: JsonValue) =
+    let private autoObject (decoderInfos: (string * BoxedDecoder)[]) (fieldDecoders: Map<string, FieldDecoder>) (path : string) (value: JsonValue) =
         if not (Helpers.isObject value) then
             (path, BadPrimitive ("an object", value)) |> Error
         else
@@ -979,10 +979,15 @@ module Decode =
                 match acc with
                 | Error _ -> acc
                 | Ok result ->
+                    let path = path + "." + name
                     let value = Helpers.getField name value
-                    if isNull value then Map.tryFind name defaultFields |> Option.toObj
-                    else value
-                    |> decoder (path + "." + name)
+                    match Map.tryFind name fieldDecoders with
+                    | None -> decoder path value
+                    | Some fieldDecoder ->
+                        match fieldDecoder (Option.ofObj value) with
+                        | UseOk v -> Ok v
+                        | UseError e -> Error(path, FailMessage e)
+                        | UseAutoDecoder -> decoder path value
                     |> Result.map (fun v -> v::result))
 
     let inline private enumDecoder<'UnderlineType when 'UnderlineType : equality>
@@ -1001,7 +1006,7 @@ module Decode =
                         System.Enum.Parse(t, toString enumValue)
                         |> Ok
                     | false ->
-                        (path, BadPrimitiveExtra(t.FullName, value, "Unkown value provided for the enum"))
+                        (path, BadPrimitiveExtra(t.FullName, value, "Unknown value provided for the enum"))
                         |> Error
                 | Error msg ->
                     Error msg
@@ -1054,8 +1059,8 @@ module Decode =
         let extra = { extra with Decoders = extra.Decoders |> Map.add t.FullName decoderRef }
         let decoder =
             if FSharpType.IsRecord(t, allowAccessToPrivateRepresentation=true) then
-                let defaultFields =
-                    Map.tryFind t.FullName extra.DefaultFields
+                let fieldDecoders =
+                    Map.tryFind t.FullName extra.FieldDecoders
                     |> Option.defaultValue Map.empty
                 let decoders =
                     FSharpType.GetRecordFields(t, allowAccessToPrivateRepresentation=true)
@@ -1063,7 +1068,7 @@ module Decode =
                         let name = Util.Casing.convert extra.CaseStrategy fi.Name
                         name, autoDecoder extra false fi.PropertyType)
                 fun path value ->
-                    autoObject decoders defaultFields path value
+                    autoObject decoders fieldDecoders path value
                     |> Result.map (fun xs -> FSharpValue.MakeRecord(t, List.toArray xs, allowAccessToPrivateRepresentation=true))
 
             elif FSharpType.IsUnion(t, allowAccessToPrivateRepresentation=true) then
@@ -1114,7 +1119,7 @@ module Decode =
             else
                 failwithf
                     """Cannot generate auto decoder for %s.
-    Thoth.Json.Net only support the folluwing enum types:
+    Thoth.Json.Net only support the following enum types:
     - sbyte
     - byte
     - int16
@@ -1204,14 +1209,14 @@ module Decode =
     let private makeExtra (extra: ExtraCoders option) caseStrategy =
         let decoders =
             extra |> Option.map (fun e -> e.Coders |> Map.map (fun _ (_,dec) -> ref dec))
-        let defaultFields =
+        let fieldDecoders =
             extra |> Option.map (fun e ->
-                e.DefaultFields |> Map.map (fun _ kvs ->
+                e.FieldDecoders |> Map.map (fun _ kvs ->
                     kvs |> Seq.map (fun kv -> Util.Casing.convert caseStrategy kv.Key, kv.Value) |> Map))
         {
             CaseStrategy = caseStrategy
             Decoders = defaultArg decoders Map.empty
-            DefaultFields = defaultArg defaultFields Map.empty
+            FieldDecoders = defaultArg fieldDecoders Map.empty
         }
 
     type Auto =
