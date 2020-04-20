@@ -994,9 +994,9 @@ module Decode =
                     match Map.tryFind name fieldDecoders with
                     | None -> decoder path value
                     | Some fieldDecoder ->
-                        match fieldDecoder (Option.ofObj value) with
+                        match fieldDecoder path (Option.ofObj value) with
                         | UseOk v -> Ok v
-                        | UseError e -> Error(path, FailMessage e)
+                        | UseError e -> Error e
                         | UseAutoDecoder -> decoder path value
                     |> Result.map (fun v -> v::result))
 

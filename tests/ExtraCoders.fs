@@ -10,6 +10,11 @@ type Data =
     { Id : int
       Text : string }
 
+type TestRecord =
+    { Foo: string
+      Bar: string
+      Baz: Data }
+
 let camelCaseCoder = Extra.withCustom
                         (fun (c:Data) ->
                             Encode.object
@@ -204,5 +209,47 @@ let tests : Test =
                     |> fun json ->
                     CachedCoder.decode (json, caseStrategy = PascalCase)
                 equal expected actual
+
+            testCase "custom field encoders work" <| fun _ ->
+                let data = {Id = 1; Text ="Text"}
+                let wrapper = { Foo = "foo"
+                                Bar = "bar"
+                                Baz = data }
+
+                let fieldEncoder (o: obj) =
+                    match o with
+                    | :? string as s when s = "bar" -> IgnoreField
+                    | _ -> UseAutoEncoder
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustomFieldEncoder<TestRecord> "Foo" fieldEncoder
+                    |> Extra.withCustomFieldEncoder<TestRecord> "Bar" fieldEncoder
+                    |> Extra.withCustomFieldEncoder<TestRecord> "Baz" (fun _ -> Encode.int 5 |> UseJsonValue)
+
+                Encode.Auto.toString (0, wrapper, CamelCase, extra)
+                |> equal """{"foo":"foo","baz":5}"""
+
+            testCase "custom field decoders work" <| fun _ ->
+                let json = """{"foo":"oof","baz":5}"""
+                let expected = { Foo = "foo"
+                                 Bar = "bar"
+                                 Baz = {Id = 1; Text ="Text"} }
+
+                let fieldDecoder path = function
+                    | Some v ->
+                        match Decode.string path v with
+                        | Ok s -> UseOk(s.ToCharArray() |> Seq.rev |> Seq.toArray |> System.String)
+                        | Error e -> UseError e
+                    | None -> UseOk "bar"
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustomFieldDecoder<TestRecord> "Foo" fieldDecoder
+                    |> Extra.withCustomFieldDecoder<TestRecord> "Bar" fieldDecoder
+                    |> Extra.withCustomFieldDecoder<TestRecord> "Baz" (fun _ _ -> UseOk {Id = 1; Text ="Text"})
+
+                Decode.Auto.fromString (json, CamelCase, extra)
+                |> equal (Ok expected)
         ]
     ]

@@ -379,7 +379,7 @@ module Encode =
 
     type private EncodeAutoExtra =
         { Encoders: Map<string, ref<BoxedEncoder>>
-          FieldEncoders: Map<string, Map<string, BoxedFieldEncoder>>
+          FieldEncoders: Map<string, Map<string, FieldEncoder>>
           CaseStrategy: CaseStrategy }
 
     // As generics are erased by Fable, let's just do an unsafe cast for performance
@@ -481,7 +481,7 @@ module Encode =
             else
                 failwithf
                     """Cannot generate auto encoder for %s.
-Thoth.Json.Net only support the folluwing enum types:
+Thoth.Json.Net only support the following enum types:
 - sbyte
 - byte
 - int16

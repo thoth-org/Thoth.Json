@@ -30,24 +30,23 @@ type BoxedEncoder = Encoder<obj>
 
 type FieldDecoderResult =
     | UseOk of obj
-    | UseError of string
+    | UseError of DecoderError
     | UseAutoDecoder
 
-type FieldDecoder = JsonValue option -> FieldDecoderResult
+type FieldDecoder = string -> JsonValue option -> FieldDecoderResult
 
 type FieldEncoderResult =
     | UseJsonValue of JsonValue
     | IgnoreField
     | UseAutoEncoder
 
-type FieldEncoder<'T> = 'T -> FieldEncoderResult
-type BoxedFieldEncoder = obj -> FieldEncoderResult
+type FieldEncoder = obj -> FieldEncoderResult
 
 type ExtraCoders =
     { Hash: string
       Coders: Map<string, BoxedEncoder * BoxedDecoder>
       FieldDecoders: Map<string, Map<string, FieldDecoder>>
-      FieldEncoders: Map<string, Map<string, BoxedFieldEncoder>> }
+      FieldEncoders: Map<string, Map<string, FieldEncoder>> }
 
 module internal Util =
     open System.Collections.Generic
