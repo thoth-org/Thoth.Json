@@ -3,6 +3,7 @@ module Thoth.Json.Extra
 
 open Fable.Core
 
+#if !FABLE_REPL_LIB
 let empty: ExtraCoders =
     { Hash = ""
       Coders = Map.empty }
@@ -27,3 +28,4 @@ let inline withDecimal (extra: ExtraCoders): ExtraCoders =
 
 let inline withBigInt (extra: ExtraCoders): ExtraCoders =
     withCustomAndKey Encode.bigint Decode.bigint extra
+#endif

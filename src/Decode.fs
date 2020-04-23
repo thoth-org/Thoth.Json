@@ -905,6 +905,7 @@ module Decode =
     // Enum ///
     /////////
 
+    #if !FABLE_REPL_LIB
     module Enum =
 
         let inline byte<'TEnum when 'TEnum : enum<byte>> : Decoder<'TEnum> =
@@ -948,6 +949,7 @@ module Decode =
                 LanguagePrimitives.EnumOfValue<uint32, 'TEnum> value
                 |> succeed
             )
+    #endif
 
     //////////////////
     // Reflection ///
@@ -1049,7 +1051,7 @@ module Decode =
             if FSharpType.IsRecord(t, allowAccessToPrivateRepresentation=true) then
                 let decoders =
                     FSharpType.GetRecordFields(t, allowAccessToPrivateRepresentation=true)
-                    |> Array.map (fun fi -> 
+                    |> Array.map (fun fi ->
                         let name = Util.Casing.convert caseStrategy fi.Name
                         name, autoDecoder extra caseStrategy false fi.PropertyType)
                 fun path value ->
