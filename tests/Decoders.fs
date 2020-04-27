@@ -924,7 +924,7 @@ Expecting an object with path `user.firstname` but instead got:
         "age": 25
     }
 }
-Node `firstname` is unkown.
+Node `firstname` is unknown.
                         """.Trim())
 
                 let actual =
@@ -1827,7 +1827,7 @@ Expecting an object with path `user.firstname` but instead got:
         "age": 25
     }
 }
-Node `firstname` is unkown.
+Node `firstname` is unknown.
                         """.Trim())
 
                 let decoder =
@@ -2244,7 +2244,7 @@ Expecting an object with path `missing_field_2.sub_field` but instead got:
         "sub_field": "not_a_boolean"
     }
 }
-Node `sub_field` is unkown.
+Node `sub_field` is unknown.
 
 Error at: `$.fieldC`
 Expecting an int but instead got: "not_a_number"
@@ -2490,7 +2490,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                         """
 Error at: `$`
 Expecting Tests.Types.Enum_Int8[System.SByte] but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """.Trim())
 #else
                 let value =
@@ -2498,7 +2498,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Tests.Types+Enum_Int8 but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """.Trim())
 #endif
 
@@ -2516,7 +2516,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Tests.Types.Enum_UInt8[System.Byte] but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """.Trim())
 #else
                 let value =
@@ -2524,7 +2524,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Tests.Types+Enum_UInt8 but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """.Trim())
 #endif
 
@@ -2542,7 +2542,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Tests.Types.Enum_Int16[System.Int16] but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """.Trim())
 #else
                 let value =
@@ -2550,7 +2550,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Tests.Types+Enum_Int16 but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """.Trim())
 #endif
 
@@ -2568,7 +2568,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Tests.Types.Enum_UInt16[System.UInt16] but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """.Trim())
 #else
                 let value =
@@ -2576,7 +2576,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Tests.Types+Enum_UInt16 but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """.Trim())
 #endif
 
@@ -2594,7 +2594,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Tests.Types.Enum_Int[System.Int32] but instead got: 4
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """.Trim())
 #else
                 let value =
@@ -2602,7 +2602,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Tests.Types+Enum_Int but instead got: 4
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """.Trim())
 #endif
 
@@ -2620,7 +2620,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Tests.Types.Enum_UInt32[System.UInt32] but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """.Trim())
 #else
                 let value =
@@ -2628,7 +2628,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Tests.Types+Enum_UInt32 but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """.Trim())
 #endif
 
@@ -2754,6 +2754,32 @@ Reason: Unkown value provided for the enum
                 let json = """[[{"a":-1.5,"b":0},"ah"],[{"a":2,"b":2},"oh"]]"""
                 let actual = Decode.Auto.fromString json
                 equal (Ok expected) actual
+
+            testCase "Auto.fromString works with mutable dictionaries" <| fun _ ->
+                let expected = System.Collections.Generic.Dictionary()
+                expected.Add("oh", { a = 2.; b = 2. })
+                expected.Add("ah", { a = -1.5; b = 0. })
+                let json = """{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}}"""
+                let actual: System.Collections.Generic.Dictionary<_,_> =
+                    Decode.Auto.unsafeFromString json
+                for (KeyValue(k, v)) in expected do
+                    equal v actual.[k]
+                equal -1.5 actual.["ah"].a
+                actual.["ah"] <- { a = 0.; b = 0. }
+                equal 0. actual.["ah"].a
+
+            testCase "Auto.fromString works with mutable hashsets" <| fun _ ->
+                let expected = System.Collections.Generic.HashSet()
+                expected.Add({ a = 2.; b = 2. }) |> ignore
+                expected.Add({ a = -1.5; b = 0. }) |> ignore
+                let json = """[{"a":2,"b":2},{"a":-1.5,"b":0}]"""
+                let actual: System.Collections.Generic.HashSet<_> = Decode.Auto.unsafeFromString json
+                for x in expected do
+                    actual.Contains(x) |> equal true
+                actual.Add({ a = 3.; b = 3. }) |> ignore
+                equal 3 actual.Count
+                actual.Add({ a = 2.; b = 2. }) |> ignore
+                equal 3 actual.Count
 
             testCase "Decoder.Auto.toString works with bigint extra" <| fun _ ->
                 let extra = Extra.empty |> Extra.withBigInt

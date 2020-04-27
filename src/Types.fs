@@ -28,9 +28,25 @@ type BoxedDecoder = Decoder<obj>
 
 type BoxedEncoder = Encoder<obj>
 
+type FieldDecoderResult =
+    | UseOk of obj
+    | UseError of DecoderError
+    | UseAutoDecoder
+
+type FieldDecoder = string -> JsonValue option -> FieldDecoderResult
+
+type FieldEncoderResult =
+    | UseJsonValue of JsonValue
+    | IgnoreField
+    | UseAutoEncoder
+
+type FieldEncoder = obj -> FieldEncoderResult
+
 type ExtraCoders =
     { Hash: string
-      Coders: Map<string, BoxedEncoder * BoxedDecoder> }
+      Coders: Map<string, BoxedEncoder * BoxedDecoder>
+      FieldDecoders: Map<string, Map<string, FieldDecoder>>
+      FieldEncoders: Map<string, Map<string, FieldEncoder>> }
 
 module internal Util =
     open System.Collections.Generic
@@ -64,6 +80,6 @@ module internal Util =
         let lowerFirst (str : string) = str.[..0].ToLowerInvariant() + str.[1..]
         let convert caseStrategy fieldName =
             match caseStrategy with
-            | CamelCase -> lowerFirst fieldName 
+            | CamelCase -> lowerFirst fieldName
             | SnakeCase -> Regex.Replace(lowerFirst fieldName, "[A-Z]","_$0").ToLowerInvariant()
-            | PascalCase -> fieldName 
+            | PascalCase -> fieldName
