@@ -1,6 +1,7 @@
 [<RequireQualifiedAccess>]
 module Thoth.Json.Extra
 
+#if !FABLE_REPL_LIB
 let empty: ExtraCoders =
     { Hash = ""
       Coders = Map.empty
@@ -49,4 +50,4 @@ let __withCustomFieldEncoderAndKey typeFullName (fieldName: string) (fieldEncode
 
 let inline withCustomFieldEncoder<'T> (fieldName: string) (fieldEncoder: FieldEncoder) (extra: ExtraCoders) =
     __withCustomFieldEncoderAndKey typeof<'T>.FullName fieldName fieldEncoder extra
-
+#endif

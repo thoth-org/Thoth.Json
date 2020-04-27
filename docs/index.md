@@ -4,7 +4,7 @@ title: Thoth.Json
 
 [[toc]]
 
-This documentation is for `Thoth.Json` v3, documentation for older versions can be found here:
+This documentation is for `Thoth.Json` v4, documentation for older versions can be found here:
 
 - [Thoth.Json v1](/Thoth.Json/legacy/v1.html)
 - [Thoth.Json v2](/Thoth.Json/legacy/v2.html)

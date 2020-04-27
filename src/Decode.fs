@@ -905,6 +905,7 @@ module Decode =
     // Enum ///
     /////////
 
+    #if !FABLE_REPL_LIB
     module Enum =
 
         let inline byte<'TEnum when 'TEnum : enum<byte>> : Decoder<'TEnum> =
@@ -948,6 +949,7 @@ module Decode =
                 LanguagePrimitives.EnumOfValue<uint32, 'TEnum> value
                 |> succeed
             )
+    #endif
 
     //////////////////
     // Reflection ///
