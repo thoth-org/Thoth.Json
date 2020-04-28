@@ -504,6 +504,12 @@ let tests : Test =
                 equal expected actual2
                 equal actual1 actual2
 
+            testCase "Encode.Auto.toString works with seq" <| fun _ ->
+                let value = seq { yield 1; yield 2 }
+                let expected = """[1,2]"""
+                let actual = Encode.Auto.toString(0, value, skipNullField = false)
+                equal expected actual
+
             testCase "Encode.Auto.toString emit null field if setted for" <| fun _ ->
                 let value = { fieldA = null }
                 let expected = """{"fieldA":null}"""

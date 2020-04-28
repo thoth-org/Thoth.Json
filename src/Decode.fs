@@ -432,43 +432,7 @@ module Decode =
     // Data structure ///
     ////////////////////
 
-    let list (decoder : Decoder<'value>) : Decoder<'value list> =
-        fun path value ->
-            if Helpers.isArray value then
-                let mutable i = -1
-                let tokens = Helpers.asArray value
-                (Ok [], tokens) ||> Array.fold (fun acc value ->
-                    i <- i + 1
-                    match acc with
-                    | Error _ -> acc
-                    | Ok acc ->
-                        match decoder (path + ".[" + (i.ToString()) + "]") value with
-                        | Error er -> Error er
-                        | Ok value -> Ok (value::acc))
-                |> Result.map List.rev
-            else
-                (path, BadPrimitive ("a list", value))
-                |> Error
-
-    let seq (decoder : Decoder<'value>) : Decoder<'value seq> =
-        fun path value ->
-            if Helpers.isArray value then
-                let mutable i = -1
-                let tokens = Helpers.asArray value
-                (Ok (seq []), tokens) ||> Array.fold (fun acc value ->
-                    i <- i + 1
-                    match acc with
-                    | Error _ -> acc
-                    | Ok acc ->
-                        match decoder (path + ".[" + (i.ToString()) + "]") value with
-                        | Error er -> Error er
-                        | Ok value -> Ok (Seq.append [value] acc))
-                |> Result.map Seq.rev
-            else
-                (path, BadPrimitive ("a seq", value))
-                |> Error
-
-    let array (decoder : Decoder<'value>) : Decoder<'value array> =
+    let private arrayWith expectedMsg (mapping: 'value[] -> 'result) (decoder : Decoder<'value>) : Decoder<'result> =
         fun path value ->
             if Helpers.isArray value then
                 let mutable i = -1
@@ -482,9 +446,19 @@ module Decode =
                         match decoder (path + ".[" + (i.ToString()) + "]") value with
                         | Error er -> Error er
                         | Ok value -> acc.[i] <- value; Ok acc)
+                |> Result.map mapping
             else
-                (path, BadPrimitive ("an array", value))
+                (path, BadPrimitive (expectedMsg, value))
                 |> Error
+
+    let list (decoder : Decoder<'value>) : Decoder<'value list> =
+        arrayWith "a list" List.ofArray decoder
+
+    let seq (decoder : Decoder<'value>) : Decoder<'value seq> =
+        arrayWith "a seq" Seq.ofArray decoder
+
+    let array (decoder : Decoder<'value>) : Decoder<'value array> =
+        arrayWith "an array" id decoder
 
     let keyValuePairs (decoder : Decoder<'value>) : Decoder<(string * 'value) list> =
         fun path value ->
@@ -1169,9 +1143,8 @@ module Decode =
                     t.GenericTypeArguments.[0] |> (autoDecoder extra true) |> option |> boxDecoder
                 elif fullname = typedefof<obj list>.FullName then
                     t.GenericTypeArguments.[0] |> (autoDecoder extra false) |> list |> boxDecoder
-                // Disable seq support because I don't know how to implement it on Thoth.Json.Net side
-                // elif fullname = typedefof<obj seq>.FullName then
-                //     t.GenericTypeArguments.[0] |> (autoDecoder extra false) |> seq |> boxDecoder
+                elif fullname = typedefof<obj seq>.FullName then
+                    t.GenericTypeArguments.[0] |> (autoDecoder extra false) |> seq |> boxDecoder
                 elif fullname = typedefof< Map<string, obj> >.FullName then
                     autoDecodeMapOrDict (fun ar -> toMap (unbox ar) |> box) extra t
                 elif fullname = typedefof< System.Collections.Generic.Dictionary<string, obj> >.FullName then
