@@ -1042,6 +1042,14 @@ Expecting an array but instead got: 1
 
                 equal expected actual
 
+            testCase "keys works" <| fun _ ->
+                let expected = Ok(["a"; "b"; "c"])
+
+                let actual =
+                    Decode.fromString Decode.keys """{ "a": 1, "b": 2, "c": 3 }"""
+
+                equal expected actual
+
             testCase "keyValuePairs works" <| fun _ ->
                 let expected = Ok([("a", 1) ; ("b", 2) ; ("c", 3)])
 
@@ -1442,6 +1450,44 @@ Expecting an object with a field named `version` but instead got:
 
                 equal expected actual
 
+
+            testCase "all works" <| fun _ ->
+                let expected = Ok [1; 2; 3]
+
+                let decodeAll = Decode.all [
+                    Decode.succeed 1
+                    Decode.succeed 2
+                    Decode.succeed 3
+                ]
+
+                let actual = Decode.fromString decodeAll "{}"
+
+                equal expected actual
+
+
+            testCase "all succeeds on empty lists" <| fun _ ->
+                let expected = Ok []
+
+                let decodeNone = Decode.all []
+
+                let actual = Decode.fromString decodeNone "{}"
+
+                equal expected actual
+
+
+            testCase "all fails when one decoder fails" <| fun _ ->
+                let msg = "Failed"
+                let expected = Error("Error at: `$`\nThe following `failure` occurred with the decoder: " + msg)
+
+                let decodeAll = Decode.all [
+                    Decode.succeed 1
+                    Decode.fail msg
+                    Decode.succeed 3
+                ]
+
+                let actual = Decode.fromString decodeAll "{}"
+
+                equal expected actual
         ]
 
         testList "Mapping" [
