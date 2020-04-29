@@ -1050,6 +1050,14 @@ Expecting an array but instead got: 1
 
                 equal expected actual
 
+            testCase "keys returns an error for invalid objects" <| fun _ ->
+                let expected = Error("Error at: `$`\nExpecting an object but instead got: 1")
+
+                let actual =
+                    Decode.fromString Decode.keys "1"
+
+                equal expected actual
+
             testCase "keyValuePairs works" <| fun _ ->
                 let expected = Ok([("a", 1) ; ("b", 2) ; ("c", 3)])
 
@@ -1476,12 +1484,11 @@ Expecting an object with a field named `version` but instead got:
 
 
             testCase "all fails when one decoder fails" <| fun _ ->
-                let msg = "Failed"
-                let expected = Error("Error at: `$`\nThe following `failure` occurred with the decoder: " + msg)
+                let expected = Error("Error at: `$`\nExpecting an int but instead got: {}")
 
                 let decodeAll = Decode.all [
                     Decode.succeed 1
-                    Decode.fail msg
+                    Decode.int
                     Decode.succeed 3
                 ]
 
