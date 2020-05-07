@@ -486,10 +486,19 @@ module Decode =
                 (path, BadPrimitive ("an array", value))
                 |> Error
 
-    let keyValuePairs (decoder : Decoder<'value>) : Decoder<(string * 'value) list> =
+    let keys: Decoder<string list> =
         fun path value ->
             if Helpers.isObject value then
-                (Ok [], Helpers.objectKeys value) ||> Seq.fold (fun acc prop ->
+                Helpers.objectKeys value |> List.ofSeq |> Ok
+            else
+                (path, BadPrimitive ("an object", value))
+                |> Error
+
+    let keyValuePairs (decoder : Decoder<'value>) : Decoder<(string * 'value) list> =
+        fun path value ->
+            match keys path value with
+            | Ok objectKeys ->
+                (Ok [], objectKeys) ||> List.fold (fun acc prop ->
                     match acc with
                     | Error _ -> acc
                     | Ok acc ->
@@ -497,9 +506,7 @@ module Decode =
                         | Error er -> Error er
                         | Ok value -> (prop, value)::acc |> Ok)
                 |> Result.map List.rev
-            else
-                (path, BadPrimitive ("an object", value))
-                |> Error
+            | Error e -> Error e
 
     //////////////////////////////
     // Inconsistent Structure ///
@@ -544,6 +551,18 @@ module Decode =
             match decoder path value with
             | Error error -> Error error
             | Ok result -> cb result path value
+
+    let all (decoders: Decoder<'a> list): Decoder<'a list> =
+        fun path value ->
+            let rec runner (decoders: Decoder<'a> list) (values: 'a list) =
+                match decoders with
+                | decoder :: tail ->
+                    match decoder path value with
+                    | Ok value -> runner tail (values @ [ value ])
+                    | Error error -> Error error
+                | [] -> Ok values
+
+            runner decoders []
 
     /////////////////////
     // Map functions ///

@@ -1042,6 +1042,22 @@ Expecting an array but instead got: 1
 
                 equal expected actual
 
+            testCase "keys works" <| fun _ ->
+                let expected = Ok(["a"; "b"; "c"])
+
+                let actual =
+                    Decode.fromString Decode.keys """{ "a": 1, "b": 2, "c": 3 }"""
+
+                equal expected actual
+
+            testCase "keys returns an error for invalid objects" <| fun _ ->
+                let expected = Error("Error at: `$`\nExpecting an object but instead got: 1")
+
+                let actual =
+                    Decode.fromString Decode.keys "1"
+
+                equal expected actual
+
             testCase "keyValuePairs works" <| fun _ ->
                 let expected = Ok([("a", 1) ; ("b", 2) ; ("c", 3)])
 
@@ -1442,6 +1458,57 @@ Expecting an object with a field named `version` but instead got:
 
                 equal expected actual
 
+
+            testCase "all works" <| fun _ ->
+                let expected = Ok [1; 2; 3]
+
+                let decodeAll = Decode.all [
+                    Decode.succeed 1
+                    Decode.succeed 2
+                    Decode.succeed 3
+                ]
+
+                let actual = Decode.fromString decodeAll "{}"
+
+                equal expected actual
+
+            testCase "combining Decode.all and Decode.keys works" <| fun _ ->
+                let expected = Ok [1; 2; 3]
+
+                let decoder =
+                    Decode.keys
+                    |> Decode.andThen (fun keys ->
+                        keys
+                        |> List.except ["special_property"]
+                        |> List.map (fun key -> Decode.field key Decode.int)
+                        |> Decode.all)
+
+                let actual = Decode.fromString decoder """{ "a": 1, "b": 2, "c": 3 }"""
+
+                equal expected actual
+
+            testCase "all succeeds on empty lists" <| fun _ ->
+                let expected = Ok []
+
+                let decodeNone = Decode.all []
+
+                let actual = Decode.fromString decodeNone "{}"
+
+                equal expected actual
+
+
+            testCase "all fails when one decoder fails" <| fun _ ->
+                let expected = Error("Error at: `$`\nExpecting an int but instead got: {}")
+
+                let decodeAll = Decode.all [
+                    Decode.succeed 1
+                    Decode.int
+                    Decode.succeed 3
+                ]
+
+                let actual = Decode.fromString decodeAll "{}"
+
+                equal expected actual
         ]
 
         testList "Mapping" [

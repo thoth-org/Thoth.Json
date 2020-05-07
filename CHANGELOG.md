@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 4.1.0 - 2020-05-07
+
+### Added
+
+* Add `keys` and `all` decoders (by @felixschorer)
+
 ## 4.0.0 - 2020-03-04
 
 ### Changed
