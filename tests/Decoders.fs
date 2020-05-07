@@ -2528,6 +2528,14 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let res = Decode.Auto.unsafeFromString<int array>(json)
                 equal value res
 
+            testCase "Auto decoders works for seq" <| fun _ ->
+                let value = [1; 2; 3; 4]
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString<int seq>(json)
+                // Comparing directly against a seq won't work, because
+                // res is actually an array in disguise
+                equal value (List.ofSeq res)
+
             testCase "Auto decoders works for option None" <| fun _ ->
                 let value = None
                 let json = Encode.Auto.toString(4, value)

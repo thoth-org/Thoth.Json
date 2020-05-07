@@ -512,9 +512,8 @@ If you can't use one of these types, please pass an extra encoder.
                         else encoder.Value value)
                 elif fullname = typedefof<obj list>.FullName
                     || fullname = typedefof<Set<string>>.FullName
-                    || fullname = typedefof<HashSet<string>>.FullName then
-                    // Disable seq support for now because I don't know how to implements to on Thoth.Json.Net
-                    // || fullname = typedefof<obj seq>.FullName then
+                    || fullname = typedefof<HashSet<string>>.FullName
+                    || fullname = typedefof<obj seq>.FullName then
                     let encoder = t.GenericTypeArguments.[0] |> autoEncoder extra skipNullField
                     fun (value: obj) ->
                         value :?> obj seq |> Seq.map encoder |> seq
