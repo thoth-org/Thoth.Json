@@ -29,15 +29,21 @@ type BoxedDecoder = Decoder<obj>
 type BoxedEncoder = Encoder<obj>
 
 type FieldDecoderResult =
+    /// Use when the decoding is a success
     | UseOk of obj
+    /// Returns an error
     | UseError of DecoderError
+    /// Let Thoth.Json decode the type using the Auto module, this is the default behaviour
     | UseAutoDecoder
 
 type FieldDecoder = string -> JsonValue option -> FieldDecoderResult
 
 type FieldEncoderResult =
+    /// Use the given JsonValue for the output ignoring what Thoth.Json would have generated for the current field
     | UseJsonValue of JsonValue
+    /// Remove the current field from the generated JSON
     | IgnoreField
+    /// Let Thoth.Json generates the encoder automatically, this is the default behaviour
     | UseAutoEncoder
 
 type FieldEncoder = obj -> FieldEncoderResult
