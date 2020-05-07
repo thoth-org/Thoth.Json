@@ -1472,6 +1472,20 @@ Expecting an object with a field named `version` but instead got:
 
                 equal expected actual
 
+            testCase "combining Decode.all and Decode.keys works" <| fun _ ->
+                let expected = Ok [1; 2; 3]
+
+                let decoder =
+                    Decode.keys
+                    |> Decode.andThen (fun keys ->
+                        keys
+                        |> List.except ["special_property"]
+                        |> List.map (fun key -> Decode.field key Decode.int)
+                        |> Decode.all)
+
+                let actual = Decode.fromString decoder """{ "a": 1, "b": 2, "c": 3 }"""
+
+                equal expected actual
 
             testCase "all succeeds on empty lists" <| fun _ ->
                 let expected = Ok []
