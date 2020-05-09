@@ -22,6 +22,7 @@ If you are interested on using it against .NET Core or .NET Framework, please us
     <Compile Include="Decode.fs" />
     <Compile Include="Encode.fs" />
     <Compile Include="Extra.fs" />
+    <Compile Include="Builder.fs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="*.fsproj; **\*.fs; **\*.js" PackagePath="fable" />

@@ -9,6 +9,7 @@ let run () =
     let tests = [ Tests.Decoders.tests
                   Tests.Encoders.tests
                   Tests.ExtraCoders.tests
+                  Tests.Builder.tests
                 ] :> Util.Testing.Test seq
 
     for (moduleName, moduleTests) in tests do

@@ -180,6 +180,36 @@ type User =
 val it : Result<User, string> = Ok { Id = 67; Name = ""; Email = "user@mail.com"; Followers = 0 }
 ```
 
+### Computation expressions
+
+The `decoder` computation expression can be used when decoding complex JSON structures.
+
+```fsharp
+open Thoth.Json
+open Thoth.Json.Builder
+
+type FunctionCall =
+    { Name: string
+      Args: float list }
+
+    static member Decoder: Decoder<FunctionCall> =
+        decoder {
+            let! name = Decode.index 0 Decode.string
+            let! numberOfArgs = Decode.index 1 Decode.int
+            let! args =
+                [ 2 .. numberOfArgs + 1 ]
+                |> List.map (fun idx -> Decode.index idx Decode.float)
+                |> Decode.all
+
+            return { Name = name
+                     Args = args }
+        }
+
+> Decode.fromString FunctionCall.Decoder """["square", 3, 1.23, 2, 42]"""
+val it : Result<FunctionCall, string> = Ok { Name = "square"; Args = [1.23; 2; 42] }
+```
+
+
 ## Encoder
 
 Module for turning F# values into JSON values.
