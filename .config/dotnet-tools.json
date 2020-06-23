@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "paket": {
-      "version": "5.226.0",
+      "version": "5.247.3",
       "commands": [
         "paket"
       ]
@@ -12,6 +12,12 @@
       "version": "5.18.1",
       "commands": [
         "fake"
+      ]
+    },
+    "fornax": {
+      "version": "0.13.1",
+      "commands": [
+        "fornax"
       ]
     }
   }
