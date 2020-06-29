@@ -18,9 +18,6 @@ open Expecto
 open Tests.Types
 open System
 
-type RecordWithPrivateConstructor = private { Foo1: int; Foo2: float }
-type UnionWithPrivateConstructor = private Bar of string | Baz
-
 let tests =
     testList "Thoth.Json.Encode" [
 
@@ -31,21 +28,21 @@ let tests =
                 let actual =
                     Encode.string "maxime"
                     |> Encode.toString 0
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an int works" <| fun _ ->
                 let expected = "1"
                 let actual =
                     Encode.int 1
                     |> Encode.toString 0
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a float works" <| fun _ ->
                 let expected = "1.2"
                 let actual =
                     Encode.float 1.2
                     |> Encode.toString 0
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an array works" <| fun _ ->
                 let expected =
@@ -55,7 +52,7 @@ let tests =
                         [| Encode.string "maxime"
                            Encode.int 2
                         |] |> Encode.toString 0
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a list works" <| fun _ ->
                 let expected =
@@ -65,28 +62,28 @@ let tests =
                         [ Encode.string "maxime"
                           Encode.int 2
                         ] |> Encode.toString 0
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a bool works" <| fun _ ->
                 let expected = "false"
                 let actual =
                     Encode.bool false
                     |> Encode.toString 0
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a null works" <| fun _ ->
                 let expected = "null"
                 let actual =
                     Encode.nil
                     |> Encode.toString 0
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "unit works" <| fun _ ->
                 let expected = "null"
                 let actual =
                     Encode.unit ()
                     |> Encode.toString 0
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an object works" <| fun _ ->
                 let expected =
@@ -96,7 +93,7 @@ let tests =
                         [ ("firstname", Encode.string "maxime")
                           ("age", Encode.int 25)
                         ] |> Encode.toString 0
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a dict works" <| fun _ ->
                 let expected =
@@ -109,7 +106,7 @@ let tests =
                         ]
                     |> Encode.dict
                     |> Encode.toString 0
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a bigint works" <| fun _ ->
                 let expected = "\"12\""
@@ -117,7 +114,7 @@ let tests =
                     Encode.bigint 12I
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a datetime works" <| fun _ ->
                 #if FABLE_COMPILER
@@ -130,7 +127,7 @@ let tests =
                     |> Encode.datetime
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a datetimeOffset works" <| fun _ ->
                 #if FABLE_COMPILER
@@ -143,7 +140,7 @@ let tests =
                     |> Encode.datetimeOffset
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a timeSpan works" <| fun _ ->
                 let expected = "\"1.02:03:04.0050000\""
@@ -152,7 +149,7 @@ let tests =
                     |> Encode.timespan
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a decimal works" <| fun _ ->
                 let expected = "\"0.7833\""
@@ -161,7 +158,7 @@ let tests =
                     |> Encode.decimal
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a guid works" <| fun _ ->
                 let expected = "\"1e5dee25-8558-4392-a9fb-aae03f81068f\""
@@ -170,7 +167,7 @@ let tests =
                     |> Encode.guid
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an byte works" <| fun _ ->
                 let expected = "\"99\""
@@ -179,7 +176,7 @@ let tests =
                     |> Encode.byte
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an sbyte works" <| fun _ ->
                 let expected = "\"99\""
@@ -188,7 +185,7 @@ let tests =
                     |> Encode.sbyte
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an int16 works" <| fun _ ->
                 let expected = "\"99\""
@@ -197,7 +194,7 @@ let tests =
                     |> Encode.int16
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an uint16 works" <| fun _ ->
                 let expected = "\"99\""
@@ -206,7 +203,7 @@ let tests =
                     |> Encode.uint16
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an int64 works" <| fun _ ->
                 let expected = "\"7923209\""
@@ -215,7 +212,7 @@ let tests =
                     |> Encode.int64
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an uint64 works" <| fun _ ->
                 let expected = "\"7923209\""
@@ -224,49 +221,49 @@ let tests =
                     |> Encode.uint64
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an enum<sbyte> works" <| fun _ ->
                 let expected = "\"99\""
                 let actual =
                     Encode.toString 0 (Encode.Enum.sbyte Enum_Int8.NinetyNine)
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an enum<byte> works" <| fun _ ->
                 let expected = "\"99\""
                 let actual =
                     Encode.toString 0 (Encode.Enum.byte Enum_UInt8.NinetyNine)
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an enum<int> works" <| fun _ ->
                 let expected = "1"
                 let actual =
                     Encode.toString 0 (Encode.Enum.int Enum_Int.One)
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an enum<uint32> works" <| fun _ ->
                 let expected = "99"
                 let actual =
                     Encode.toString 0 (Encode.Enum.uint32 Enum_UInt32.NinetyNine)
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an enum<int16> works" <| fun _ ->
                 let expected = "\"99\""
                 let actual =
                     Encode.toString 0 (Encode.Enum.int16 Enum_Int16.NinetyNine)
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "an enum<uint16> works" <| fun _ ->
                 let expected = "\"99\""
                 let actual =
                     Encode.toString 0 (Encode.Enum.uint16 Enum_UInt16.NinetyNine)
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a tuple2 works" <| fun _ ->
                 let expected = """[1,"maxime"]"""
@@ -277,7 +274,7 @@ let tests =
                         (1, "maxime")
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a tuple3 works" <| fun _ ->
                 let expected = """[1,"maxime",2.5]"""
@@ -289,7 +286,7 @@ let tests =
                         (1, "maxime", 2.5)
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a tuple4 works" <| fun _ ->
                 let expected = """[1,"maxime",2.5,{"fieldA":"test"}]"""
@@ -302,7 +299,7 @@ let tests =
                         (1, "maxime", 2.5, { fieldA = "test" })
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a tuple5 works" <| fun _ ->
                 #if FABLE_COMPILER
@@ -320,7 +317,7 @@ let tests =
                         (1, "maxime", 2.5, { fieldA = "test" }, DateTime(2018, 10, 1, 11, 12, 55, DateTimeKind.Utc))
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a tuple6 works" <| fun _ ->
                 let expected = """[1,"maxime",2.5,{"fieldA":"test"},false,null]"""
@@ -335,7 +332,7 @@ let tests =
                         (1, "maxime", 2.5, { fieldA = "test" }, false, null)
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a tuple7 works" <| fun _ ->
                 let expected = """[1,"maxime",2.5,{"fieldA":"test"},false,null,true]"""
@@ -351,7 +348,7 @@ let tests =
                         (1, "maxime", 2.5, { fieldA = "test" }, false, null, true)
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "a tuple8 works" <| fun _ ->
                 let expected = """[1,"maxime",2.5,{"fieldA":"test"},false,null,true,98]"""
@@ -368,7 +365,7 @@ let tests =
                         (1, "maxime", 2.5, { fieldA = "test" }, false, null, true, 98)
                     |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "using pretty space works" <| fun _ ->
                 let expected = "{\n    \"firstname\": \"maxime\",\n    \"age\": 25\n}"
@@ -378,7 +375,7 @@ let tests =
                         [ ("firstname", Encode.string "maxime")
                           ("age", Encode.int 25)
                         ] |> Encode.toString 4
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "complex structure works" <| fun _ ->
                 let expected =
@@ -393,7 +390,7 @@ let tests =
                                           "city", Encode.string "Bordeaux"
                                         ])
                         ] |> Encode.toString 4
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "option with a value `Some ...` works" <| fun _ ->
                 let expected = """{"id":1,"operator":"maxime"}"""
@@ -404,7 +401,7 @@ let tests =
                           ("operator", Encode.option Encode.string (Some "maxime"))
                         ] |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
             testCase "option without a value `None` works" <| fun _ ->
                 let expected = """{"id":1,"operator":null}"""
@@ -415,7 +412,7 @@ let tests =
                           ("operator", Encode.option Encode.string None)
                         ] |> Encode.toString 0
 
-                Expect.equal expected actual ""
+                Expect.equal actual expected ""
 
       ]
 

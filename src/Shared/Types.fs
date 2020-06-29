@@ -6,6 +6,11 @@ namespace Thoth.Json.Fable
 namespace Thoth.Json.Newtonsoft
 #endif
 
+type CaseStrategy =
+    | PascalCase
+    | CamelCase
+    | SnakeCase
+
 type ErrorReason =
     | BadPrimitive of string * JsonValue
     | BadPrimitiveExtra of string * JsonValue * string
@@ -75,3 +80,45 @@ module DecoderError =
             errorToString (path, error)
         | _ ->
             "Error at: `" + path + "`\n" + errorToString (path, error)
+
+[<AbstractClass>]
+type BoxedDecoder() =
+    abstract Decode : value : JsonValue -> Result<obj, DecoderError>
+    member this.BoxedDecoder : Decoder<obj> =
+        fun value -> this.Decode(value)
+
+[<AbstractClass>]
+type BoxedEncoder() =
+    abstract Encode : value : obj -> JsonValue
+    member this.BoxedEncoder : Encoder<obj> =
+        this.Encode
+
+type ExtraCoders =
+    {
+        Hash : string
+        Coders : Map<string, BoxedEncoder * BoxedDecoder>
+    }
+
+module internal Cache =
+
+    open System.Collections.Concurrent
+
+    type Cache<'Value>() =
+        let cache = ConcurrentDictionary<string, 'Value>()
+        member __.GetOrAdd(key: string, factory: string->'Value) =
+            cache.GetOrAdd(key, factory)
+
+    let Encoders = lazy Cache<BoxedEncoder>()
+    let Decoders = lazy Cache<BoxedDecoder>()
+
+module Util =
+
+    open System.Text.RegularExpressions
+
+    module Casing =
+        let lowerFirst (str : string) = str.[..0].ToLowerInvariant() + str.[1..]
+        let convert caseStrategy fieldName =
+            match caseStrategy with
+            | CamelCase -> lowerFirst fieldName
+            | SnakeCase -> Regex.Replace(lowerFirst fieldName, "[A-Z]","_$0").ToLowerInvariant()
+            | PascalCase -> fieldName

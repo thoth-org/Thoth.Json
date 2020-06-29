@@ -26,6 +26,7 @@ If you are interested on using it against .NET Core or .NET Framework, please us
     <Compile Include="../Shared/Encode.fs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="../Shared/Extra.fs" />
     <Content Include="*.fsproj; **\*.fs; **\*.js" PackagePath="fable" />
   </ItemGroup>
   <ItemGroup>

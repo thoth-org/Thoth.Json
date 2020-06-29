@@ -334,7 +334,7 @@ module Encode =
         JValue(value.ToString(CultureInfo.InvariantCulture)) :> JsonValue
         #endif
 
-    let inline int (value : int) : JsonValue =
+    let int (value : int) : JsonValue =
         #if THOTH_JSON_FABLE
         box value
         #endif
@@ -343,7 +343,7 @@ module Encode =
         JValue(value) :> JsonValue
         #endif
 
-    let inline uint32 (value : uint32) : JsonValue =
+    let uint32 (value : uint32) : JsonValue =
         #if THOTH_JSON_FABLE
         box value
         #endif
@@ -610,3 +610,351 @@ module Encode =
     ///
     let option (encoder : 'a -> JsonValue) =
         Option.map encoder >> Option.defaultWith (fun _ -> nil)
+
+    //////////////////
+    // Reflection ///
+    ////////////////
+
+    open FSharp.Reflection
+
+    type private EncoderCrate<'T>(enc: Encoder<'T>) =
+        inherit BoxedEncoder()
+        override __.Encode(value: obj): JsonValue =
+            enc (unbox value)
+        member __.UnboxedEncoder = enc
+
+    let boxEncoder (d: Encoder<'T>): BoxedEncoder =
+        EncoderCrate(d) :> BoxedEncoder
+
+    let unboxEncoder<'T> (d: BoxedEncoder): Encoder<'T> =
+        (d :?> EncoderCrate<'T>).UnboxedEncoder
+
+    let private (|StringifiableType|_|) (t: System.Type): (obj->string) option =
+        let fullName = t.FullName
+        if fullName = typeof<string>.FullName then
+            Some unbox
+        elif fullName = typeof<System.Guid>.FullName then
+            Some(fun (v: obj) -> (v :?> System.Guid).ToString())
+        else None
+
+    #if !NETFRAMEWORK
+    let private (|StringEnum|_|) (typ : System.Type) =
+        typ.CustomAttributes
+        |> Seq.tryPick (function
+            | attr when attr.AttributeType.FullName = typeof<Fable.Core.StringEnumAttribute>.FullName -> Some attr
+            | _ -> None
+        )
+
+    let private (|CompiledName|_|) (caseInfo : UnionCaseInfo) =
+        caseInfo.GetCustomAttributes()
+        |> Seq.tryPick (function
+            | :? CompiledNameAttribute as att -> Some att.CompiledName
+            | _ -> None)
+
+    let private (|LowerFirst|Forward|) (args : IList<System.Reflection.CustomAttributeTypedArgument>) =
+        args
+        |> Seq.tryPick (function
+            | rule when rule.ArgumentType.FullName = typeof<Fable.Core.CaseRules>.FullName -> Some rule
+            | _ -> None
+        )
+        |> function
+        | Some rule ->
+            match rule.Value with
+            | :? int as value ->
+                printfn "%A" value
+                match value with
+                | 0 -> Forward
+                | 1 -> LowerFirst
+                | _ -> LowerFirst // should not happen
+            | _ -> LowerFirst // should not happen
+        | None ->
+            LowerFirst
+    #endif
+
+    let rec inline private handleRecord (extra : Map<string, ref<BoxedEncoder>>)
+                                (caseStrategy : CaseStrategy)
+                                (skipNullField : bool)
+                                (t : System.Type) : BoxedEncoder =
+        let setters =
+            FSharpType.GetRecordFields(t, allowAccessToPrivateRepresentation = true)
+            |> Array.map (fun propertyInfo ->
+                let targetKey = Util.Casing.convert caseStrategy propertyInfo.Name
+                let encoder = autoEncoder extra caseStrategy skipNullField propertyInfo.PropertyType
+                fun (source : obj) (res : JObject) ->
+                    let value = FSharpValue.GetRecordField(source, propertyInfo)
+                    // Discard null value
+                    if not skipNullField || (skipNullField && not (isNull value)) then
+                        res.[targetKey] <- encoder.Encode value
+                    res
+            )
+        boxEncoder(fun (value : obj) ->
+            (JObject(), setters)
+            ||> Array.fold (fun res set ->
+                set value res
+            ) :> JsonValue
+        )
+
+    and inline private handleUnion (extra : Map<string, ref<BoxedEncoder>>)
+                            (caseStrategy : CaseStrategy)
+                            (skipNullField : bool)
+                            (t : System.Type) : BoxedEncoder =
+        boxEncoder(fun (value : obj) ->
+            let info, fields = FSharpValue.GetUnionFields(value, t, allowAccessToPrivateRepresentation = true)
+            match fields.Length with
+            | 0 ->
+                #if !NETFRAMEWORK
+                match t with
+                // Replicate Fable behaviour when using StringEnum
+                | StringEnum t ->
+                    match info with
+                    | CompiledName name -> string name
+                    | _ ->
+                        match t.ConstructorArguments with
+                        | LowerFirst ->
+                            let name = info.Name.[..0].ToLowerInvariant() + info.Name.[1..]
+                            string name
+                        | Forward -> string info.Name
+
+                | _ -> string info.Name
+                #else
+                string info.Name
+                #endif
+            | length ->
+                let fieldTypes = info.GetFields()
+                let res = Array.zeroCreate(length + 1)
+                res.[0] <- string info.Name
+                for i = 1 to length do
+                    let encoder = autoEncoder extra caseStrategy skipNullField fieldTypes.[i-1].PropertyType
+                    res.[i] <- encoder.Encode(fields.[i-1])
+                array res
+        )
+
+    and inline private handleRecordAndUnion (extra : Map<string, ref<BoxedEncoder>>)
+                            (caseStrategy : CaseStrategy)
+                            (skipNullField : bool)
+                            (t : System.Type) : BoxedEncoder =
+        // Add the encoder to extra in case one of the fields is recursive
+        let encoderRef = ref Unchecked.defaultof<_>
+        let extra = extra |> Map.add t.FullName encoderRef
+
+        let encoder =
+            if FSharpType.IsRecord(t, allowAccessToPrivateRepresentation = true) then
+                handleRecord extra caseStrategy skipNullField t
+            else if FSharpType.IsUnion(t, allowAccessToPrivateRepresentation = true) then
+                handleUnion extra caseStrategy skipNullField t
+            else
+                failwithf "Cannot generate auto encoder for %s. Please pass an extra coder." t.FullName
+
+        encoderRef := encoder
+        encoder
+
+    and inline private handleGenericSeq (encoder : BoxedEncoder) =
+        boxEncoder(fun (elements : obj) ->
+            let array = JArray()
+            for element in elements :?> System.Collections.IEnumerable do
+                array.Add(encoder.Encode element)
+            array :> JsonValue
+        )
+
+    and inline private handleEnum (t : System.Type) (fullName : string) =
+        let enumType = System.Enum.GetUnderlyingType(t).FullName
+        if enumType = typeof<sbyte>.FullName then
+            boxEncoder sbyte
+        else if enumType = typeof<byte>.FullName then
+            boxEncoder byte
+        else if enumType = typeof<int16>.FullName then
+            boxEncoder int16
+        else if enumType = typeof<uint16>.FullName then
+            boxEncoder uint16
+        else if enumType = typeof<int>.FullName then
+            boxEncoder int
+        else if enumType = typeof<uint32>.FullName then
+            boxEncoder uint32
+        else
+            failwithf
+                """Cannot generate auto encoder for %s.
+Only the following enum type are supported:
+- sbyte
+- byte
+- int16
+- uint16
+- int
+- uint32
+If you can't use one of these types, please pass add a new extra coder.
+                """
+                fullName
+
+    and inline private handleTuple (extra : Map<string, ref<BoxedEncoder>>)
+                (caseStrategy : CaseStrategy)
+                (skipNullField : bool)
+                (t : System.Type) : BoxedEncoder =
+
+        let encoders =
+            FSharpType.GetTupleElements(t)
+            |> Array.map (fun typ ->
+                autoEncoder extra caseStrategy skipNullField typ
+            )
+
+        boxEncoder(fun (value : obj) ->
+            FSharpValue.GetTupleFields(value)
+            |> Array.mapi (fun i fieldValue ->
+                encoders.[i].Encode fieldValue
+            )
+            |> seq
+        )
+
+    and inline private handleGeneric (extra : Map<string, ref<BoxedEncoder>>)
+                                (caseStrategy : CaseStrategy)
+                                (skipNullField : bool)
+                                (t : System.Type) : BoxedEncoder =
+        let fullName = t.GetGenericTypeDefinition().FullName
+
+        if fullName = typedefof<obj option>.FullName then
+            // Evaluate lazily so we don't need to generate the encoder for null values
+            let encoder = lazy autoEncoder extra caseStrategy skipNullField t.GenericTypeArguments.[0]
+            boxEncoder(fun (value: obj) ->
+                if isNull value then
+                    nil
+                else
+                    let _, fields = FSharpValue.GetUnionFields(value, t, allowAccessToPrivateRepresentation=true)
+                    encoder.Value.Encode fields.[0]
+            )
+
+        else if fullName = typedefof<obj list>.FullName
+                    || fullName = typedefof<Set<string>>.FullName then
+            t.GenericTypeArguments.[0]
+            |> autoEncoder extra caseStrategy skipNullField
+            |> handleGenericSeq
+
+        else if fullName = typedefof<Map<string, obj>>.FullName then
+            let keyType = t.GenericTypeArguments.[0]
+            let valueType = t.GenericTypeArguments.[1]
+            let valueEncoder =
+                valueType
+                |> autoEncoder extra caseStrategy skipNullField
+            let kvProps = typedefof<KeyValuePair<obj, obj>>.MakeGenericType(keyType, valueType).GetProperties()
+            match keyType with
+            | StringifiableType toString ->
+                boxEncoder(fun (value : obj) ->
+                    let res = JObject()
+                    for kv in value :?> System.Collections.IEnumerable do
+                        let k = kvProps.[0].GetValue(kv)
+                        let v = kvProps.[1].GetValue(kv)
+                        res.[toString k] <- valueEncoder.Encode v
+                    res :> JsonValue
+                )
+
+            | _ ->
+                boxEncoder(fun (value : obj) ->
+                    let keyEncoder =
+                        keyType
+                        |> autoEncoder extra caseStrategy skipNullField
+                    let res = JArray()
+                    for kv in value :?> System.Collections.IEnumerable do
+                        let k = kvProps.[0].GetValue(kv)
+                        let v = kvProps.[1].GetValue(kv)
+                        res.Add(JArray [| keyEncoder.Encode k; valueEncoder.Encode v |])
+                    res :> JsonValue
+                )
+
+        else
+            handleRecordAndUnion extra caseStrategy skipNullField t
+
+    and private autoEncoder (extra : Map<string, ref<BoxedEncoder>>)
+                            (caseStrategy : CaseStrategy)
+                            (skipNullField : bool)
+                            (t : System.Type) : BoxedEncoder =
+        let fullName = t.FullName
+        match Map.tryFind fullName extra with
+        | Some encoderRef ->
+            boxEncoder(fun v -> encoderRef.contents.BoxedEncoder v)
+
+        | None ->
+            if t.IsArray then
+                t.GetElementType()
+                |> autoEncoder extra caseStrategy skipNullField
+                |> handleGenericSeq
+            else if t.IsEnum then
+                handleEnum t fullName
+            else if FSharpType.IsTuple(t) then
+                handleTuple extra caseStrategy skipNullField t
+            else if t.IsGenericType then
+                handleGeneric extra caseStrategy skipNullField t
+            else if fullName = typeof<bool>.FullName then
+                boxEncoder bool
+            else if fullName = typeof<unit>.FullName then
+                boxEncoder unit
+            else if fullName = typeof<string>.FullName then
+                boxEncoder string
+            else if fullName = typeof<sbyte>.FullName then
+                boxEncoder sbyte
+            else if fullName = typeof<byte>.FullName then
+                boxEncoder byte
+            else if fullName = typeof<int16>.FullName then
+                boxEncoder int16
+            else if fullName = typeof<uint16>.FullName then
+                boxEncoder uint16
+            else if fullName = typeof<int>.FullName then
+                boxEncoder int
+            else if fullName = typeof<uint32>.FullName then
+                boxEncoder uint32
+            else if fullName = typeof<float>.FullName then
+                boxEncoder float
+            else if fullName = typeof<float32>.FullName then
+                boxEncoder float32
+            else if fullName = typeof<System.DateTime>.FullName then
+                boxEncoder datetime
+            else if fullName = typeof<System.DateTimeOffset>.FullName then
+                boxEncoder datetimeOffset
+            else if fullName = typeof<System.TimeSpan>.FullName then
+                boxEncoder timespan
+            else if fullName = typeof<System.Guid>.FullName then
+                boxEncoder guid
+            // Allows to encode null values
+            else if fullName = typeof<obj>.FullName then
+                boxEncoder(fun (v: obj) -> JValue(v) :> JsonValue)
+            else
+                handleRecordAndUnion extra caseStrategy skipNullField t
+
+    let private makeExtra (extra: ExtraCoders option) =
+        match extra with
+        | None -> Map.empty
+        | Some e -> Map.map (fun _ (enc,_) -> ref enc) e.Coders
+
+    module Auto =
+
+        /// The goal of this API is to provide better interop when consuming Thoth.Json.Net from a C# project
+        type LowLevel =
+            /// ATTENTION: Use this only when other arguments (isCamelCase, extra) don't change
+            static member generateEncoderCached<'T> (t: System.Type, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool): Encoder<'T> =
+                let caseStrategy = defaultArg caseStrategy PascalCase
+                let skipNullField = defaultArg skipNullField true
+
+                let key =
+                    t.FullName
+                    |> (+) (Operators.string caseStrategy)
+                    |> (+) (extra |> Option.map (fun e -> e.Hash) |> Option.defaultValue "")
+
+                let encoderCrate =
+                    Cache.Encoders.Value.GetOrAdd(key, fun _ ->
+                        autoEncoder (makeExtra extra) caseStrategy skipNullField t)
+
+                fun (value: 'T) ->
+                    encoderCrate.Encode value
+
+    type Auto =
+        /// ATTENTION: Use this only when other arguments (caseStrategy, extra) don't change
+        static member generateEncoderCached<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool): Encoder<'T> =
+            let t = typeof<'T>
+            Auto.LowLevel.generateEncoderCached(t, ?caseStrategy = caseStrategy, ?extra = extra, ?skipNullField=skipNullField)
+
+        static member generateEncoder<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool): Encoder<'T> =
+            let caseStrategy = defaultArg caseStrategy PascalCase
+            let skipNullField = defaultArg skipNullField true
+            let encoderCrate = autoEncoder (makeExtra extra) caseStrategy skipNullField typeof<'T>
+            fun (value: 'T) ->
+                encoderCrate.Encode value
+
+        static member toString(space : int, value : 'T, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool) : string =
+            let encoder = Auto.generateEncoder(?caseStrategy=caseStrategy, ?extra=extra, ?skipNullField=skipNullField)
+            encoder value |> toString space

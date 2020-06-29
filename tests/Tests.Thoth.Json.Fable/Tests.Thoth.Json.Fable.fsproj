@@ -4,10 +4,12 @@
         <DefineConstants>THOTH_JSON_FABLE;FABLE_COMPILER</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="../Shared/Manual/Types.fs" />
-        <Compile Include="../Shared/Manual/Decoders.fs" />
-        <Compile Include="../Shared/Manual/Encoders.fs" />
-        <Compile Include="../Shared/Manual/Main.fs" />
+        <Compile Include="../Shared/Types.fs" />
+        <Compile Include="../Shared/Decoders.Manual.fs" />
+        <Compile Include="../Shared/Encoders.Manual.fs" />
+        <Compile Include="../Shared/Encoders.Auto.fs" />
+        <Compile Include="../Shared/Decoders.Auto.fs" />
+        <Compile Include="../Shared/Main.fs" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Fable.Mocha" Version="2.9.1" />
