@@ -1,9 +1,5 @@
 module Tests.Decoders.Auto
 
-#if !NETFRAMEWORK
-open Fable.Core
-#endif
-
 #if THOTH_JSON_FABLE
 open Thoth.Json.Fable
 open Fable.Mocha
@@ -13,6 +9,7 @@ open Fable.Core.JsInterop
 #if THOTH_JSON_NEWTONSOFT
 open Thoth.Json.Newtonsoft
 open Expecto
+open Fable.Core
 #endif
 
 open Tests.Types
@@ -323,7 +320,7 @@ Reason: Unknown value provided for the enum
             let res = Decode.Auto.unsafeFromString<Enum_UInt16>("99")
             Expect.equal res Enum_UInt16.NinetyNine ""
 
-        testCase "Auto decoders for enum<ºint16> returns an error if the Enum value is invalid" <| fun _ ->
+        testCase "Auto decoders for enum<uint16> returns an error if the Enum value is invalid" <| fun _ ->
 #if FABLE_COMPILER
             let value =
                 Error(

@@ -881,6 +881,10 @@ module Decode =
 
     open FSharp.Reflection
 
+    #if THOTH_JSON_FABLE
+    open Fable.Core
+    #endif
+
     type private DecoderCrate<'T>(decoder : Decoder<'T>) =
         inherit BoxedDecoder()
 
@@ -913,6 +917,27 @@ module Decode =
                     )
             )
 
+    #if THOTH_JSON_FABLE
+    let private autoObjectFromKeyValue (keyDecoder: BoxedDecoder) (valueDecoder: BoxedDecoder) (value: JsonValue) =
+        if not (Helpers.isObject value) then
+            ("", BadPrimitive ("an object", value)) |> Error
+        else
+            (Ok [], Helpers.objectKeys(value))
+            ||> Seq.fold (fun acc name ->
+                match acc with
+                | Error _ -> acc
+                | Ok acc ->
+                    match keyDecoder.Decode name with
+                    | Error er -> Error er
+                    | Ok k ->
+                        Helpers.getField name value
+                        |> valueDecoder.Decode
+                        |> function
+                            | Error er -> Error (er |> DecoderError.prependPath ("." + name))
+                            | Ok v -> (k,v)::acc |> Ok
+            )
+    #endif
+
     let mixedArray (msg : string)
                     (decoders : BoxedDecoder[])
                     (values : JsonValue[]) : Result<obj list, DecoderError> =
@@ -928,6 +953,12 @@ module Decode =
                     decoder.Decode value
                     |> Result.map (fun value -> value::result)
             )
+
+    #if THOTH_JSON_FABLE
+    // This is used to force Fable use a generic comparer for map keys
+    let private toMap<'key, 'value when 'key: comparison> (xs: ('key*'value) seq) = Map.ofSeq xs
+    let private toSet<'key when 'key: comparison> (xs: 'key seq) = Set.ofSeq xs
+    #endif
 
     let inline private enumDecoder<'UnderlineType when 'UnderlineType : equality>
         (decoder : Decoder<'UnderlineType>)
@@ -965,7 +996,7 @@ module Decode =
             if not (Helpers.isArray value) then
                 ("", BadPrimitive ("a list", value)) |> Error
             else
-                let values = value.Value<JArray>()
+                let values = Helpers.asArray value
                 let ucis = FSharpType.GetUnionCases(t, allowAccessToPrivateRepresentation=true)
                 let empty = FSharpValue.MakeUnion(ucis.[0], [||], allowAccessToPrivateRepresentation=true)
                 (values, Ok empty)
@@ -982,6 +1013,7 @@ module Decode =
                             |> Ok
                     )
 
+    #if THOTH_JSON_NEWTONSOFT
     let private (|StringifiableType|_|) (t: System.Type): (string->obj) option =
         let fullName = t.FullName
         if fullName = typeof<string>.FullName then
@@ -990,12 +1022,19 @@ module Decode =
             let ofString = t.GetConstructor([|typeof<string>|])
             Some(fun (v: string) -> ofString.Invoke([|v|]))
         else None
+    #endif
 
     let rec inline private handleArray (extra : Map<string, ref<BoxedDecoder>>)
                                     (caseStrategy : CaseStrategy)
                                     (t : System.Type) : BoxedDecoder =
         let elementType = t.GetElementType()
         let decoder = autoDecoder extra caseStrategy false elementType
+
+        #if THOTH_JSON_FABLE
+        array decoder.Decode |> boxDecoder
+        #endif
+
+        #if THOTH_JSON_NEWTONSOFT
         boxDecoder(fun value ->
             match array decoder.BoxedDecoder value with
             | Ok items ->
@@ -1005,12 +1044,23 @@ module Decode =
                 Ok result
             | Error error -> Error error
         )
+        #endif
 
-    and private genericMap extra isCamelCase (t: System.Type) =
+    and private genericMap extra caseStrategy (t: System.Type) =
+        #if THOTH_JSON_FABLE
+        let keyDecoder = t.GenericTypeArguments.[0] |> autoDecoder extra caseStrategy false
+        let valueDecoder = t.GenericTypeArguments.[1] |> autoDecoder extra caseStrategy false
+        oneOf [
+            autoObjectFromKeyValue keyDecoder valueDecoder
+            list (tuple2 keyDecoder.Decode valueDecoder.Decode)
+        ] |> map (fun ar -> toMap (unbox ar) |> box)
+        #endif
+
+        #if THOTH_JSON_NEWTONSOFT
         let keyType   = t.GenericTypeArguments.[0]
         let valueType = t.GenericTypeArguments.[1]
-        let valueDecoder = autoDecoder extra isCamelCase false valueType
-        let keyDecoder = autoDecoder extra isCamelCase false keyType
+        let valueDecoder = autoDecoder extra caseStrategy false valueType
+        let keyDecoder = autoDecoder extra caseStrategy false keyType
         let tupleType = typedefof<obj * obj>.MakeGenericType([|keyType; valueType|])
         let listType = typedefof< ResizeArray<obj> >.MakeGenericType([|tupleType|])
         let addMethod = listType.GetMethod("Add")
@@ -1018,14 +1068,14 @@ module Decode =
             let empty = System.Activator.CreateInstance(listType)
             let kvs =
                 if Helpers.isArray value then
-                    (Ok empty, value.Value<JArray>()) ||> Seq.fold (fun acc value ->
+                    (Ok empty, Helpers.asArray value) ||> Seq.fold (fun acc value ->
                         match acc with
                         | Error _ -> acc
                         | Ok acc ->
                             if not (Helpers.isArray value) then
                                 ("", BadPrimitive ("an array", value)) |> Error
                             else
-                                let kv = value.Value<JArray>()
+                                let kv = Helpers.asArray value
                                 match keyDecoder.Decode(kv.[0]), valueDecoder.Decode(kv.[1]) with
                                 | Error er, _ ->
                                     er
@@ -1058,6 +1108,7 @@ module Decode =
                     | _ ->
                         ("", BadPrimitive ("an array or an object", value)) |> Error
             kvs |> Result.map (fun kvs -> System.Activator.CreateInstance(t, kvs))
+        #endif
 
     and inline private handleRecord (extra : Map<string, ref<BoxedDecoder>>)
                                     (caseStrategy : CaseStrategy)
@@ -1191,19 +1242,49 @@ If you can't use one of these types, please pass an extra decoder.
                                         (t : System.Type) : BoxedDecoder =
         let fullName = t.GetGenericTypeDefinition().FullName
         if fullName = typedefof<obj option>.FullName then
+            #if THOTH_JSON_FABLE
+            let decoder = autoDecoder extra caseStrategy true t.GenericTypeArguments.[0]
+
+            option decoder.Decode
+            |> boxDecoder
+            #endif
+
+            #if THOTH_JSON_NEWTONSOFT
             autoDecoder extra caseStrategy true t.GenericTypeArguments.[0]
             |> genericOption t
             |> boxDecoder
+            #endif
         else if fullName = typedefof<obj list>.FullName then
+            #if THOTH_JSON_FABLE
+            let decoder = autoDecoder extra caseStrategy false t.GenericTypeArguments.[0]
+            list decoder.Decode
+            |> boxDecoder
+            #endif
+
+            #if THOTH_JSON_NEWTONSOFT
             autoDecoder extra caseStrategy false t.GenericTypeArguments.[0]
             |> genericList t
             |> boxDecoder
+            #endif
         else if fullName = typedefof<Map<string, obj>>.FullName then
             genericMap extra caseStrategy t
             |> boxDecoder
         else if fullName = typedefof<Set<string>>.FullName then
             let t = t.GetGenericArguments().[0]
             let decoder = autoDecoder extra caseStrategy false t
+
+            #if THOTH_JSON_FABLE
+            boxDecoder(fun value ->
+                match array decoder.Decode value with
+                | Error error ->
+                    Error error
+
+                | Ok values ->
+                    toSet (unbox values) |> box |> Ok
+            )
+            #endif
+
+            #if THOTH_JSON_NEWTONSOFT
             boxDecoder(fun value ->
                 match array decoder.BoxedDecoder value with
                 | Ok items ->
@@ -1214,6 +1295,7 @@ If you can't use one of these types, please pass an extra decoder.
                     System.Activator.CreateInstance(setType, ar) |> Ok
                 | Error error -> Error error
             )
+            #endif
         else
             autoDecodeRecordAndUnions extra caseStrategy isOptional t
 
@@ -1228,12 +1310,12 @@ If you can't use one of these types, please pass an extra decoder.
         | None ->
             if t.IsArray then
                 handleArray extra caseStrategy t
+            else if t.IsEnum then
+                handleEnum t
             else if FSharpType.IsTuple(t) then
                 handleTuple extra caseStrategy t
             else if t.IsGenericType then
                 handleGeneric extra caseStrategy isOptional t
-            else if t.IsEnum then
-                handleEnum t
             else if fullName = typeof<bool>.FullName then
                 boxDecoder bool
             else if fullName = typedefof<unit>.FullName then
@@ -1267,10 +1349,16 @@ If you can't use one of these types, please pass an extra decoder.
             // Allows to decode null values
             else if fullName = typeof<obj>.FullName then
                 boxDecoder (fun value ->
+                    #if THOTH_JSON_FABLE
+                    Ok value
+                    #endif
+
+                    #if THOTH_JSON_NEWTONSOFT
                     if Helpers.isNullValue value then
                         Ok(null: obj)
                     else
                         value.Value<obj>() |> Ok
+                    #endif
                 )
             else
                 autoDecodeRecordAndUnions extra caseStrategy isOptional t
@@ -1316,21 +1404,56 @@ If you can't use one of these types, please pass an extra decoder.
                 Decode.fromString decoder json
 
     type Auto =
+        #if THOTH_JSON_FABLE
+        /// ATTENTION: Use this only when other arguments (isCamelCase, extra) don't change
+        static member generateDecoderCached<'T> (?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver : ITypeResolver<'T>): Decoder<'T> =
+            let t = resolver.Value.ResolveType()
+            Auto.LowLevel.generateDecoderCached (t, ?caseStrategy = caseStrategy, ?extra = extra)
+        #endif
+
+        #if THOTH_JSON_NEWTONSOFT
         /// ATTENTION: Use this only when other arguments (isCamelCase, extra) don't change
         static member generateDecoderCached<'T> (?caseStrategy : CaseStrategy, ?extra: ExtraCoders): Decoder<'T> =
             let t = typeof<'T>
             Auto.LowLevel.generateDecoderCached (t, ?caseStrategy = caseStrategy, ?extra = extra)
+        #endif
 
+        #if THOTH_JSON_FABLE
+        static member generateDecoder<'T> (?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver : ITypeResolver<'T>): Decoder<'T> =
+            let t = resolver.Value.ResolveType()
+            Auto.LowLevel.generateDecoder(t, ?caseStrategy = caseStrategy, ?extra = extra)
+        #endif
+
+        #if THOTH_JSON_NEWTONSOFT
         static member generateDecoder<'T> (?caseStrategy : CaseStrategy, ?extra: ExtraCoders): Decoder<'T> =
             let t = typeof<'T>
             Auto.LowLevel.generateDecoder(t, ?caseStrategy = caseStrategy, ?extra = extra)
+        #endif
 
+        #if THOTH_JSON_FABLE
+        static member fromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver : ITypeResolver<'T>): Result<'T, string> =
+            let decoder = Auto.generateDecoder(?caseStrategy=caseStrategy, ?extra=extra, ?resolver=resolver)
+            Decode.fromString decoder json
+        #endif
+
+        #if THOTH_JSON_NEWTONSOFT
         static member fromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders): Result<'T, string> =
             let decoder = Auto.generateDecoder(?caseStrategy=caseStrategy, ?extra=extra)
             Decode.fromString decoder json
+        #endif
 
+        #if THOTH_JSON_FABLE
+        static member unsafeFromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver : ITypeResolver<'T>): 'T =
+            let decoder = Auto.generateDecoder(?caseStrategy=caseStrategy, ?extra=extra, ?resolver=resolver)
+            match Decode.fromString decoder json with
+            | Ok v -> v
+            | Error msg -> failwith msg
+        #endif
+
+        #if THOTH_JSON_NEWTONSOFT
         static member unsafeFromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders): 'T =
             let decoder = Auto.generateDecoder(?caseStrategy=caseStrategy, ?extra=extra)
             match Decode.fromString decoder json with
-            | Ok x -> x
+            | Ok v -> v
             | Error msg -> failwith msg
+        #endif
