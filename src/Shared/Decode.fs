@@ -980,6 +980,7 @@ module Decode =
                 | Error message ->
                     Error message
 
+    #if THOTH_JSON_NEWTONSOFT
     let private genericOption t (decoder: BoxedDecoder) =
         let ucis = FSharpType.GetUnionCases(t)
         fun (value: JsonValue) ->
@@ -1012,6 +1013,7 @@ module Decode =
                             FSharpValue.MakeUnion(ucis.[1], [|result; acc|], allowAccessToPrivateRepresentation=true)
                             |> Ok
                     )
+    #endif
 
     #if THOTH_JSON_NEWTONSOFT
     let private (|StringifiableType|_|) (t: System.Type): (string->obj) option =
