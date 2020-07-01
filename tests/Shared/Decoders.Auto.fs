@@ -645,4 +645,24 @@ Reason: Unknown value provided for the enum
             let actual = Decode.Auto.unsafeFromString(json, extra = extra)
 
             Expect.equal actual 99 ""
+
+        testCase "Decode.Auto.fromString works with [<StrinEnum>]" <| fun _ ->
+            let expected = Camera.FirstPerson
+            let actual = Decode.Auto.unsafeFromString("\"firstPerson\"")
+            Expect.equal actual expected ""
+
+        testCase "Decode.Auto.fromString works with [<StringEnum(CaseRules.LowerFirst)>" <| fun _ ->
+            let expected = Framework.React
+            let actual = Decode.Auto.unsafeFromString("\"react\"")
+            Expect.equal actual expected ""
+
+        testCase "Decode.Auto.fromString works with [<StringEnum(CaseRules.None)>]" <| fun _ ->
+            let expected = Language.Fsharp
+            let actual = Decode.Auto.unsafeFromString("\"Fsharp\"")
+            Expect.equal actual expected ""
+
+        testCase "Decode.Auto.fromString works with [<StringEnum>] + [<CompiledName>]" <| fun _ ->
+            let expected = Language.Csharp
+            let actual = Decode.Auto.unsafeFromString("\"C#\"")
+            Expect.equal actual expected ""
     ]

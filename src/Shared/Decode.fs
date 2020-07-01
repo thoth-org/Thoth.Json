@@ -885,6 +885,11 @@ module Decode =
     open Fable.Core
     #endif
 
+    #if THOTH_JSON_NEWTONSOFT
+    open System.Collections.Generic
+    open System.Globalization
+    #endif
+
     type private DecoderCrate<'T>(decoder : Decoder<'T>) =
         inherit BoxedDecoder()
 
@@ -1135,8 +1140,26 @@ module Decode =
                         (name :string)
                         (values : JsonValue []) =
         let unionCaseInfo =
-            FSharpType.GetUnionCases(t, allowAccessToPrivateRepresentation = true)
-            |> Array.tryFind (fun unionCaseInfo -> unionCaseInfo.Name = name)
+            match t with
+            | Util.StringEnum attributeType ->
+                FSharpType.GetUnionCases(t, allowAccessToPrivateRepresentation = true)
+                |> Array.tryFind (fun unionCaseInfo ->
+                    match unionCaseInfo with
+                    | Util.CompiledName compiledName ->
+                        compiledName = name
+                    | _ ->
+                        match attributeType.ConstructorArguments with
+                        | Util.LowerFirst ->
+                            let adaptedName = unionCaseInfo.Name.[..0].ToLowerInvariant() + unionCaseInfo.Name.[1..]
+                            adaptedName = name
+                        | Util.Forward ->
+                            unionCaseInfo.Name = name
+                )
+            | _ ->
+                FSharpType.GetUnionCases(t, allowAccessToPrivateRepresentation = true)
+                |> Array.tryFind (fun unionCaseInfo ->
+                    unionCaseInfo.Name = name
+                )
 
         match unionCaseInfo with
         | None ->

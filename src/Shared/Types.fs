@@ -135,6 +135,8 @@ module internal Cache =
 module Util =
 
     open System.Text.RegularExpressions
+    open FSharp.Reflection
+    open System.Collections.Generic
 
     module Casing =
         let lowerFirst (str : string) = str.[..0].ToLowerInvariant() + str.[1..]
@@ -143,3 +145,36 @@ module Util =
             | CamelCase -> lowerFirst fieldName
             | SnakeCase -> Regex.Replace(lowerFirst fieldName, "[A-Z]","_$0").ToLowerInvariant()
             | PascalCase -> fieldName
+
+    #if !NETFRAMEWORK && !THOTH_JSON_FABLE
+    let (|StringEnum|_|) (typ : System.Type) =
+        typ.CustomAttributes
+        |> Seq.tryPick (function
+            | attr when attr.AttributeType.FullName = typeof<Fable.Core.StringEnumAttribute>.FullName -> Some attr
+            | _ -> None
+        )
+
+    let (|CompiledName|_|) (caseInfo : UnionCaseInfo) =
+        caseInfo.GetCustomAttributes()
+        |> Seq.tryPick (function
+            | :? CompiledNameAttribute as att -> Some att.CompiledName
+            | _ -> None)
+
+    let (|LowerFirst|Forward|) (args : IList<System.Reflection.CustomAttributeTypedArgument>) =
+        args
+        |> Seq.tryPick (function
+            | rule when rule.ArgumentType.FullName = typeof<Fable.Core.CaseRules>.FullName -> Some rule
+            | _ -> None
+        )
+        |> function
+        | Some rule ->
+            match rule.Value with
+            | :? int as value ->
+                match value with
+                | 0 -> Forward
+                | 1 -> LowerFirst
+                | _ -> LowerFirst // should not happen
+            | _ -> LowerFirst // should not happen
+        | None ->
+            LowerFirst
+    #endif
