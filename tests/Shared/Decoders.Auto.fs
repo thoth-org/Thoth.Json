@@ -619,4 +619,30 @@ Reason: Unknown value provided for the enum
 
             let actual : TestStringWithHTML = Decode.Auto.unsafeFromString(articleJson)
             Expect.equal actual expected ""
+
+        testCase "Decode.Auto.fromString allows to customize default known types" <| fun _ ->
+            let customizedIntEncoder (value : int) =
+                Encode.object [
+                    "type", Encode.string "int"
+                    "value", Encode.int value
+                ]
+
+            let customizedIntDecoder =
+                Decode.field "type" Decode.string
+                |> Decode.andThen(function
+                | "int" ->
+                    Decode.field "value" Decode.int
+                | invalid ->
+                    sprintf "`%s` is not a valid type value for customizedInt" invalid
+                    |> Decode.fail
+                )
+
+            let extra =
+                Extra.empty
+                |> Extra.withCustom customizedIntEncoder customizedIntDecoder
+
+            let json = "{\"type\":\"int\",\"value\":99}"
+            let actual = Decode.Auto.unsafeFromString(json, extra = extra)
+
+            Expect.equal actual 99 ""
     ]

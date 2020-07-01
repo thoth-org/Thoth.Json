@@ -273,5 +273,30 @@ let tests =
                         Expect.equal actual expected ""
                     #endif
             *)
+
+            testCase "Encode.Auto.toString allows to customize default known types" <| fun _ ->
+                let customizedIntEncoder (value : int) =
+                    Encode.object [
+                        "type", Encode.string "int"
+                        "value", Encode.int value
+                    ]
+
+                let customizedIntDecoder =
+                    Decode.field "type" Decode.string
+                    |> Decode.andThen(function
+                    | "int" ->
+                        Decode.field "value" Decode.int
+                    | invalid ->
+                        sprintf "`%s` is not a valid type value for customizedInt" invalid
+                        |> Decode.fail
+                    )
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom customizedIntEncoder customizedIntDecoder
+
+                let json = Encode.Auto.toString(0, 99, extra=extra)
+
+                Expect.equal json "{\"type\":\"int\",\"value\":99}" ""
         ]
     ]
