@@ -1140,6 +1140,7 @@ module Decode =
                         (name :string)
                         (values : JsonValue []) =
         let unionCaseInfo =
+            #if THOTH_JSON_NEWTONSOFT
             match t with
             | Util.StringEnum attributeType ->
                 FSharpType.GetUnionCases(t, allowAccessToPrivateRepresentation = true)
@@ -1156,6 +1157,7 @@ module Decode =
                             unionCaseInfo.Name = name
                 )
             | _ ->
+            #endif
                 FSharpType.GetUnionCases(t, allowAccessToPrivateRepresentation = true)
                 |> Array.tryFind (fun unionCaseInfo ->
                     unionCaseInfo.Name = name
