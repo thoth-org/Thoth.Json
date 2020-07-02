@@ -1137,13 +1137,14 @@ module Decode =
     and inline private makeUnion (extra : Map<string, ref<BoxedDecoder>>)
                         (caseStrategy : CaseStrategy)
                         (t : System.Type)
+                        (unionCasesInfo : UnionCaseInfo [])
                         (name :string)
                         (values : JsonValue []) =
         let unionCaseInfo =
             #if THOTH_JSON_NEWTONSOFT
             match t with
             | Util.StringEnum attributeType ->
-                FSharpType.GetUnionCases(t, allowAccessToPrivateRepresentation = true)
+                unionCasesInfo
                 |> Array.tryFind (fun unionCaseInfo ->
                     match unionCaseInfo with
                     | Util.CompiledName compiledName ->
@@ -1158,7 +1159,7 @@ module Decode =
                 )
             | _ ->
             #endif
-                FSharpType.GetUnionCases(t, allowAccessToPrivateRepresentation = true)
+                unionCasesInfo
                 |> Array.tryFind (fun unionCaseInfo ->
                     unionCaseInfo.Name = name
                 )
@@ -1185,32 +1186,39 @@ module Decode =
     and inline private handleUnion (extra : Map<string, ref<BoxedDecoder>>)
                                     (caseStrategy : CaseStrategy)
                                     (t : System.Type) : BoxedDecoder =
-        boxDecoder(fun value ->
-            let unionCasesInfo = FSharpType.GetUnionCases(t, allowAccessToPrivateRepresentation = true)
+        let unionCasesInfo = FSharpType.GetUnionCases(t, allowAccessToPrivateRepresentation = true)
 
-            match unionCasesInfo.Length with
-            // Single union case
-            | 1 ->
-                let unionCaseInfo = unionCasesInfo.[0]
-                let propertyInfo = unionCaseInfo.GetFields().[0]
-                let decoder = autoDecoder extra caseStrategy false propertyInfo.PropertyType
-                decoder.Decode value
-                |> Result.map (fun value ->
-                    FSharpValue.MakeUnion(unionCaseInfo, [| value |], allowAccessToPrivateRepresentation = true)
-                )
+        let standardUnionCaseBehaviourDecoder value =
+            if Helpers.isString value then
+                let name = Helpers.asString value
+                makeUnion extra caseStrategy t unionCasesInfo name [||]
+            else if Helpers.isArray value then
+                let values = Helpers.asArray value
+                let name = Helpers.asString values.[0]
+                makeUnion extra caseStrategy t unionCasesInfo name values.[1..]
+            else
+                ("", BadPrimitive("a string or an array", value)) |> Error
 
-            // Standard union case
-            | _ ->
-                if Helpers.isString value then
-                    let name = Helpers.asString value
-                    makeUnion extra caseStrategy t name [||]
-                else if Helpers.isArray value then
-                    let values = Helpers.asArray value
-                    let name = Helpers.asString values.[0]
-                    makeUnion extra caseStrategy t name values.[1..]
-                else
-                    ("", BadPrimitive("a string or an array", value)) |> Error
-        )
+        oneOf [
+            fun value ->
+                match unionCasesInfo.Length with
+                // Single union case
+                | 1 ->
+                    let unionCaseInfo = unionCasesInfo.[0]
+                    let propertyInfo = unionCaseInfo.GetFields().[0]
+                    let decoder = autoDecoder extra caseStrategy false propertyInfo.PropertyType
+                    decoder.Decode value
+                    |> Result.map (fun value ->
+                        FSharpValue.MakeUnion(unionCaseInfo, [| value |], allowAccessToPrivateRepresentation = true)
+                    )
+
+                // Standard union case
+                | _ ->
+                    standardUnionCaseBehaviourDecoder value
+
+            fun value ->
+                standardUnionCaseBehaviourDecoder value
+        ] |> boxDecoder
 
     and inline private autoDecodeRecordAndUnions (extra : Map<string, ref<BoxedDecoder>>)
                                                 (caseStrategy : CaseStrategy)

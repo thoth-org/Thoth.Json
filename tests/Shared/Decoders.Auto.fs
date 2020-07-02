@@ -596,11 +596,11 @@ Reason: Unknown value provided for the enum
             let res = Decode.Auto.unsafeFromString<unit>(json)
             Expect.equal res () ""
 
-        //testCase "Erased single-case DUs works" <| fun _ ->
-        //    let expected = NoAllocAttributeId (Guid.NewGuid())
-        //    let json = Encode.Auto.toString(4, expected)
-        //    let actual = Decode.Auto.unsafeFromString<NoAllocAttributeId>(json)
-        //    Expect.equal actual expected ""
+        testCase "Erased single-case DUs works" <| fun _ ->
+            let expected = NoAllocAttributeSingleCaseDU (Guid.NewGuid())
+            let json = Encode.Auto.toString(4, expected)
+            let actual = Decode.Auto.unsafeFromString<NoAllocAttributeSingleCaseDU>(json)
+            Expect.equal actual expected ""
 
         testCase "Single case unions generates simplify JSON" <| fun _ ->
             let expected = SingleCaseDUSimple "Maxime"
@@ -618,6 +618,18 @@ Reason: Unknown value provided for the enum
 }
                 """.Trim()
             let actual = Decode.Auto.unsafeFromString json
+            Expect.equal actual expected ""
+
+        testCase "Old style of single case unions is supported" <| fun _ ->
+            let expected = SingleCaseDUSimple "Maxime"
+            let json =
+                """
+[
+    "SingleCaseDUSimple",
+    "Maxime"
+]
+                """.Trim()
+            let actual = Decode.Auto.unsafeFromString(json)
             Expect.equal actual expected ""
 
         testCase "Auto.unsafeFromString works with HTML inside of a string" <| fun _ ->
@@ -683,4 +695,5 @@ Reason: Unknown value provided for the enum
             let expected = Language.Csharp
             let actual = Decode.Auto.unsafeFromString("\"C#\"")
             Expect.equal actual expected ""
+
     ]
