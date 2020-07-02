@@ -16,38 +16,17 @@ let quicktests =
     testList "QuickTest" [
         testList "Fake category" [
             testCase "QuickTest: #1" <| fun _ ->
-                let expected = "\"Maxime\""
-                let actual = Encode.Auto.toString(4, SingleCaseDUSimple "Maxime")
-                Expect.equal actual expected ""
-
-            testCase "QuickTest: #2" <| fun _ ->
-                let expected =
-                    """
-{
-    "Age": 28,
-    "FirstName": "Maxime"
-}
-                    """.Trim()
-                let actual = Encode.Auto.toString(4, SingleCaseDUComplex {| FirstName = "Maxime"; Age = 28 |})
-                Expect.equal actual expected ""
-
-            testCase "QuickTest: #3" <| fun _ ->
                 let expected = SingleCaseDUSimple "Maxime"
-                let json = "\"Maxime\""
+                let json =
+                    """
+[
+    "SingleCaseDUSimple",
+    "Maxime"
+]
+                    """.Trim()
                 let actual = Decode.Auto.unsafeFromString(json)
                 Expect.equal actual expected ""
 
-            testCase "QuickTest: #4" <| fun _ ->
-                let expected = SingleCaseDUComplex {| FirstName = "Maxime"; Age = 28 |}
-                let json =
-                    """
-{
-    "Age": 28,
-    "FirstName": "Maxime"
-}
-                    """.Trim()
-                let actual = Decode.Auto.unsafeFromString json
-                Expect.equal actual expected ""
         ]
     ]
 

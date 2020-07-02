@@ -683,41 +683,45 @@ module Encode =
                             (skipNullField : bool)
                             (t : System.Type) : BoxedEncoder =
         boxEncoder(fun (value : obj) ->
+            let unionCasesInfo = FSharpType.GetUnionCases(t, allowAccessToPrivateRepresentation = true)
             let info, fields = FSharpValue.GetUnionFields(value, t, allowAccessToPrivateRepresentation = true)
-            match fields.Length with
-            | 0 ->
-                #if !NETFRAMEWORK && !THOTH_JSON_FABLE
-                match t with
-                // Replicate Fable behaviour when using StringEnum
-                | Util.StringEnum t ->
-                    match info with
-                    | Util.CompiledName name -> string name
-                    | _ ->
-                        match t.ConstructorArguments with
-                        | Util.LowerFirst ->
-                            let name = info.Name.[..0].ToLowerInvariant() + info.Name.[1..]
-                            string name
-                        | Util.Forward -> string info.Name
 
-                | _ -> string info.Name
-                #else
-                string info.Name
-                #endif
-
+            match unionCasesInfo.Length with
             | 1 ->
                 let fieldTypes = info.GetFields()
                 // There is only one field so we can use a direct access to it
                 let encoder = autoEncoder extra caseStrategy skipNullField fieldTypes.[0].PropertyType
                 encoder.Encode(fields.[0])
 
-            | length ->
-                let fieldTypes = info.GetFields()
-                let res = Array.zeroCreate(length + 1)
-                res.[0] <- string info.Name
-                for i = 1 to length do
-                    let encoder = autoEncoder extra caseStrategy skipNullField fieldTypes.[i-1].PropertyType
-                    res.[i] <- encoder.Encode(fields.[i-1])
-                array res
+            | _ ->
+                match fields.Length with
+                | 0 ->
+                    #if !NETFRAMEWORK && !THOTH_JSON_FABLE
+                    match t with
+                    // Replicate Fable behaviour when using StringEnum
+                    | Util.StringEnum t ->
+                        match info with
+                        | Util.CompiledName name -> string name
+                        | _ ->
+                            match t.ConstructorArguments with
+                            | Util.LowerFirst ->
+                                let name = info.Name.[..0].ToLowerInvariant() + info.Name.[1..]
+                                string name
+                            | Util.Forward -> string info.Name
+
+                    | _ -> string info.Name
+                    #else
+                    string info.Name
+                    #endif
+
+                | length ->
+                    let fieldTypes = info.GetFields()
+                    let res = Array.zeroCreate(length + 1)
+                    res.[0] <- string info.Name
+                    for i = 1 to length do
+                        let encoder = autoEncoder extra caseStrategy skipNullField fieldTypes.[i-1].PropertyType
+                        res.[i] <- encoder.Encode(fields.[i-1])
+                    array res
         )
 
     and inline private handleRecordAndUnion (extra : Map<string, ref<BoxedEncoder>>)

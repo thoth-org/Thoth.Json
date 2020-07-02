@@ -1216,8 +1216,7 @@ module Decode =
                 | _ ->
                     standardUnionCaseBehaviourDecoder value
 
-            fun value ->
-                standardUnionCaseBehaviourDecoder value
+            standardUnionCaseBehaviourDecoder
         ] |> boxDecoder
 
     and inline private autoDecodeRecordAndUnions (extra : Map<string, ref<BoxedDecoder>>)

@@ -194,6 +194,7 @@ type RecordWithRequiredClass =
 type Shape =
     | Circle of radius: int
     | Rectangle of width: int * height: int
+    | Void
 
     static member DecoderCircle =
         Decode.field "radius" Decode.int
