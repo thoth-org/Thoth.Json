@@ -304,7 +304,11 @@ type NoAlloc = StructAttribute
 #endif
 
 [<NoAlloc>]
-type NoAllocAttributeId = NoAllocAttributeId of System.Guid
+type NoAllocAttributeSingleCaseDU = NoAllocAttributeSingleCaseDU of System.Guid
+
+type SingleCaseDUSimple = SingleCaseDUSimple of string
+
+type SingleCaseDUComplex = SingleCaseDUComplex of {| FirstName : string; Age : int |}
 
 type TestStringWithHTML =
     {

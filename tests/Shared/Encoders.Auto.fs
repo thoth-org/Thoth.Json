@@ -83,7 +83,7 @@ let tests =
                     |> Extra.withUInt64
                 let encoder = Encode.Auto.generateEncoder<Record9>(extra = extra)
                 let actual = encoder value |> Encode.toString 0
-                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":"120","j":"120","k":"250","l":"250","m":99,"n":"99","o":"999"}"""
+                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[14,null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":"120","j":"120","k":"250","l":"250","m":99,"n":"99","o":"999"}"""
                 // Don't fail because of non-meaningful decimal digits ("2" vs "2.0")
                 let actual = System.Text.RegularExpressions.Regex.Replace(actual, @"\.0+(?!\d)", "")
                 Expect.equal actual expected ""
@@ -117,7 +117,7 @@ let tests =
                 let encoder2 = Encode.Auto.generateEncoderCached<Record9>(extra = extra)
                 let actual1 = encoder1 value |> Encode.toString 0
                 let actual2 = encoder2 value |> Encode.toString 0
-                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":"120","j":"120","k":"250","l":"250","m":99,"n":"99","o":"999"}"""
+                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[14,null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":"120","j":"120","k":"250","l":"250","m":99,"n":"99","o":"999"}"""
                 // Don't fail because of non-meaningful decimal digits ("2" vs "2.0")
                 let actual1 = System.Text.RegularExpressions.Regex.Replace(actual1, @"\.0+(?!\d)", "")
                 let actual2 = System.Text.RegularExpressions.Regex.Replace(actual2, @"\.0+(?!\d)", "")
@@ -161,7 +161,7 @@ let tests =
                 Expect.equal actual expected ""
 
             testCase "Encode.Auto.toString works with unions with private constructors" <| fun _ ->
-                let expected = """["Baz",["Bar","foo"]]"""
+                let expected = """["Baz","foo"]"""
                 let x = [Baz; Bar "foo"]
                 let actual = Encode.Auto.toString(0, x, caseStrategy=CamelCase)
                 Expect.equal actual expected ""
@@ -298,5 +298,26 @@ let tests =
                 let json = Encode.Auto.toString(0, 99, extra=extra)
 
                 Expect.equal json "{\"type\":\"int\",\"value\":99}" ""
+
+            testCase "Erased single-case DUs works" <| fun _ ->
+                let expected = "\"2e053897-15a9-4647-a005-e954666e24d3\""
+                let actual = Encode.Auto.toString(4, NoAllocAttributeSingleCaseDU (Guid("2e053897-15a9-4647-a005-e954666e24d3")))
+                Expect.equal actual expected ""
+
+            testCase "Single case unions generates simplify JSON"  <| fun _ ->
+                let expected = "\"Maxime\""
+                let actual = Encode.Auto.toString(4, SingleCaseDUSimple "Maxime")
+                Expect.equal actual expected ""
+
+            testCase "Single case unions generates simplify JSON and works with complex types" <| fun _ ->
+                let expected =
+                    """
+{
+    "Age": 28,
+    "FirstName": "Maxime"
+}
+                    """.Trim()
+                let actual = Encode.Auto.toString(4, SingleCaseDUComplex {| FirstName = "Maxime"; Age = 28 |})
+                Expect.equal actual expected ""
         ]
     ]

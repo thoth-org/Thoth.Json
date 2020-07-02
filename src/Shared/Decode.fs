@@ -1053,7 +1053,7 @@ module Decode =
         )
         #endif
 
-    and private genericMap extra caseStrategy (t: System.Type) =
+    and inline private genericMap extra caseStrategy (t: System.Type) =
         #if THOTH_JSON_FABLE
         let keyDecoder = t.GenericTypeArguments.[0] |> autoDecoder extra caseStrategy false
         let valueDecoder = t.GenericTypeArguments.[1] |> autoDecoder extra caseStrategy false
@@ -1184,18 +1184,32 @@ module Decode =
 
     and inline private handleUnion (extra : Map<string, ref<BoxedDecoder>>)
                                     (caseStrategy : CaseStrategy)
-                                    (isOptional : bool)
                                     (t : System.Type) : BoxedDecoder =
         boxDecoder(fun value ->
-            if Helpers.isString value then
-                let name = Helpers.asString value
-                makeUnion extra caseStrategy t name [||]
-            else if Helpers.isArray value then
-                let values = Helpers.asArray value
-                let name = Helpers.asString values.[0]
-                makeUnion extra caseStrategy t name values.[1..]
-            else
-                ("", BadPrimitive("a string or an array", value)) |> Error
+            let unionCasesInfo = FSharpType.GetUnionCases(t, allowAccessToPrivateRepresentation = true)
+
+            match unionCasesInfo.Length with
+            // Single union case
+            | 1 ->
+                let unionCaseInfo = unionCasesInfo.[0]
+                let propertyInfo = unionCaseInfo.GetFields().[0]
+                let decoder = autoDecoder extra caseStrategy false propertyInfo.PropertyType
+                decoder.Decode value
+                |> Result.map (fun value ->
+                    FSharpValue.MakeUnion(unionCaseInfo, [| value |], allowAccessToPrivateRepresentation = true)
+                )
+
+            // Standard union case
+            | _ ->
+                if Helpers.isString value then
+                    let name = Helpers.asString value
+                    makeUnion extra caseStrategy t name [||]
+                else if Helpers.isArray value then
+                    let values = Helpers.asArray value
+                    let name = Helpers.asString values.[0]
+                    makeUnion extra caseStrategy t name values.[1..]
+                else
+                    ("", BadPrimitive("a string or an array", value)) |> Error
         )
 
     and inline private autoDecodeRecordAndUnions (extra : Map<string, ref<BoxedDecoder>>)
@@ -1209,7 +1223,7 @@ module Decode =
             if FSharpType.IsRecord(t, allowAccessToPrivateRepresentation = true) then
                 handleRecord extra caseStrategy t
             else if FSharpType.IsUnion(t, allowAccessToPrivateRepresentation = true) then
-                handleUnion extra caseStrategy isOptional t
+                handleUnion extra caseStrategy t
             else if isOptional then
                 // The error will only happen at runtime if the value is not null
                 // See https://github.com/MangelMaxime/Thoth/pull/84#issuecomment-444837773

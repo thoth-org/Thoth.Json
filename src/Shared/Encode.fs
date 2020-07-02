@@ -703,6 +703,13 @@ module Encode =
                 #else
                 string info.Name
                 #endif
+
+            | 1 ->
+                let fieldTypes = info.GetFields()
+                // There is only one field so we can use a direct access to it
+                let encoder = autoEncoder extra caseStrategy skipNullField fieldTypes.[0].PropertyType
+                encoder.Encode(fields.[0])
+
             | length ->
                 let fieldTypes = info.GetFields()
                 let res = Array.zeroCreate(length + 1)

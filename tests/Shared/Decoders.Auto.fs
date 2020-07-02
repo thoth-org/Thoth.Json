@@ -596,10 +596,28 @@ Reason: Unknown value provided for the enum
             let res = Decode.Auto.unsafeFromString<unit>(json)
             Expect.equal res () ""
 
-        testCase "Erased single-case DUs works" <| fun _ ->
-            let expected = NoAllocAttributeId (Guid.NewGuid())
-            let json = Encode.Auto.toString(4, expected)
-            let actual = Decode.Auto.unsafeFromString<NoAllocAttributeId>(json)
+        //testCase "Erased single-case DUs works" <| fun _ ->
+        //    let expected = NoAllocAttributeId (Guid.NewGuid())
+        //    let json = Encode.Auto.toString(4, expected)
+        //    let actual = Decode.Auto.unsafeFromString<NoAllocAttributeId>(json)
+        //    Expect.equal actual expected ""
+
+        testCase "Single case unions generates simplify JSON" <| fun _ ->
+            let expected = SingleCaseDUSimple "Maxime"
+            let json = "\"Maxime\""
+            let actual = Decode.Auto.unsafeFromString(json)
+            Expect.equal actual expected ""
+
+        testCase "Single case unions generates simplify JSON and works with complex types" <| fun _ ->
+            let expected = SingleCaseDUComplex {| FirstName = "Maxime"; Age = 28 |}
+            let json =
+                """
+{
+    "Age": 28,
+    "FirstName": "Maxime"
+}
+                """.Trim()
+            let actual = Decode.Auto.unsafeFromString json
             Expect.equal actual expected ""
 
         testCase "Auto.unsafeFromString works with HTML inside of a string" <| fun _ ->
