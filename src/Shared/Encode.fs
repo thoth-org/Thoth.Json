@@ -42,6 +42,16 @@ module Encode =
         JValue(value) :> JsonValue
     #endif
 
+    #if THOTH_JSON_FABLE
+    let inline char (value : char) : JsonValue =
+        box value
+    #endif
+
+    #if THOTH_JSON_NEWTONSOFT
+    let char (value : char) : JsonValue =
+        JValue(value) :> JsonValue
+    #endif
+
     ///**Description**
     /// Encode a GUID
     ///
@@ -943,6 +953,8 @@ If you can't use one of these types, please pass add a new extra coder.
                 boxEncoder unit
             else if fullName = typeof<string>.FullName then
                 boxEncoder string
+            else if fullName = typeof<char>.FullName then
+                boxEncoder char
             else if fullName = typeof<sbyte>.FullName then
                 boxEncoder sbyte
             else if fullName = typeof<byte>.FullName then

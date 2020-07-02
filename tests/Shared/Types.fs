@@ -131,6 +131,7 @@ type Record9 =
         n: int64
         o: uint64
         p: unit
+        r: char
         // r: string seq
     }
 

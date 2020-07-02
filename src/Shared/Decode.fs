@@ -22,6 +22,17 @@ module Decode =
             else
                 ("", BadPrimitive("a string", value)) |> Error
 
+    let char : Decoder<char> =
+        fun value ->
+            if Helpers.isString value then
+                try
+                    value |> Helpers.asString |> System.Char.Parse |> Ok
+                with
+                    | _ ->
+                        ("", BadPrimitive("a char", value)) |> Error
+            else
+                ("", BadPrimitive("a string", value)) |> Error
+
     let guid : Decoder<System.Guid> =
         fun value ->
             if Helpers.isString value then
@@ -1366,6 +1377,8 @@ If you can't use one of these types, please pass an extra decoder.
                 handleGeneric extra caseStrategy isOptional t
             else if fullName = typeof<bool>.FullName then
                 boxDecoder bool
+            else if fullName = typeof<char>.FullName then
+                boxDecoder char
             else if fullName = typedefof<unit>.FullName then
                 boxDecoder unit
             else if fullName = typeof<string>.FullName then

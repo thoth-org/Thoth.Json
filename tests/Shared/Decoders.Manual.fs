@@ -105,6 +105,13 @@ let tests =
 
                 Expect.equal actual expected ""
 
+            testCase "a char works" <| fun _ ->
+                let expected = Ok('c')
+                let actual =
+                    Decode.fromString Decode.char"\"c\""
+
+                Expect.equal actual expected ""
+
             testCase "a float works" <| fun _ ->
                 let expected = Ok(1.2)
                 let actual =

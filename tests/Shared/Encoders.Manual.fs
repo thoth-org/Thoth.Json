@@ -30,6 +30,13 @@ let tests =
                     |> Encode.toString 0
                 Expect.equal actual expected ""
 
+            testCase "a char works" <| fun _ ->
+                let expected = "\"m\""
+                let actual =
+                    Encode.char 'm'
+                    |> Encode.toString 0
+                Expect.equal actual expected ""
+
             testCase "an int works" <| fun _ ->
                 let expected = "1"
                 let actual =

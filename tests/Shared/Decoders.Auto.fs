@@ -41,6 +41,7 @@ let tests =
                     n = 99L
                     o = 999UL
                     p = ()
+                    r = 'r'
                     // r = seq [ "item n°1"; "item n°2"]
                 }
             let extra =
@@ -69,6 +70,7 @@ let tests =
             Expect.equal 99L r2.n ""
             Expect.equal 999UL r2.o ""
             Expect.equal () r2.p ""
+            Expect.equal 'r' r2.r ""
             // Expect.equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.r |> Seq.toList) ""
 
         testCase "Auto serialization works with recursive types" <| fun _ ->
