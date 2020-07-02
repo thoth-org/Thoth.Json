@@ -32,14 +32,15 @@ module Encode =
     ///
     ///**Exceptions**
     ///
+    #if THOTH_JSON_FABLE
     let inline string (value : string) : JsonValue =
-        #if THOTH_JSON_FABLE
         box value
-        #endif
+    #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+    #if THOTH_JSON_NEWTONSOFT
+    let string (value : string) : JsonValue =
         JValue(value) :> JsonValue
-        #endif
+    #endif
 
     ///**Description**
     /// Encode a GUID
@@ -72,23 +73,25 @@ module Encode =
     ///
     ///**Exceptions**
     ///
+    #if THOTH_JSON_FABLE
     let inline float (value : float) : JsonValue =
-        #if THOTH_JSON_FABLE
         box value
-        #endif
+    #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+    #if THOTH_JSON_NEWTONSOFT
+    let float (value : float) : JsonValue =
         JValue(value) :> JsonValue
-        #endif
+    #endif
 
+    #if THOTH_JSON_FABLE
     let inline float32 (value : float32) : JsonValue =
-        #if THOTH_JSON_FABLE
         box value
-        #endif
+    #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+    #if THOTH_JSON_NEWTONSOFT
+    let float32 (value : float32) : JsonValue =
         JValue(value) :> JsonValue
-        #endif
+    #endif
 
     ///**Description**
     /// Encode a Decimal.
@@ -139,14 +142,15 @@ module Encode =
     ///
     ///**Exceptions**
     ///
+    #if THOTH_JSON_FABLE
     let inline bool (value : bool) : JsonValue =
-        #if THOTH_JSON_FABLE
         box value
-        #endif
+    #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+    #if THOTH_JSON_NEWTONSOFT
+    let bool (value : bool) : JsonValue =
         JValue(value) :> JsonValue
-        #endif
+    #endif
 
     ///**Description**
     /// Encode an object
@@ -186,14 +190,15 @@ module Encode =
     ///
     ///**Exceptions**
     ///
+    #if THOTH_JSON_FABLE
     let inline array (values : JsonValue array) : JsonValue =
-        #if THOTH_JSON_FABLE
         box values
-        #endif
+    #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+    #if THOTH_JSON_NEWTONSOFT
+    let array (values : JsonValue array) : JsonValue =
         JArray(values) :> JsonValue
-        #endif
+    #endif
 
     ///**Description**
     /// Encode a list
