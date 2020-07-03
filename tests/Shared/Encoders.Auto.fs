@@ -336,5 +336,33 @@ let tests =
                 let voidExpected = "\"Void\""
                 let voidActual = Encode.Auto.toString(4, Shape.Void)
                 Expect.equal voidActual voidExpected ""
+
+            testCase "Encode.Auto.toString serializes mutable hashsets" <| fun _ ->
+                let s = System.Collections.Generic.HashSet()
+                s.Add(1) |> ignore
+                s.Add(1) |> ignore
+                s.Add(2) |> ignore
+                let actual = Encode.Auto.toString(0, s)
+                Expect.equal actual """[1,2]""" ""
+
+            testCase "Encode.Auto.toString works with seq" <| fun _ ->
+                let value = seq { yield 1; yield 2 }
+                let expected = """[1,2]"""
+                let actual = Encode.Auto.toString(0, value, skipNullField = false)
+                Expect.equal actual expected ""
+
+            testCase "Encode.Auto.toString serializes mutable dictionaries" <| fun _ ->
+                let d = System.Collections.Generic.Dictionary()
+                d.Add("Foo", 1)
+                d.Add("Bar", 2)
+                let actual = Encode.Auto.toString(0, d)
+                Expect.equal actual """{"Foo":1,"Bar":2}""" ""
+
+            testCase "Encode.Auto.toString serializes mutable dictionaries with non simple keys" <| fun _ ->
+                let d = System.Collections.Generic.Dictionary()
+                d.Add({| ComplexKey = 1 |}, 1)
+                d.Add({| ComplexKey = 2 |}, 2)
+                let actual = Encode.Auto.toString(0, d)
+                Expect.equal actual """[[{"ComplexKey":1},1],[{"ComplexKey":2},2]]""" ""
         ]
     ]

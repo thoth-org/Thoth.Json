@@ -1266,6 +1266,12 @@ Expecting a string but instead got: 12
 
                 Expect.equal expectedUndefinedField actualUndefinedField ""
 
+            testCase "Decode.option works" <| fun _ ->
+                let expected= Ok(Some "maxime")
+                let actual =
+                    Decode.fromString (Decode.option Decode.string) "\"maxime\""
+                Expect.equal expected actual ""
+
             testCase "combining field and option decoders works" <| fun _ ->
                 let json = """{ "name": "maxime", "age": 25, "something_undefined": null }"""
 
@@ -1273,7 +1279,7 @@ Expecting a string but instead got: 12
                 let actualValid =
                     Decode.fromString (Decode.field "name" (Decode.option Decode.string)) json
 
-                Expect.equal expectedValid actualValid ""
+                Expect.equal actualValid expectedValid ""
 
                 match Decode.fromString (Decode.field "name" (Decode.option Decode.int)) json with
                 | Error msg ->
@@ -1282,7 +1288,7 @@ Expecting a string but instead got: 12
 Error at: `$.name`
 Expecting an int but instead got: "maxime"
                         """.Trim()
-                    Expect.equal expected msg ""
+                    Expect.equal msg expected ""
                 | Ok _ -> failwith "Expected type error for `name` field #1"
 
                 match Decode.fromString (Decode.field "this_field_do_not_exist" (Decode.option Decode.int)) json with

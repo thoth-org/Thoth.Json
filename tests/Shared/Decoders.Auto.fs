@@ -214,13 +214,13 @@ let tests =
             let res = Decode.Auto.unsafeFromString<int array>(json)
             Expect.equal res value ""
 
-        //testCase "Auto decoders works for seq" <| fun _ ->
-        //    let value = [1; 2; 3; 4]
-        //    let json = Encode.Auto.toString(4, value)
-        //    let res = Decode.Auto.unsafeFromString<int seq>(json)
-        //    // Comparing directly against a seq won't work, because
-        //    // res is actually an array in disguise
-        //    Expect.equal value (List.ofSeq res) ""
+        testCase "Auto decoders works for seq" <| fun _ ->
+            let value = [1; 2; 3; 4]
+            let json = Encode.Auto.toString(4, value)
+            let res = Decode.Auto.unsafeFromString<int seq>(json)
+            // Comparing directly against a seq won't work, because
+            // res is actually an array in disguise
+            Expect.equal value (List.ofSeq res) ""
 
         testCase "Auto decoders works for option None" <| fun _ ->
             let value = None
@@ -516,31 +516,39 @@ Reason: Unknown value provided for the enum
             let actual = Decode.Auto.fromString json
             Expect.equal actual (Ok expected) ""
 
-        //testCase "Auto.fromString works with mutable dictionaries" <| fun _ ->
-        //    let expected = System.Collections.Generic.Dictionary()
-        //    expected.Add("oh", { a = 2.; b = 2. })
-        //    expected.Add("ah", { a = -1.5; b = 0. })
-        //    let json = """{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}}"""
-        //    let actual: System.Collections.Generic.Dictionary<_,_> =
-        //        Decode.Auto.unsafeFromString json
-        //    for (KeyValue(k, v)) in expected do
-        //        Expect.equal v actual.[k] ""
-        //    Expect.equal -1.5 actual.["ah"].a ""
-        //    actual.["ah"] <- { a = 0.; b = 0. }
-        //    Expect.equal 0. actual.["ah"].a ""
+        testCase "Auto.unsafeFromString works with mutable dictionaries" <| fun _ ->
+            let expected = System.Collections.Generic.Dictionary()
+            expected.Add("oh", { a = 2.; b = 2. })
+            expected.Add("ah", { a = -1.5; b = 0. })
+            let json = """{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}}"""
+            let actual: System.Collections.Generic.Dictionary<_,_> =
+                Decode.Auto.unsafeFromString json
+            for (KeyValue(k, v)) in expected do
+                Expect.equal actual.[k] v ""
+            Expect.equal actual.["ah"].a -1.5 ""
+            actual.["ah"] <- { a = 0.; b = 0. }
+            Expect.equal actual.["ah"].a 0. ""
+        testCase "Auto.unsafeFromString works with mutable dictionaires with non simples keys" <| fun _ ->
+            let json = """[[{"ComplexKey":1},1],[{"ComplexKey":2},2]]"""
+            let d = System.Collections.Generic.Dictionary()
+            d.Add({| ComplexKey = 1 |}, 1)
+            d.Add({| ComplexKey = 2 |}, 2)
+            let actual : Collections.Generic.Dictionary<{| ComplexKey : int |}, int> = Decode.Auto.unsafeFromString json
+            Expect.equal actual.[{| ComplexKey = 1 |}] 1 ""
+            Expect.equal actual.[{| ComplexKey = 2 |}] 2 ""
 
-        //testCase "Auto.fromString works with mutable hashsets" <| fun _ ->
-        //    let expected = System.Collections.Generic.HashSet()
-        //    expected.Add({ a = 2.; b = 2. }) |> ignore
-        //    expected.Add({ a = -1.5; b = 0. }) |> ignore
-        //    let json = """[{"a":2,"b":2},{"a":-1.5,"b":0}]"""
-        //    let actual: System.Collections.Generic.HashSet<_> = Decode.Auto.unsafeFromString json
-        //    for x in expected do
-        //        Expect.equal (actual.Contains(x)) true ""
-        //    actual.Add({ a = 3.; b = 3. }) |> ignore
-        //    Expect.equal 3 actual.Count ""
-        //    actual.Add({ a = 2.; b = 2. }) |> ignore
-        //    Expect.equal 3 actual.Count ""
+        testCase "Auto.unsafeFromString works with mutable hashsets" <| fun _ ->
+            let expected = System.Collections.Generic.HashSet()
+            expected.Add({ a = 2.; b = 2. }) |> ignore
+            expected.Add({ a = -1.5; b = 0. }) |> ignore
+            let json = """[{"a":2,"b":2},{"a":-1.5,"b":0}]"""
+            let actual: System.Collections.Generic.HashSet<_> = Decode.Auto.unsafeFromString json
+            for x in expected do
+                Expect.equal (actual.Contains(x)) true ""
+            actual.Add({ a = 3.; b = 3. }) |> ignore
+            Expect.equal actual.Count 3 ""
+            actual.Add({ a = 2.; b = 2. }) |> ignore
+            Expect.equal actual.Count 3 ""
 
         testCase "Decoder.Auto.toString works with bigint extra" <| fun _ ->
             let extra = Extra.empty |> Extra.withBigInt

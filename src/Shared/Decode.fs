@@ -1042,12 +1042,43 @@ module Decode =
         else None
     #endif
 
-    let rec inline private handleArray (extra : Map<string, ref<BoxedDecoder>>)
-                                    (caseStrategy : CaseStrategy)
-                                    (t : System.Type) : BoxedDecoder =
-        let elementType = t.GetElementType()
-        let decoder = autoDecoder extra caseStrategy false elementType
+    #if THOTH_JSON_FABLE
+    let private toDict<'key, 'value when 'key: comparison> (xs: ('key*'value) seq) =
+        let dic = System.Collections.Generic.Dictionary<'key, 'value>()
+        for (k, v) in xs do
+            dic.Add(k, v)
+        dic
+    #endif
 
+    #if THOTH_JSON_NEWTONSOFT
+    let private toDict (t: System.Type) (keyType: System.Type) (valueType: System.Type) (kvs: obj) =
+        let dic = System.Activator.CreateInstance(t)
+        let addMethod = t.GetMethod("Add")
+        let kvProps = typedefof<obj * obj>.MakeGenericType(keyType, valueType).GetProperties()
+        for kv in kvs :?> System.Collections.IEnumerable do
+            let k = kvProps.[0].GetValue(kv)
+            let v = kvProps.[1].GetValue(kv)
+            addMethod.Invoke(dic, [|k; v|]) |> ignore
+        dic
+    #endif
+
+    #if THOTH_JSON_FABLE
+    let private toHashSet<'key when 'key: comparison> (xs: 'key seq) =
+        let set = System.Collections.Generic.HashSet<'key>()
+        for x in xs do set.Add(x) |> ignore
+        set
+    #endif
+
+    #if THOTH_JSON_NEWTONSOFT
+    let private toHashSet (t: System.Type) (xs: obj) =
+        let hashSet = System.Activator.CreateInstance(t)
+        let addMethod = t.GetMethod("Add")
+        for x in xs :?> System.Collections.IEnumerable do
+            addMethod.Invoke(hashSet, [|x|]) |> ignore
+        hashSet
+    #endif
+
+    let rec inline private genericArray (elementType : System.Type) (decoder : BoxedDecoder) : BoxedDecoder =
         #if THOTH_JSON_FABLE
         array decoder.Decode |> boxDecoder
         #endif
@@ -1064,14 +1095,38 @@ module Decode =
         )
         #endif
 
-    and inline private genericMap extra caseStrategy (t: System.Type) =
+    and inline private autoDecodeSetOrHashSet constructor caseStrategy extra (t : System.Type) =
+        #if THOTH_JSON_FABLE
+        let decoder =
+            t.GenericTypeArguments.[0]
+            |> autoDecoder extra caseStrategy false
+        fun value ->
+            match array decoder.Decode value with
+            | Error er -> Error er
+            | Ok ar -> constructor ar |> Ok
+        #endif
+
+        #if THOTH_JSON_NEWTONSOFT
+        let keyType = t.GenericTypeArguments.[0]
+        let decoder = autoDecoder extra caseStrategy false keyType
+        fun value ->
+            match array decoder.BoxedDecoder value with
+            | Ok items ->
+                let ar = System.Array.CreateInstance(keyType, items.Length)
+                for i = 0 to ar.Length - 1 do
+                    ar.SetValue(items.[i], i)
+                constructor t ar |> Ok
+            | Error er -> Error er
+        #endif
+
+    and inline private autoDecodeMapOrDict constructor extra caseStrategy (t: System.Type) =
         #if THOTH_JSON_FABLE
         let keyDecoder = t.GenericTypeArguments.[0] |> autoDecoder extra caseStrategy false
         let valueDecoder = t.GenericTypeArguments.[1] |> autoDecoder extra caseStrategy false
         oneOf [
             autoObjectFromKeyValue keyDecoder valueDecoder
             list (tuple2 keyDecoder.Decode valueDecoder.Decode)
-        ] |> map (fun ar -> toMap (unbox ar) |> box)
+        ] |> map constructor
         #endif
 
         #if THOTH_JSON_NEWTONSOFT
@@ -1125,7 +1180,7 @@ module Decode =
                                     Ok acc)
                     | _ ->
                         ("", BadPrimitive ("an array or an object", value)) |> Error
-            kvs |> Result.map (fun kvs -> System.Activator.CreateInstance(t, kvs))
+            kvs |> Result.map (constructor t keyType valueType)
         #endif
 
     and inline private handleRecord (extra : Map<string, ref<BoxedDecoder>>)
@@ -1325,35 +1380,58 @@ If you can't use one of these types, please pass an extra decoder.
             |> genericList t
             |> boxDecoder
             #endif
+        else if fullName = typedefof<obj seq>.FullName then
+            let elemType = t.GenericTypeArguments.[0]
+            autoDecoder extra caseStrategy false elemType
+            |> genericArray elemType
         else if fullName = typedefof<Map<string, obj>>.FullName then
-            genericMap extra caseStrategy t
-            |> boxDecoder
-        else if fullName = typedefof<Set<string>>.FullName then
-            let t = t.GetGenericArguments().[0]
-            let decoder = autoDecoder extra caseStrategy false t
-
             #if THOTH_JSON_FABLE
-            boxDecoder(fun value ->
-                match array decoder.Decode value with
-                | Error error ->
-                    Error error
-
-                | Ok values ->
-                    toSet (unbox values) |> box |> Ok
-            )
+            autoDecodeMapOrDict (fun ar -> toMap (unbox ar) |> box) extra caseStrategy t
+            |> boxDecoder
             #endif
 
             #if THOTH_JSON_NEWTONSOFT
-            boxDecoder(fun value ->
-                match array decoder.BoxedDecoder value with
-                | Ok items ->
-                    let ar = System.Array.CreateInstance(t, items.Length)
-                    for i = 0 to ar.Length - 1 do
-                        ar.SetValue(items.[i], i)
-                    let setType = typedefof< Set<string> >.MakeGenericType([|t|])
-                    System.Activator.CreateInstance(setType, ar) |> Ok
-                | Error error -> Error error
-            )
+            autoDecodeMapOrDict (fun t _ _ kvs -> System.Activator.CreateInstance(t, kvs)) extra caseStrategy t
+            |> boxDecoder
+            #endif
+        else if fullName = typedefof<System.Collections.Generic.Dictionary<string, obj>>.FullName then
+            #if THOTH_JSON_FABLE
+            autoDecodeMapOrDict (fun ar ->
+                // For generic keys, Fable creates a structure with a custom equality comparer.
+                // Deal with string keys separately to let Fable generate native JS Maps
+                if t.GenericTypeArguments.[0].FullName = typeof<string>.FullName then
+                    let dic = System.Collections.Generic.Dictionary<string, obj>()
+                    for (k, v) in (unbox ar) do dic.Add(k, v)
+                    box dic
+                else
+                    toDict (unbox ar) |> box
+            ) extra caseStrategy t
+            |> boxDecoder
+            #endif
+
+            #if THOTH_JSON_NEWTONSOFT
+            autoDecodeMapOrDict toDict extra caseStrategy t
+            |> boxDecoder
+            #endif
+        else if fullName = typedefof<Set<string>>.FullName then
+            #if THOTH_JSON_FABLE
+            autoDecodeSetOrHashSet (fun arr -> toSet (unbox arr) |> box) caseStrategy extra t
+            |> boxDecoder
+            #endif
+
+            #if THOTH_JSON_NEWTONSOFT
+            autoDecodeSetOrHashSet (fun t kvs -> System.Activator.CreateInstance(t, kvs)) caseStrategy extra t
+            |> boxDecoder
+            #endif
+        else if fullName = typedefof<System.Collections.Generic.HashSet<string>>.FullName then
+            #if THOTH_JSON_FABLE
+            autoDecodeSetOrHashSet (fun arr -> toHashSet (unbox arr) |> box) caseStrategy extra t
+            |> boxDecoder
+            #endif
+
+            #if THOTH_JSON_NEWTONSOFT
+            autoDecodeSetOrHashSet toHashSet caseStrategy extra t
+            |> boxDecoder
             #endif
         else
             autoDecodeRecordAndUnions extra caseStrategy isOptional t
@@ -1368,7 +1446,9 @@ If you can't use one of these types, please pass an extra decoder.
             boxDecoder(fun value -> decoderRef.contents.BoxedDecoder value)
         | None ->
             if t.IsArray then
-                handleArray extra caseStrategy t
+                let elementType = t.GetElementType()
+                autoDecoder extra caseStrategy false elementType
+                |> genericArray elementType
             else if t.IsEnum then
                 handleEnum t
             else if FSharpType.IsTuple(t) then

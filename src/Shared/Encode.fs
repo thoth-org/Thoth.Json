@@ -820,6 +820,74 @@ If you can't use one of these types, please pass add a new extra coder.
             |> seq
         )
 
+    and inline private handleMapOrDict (extra : Map<string, ref<BoxedEncoder>>)
+                                        (caseStrategy : CaseStrategy)
+                                        (skipNullField : bool)
+                                        (t : System.Type) : BoxedEncoder =
+        let keyType = t.GenericTypeArguments.[0]
+        let valueType = t.GenericTypeArguments.[1]
+        let valueEncoder =
+            valueType
+            |> autoEncoder extra caseStrategy skipNullField
+
+        match keyType with
+        | StringifiableType toString ->
+            boxEncoder(fun (value : obj) ->
+                #if THOTH_JSON_FABLE
+                let res = JsonValue()
+
+                // This cast to Map<string, obj> seems to be fine for Fable
+                // We use the same trick for non stringifiable key
+                for KeyValue(key, value) in value :?> Map<string, obj> do
+                    res.[toString key] <- valueEncoder.Encode value
+
+                res
+                #endif
+
+                #if THOTH_JSON_NEWTONSOFT
+                let res = JObject()
+                let kvProps = typedefof<KeyValuePair<obj, obj>>.MakeGenericType(keyType, valueType).GetProperties()
+
+                for kv in value :?> System.Collections.IEnumerable do
+                    let k = kvProps.[0].GetValue(kv)
+                    let v = kvProps.[1].GetValue(kv)
+                    res.[toString k] <- valueEncoder.Encode v
+
+                res :> JsonValue
+                #endif
+            )
+
+        | _ ->
+            boxEncoder(fun (value : obj) ->
+                let keyEncoder =
+                    keyType
+                    |> autoEncoder extra caseStrategy skipNullField
+
+                #if THOTH_JSON_FABLE
+                let res = ResizeArray<obj>()
+
+                for KeyValue(key, value) in value :?> Map<string, obj> do
+                    res.Add(ResizeArray<obj>([ keyEncoder.Encode key; valueEncoder.Encode value ]))
+
+                res :> JsonValue
+                #endif
+
+                #if THOTH_JSON_NEWTONSOFT
+                let res = JArray()
+                let kvProps = typedefof<KeyValuePair<obj, obj>>.MakeGenericType(keyType, valueType).GetProperties()
+
+                for kv in value :?> System.Collections.IEnumerable do
+                    let k = kvProps.[0].GetValue(kv)
+                    let v = kvProps.[1].GetValue(kv)
+
+                    #if THOTH_JSON_NEWTONSOFT
+                    res.Add(JArray [| keyEncoder.Encode k; valueEncoder.Encode v |])
+                    #endif
+
+                res :> JsonValue
+                #endif
+            )
+
     and inline private handleGeneric (extra : Map<string, ref<BoxedEncoder>>)
                                 (caseStrategy : CaseStrategy)
                                 (skipNullField : bool)
@@ -854,76 +922,16 @@ If you can't use one of these types, please pass add a new extra coder.
             #endif
 
         else if fullName = typedefof<obj list>.FullName
-                    || fullName = typedefof<Set<string>>.FullName then
+                    || fullName = typedefof<Set<string>>.FullName
+                    || fullName = typedefof<HashSet<string>>.FullName
+                    || fullName = typedefof<obj seq>.FullName then
             t.GenericTypeArguments.[0]
             |> autoEncoder extra caseStrategy skipNullField
             |> handleGenericSeq
 
-        else if fullName = typedefof<Map<string, obj>>.FullName then
-            let keyType = t.GenericTypeArguments.[0]
-            let valueType = t.GenericTypeArguments.[1]
-            let valueEncoder =
-                valueType
-                |> autoEncoder extra caseStrategy skipNullField
-
-            match keyType with
-            | StringifiableType toString ->
-                boxEncoder(fun (value : obj) ->
-                    #if THOTH_JSON_FABLE
-                    let res = JsonValue()
-
-                    // This cast to Map<string, obj> seems to be fine for Fable
-                    // We use the same trick for non stringifiable key
-                    for KeyValue(key, value) in value :?> Map<string, obj> do
-                        res.[toString key] <- valueEncoder.Encode value
-
-                    res
-                    #endif
-
-                    #if THOTH_JSON_NEWTONSOFT
-                    let res = JObject()
-                    let kvProps = typedefof<KeyValuePair<obj, obj>>.MakeGenericType(keyType, valueType).GetProperties()
-
-                    for kv in value :?> System.Collections.IEnumerable do
-                        let k = kvProps.[0].GetValue(kv)
-                        let v = kvProps.[1].GetValue(kv)
-                        res.[toString k] <- valueEncoder.Encode v
-
-                    res :> JsonValue
-                    #endif
-                )
-
-            | _ ->
-                boxEncoder(fun (value : obj) ->
-                    let keyEncoder =
-                        keyType
-                        |> autoEncoder extra caseStrategy skipNullField
-
-                    #if THOTH_JSON_FABLE
-                    let res = ResizeArray<obj>()
-
-                    for KeyValue(key, value) in value :?> Map<string, obj> do
-                        res.Add(ResizeArray<obj>([ keyEncoder.Encode key; valueEncoder.Encode value ]))
-
-                    res :> JsonValue
-                    #endif
-
-                    #if THOTH_JSON_NEWTONSOFT
-                    let res = JArray()
-                    let kvProps = typedefof<KeyValuePair<obj, obj>>.MakeGenericType(keyType, valueType).GetProperties()
-
-                    for kv in value :?> System.Collections.IEnumerable do
-                        let k = kvProps.[0].GetValue(kv)
-                        let v = kvProps.[1].GetValue(kv)
-
-                        #if THOTH_JSON_NEWTONSOFT
-                        res.Add(JArray [| keyEncoder.Encode k; valueEncoder.Encode v |])
-                        #endif
-
-                    res :> JsonValue
-                    #endif
-                )
-
+        else if fullName = typedefof<Map<string, obj>>.FullName
+                    || fullName = typedefof<Dictionary<string, obj>>.FullName then
+            handleMapOrDict extra caseStrategy skipNullField t
         else
             handleRecordAndUnion extra caseStrategy skipNullField t
 
