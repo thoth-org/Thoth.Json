@@ -1,19 +1,6 @@
 version 5.247.3
 source https://www.nuget.org/api/v2
 
-group Docs
-    source https://api.nuget.org/v3/index.json
-
-    framework: netstandard2.0
-
-    nuget FSharp.Compiler.Service ~> 35.0
-    nuget FSharp.Formatting ~> 4.1
-    nuget Newtonsoft.Json
-
-group Grammars
-    github akamud/vscode-theme-onelight themes/OneLight.json
-    github ionide/ionide-fsgrammar grammar/fsharp.json
-
 group netcorebuild
     source https://www.nuget.org/api/v2
     framework: netstandard2.0
