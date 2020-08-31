@@ -4,6 +4,17 @@ module Tests.Decoders.Manual
 open Fable.Core
 #endif
 
+#if (THOTH_JSON && FABLE_COMPILER)
+open Thoth.Json
+open Fable.Mocha
+open Fable.Core.JsInterop
+#endif
+
+#if THOTH_JSON && !FABLE_COMPILER
+open Thoth.Json
+open Expecto
+#endif
+
 #if THOTH_JSON_FABLE
 open Thoth.Json.Fable
 open Fable.Mocha
@@ -45,7 +56,7 @@ let tests =
 
         testList "Errors" [
 
-            #if FABLE_COMPILER
+            #if THTOH_JSON_FABLE
 
             testCase "circular structure are supported when reporting error" <| fun _ ->
                 let a = createObj [ ]
@@ -60,9 +71,15 @@ let tests =
             #endif
 
             testCase "invalid json" <| fun _ ->
-                #if FABLE_COMPILER
+                #if THOTH_JSON
+                let expected : Result<float, string> = Error "Given an invalid JSON: Invalid JSON starting at character 0, snippet =\n-----\nmaxime\n-----\njson =\n-----\nmaxime\n-----"
+                #endif
+
+                #if THOTH_JSON_FABLE
                 let expected : Result<float, string> = Error "Given an invalid JSON: Unexpected token m in JSON at position 0"
-                #else
+                #endif
+
+                #if THOTH_JSON_NEWTONSOFT
                 let expected : Result<float, string> = Error "Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0."
                 #endif
                 let actual = Decode.fromString Decode.float "maxime"
@@ -480,7 +497,16 @@ Expecting a bigint but instead got: "maxime"
                 let actual =
                     Decode.fromString Decode.string "\"2018-10-01T11:12:55.00Z\""
 
-                Expect.equal (Ok expected) actual ""
+                Expect.equal actual (Ok expected) ""
+
+            testCase "a decimal works2" <| fun _ ->
+
+                let expected = 0.7833M
+                let actual =
+                    Decode.fromString Decode.decimal "\"0.7833\""
+
+
+                Expect.equal actual (Ok expected) ""
 
             testCase "a datetime works" <| fun _ ->
                 let expected = new DateTime(2018, 10, 1, 11, 12, 55, DateTimeKind.Utc)
@@ -872,7 +898,7 @@ Expecting an int but instead got: "maxime"
         testList "Object primitives" [
 
             testCase "field works" <| fun _ ->
-                let json = """{ "name": "maxime", "age": 25 }"""
+                let json = """{ "age": 25, "name": "maxime" }"""
                 let expected = Ok("maxime")
 
                 let actual =
@@ -896,15 +922,15 @@ Expecting an int but instead got: null
                 Expect.equal actual expected ""
 
             testCase "field output an error when field is missing" <| fun _ ->
-                let json = """{ "name": "maxime", "age": 25 }"""
+                let json = """{ "age": 25, "name": "maxime" }"""
                 let expected =
                     Error(
                         """
 Error at: `$`
 Expecting an object with a field named `height` but instead got:
 {
-    "name": "maxime",
-    "age": 25
+    "age": 25,
+    "name": "maxime"
 }
                         """.Trim())
 
@@ -924,7 +950,7 @@ Expecting an object with a field named `height` but instead got:
                 Expect.equal actual expected ""
 
             testCase "at output an error if the path failed" <| fun _ ->
-                let json = """{ "user": { "name": "maxime", "age": 25 } }"""
+                let json = """{ "user": { "age": 25, "name": "maxime" } }"""
                 let expected =
                     Error(
                         """
@@ -932,8 +958,8 @@ Error at: `$.user.firstname`
 Expecting an object with path `user.firstname` but instead got:
 {
     "user": {
-        "name": "maxime",
-        "age": 25
+        "age": 25,
+        "name": "maxime"
     }
 }
 Node `firstname` is unknown.
@@ -1273,7 +1299,7 @@ Expecting a string but instead got: 12
                 Expect.equal expected actual ""
 
             testCase "combining field and option decoders works" <| fun _ ->
-                let json = """{ "name": "maxime", "age": 25, "something_undefined": null }"""
+                let json = """{ "age": 25, "name": "maxime", "something_undefined": null }"""
 
                 let expectedValid = Ok(Some "maxime")
                 let actualValid =
@@ -1298,12 +1324,12 @@ Expecting an int but instead got: "maxime"
 Error at: `$`
 Expecting an object with a field named `this_field_do_not_exist` but instead got:
 {
-    "name": "maxime",
     "age": 25,
+    "name": "maxime",
     "something_undefined": null
 }
                         """.Trim()
-                    Expect.equal expected msg ""
+                    Expect.equal msg expected ""
                 | Ok _ ->
                     failwith "Expected type error for `name` field #2"
 
@@ -1317,7 +1343,7 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
                 let actualValid2 =
                     Decode.fromString (Decode.option (Decode.field "name" Decode.string)) json
 
-                Expect.equal expectedValid2 actualValid2 ""
+                Expect.equal actualValid2 expectedValid2 ""
 
                 match Decode.fromString (Decode.option (Decode.field "name" Decode.int)) json with
                 | Error msg ->
@@ -1326,7 +1352,7 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
 Error at: `$.name`
 Expecting an int but instead got: "maxime"
                         """.Trim()
-                    Expect.equal expected msg ""
+                    Expect.equal msg expected ""
                 | Ok _ -> failwith "Expected type error for `name` field #3"
 
                 match Decode.fromString (Decode.option (Decode.field "this_field_do_not_exist" Decode.int)) json with
@@ -1336,12 +1362,12 @@ Expecting an int but instead got: "maxime"
 Error at: `$`
 Expecting an object with a field named `this_field_do_not_exist` but instead got:
 {
-    "name": "maxime",
     "age": 25,
+    "name": "maxime",
     "something_undefined": null
 }
                         """.Trim()
-                    Expect.equal expected msg ""
+                    Expect.equal msg expected ""
                 | Ok _ -> failwith "Expected type error for `name` field #4"
 
                 match Decode.fromString (Decode.option (Decode.field "something_undefined" Decode.int)) json with
@@ -1351,7 +1377,7 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
 Error at: `$.something_undefined`
 Expecting an int but instead got: null
                         """.Trim()
-                    Expect.equal expected msg ""
+                    Expect.equal msg expected ""
                 | Ok _ -> failwith "Expected type error for `name` field"
 
                 /// Alfonso: Should this test pass? We should use Decode.optional instead
@@ -1372,13 +1398,13 @@ Expecting an int but instead got: null
 Error at: `$`
 Expecting an object with a field named `height` but instead got:
 {
-    "name": "maxime",
     "age": 25,
+    "name": "maxime",
     "something_undefined": null
 }
                         """.Trim()
 
-                    Expect.equal expected msg ""
+                    Expect.equal msg expected ""
 
                 | Ok _ -> failwith "Expected type error for `height` field"
 
@@ -1414,11 +1440,29 @@ Expecting an object with a field named `height` but instead got:
                 Expect.equal actual expected ""
 
             testCase "succeed output an error if the JSON is invalid" <| fun _ ->
-                #if FABLE_COMPILER
+                #if THOTH_JSON
+                let expected =
+                    Error(
+                        """
+Given an invalid JSON: Invalid JSON starting at character 0, snippet =
+-----
+maxime
+-----
+json =
+-----
+maxime
+-----
+                        """.Trim())
+                #endif
+
+                #if THOTH_JSON_FABLE
                 let expected = Error("Given an invalid JSON: Unexpected token m in JSON at position 0")
-                #else
+                #endif
+
+                #if THOTH_JSON_NEWTONSOFT
                 let expected = Error("Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0.")
                 #endif
+
                 let actual =
                     Decode.fromString (Decode.succeed 7) "maxime"
 
@@ -1459,8 +1503,8 @@ Expecting an object with a field named `height` but instead got:
 Error at: `$`
 Expecting an object with a field named `version` but instead got:
 {
-    "info": 3,
-    "data": 2
+    "data": 3,
+    "info": 2
 }
                         """.Trim())
                 let infoHelp version : Decoder<int> =
@@ -1477,7 +1521,7 @@ Expecting an object with a field named `version` but instead got:
                     |> Decode.andThen infoHelp
 
                 let actual =
-                    Decode.fromString info """{ "info": 3, "data": 2 }"""
+                    Decode.fromString info """{ "data": 3, "info": 2 }"""
 
                 Expect.equal actual expected ""
 
@@ -1700,7 +1744,7 @@ Expecting an object with a field named `version` but instead got:
         testList "object builder" [
 
             testCase "get.Required.Field works" <| fun _ ->
-                let json = """{ "name": "maxime", "age": 25 }"""
+                let json = """{ "age": 25, "name": "maxime" }"""
                 let expected = Ok({ fieldA = "maxime" })
 
                 let decoder =
@@ -1758,7 +1802,7 @@ Expecting a string but instead got: 12
                 Expect.equal actual expected ""
 
             testCase "get.Optional.Field works" <| fun _ ->
-                let json = """{ "name": "maxime", "age": 25 }"""
+                let json = """{ "age": 25, "name": "maxime" }"""
                 let expected = Ok({ optionalField = Some "maxime" })
 
                 let decoder =
@@ -1901,7 +1945,7 @@ Expecting an object but instead got:
                 Expect.equal actual expected ""
 
             testCase "get.Required.At returns Error if field missing" <| fun _ ->
-                let json = """{ "user": { "name": "maxime", "age": 25 } }"""
+                let json = """{ "user": { "age": 25, "name": "maxime" } }"""
                 let expected =
                     Error(
                         """
@@ -1909,8 +1953,8 @@ Error at: `$.user.firstname`
 Expecting an object with path `user.firstname` but instead got:
 {
     "user": {
-        "name": "maxime",
-        "age": 25
+        "age": 25,
+        "name": "maxime"
     }
 }
 Node `firstname` is unknown.

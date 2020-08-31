@@ -1,5 +1,9 @@
 module Tests.Types
 
+#if THOTH_JSON
+open Thoth.Json
+#endif
+
 #if THOTH_JSON_FABLE
 open Thoth.Json.Fable
 #endif
@@ -132,6 +136,7 @@ type Record9 =
         o: uint64
         p: unit
         r: char
+        s: System.Guid
         // r: string seq
     }
 
@@ -208,22 +213,32 @@ type Shape =
         |> Decode.map Rectangle
 
 type MyObj =
-    { Enabled: bool
-      Shape: Shape }
+    {
+      Enabled: bool
+      Shape: Shape
+    }
 
 type MyObj2 =
-    { Enabled: bool
-      Shape: Shape option }
+    {
+      Enabled: bool
+      Shape: Shape option
+    }
 
 exception CustomException
 
 type BigIntRecord =
-    { bigintField: bigint }
+    {
+        bigintField: bigint
+    }
 
 type ChildType =
-    { ChildField: string }
+    {
+        ChildField: string
+    }
+
     static member Encode(x: ChildType) =
         Encode.string x.ChildField
+
     static member Decoder =
         Decode.string |> Decode.map (fun x -> { ChildField = x })
 
@@ -240,10 +255,10 @@ type RecordWithStrangeType =
       Thread : Thread option }
 
 type UserCaseSensitive =
-    { Id : int
-      Name : string
-      Email : string
-      followers : int }
+    { Email : string
+      followers : int
+      Id : int
+      Name : string }
 
 type IAmAnInterface =
     abstract member DoIt : unit -> unit
@@ -253,8 +268,10 @@ type RecordWithInterface =
       Interface : IAmAnInterface option }
 
 type MyRecType =
-    { Name: string
-      Children: MyRecType List }
+    {
+        Children: MyRecType List
+        Name: string
+    }
 
 #if !NETFRAMEWORK
 [<StringEnum>]
@@ -299,14 +316,18 @@ type Enum_UInt32 =
     | Zero = 0u
     | NinetyNine = 99u
 
-#if FABLE_COMPILER
-type NoAlloc = Fable.Core.EraseAttribute
-#else
-type NoAlloc = StructAttribute
-#endif
+//Disable no alloc test because it doesn't work on Fable runtime
+// Fable doesn't generate the type information for Erased type so reflection doesn't work and we get `System.Object`
+// all the time.
 
-[<NoAlloc>]
-type NoAllocAttributeSingleCaseDU = NoAllocAttributeSingleCaseDU of System.Guid
+//#if FABLE_COMPILER
+//type NoAlloc = Fable.Core.EraseAttribute
+//#else
+//type NoAlloc = StructAttribute
+//#endif
+
+//[<NoAlloc>]
+//type NoAllocAttributeSingleCaseDU = NoAllocAttributeSingleCaseDU of System.Guid
 
 type SingleCaseDUSimple = SingleCaseDUSimple of string
 
@@ -318,4 +339,4 @@ type TestStringWithHTML =
         Content : string
     }
 
-type RecordForCharacterCase = { One : int; TwoPart : int; ThreePartField : int }
+type RecordForCharacterCase = { One : int; ThreePartField : int; TwoPart : int }

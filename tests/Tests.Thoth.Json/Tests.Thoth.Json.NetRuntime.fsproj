@@ -1,21 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.0;net461</TargetFrameworks>
-        <DefineConstants>THOTH_JSON_NEWTONSOFT</DefineConstants>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <DefineConstants>THOTH_JSON</DefineConstants>
         <OutputType>Exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="../Shared/Types.fs" />
         <Compile Include="../Shared/Decoders.Manual.fs" />
         <Compile Include="../Shared/Encoders.Manual.fs" />
-        <Compile Include="../Shared/Encoders.Auto.fs" />
-        <Compile Include="../Shared/Decoders.Auto.fs" />
+<!--        <Compile Include="../Shared/Encoders.Auto.fs" />-->
+<!--        <Compile Include="../Shared/Decoders.Auto.fs" />-->
         <Compile Include="../Shared/Main.fs" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Expecto" Version="9.0.0" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Thoth.Json.Newtonsoft\Thoth.Json.Newtonsoft.fsproj" />
+        <ProjectReference Include="..\..\src\Thoth.Json\Thoth.Json.fsproj" />
     </ItemGroup>
 </Project>

@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.0;net461</TargetFrameworks>
-        <DefineConstants>THOTH_JSON_NEWTONSOFT</DefineConstants>
-        <OutputType>Exe</OutputType>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <DefineConstants>THOTH_JSON;FABLE_COMPILER</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="../Shared/Types.fs" />
@@ -13,9 +12,9 @@
         <Compile Include="../Shared/Main.fs" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Expecto" Version="9.0.0" />
+        <PackageReference Include="Fable.Mocha" Version="2.9.1" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Thoth.Json.Newtonsoft\Thoth.Json.Newtonsoft.fsproj" />
+        <ProjectReference Include="..\..\src\Thoth.Json\Thoth.Json.fsproj" />
     </ItemGroup>
 </Project>

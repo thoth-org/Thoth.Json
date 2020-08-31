@@ -16,9 +16,10 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <DefineConstants>THOTH_JSON_FABLE</DefineConstants>
+        <DefineConstants>THOTH_JSON;FABLE_COMPILER</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
+        <Compile Include="Parser.fs" />
         <Compile Include="Prelude.fs" />
         <Compile Include="../Shared/Types.fs" />
         <Compile Include="Runners.fs" />

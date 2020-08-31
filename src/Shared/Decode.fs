@@ -1,3 +1,10 @@
+#if THOTH_JSON
+namespace Thoth.Json
+
+open Thoth.Json.Parser
+
+#endif
+
 #if THOTH_JSON_FABLE
 namespace Thoth.Json.Fable
 #endif
@@ -5,6 +12,7 @@ namespace Thoth.Json.Fable
 #if THOTH_JSON_NEWTONSOFT
 namespace Thoth.Json.Newtonsoft
 
+open System.Globalization
 open Newtonsoft.Json.Linq
 #endif
 
@@ -177,7 +185,12 @@ module Decode =
             if Helpers.isNumber value then
                 Helpers.asFloat value |> decimal |> Ok
             elif Helpers.isString value then
-                match System.Decimal.TryParse (Helpers.asString value) with
+                // Accept any culture for now
+                #if THOTH_JSON_NEWTONSOFT
+                match System.Decimal.TryParse(Helpers.asString value, NumberStyles.Any, CultureInfo.InvariantCulture) with
+                #else
+                match System.Decimal.TryParse(Helpers.asString value) with
+                #endif
                 | true, x -> Ok x
                 | _ -> ("", BadPrimitive("a decimal", value)) |> Error
             else
@@ -330,8 +343,18 @@ module Decode =
 
     let option (decoder : Decoder<'value>) : Decoder<'value option> =
         fun value ->
-            if Helpers.isNullValue value then Ok None
-            else decoder value |> Result.map Some
+            #if THOTH_JSON
+            if Helpers.isNullValue value || Helpers.isUndefined value then
+                Ok None
+            else
+                decoder value |> Result.map Some
+            #else
+            if Helpers.isNullValue value then
+                Ok None
+            else
+                decoder value |> Result.map Some
+            #endif
+
 
     //////////////////////
     // Data structure ///
@@ -892,11 +915,11 @@ module Decode =
 
     open FSharp.Reflection
 
-    #if THOTH_JSON_FABLE
+    #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
     open Fable.Core
     #endif
 
-    #if THOTH_JSON_NEWTONSOFT
+    #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
     open System.Collections.Generic
     open System.Globalization
     #endif
@@ -933,8 +956,8 @@ module Decode =
                     )
             )
 
-    #if THOTH_JSON_FABLE
-    let private autoObjectFromKeyValue (keyDecoder: BoxedDecoder) (valueDecoder: BoxedDecoder) (value: JsonValue) =
+    #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
+    let private autoObjectFromKeyValue (valueDecoder: BoxedDecoder) (value: JsonValue) =
         if not (Helpers.isObject value) then
             ("", BadPrimitive ("an object", value)) |> Error
         else
@@ -943,14 +966,11 @@ module Decode =
                 match acc with
                 | Error _ -> acc
                 | Ok acc ->
-                    match keyDecoder.Decode name with
-                    | Error er -> Error er
-                    | Ok k ->
                         Helpers.getField name value
                         |> valueDecoder.Decode
                         |> function
                             | Error er -> Error (er |> DecoderError.prependPath ("." + name))
-                            | Ok v -> (k,v)::acc |> Ok
+                            | Ok v -> (name,v)::acc |> Ok
             )
     #endif
 
@@ -970,7 +990,7 @@ module Decode =
                     |> Result.map (fun value -> value::result)
             )
 
-    #if THOTH_JSON_FABLE
+    #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
     // This is used to force Fable use a generic comparer for map keys
     let private toMap<'key, 'value when 'key: comparison> (xs: ('key*'value) seq) = Map.ofSeq xs
     let private toSet<'key when 'key: comparison> (xs: 'key seq) = Set.ofSeq xs
@@ -1042,7 +1062,7 @@ module Decode =
         else None
     #endif
 
-    #if THOTH_JSON_FABLE
+    #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
     let private toDict<'key, 'value when 'key: comparison> (xs: ('key*'value) seq) =
         let dic = System.Collections.Generic.Dictionary<'key, 'value>()
         for (k, v) in xs do
@@ -1062,7 +1082,7 @@ module Decode =
         dic
     #endif
 
-    #if THOTH_JSON_FABLE
+    #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
     let private toHashSet<'key when 'key: comparison> (xs: 'key seq) =
         let set = System.Collections.Generic.HashSet<'key>()
         for x in xs do set.Add(x) |> ignore
@@ -1079,7 +1099,7 @@ module Decode =
     #endif
 
     let rec inline private genericArray (elementType : System.Type) (decoder : BoxedDecoder) : BoxedDecoder =
-        #if THOTH_JSON_FABLE
+        #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
         array decoder.Decode |> boxDecoder
         #endif
 
@@ -1096,7 +1116,7 @@ module Decode =
         #endif
 
     and inline private autoDecodeSetOrHashSet constructor caseStrategy extra (t : System.Type) =
-        #if THOTH_JSON_FABLE
+        #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
         let decoder =
             t.GenericTypeArguments.[0]
             |> autoDecoder extra caseStrategy false
@@ -1120,17 +1140,96 @@ module Decode =
         #endif
 
     and inline private autoDecodeMapOrDict constructor extra caseStrategy (t: System.Type) =
-        #if THOTH_JSON_FABLE
-        let keyDecoder = t.GenericTypeArguments.[0] |> autoDecoder extra caseStrategy false
-        let valueDecoder = t.GenericTypeArguments.[1] |> autoDecoder extra caseStrategy false
-        oneOf [
-            autoObjectFromKeyValue keyDecoder valueDecoder
-            list (tuple2 keyDecoder.Decode valueDecoder.Decode)
-        ] |> map constructor
+
+//        // The oneOf needs to be split as for NEWTONSOFT
+//        #if THOTH_JSON_FABLE
+//        let keyType = t.GenericTypeArguments.[0]
+//        let valueType = t.GenericTypeArguments.[1]
+//        let valueDecoder = autoDecoder extra caseStrategy false valueType
+//        let keyDecoder = autoDecoder extra caseStrategy false keyType
+//
+//        oneOf [
+//            autoObjectFromKeyValue valueDecoder
+//            list (tuple2 keyDecoder.Decode valueDecoder.Decode)
+//        ] |> map constructor
+//        #endif
+
+        #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
+
+        // Ugly re-implementation of a combination of oneOf, array, etc. decoders
+        // oneOf is working for THOTH_JSON_FABLE because we are using obj to alias the JsonValue and others things like that
+        let keyType = t.GenericTypeArguments.[0]
+        let valueType = t.GenericTypeArguments.[1]
+        let valueDecoder = autoDecoder extra caseStrategy false valueType
+        let keyDecoder = autoDecoder extra caseStrategy false keyType
+
+        let decoderArrayStyle =
+            fun (value : JsonValue) ->
+                if Helpers.isArray value then
+                    let values = Helpers.asArray value
+
+                    let mutable i = -1
+                    let result = Array.zeroCreate values.Length
+                    let mutable error : DecoderError option = None
+
+                    while i < values.Length - 1 && error.IsNone do
+                        i <- i + 1
+                        let value = values.[i]
+
+                        if not (Helpers.isArray value) then
+                            error <- ("", BadPrimitive ("an array", value)) |> Some
+                        else
+                            let kv = Helpers.asArray value
+                            match keyDecoder.Decode(kv.[0]), valueDecoder.Decode(kv.[1]) with
+                            | Error er, _ ->
+                                let er =
+                                    er
+                                    |> DecoderError.prependPath ".[0]"
+
+                                error <- Some er
+
+                            | _, Error er ->
+                                let er =
+                                    er
+                                    |> DecoderError.prependPath ".[1]"
+
+                                error <- Some er
+
+                            | Ok key, Ok value ->
+                                result.[i] <- (key, value)
+
+                    if error.IsNone then
+                        Ok result
+                    else
+                        Error error.Value
+                else
+                    #if THOTH_JSON && FABLE_COMPILER
+                    Error ("", BadPrimitive("an array", Json.Null))
+                    #endif
+
+                    #if THOTH_JSON_FABLE
+                    Error ("", BadPrimitive("an array", null))
+                    #endif
+
+
+
+        let decoderObjectStyle =
+            autoObjectFromKeyValue valueDecoder
+
+        fun value ->
+            match decoderArrayStyle value with
+            | Ok value ->
+                value |> unbox |> constructor |> Ok
+            | Error errorMessage1 ->
+                match decoderObjectStyle value with
+                | Ok value ->
+                    value |> unbox |> constructor |> Ok
+                | Error errorMessage2 ->
+                    Error("", BadOneOf [ errorMessage1; errorMessage2 ])
         #endif
 
         #if THOTH_JSON_NEWTONSOFT
-        let keyType   = t.GenericTypeArguments.[0]
+        let keyType = t.GenericTypeArguments.[0]
         let valueType = t.GenericTypeArguments.[1]
         let valueDecoder = autoDecoder extra caseStrategy false valueType
         let keyDecoder = autoDecoder extra caseStrategy false keyType
@@ -1207,7 +1306,7 @@ module Decode =
                         (name :string)
                         (values : JsonValue []) =
         let unionCaseInfo =
-            #if THOTH_JSON_NEWTONSOFT
+            #if THOTH_JSON_NEWTONSOFT && !NETFRAMEWORK
             match t with
             | Util.StringEnum attributeType ->
                 unionCasesInfo
@@ -1356,7 +1455,7 @@ If you can't use one of these types, please pass an extra decoder.
                                         (t : System.Type) : BoxedDecoder =
         let fullName = t.GetGenericTypeDefinition().FullName
         if fullName = typedefof<obj option>.FullName then
-            #if THOTH_JSON_FABLE
+            #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
             let decoder = autoDecoder extra caseStrategy true t.GenericTypeArguments.[0]
 
             option decoder.Decode
@@ -1369,7 +1468,7 @@ If you can't use one of these types, please pass an extra decoder.
             |> boxDecoder
             #endif
         else if fullName = typedefof<obj list>.FullName then
-            #if THOTH_JSON_FABLE
+            #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
             let decoder = autoDecoder extra caseStrategy false t.GenericTypeArguments.[0]
             list decoder.Decode
             |> boxDecoder
@@ -1385,7 +1484,7 @@ If you can't use one of these types, please pass an extra decoder.
             autoDecoder extra caseStrategy false elemType
             |> genericArray elemType
         else if fullName = typedefof<Map<string, obj>>.FullName then
-            #if THOTH_JSON_FABLE
+            #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
             autoDecodeMapOrDict (fun ar -> toMap (unbox ar) |> box) extra caseStrategy t
             |> boxDecoder
             #endif
@@ -1395,7 +1494,7 @@ If you can't use one of these types, please pass an extra decoder.
             |> boxDecoder
             #endif
         else if fullName = typedefof<System.Collections.Generic.Dictionary<string, obj>>.FullName then
-            #if THOTH_JSON_FABLE
+            #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
             autoDecodeMapOrDict (fun ar ->
                 // For generic keys, Fable creates a structure with a custom equality comparer.
                 // Deal with string keys separately to let Fable generate native JS Maps
@@ -1414,7 +1513,7 @@ If you can't use one of these types, please pass an extra decoder.
             |> boxDecoder
             #endif
         else if fullName = typedefof<Set<string>>.FullName then
-            #if THOTH_JSON_FABLE
+            #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
             autoDecodeSetOrHashSet (fun arr -> toSet (unbox arr) |> box) caseStrategy extra t
             |> boxDecoder
             #endif
@@ -1424,7 +1523,7 @@ If you can't use one of these types, please pass an extra decoder.
             |> boxDecoder
             #endif
         else if fullName = typedefof<System.Collections.Generic.HashSet<string>>.FullName then
-            #if THOTH_JSON_FABLE
+            #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
             autoDecodeSetOrHashSet (fun arr -> toHashSet (unbox arr) |> box) caseStrategy extra t
             |> boxDecoder
             #endif
@@ -1490,6 +1589,13 @@ If you can't use one of these types, please pass an extra decoder.
             // Allows to decode null values
             else if fullName = typeof<obj>.FullName then
                 boxDecoder (fun value ->
+                    #if (THOTH_JSON && FABLE_COMPILER)
+                    if Helpers.isNullValue value then
+                        Ok(null : obj)
+                    else
+                        Ok(box value)
+                    #endif
+
                     #if THOTH_JSON_FABLE
                     Ok value
                     #endif
@@ -1545,7 +1651,7 @@ If you can't use one of these types, please pass an extra decoder.
                 Decode.fromString decoder json
 
     type Auto =
-        #if THOTH_JSON_FABLE
+        #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
         /// ATTENTION: Use this only when other arguments (isCamelCase, extra) don't change
         static member generateDecoderCached<'T> (?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver : ITypeResolver<'T>): Decoder<'T> =
             let t = resolver.Value.ResolveType()
@@ -1559,7 +1665,7 @@ If you can't use one of these types, please pass an extra decoder.
             Auto.LowLevel.generateDecoderCached (t, ?caseStrategy = caseStrategy, ?extra = extra)
         #endif
 
-        #if THOTH_JSON_FABLE
+        #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
         static member generateDecoder<'T> (?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver : ITypeResolver<'T>): Decoder<'T> =
             let t = resolver.Value.ResolveType()
             Auto.LowLevel.generateDecoder(t, ?caseStrategy = caseStrategy, ?extra = extra)
@@ -1571,7 +1677,7 @@ If you can't use one of these types, please pass an extra decoder.
             Auto.LowLevel.generateDecoder(t, ?caseStrategy = caseStrategy, ?extra = extra)
         #endif
 
-        #if THOTH_JSON_FABLE
+        #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
         static member fromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver : ITypeResolver<'T>): Result<'T, string> =
             let decoder = Auto.generateDecoder(?caseStrategy=caseStrategy, ?extra=extra, ?resolver=resolver)
             Decode.fromString decoder json
@@ -1583,7 +1689,7 @@ If you can't use one of these types, please pass an extra decoder.
             Decode.fromString decoder json
         #endif
 
-        #if THOTH_JSON_FABLE
+        #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
         static member unsafeFromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver : ITypeResolver<'T>): 'T =
             let decoder = Auto.generateDecoder(?caseStrategy=caseStrategy, ?extra=extra, ?resolver=resolver)
             match Decode.fromString decoder json with

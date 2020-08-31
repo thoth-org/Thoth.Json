@@ -1,3 +1,11 @@
+#if THOTH_JSON
+namespace Thoth.Json
+
+open System.Text
+open Thoth.Json.Parser
+
+#endif
+
 #if THOTH_JSON_FABLE
 namespace Thoth.Json.Fable
 #endif
@@ -12,10 +20,16 @@ module Encode =
     open System.Collections.Generic
     open System.Globalization
 
+    #if THOTH_JSON
+    open Fable.Core
+    #endif
+
     #if THOTH_JSON_FABLE
     open Fable.Core
     open Fable.Core.JsInterop
-    #else
+    #endif
+
+    #if THOTH_JSON_NEWTONSOFT
     open Newtonsoft.Json
     open Newtonsoft.Json.Linq
     open System.IO
@@ -32,6 +46,17 @@ module Encode =
     ///
     ///**Exceptions**
     ///
+    #if THOTH_JSON
+    let string (value : string) : JsonValue =
+        // If the string is null we represent it using null
+        // This is similar to what the other runtime do, THOTH_JSON parser is more strict by default
+        // so we need mix a bit of the Parser logic with the decoder
+        if value = null then
+            Json.Null
+        else
+            value |> Json.String
+    #endif
+
     #if THOTH_JSON_FABLE
     let inline string (value : string) : JsonValue =
         box value
@@ -40,6 +65,11 @@ module Encode =
     #if THOTH_JSON_NEWTONSOFT
     let string (value : string) : JsonValue =
         JValue(value) :> JsonValue
+    #endif
+
+    #if THOTH_JSON
+    let char (value : char) : JsonValue =
+        (Operators.string value) |> Json.String
     #endif
 
     #if THOTH_JSON_FABLE
@@ -64,6 +94,10 @@ module Encode =
     ///**Exceptions**
     ///
     let guid (value : System.Guid) : JsonValue =
+        #if THOTH_JSON
+        value.ToString() |> Json.String
+        #endif
+
         #if THOTH_JSON_FABLE
         box (value.ToString())
         #endif
@@ -83,6 +117,11 @@ module Encode =
     ///
     ///**Exceptions**
     ///
+    #if THOTH_JSON
+    let inline float (value : float) : JsonValue =
+        value |> Json.Number
+    #endif
+
     #if THOTH_JSON_FABLE
     let inline float (value : float) : JsonValue =
         box value
@@ -91,6 +130,12 @@ module Encode =
     #if THOTH_JSON_NEWTONSOFT
     let float (value : float) : JsonValue =
         JValue(value) :> JsonValue
+    #endif
+
+    #if THOTH_JSON
+    let float32 (value : float32) : JsonValue =
+        // I think we are loosing some precision here
+        Operators.float value |> Json.Number
     #endif
 
     #if THOTH_JSON_FABLE
@@ -115,6 +160,10 @@ module Encode =
     ///**Exceptions**
     ///
     let decimal (value : decimal) : JsonValue =
+        #if THOTH_JSON
+        value.ToString() |> Json.String
+        #endif
+
         #if THOTH_JSON_FABLE
         value.ToString() |> string
         #endif
@@ -134,6 +183,10 @@ module Encode =
     ///**Exceptions**
     ///
     let nil : JsonValue =
+        #if THOTH_JSON
+        Json.Null
+        #endif
+
         #if THOTH_JSON_FABLE
         box null
         #endif
@@ -152,6 +205,11 @@ module Encode =
     ///
     ///**Exceptions**
     ///
+    #if THOTH_JSON
+    let bool (value : bool) : JsonValue =
+        Json.Bool value
+    #endif
+
     #if THOTH_JSON_FABLE
     let inline bool (value : bool) : JsonValue =
         box value
@@ -174,6 +232,12 @@ module Encode =
     ///**Exceptions**
     ///
     let object (values : (string * JsonValue) seq) : JsonValue =
+        #if THOTH_JSON
+        values
+        |> Map.ofSeq
+        |> Json.Object
+        #endif
+
         #if THOTH_JSON_FABLE
         let o = obj()
         for (key, value) in values do
@@ -200,6 +264,11 @@ module Encode =
     ///
     ///**Exceptions**
     ///
+    #if THOTH_JSON
+    let array (values : JsonValue array) : JsonValue =
+        Json.Array values
+    #endif
+
     #if THOTH_JSON_FABLE
     let inline array (values : JsonValue array) : JsonValue =
         box values
@@ -221,6 +290,10 @@ module Encode =
     ///**Exceptions**
     ///
     let list (values : JsonValue list) : JsonValue =
+        #if THOTH_JSON
+        values |> List.toArray |> Json.Array
+        #endif
+
         #if THOTH_JSON_FABLE
         // Don't use List.toArray as it may create a typed array
         Helpers.arrayFrom values
@@ -231,6 +304,10 @@ module Encode =
         #endif
 
     let seq (values : JsonValue seq) : JsonValue =
+        #if THOTH_JSON
+        values |> Seq.toArray |> Json.Array
+        #endif
+
         #if THOTH_JSON_FABLE
         Helpers.arrayFrom values
         #endif
@@ -255,6 +332,10 @@ module Encode =
         |> object
 
     let bigint (value : bigint) : JsonValue =
+        #if THOTH_JSON
+        value.ToString() |> Json.String
+        #endif
+
         #if THOTH_JSON_FABLE
         box (value.ToString())
         #endif
@@ -276,6 +357,10 @@ module Encode =
     /// **Exceptions**
     ///
     let datetime (value : System.DateTime) : JsonValue =
+        #if THOTH_JSON
+        value.ToString("O", CultureInfo.InvariantCulture) |> string
+        #endif
+
         #if THOTH_JSON_FABLE
         value.ToString("O", CultureInfo.InvariantCulture) |> string
         #endif
@@ -285,6 +370,10 @@ module Encode =
         #endif
 
     let datetimeOffset (value : System.DateTimeOffset) : JsonValue =
+        #if THOTH_JSON
+        value.ToString("O", CultureInfo.InvariantCulture) |> string
+        #endif
+
         #if THOTH_JSON_FABLE
         value.ToString("O", CultureInfo.InvariantCulture) |> string
         #endif
@@ -304,6 +393,10 @@ module Encode =
     /// **Exceptions**
     ///
     let timespan (value : System.TimeSpan) : JsonValue =
+        #if THOTH_JSON
+        value.ToString() |> string
+        #endif
+
         #if THOTH_JSON_FABLE
         value.ToString() |> string
         #endif
@@ -313,6 +406,10 @@ module Encode =
         #endif
 
     let sbyte (value : sbyte) : JsonValue =
+        #if THOTH_JSON
+        value.ToString(CultureInfo.InvariantCulture) |> string
+        #endif
+
         #if THOTH_JSON_FABLE
         box (value.ToString(CultureInfo.InvariantCulture))
         #endif
@@ -322,6 +419,10 @@ module Encode =
         #endif
 
     let byte (value : byte) : JsonValue =
+        #if THOTH_JSON
+        value.ToString(CultureInfo.InvariantCulture) |> string
+        #endif
+
         #if THOTH_JSON_FABLE
         box (value.ToString(CultureInfo.InvariantCulture))
         #endif
@@ -331,6 +432,10 @@ module Encode =
         #endif
 
     let int16 (value : int16) : JsonValue =
+        #if THOTH_JSON
+        value.ToString(CultureInfo.InvariantCulture) |> string
+        #endif
+
         #if THOTH_JSON_FABLE
         box (value.ToString(CultureInfo.InvariantCulture))
         #endif
@@ -340,6 +445,10 @@ module Encode =
         #endif
 
     let uint16 (value : uint16) : JsonValue =
+        #if THOTH_JSON
+        value.ToString(CultureInfo.InvariantCulture) |> string
+        #endif
+
         #if THOTH_JSON_FABLE
         box (value.ToString(CultureInfo.InvariantCulture))
         #endif
@@ -349,6 +458,10 @@ module Encode =
         #endif
 
     let int (value : int) : JsonValue =
+        #if THOTH_JSON
+        Operators.float value |> Json.Number
+        #endif
+
         #if THOTH_JSON_FABLE
         box value
         #endif
@@ -358,6 +471,10 @@ module Encode =
         #endif
 
     let uint32 (value : uint32) : JsonValue =
+        #if THOTH_JSON
+        Operators.float value |> Json.Number
+        #endif
+
         #if THOTH_JSON_FABLE
         box value
         #endif
@@ -367,6 +484,10 @@ module Encode =
         #endif
 
     let int64 (value : int64) : JsonValue =
+        #if THOTH_JSON
+        value.ToString(CultureInfo.InvariantCulture) |> Json.String
+        #endif
+
         #if THOTH_JSON_FABLE
         box (value.ToString(CultureInfo.InvariantCulture))
         #endif
@@ -376,6 +497,10 @@ module Encode =
         #endif
 
     let uint64 (value : uint64) : JsonValue =
+        #if THOTH_JSON
+        value.ToString(CultureInfo.InvariantCulture) |> Json.String
+        #endif
+
         #if THOTH_JSON_FABLE
         box (value.ToString(CultureInfo.InvariantCulture))
         #endif
@@ -385,6 +510,10 @@ module Encode =
         #endif
 
     let unit () : JsonValue =
+        #if THOTH_JSON
+        Json.Null
+        #endif
+
         #if THOTH_JSON_FABLE
         box null
         #endif
@@ -402,7 +531,7 @@ module Encode =
                enc2 v2 |]
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || THOTH_JSON
         [| enc1 v1
            enc2 v2 |] |> array
         #endif
@@ -418,7 +547,7 @@ module Encode =
                enc3 v3 |]
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || THOTH_JSON
         [| enc1 v1
            enc2 v2
            enc3 v3 |] |> array
@@ -437,7 +566,7 @@ module Encode =
                enc4 v4 |]
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || THOTH_JSON
         [| enc1 v1
            enc2 v2
            enc3 v3
@@ -459,7 +588,7 @@ module Encode =
                enc5 v5 |]
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || THOTH_JSON
         [| enc1 v1
            enc2 v2
            enc3 v3
@@ -484,7 +613,7 @@ module Encode =
                 enc6 v6 |]
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || THOTH_JSON
         [| enc1 v1
            enc2 v2
            enc3 v3
@@ -512,7 +641,7 @@ module Encode =
                 enc7 v7 |]
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || THOTH_JSON
         [| enc1 v1
            enc2 v2
            enc3 v3
@@ -543,7 +672,7 @@ module Encode =
                 enc8 v8 |]
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || THOTH_JSON
         [| enc1 v1
            enc2 v2
            enc3 v3
@@ -596,6 +725,19 @@ module Encode =
     ///**Exceptions**
     ///
     let toString (space: int) (value: JsonValue) : string =
+        #if THOTH_JSON
+        let builder = new StringBuilder()
+        let format =
+            if space = 0 then
+                JsonSaveOptions.DisableFormatting
+            else
+                JsonSaveOptions.Format
+
+        value.Write(builder, format, space)
+
+        builder.ToString()
+        #endif
+
         #if THOTH_JSON_FABLE
         JS.JSON.stringify(value, !!null, space)
         #endif
@@ -662,7 +804,17 @@ module Encode =
             FSharpType.GetRecordFields(t, allowAccessToPrivateRepresentation = true)
             |> Array.map (fun propertyInfo ->
                 let targetKey = Util.Casing.convert caseStrategy propertyInfo.Name
-                let encoder = autoEncoder extra caseStrategy skipNullField propertyInfo.PropertyType
+                let encoder : BoxedEncoder = autoEncoder extra caseStrategy skipNullField propertyInfo.PropertyType
+
+                #if THOTH_JSON
+                fun (source : obj) (res : Map<string, Json>) ->
+                    let value = FSharpValue.GetRecordField(source, propertyInfo)
+                    // Discard null value
+                    if not skipNullField || (skipNullField && not (isNull value)) then
+                        Map.add targetKey (encoder.Encode value) res
+                    else
+                        res
+                #endif
 
                 #if THOTH_JSON_FABLE
                 fun (source : obj) (res : JsonValue) ->
@@ -671,13 +823,25 @@ module Encode =
                 #if THOTH_JSON_NEWTONSOFT
                 fun (source : obj) (res : JObject) ->
                 #endif
+
+                #if THOTH_JSON_NEWTONSOFT || THOTH_JSON_FABLE
                     let value = FSharpValue.GetRecordField(source, propertyInfo)
                     // Discard null value
                     if not skipNullField || (skipNullField && not (isNull value)) then
                         res.[targetKey] <- encoder.Encode value
                     res
+                #endif
             )
+
         boxEncoder(fun (value : obj) ->
+            #if THOTH_JSON
+            (Map.empty<string, Json>, setters)
+            ||> Array.fold (fun res set ->
+                set value res
+            )
+            |> Json.Object
+            #endif
+
             #if THOTH_JSON_FABLE
             (JsonValue(), setters)
             ||> Array.fold (fun res set ->
@@ -705,13 +869,13 @@ module Encode =
             | 1 ->
                 let fieldTypes = info.GetFields()
                 // There is only one field so we can use a direct access to it
-                let encoder = autoEncoder extra caseStrategy skipNullField fieldTypes.[0].PropertyType
+                let encoder : BoxedEncoder = autoEncoder extra caseStrategy skipNullField fieldTypes.[0].PropertyType
                 encoder.Encode(fields.[0])
 
             | _ ->
                 match fields.Length with
                 | 0 ->
-                    #if !NETFRAMEWORK && !THOTH_JSON_FABLE
+                    #if !NETFRAMEWORK && !THOTH_JSON_FABLE && !(THOTH_JSON && FABLE_COMPILER)
                     match t with
                     // Replicate Fable behaviour when using StringEnum
                     | Util.StringEnum t ->
@@ -734,7 +898,7 @@ module Encode =
                     let res = Array.zeroCreate(length + 1)
                     res.[0] <- string info.Name
                     for i = 1 to length do
-                        let encoder = autoEncoder extra caseStrategy skipNullField fieldTypes.[i-1].PropertyType
+                        let encoder : BoxedEncoder = autoEncoder extra caseStrategy skipNullField fieldTypes.[i-1].PropertyType
                         res.[i] <- encoder.Encode(fields.[i-1])
                     array res
         )
@@ -760,6 +924,10 @@ module Encode =
 
     and inline private handleGenericSeq (encoder : BoxedEncoder) =
         boxEncoder(fun (elements : obj) ->
+            #if THOTH_JSON
+            let array = ResizeArray<Json>()
+            #endif
+
             #if THOTH_JSON_FABLE
             let array = ResizeArray<obj>()
             #endif
@@ -770,7 +938,14 @@ module Encode =
 
             for element in elements :?> System.Collections.IEnumerable do
                 array.Add(encoder.Encode element)
+
+            #if THOTH_JSON
+            array.ToArray() |> Json.Array
+            #endif
+
+            #if THOTH_JSON_FABLE || THOTH_JSON_NEWTONSOFT
             array :> JsonValue
+            #endif
         )
 
     and inline private handleEnum (t : System.Type) (fullName : string) =
@@ -806,7 +981,7 @@ If you can't use one of these types, please pass add a new extra coder.
                 (skipNullField : bool)
                 (t : System.Type) : BoxedEncoder =
 
-        let encoders =
+        let encoders : BoxedEncoder array =
             FSharpType.GetTupleElements(t)
             |> Array.map (fun typ ->
                 autoEncoder extra caseStrategy skipNullField typ
@@ -826,13 +1001,27 @@ If you can't use one of these types, please pass add a new extra coder.
                                         (t : System.Type) : BoxedEncoder =
         let keyType = t.GenericTypeArguments.[0]
         let valueType = t.GenericTypeArguments.[1]
-        let valueEncoder =
+        let valueEncoder : BoxedEncoder =
             valueType
             |> autoEncoder extra caseStrategy skipNullField
 
         match keyType with
         | StringifiableType toString ->
             boxEncoder(fun (value : obj) ->
+                #if THOTH_JSON
+                let res = ResizeArray<(string * Json)>()
+
+                // This cast to Map<string, obj> seems to be fine for Fable
+                // We use the same trick for non stringifiable key
+                // TODO: Does it works for .NET runtime?
+                for KeyValue(key, value) in value :?> Map<string, obj> do
+                    res.Add(toString key, valueEncoder.Encode value)
+
+                res.ToArray()
+                |> Map.ofArray
+                |> Json.Object
+                #endif
+
                 #if THOTH_JSON_FABLE
                 let res = JsonValue()
 
@@ -859,9 +1048,22 @@ If you can't use one of these types, please pass add a new extra coder.
 
         | _ ->
             boxEncoder(fun (value : obj) ->
-                let keyEncoder =
+                let keyEncoder : BoxedEncoder =
                     keyType
                     |> autoEncoder extra caseStrategy skipNullField
+
+                #if THOTH_JSON
+                let res = ResizeArray<Json>()
+
+                // This cast to Map<string, obj> seems to be fine for Fable
+                // We use the same trick for non stringifiable key
+                // TODO: Does it works for .NET runtime?
+                for KeyValue(key, value) in value :?> Map<string, obj> do
+                    res.Add(Json.Array [| keyEncoder.Encode key; valueEncoder.Encode value |])
+
+                res.ToArray()
+                |> Json.Array
+                #endif
 
                 #if THOTH_JSON_FABLE
                 let res = ResizeArray<obj>()
@@ -880,9 +1082,7 @@ If you can't use one of these types, please pass add a new extra coder.
                     let k = kvProps.[0].GetValue(kv)
                     let v = kvProps.[1].GetValue(kv)
 
-                    #if THOTH_JSON_NEWTONSOFT
                     res.Add(JArray [| keyEncoder.Encode k; valueEncoder.Encode v |])
-                    #endif
 
                 res :> JsonValue
                 #endif
@@ -895,6 +1095,21 @@ If you can't use one of these types, please pass add a new extra coder.
         let fullName = t.GetGenericTypeDefinition().FullName
 
         if fullName = typedefof<obj option>.FullName then
+            #if THOTH_JSON
+            // Evaluate lazily so we don't need to generate the encoder for null values
+            // TODO: Adapt for running on .NET ?
+            let encoder = lazy
+                            ((autoEncoder extra caseStrategy skipNullField (t.GenericTypeArguments.[0])).Encode)
+                            |> option
+                            |> boxEncoder
+            boxEncoder(fun (value: obj) ->
+                if isNull value then
+                    nil
+                else
+                    encoder.Value.Encode value
+            )
+            #endif
+
             #if THOTH_JSON_FABLE
             // Evaluate lazily so we don't need to generate the encoder for null values
             let encoder = lazy
@@ -989,6 +1204,13 @@ If you can't use one of these types, please pass add a new extra coder.
                 boxEncoder guid
             // Allows to encode null values
             else if fullName = typeof<obj>.FullName then
+                #if THOTH_JSON
+                // If this is used only for Null value it should be ok
+                boxEncoder(fun (v : obj) ->
+                    Json.Null
+                )
+                #endif
+
                 #if THOTH_JSON_FABLE
                 boxEncoder id
                 #endif
@@ -1026,21 +1248,22 @@ If you can't use one of these types, please pass add a new extra coder.
                     encoderCrate.Encode value
 
     type Auto =
-        #if  THOTH_JSON_FABLE
+
+        #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
         /// ATTENTION: Use this only when other arguments (caseStrategy, extra) don't change
         static member generateEncoderCached<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver : ITypeResolver<'T>): Encoder<'T> =
             let t = resolver.Value.ResolveType()
             Auto.LowLevel.generateEncoderCached(t, ?caseStrategy = caseStrategy, ?extra = extra, ?skipNullField=skipNullField)
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
         /// ATTENTION: Use this only when other arguments (caseStrategy, extra) don't change
         static member generateEncoderCached<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool): Encoder<'T> =
             let t = typeof<'T>
             Auto.LowLevel.generateEncoderCached(t, ?caseStrategy = caseStrategy, ?extra = extra, ?skipNullField=skipNullField)
         #endif
 
-        #if  THOTH_JSON_FABLE
+        #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
         static member generateEncoder<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver : ITypeResolver<'T>): Encoder<'T> =
             let caseStrategy = defaultArg caseStrategy PascalCase
             let skipNullField = defaultArg skipNullField true
@@ -1050,7 +1273,7 @@ If you can't use one of these types, please pass add a new extra coder.
                 encoderCrate.Encode value
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
         static member generateEncoder<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool): Encoder<'T> =
             let caseStrategy = defaultArg caseStrategy PascalCase
             let skipNullField = defaultArg skipNullField true
@@ -1059,13 +1282,13 @@ If you can't use one of these types, please pass add a new extra coder.
                 encoderCrate.Encode value
         #endif
 
-        #if  THOTH_JSON_FABLE
+        #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
         static member toString(space : int, value : 'T, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver : ITypeResolver<'T>) : string =
             let encoder = Auto.generateEncoder(?caseStrategy=caseStrategy, ?extra=extra, ?skipNullField=skipNullField, ?resolver=resolver)
             encoder value |> toString space
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
         static member toString(space : int, value : 'T, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool) : string =
             let encoder = Auto.generateEncoder(?caseStrategy=caseStrategy, ?extra=extra, ?skipNullField=skipNullField)
             encoder value |> toString space

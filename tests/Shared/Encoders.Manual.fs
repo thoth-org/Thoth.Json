@@ -4,6 +4,17 @@ module Tests.Encoders.Manual
 open Fable.Core
 #endif
 
+#if (THOTH_JSON && FABLE_COMPILER)
+open Thoth.Json
+open Fable.Mocha
+open Fable.Core.JsInterop
+#endif
+
+#if THOTH_JSON && !FABLE_COMPILER
+open Thoth.Json
+open Expecto
+#endif
+
 #if THOTH_JSON_FABLE
 open Thoth.Json.Fable
 open Fable.Mocha
@@ -94,7 +105,13 @@ let tests =
 
             testCase "an object works" <| fun _ ->
                 let expected =
+                    // THOTH_JSON parser doesn't re-order the properties
+                    // This is not a problem because JSON object are an unordered structure
+                    #if THOTH_JSON
+                    """{"age":25,"firstname":"maxime"}"""
+                    #else
                     """{"firstname":"maxime","age":25}"""
+                    #endif
                 let actual =
                     Encode.object
                         [ ("firstname", Encode.string "maxime")
@@ -375,7 +392,13 @@ let tests =
                 Expect.equal actual expected ""
 
             testCase "using pretty space works" <| fun _ ->
+                // THOTH_JSON parser doesn't re-order the properties
+                // This is not a problem because JSON object are an unordered structure
+                #if THOTH_JSON
+                let expected = "{\n    \"age\": 25,\n    \"firstname\": \"maxime\"\n}"
+                #else
                 let expected = "{\n    \"firstname\": \"maxime\",\n    \"age\": 25\n}"
+                #endif
 
                 let actual =
                     Encode.object
@@ -385,8 +408,15 @@ let tests =
                 Expect.equal actual expected ""
 
             testCase "complex structure works" <| fun _ ->
+                // THOTH_JSON parser doesn't re-order the properties
+                // This is not a problem because JSON object are an unordered structure
+                #if THOTH_JSON
+                let expected =
+                    "{\n    \"address\": {\n        \"city\": \"Bordeaux\",\n        \"street\": \"main road\"\n    },\n    \"age\": 25,\n    \"firstname\": \"maxime\"\n}"
+                #else
                 let expected =
                     "{\n    \"firstname\": \"maxime\",\n    \"age\": 25,\n    \"address\": {\n        \"street\": \"main road\",\n        \"city\": \"Bordeaux\"\n    }\n}"
+                #endif
 
                 let actual =
                     Encode.object

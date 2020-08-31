@@ -2,17 +2,17 @@
     "private": true,
     "scripts": {},
     "devDependencies": {
-        "@babel/core": "^7.5.5",
-        "@babel/preset-env": "^7.5.5",
-        "@fortawesome/fontawesome-free": "^5.10.0",
+        "@babel/core": "^7.11.4",
+        "@babel/preset-env": "^7.11.0",
+        "@fortawesome/fontawesome-free": "^5.14.0",
         "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
         "fable-compiler": "^2.4.7",
-        "fable-splitter": "^2.1.10",
-        "mocha": "^6.2.0",
-        "gh-pages": "^2.1.1",
+        "fable-splitter": "^2.2.1",
+        "gh-pages": "^3.1.0",
+        "mocha": "^8.1.2",
         "nacara": "^0.2.1",
-        "react": "^16.9.0",
-        "react-dom": "^16.9.0"
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1"
     },
     "dependencies": {}
 }

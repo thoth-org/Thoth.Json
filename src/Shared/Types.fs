@@ -1,3 +1,7 @@
+#if THOTH_JSON
+namespace Thoth.Json
+#endif
+
 #if THOTH_JSON_FABLE
 namespace Thoth.Json.Fable
 #endif
@@ -101,7 +105,7 @@ type ExtraCoders =
 
 module internal Cache =
 
-    #if THOTH_JSON_FABLE
+    #if THOTH_JSON_FABLE || (THOTH_JSON && FABLE_COMPILER)
     open System.Collections.Generic
 
     type Cache<'Value>() =
@@ -120,7 +124,7 @@ module internal Cache =
     let Decoders = lazy Cache<BoxedDecoder>()
     #endif
 
-    #if THOTH_JSON_NEWTONSOFT
+    #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
     open System.Collections.Concurrent
 
     type Cache<'Value>() =
@@ -146,7 +150,7 @@ module Util =
             | SnakeCase -> Regex.Replace(lowerFirst fieldName, "[A-Z]","_$0").ToLowerInvariant()
             | PascalCase -> fieldName
 
-    #if !NETFRAMEWORK && !THOTH_JSON_FABLE
+    #if !NETFRAMEWORK && !THOTH_JSON_FABLE && !(THOTH_JSON && FABLE_COMPILER)
     let (|StringEnum|_|) (typ : System.Type) =
         typ.CustomAttributes
         |> Seq.tryPick (function
