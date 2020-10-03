@@ -184,13 +184,12 @@ let dotnetRestore = BuildTask.create "DotnetRestore" [ clean.IfNeeded ] {
 
 let mochaTest = BuildTask.create "MochaTest" [ clean.IfNeeded; yarnInstall; dotnetRestore ] {
     let projDir = testsFile |> Path.getDirectory
-    let configFile = projDir </> "splitter.config.js"
     //Compile to JS
-    Yarn.exec ("fable-splitter -c " + configFile) id
+    DotNet.exec id "fable" "tests --outDir tests/bin" |> ignore
 
     //Run mocha tests
     let projDirOutput = projDir </> "bin"
-    Yarn.exec ("run mocha " + projDirOutput) id
+    Yarn.exec ("run mocha -r esm " + projDirOutput) id
 }
 
 let publish = BuildTask.create "Publish" [ clean; dotnetRestore ] {
