@@ -116,3 +116,11 @@ module Helpers =
             |> Seq.map fst
         | _ ->
             failwith "Given JSON values is not an object"
+
+    let objectKeyValues(value: JsonValue): seq<string * JsonValue> =
+        match value with
+        | Json.Object properties ->
+            properties
+            |> Map.toSeq
+        | _ ->
+            failwith "Given JSON values is not an object"

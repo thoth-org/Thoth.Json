@@ -161,7 +161,7 @@ module Encode =
     ///
     let decimal (value : decimal) : JsonValue =
         #if THOTH_JSON
-        value.ToString() |> Json.String
+        value.ToString(CultureInfo.InvariantCulture) |> Json.String
         #endif
 
         #if THOTH_JSON_FABLE
@@ -333,7 +333,7 @@ module Encode =
 
     let bigint (value : bigint) : JsonValue =
         #if THOTH_JSON
-        value.ToString() |> Json.String
+        value.ToString(CultureInfo.InvariantCulture) |> Json.String
         #endif
 
         #if THOTH_JSON_FABLE
@@ -735,6 +735,8 @@ module Encode =
 
         value.Write(builder, format, space)
 
+//        let bytes = Encoding.Default.GetBytes(builder.ToString())
+//        Encoding.ASCII.GetString(bytes)
         builder.ToString()
         #endif
 
@@ -1008,7 +1010,7 @@ If you can't use one of these types, please pass add a new extra coder.
         match keyType with
         | StringifiableType toString ->
             boxEncoder(fun (value : obj) ->
-                #if THOTH_JSON
+                #if THOTH_JSON && FABLE_COMPILER
                 let res = ResizeArray<(string * Json)>()
 
                 // This cast to Map<string, obj> seems to be fine for Fable
@@ -1044,6 +1046,20 @@ If you can't use one of these types, please pass add a new extra coder.
 
                 res :> JsonValue
                 #endif
+
+                #if THOTH_JSON && !FABLE_COMPILER
+                let res = ResizeArray()
+                let kvProps = typedefof<KeyValuePair<obj, obj>>.MakeGenericType(keyType, valueType).GetProperties()
+
+                for kv in value :?> System.Collections.IEnumerable do
+                    let k = kvProps.[0].GetValue(kv)
+                    let v = kvProps.[1].GetValue(kv)
+                    res.Add(toString k, valueEncoder.Encode v)
+
+                res
+                |> Map.ofSeq
+                |> Json.Object
+                #endif
             )
 
         | _ ->
@@ -1052,7 +1068,7 @@ If you can't use one of these types, please pass add a new extra coder.
                     keyType
                     |> autoEncoder extra caseStrategy skipNullField
 
-                #if THOTH_JSON
+                #if THOTH_JSON && FABLE_COMPILER
                 let res = ResizeArray<Json>()
 
                 // This cast to Map<string, obj> seems to be fine for Fable
@@ -1086,6 +1102,20 @@ If you can't use one of these types, please pass add a new extra coder.
 
                 res :> JsonValue
                 #endif
+
+                #if (THOTH_JSON && !FABLE_COMPILER)
+                let res = ResizeArray<Json>()
+                let kvProps = typedefof<KeyValuePair<obj, obj>>.MakeGenericType(keyType, valueType).GetProperties()
+
+                for kv in value :?> System.Collections.IEnumerable do
+                    let k = kvProps.[0].GetValue(kv)
+                    let v = kvProps.[1].GetValue(kv)
+
+                    res.Add(Json.Array [| keyEncoder.Encode k; valueEncoder.Encode v |])
+
+                res.ToArray()
+                |> Json.Array
+                #endif
             )
 
     and inline private handleGeneric (extra : Map<string, ref<BoxedEncoder>>)
@@ -1095,7 +1125,7 @@ If you can't use one of these types, please pass add a new extra coder.
         let fullName = t.GetGenericTypeDefinition().FullName
 
         if fullName = typedefof<obj option>.FullName then
-            #if THOTH_JSON
+            #if THOTH_JSON && FABLE_COMPILER
             // Evaluate lazily so we don't need to generate the encoder for null values
             // TODO: Adapt for running on .NET ?
             let encoder = lazy
@@ -1124,7 +1154,7 @@ If you can't use one of these types, please pass add a new extra coder.
             )
             #endif
 
-            #if THOTH_JSON_NEWTONSOFT
+            #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
             // Evaluate lazily so we don't need to generate the encoder for null values
             let encoder = lazy autoEncoder extra caseStrategy skipNullField t.GenericTypeArguments.[0]
             boxEncoder(fun (value: obj) ->

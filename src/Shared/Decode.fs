@@ -2,7 +2,7 @@
 namespace Thoth.Json
 
 open Thoth.Json.Parser
-
+open System.Globalization
 #endif
 
 #if THOTH_JSON_FABLE
@@ -186,7 +186,7 @@ module Decode =
                 Helpers.asFloat value |> decimal |> Ok
             elif Helpers.isString value then
                 // Accept any culture for now
-                #if THOTH_JSON_NEWTONSOFT
+                #if THOTH_JSON_NEWTONSOFT || THOTH_JSON && !FABLE_COMPILER
                 match System.Decimal.TryParse(Helpers.asString value, NumberStyles.Any, CultureInfo.InvariantCulture) with
                 #else
                 match System.Decimal.TryParse(Helpers.asString value) with
@@ -1016,7 +1016,7 @@ module Decode =
                 | Error message ->
                     Error message
 
-    #if THOTH_JSON_NEWTONSOFT
+    #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
     let private genericOption t (decoder: BoxedDecoder) =
         let ucis = FSharpType.GetUnionCases(t)
         fun (value: JsonValue) ->
@@ -1051,7 +1051,7 @@ module Decode =
                     )
     #endif
 
-    #if THOTH_JSON_NEWTONSOFT
+    #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
     let private (|StringifiableType|_|) (t: System.Type): (string->obj) option =
         let fullName = t.FullName
         if fullName = typeof<string>.FullName then
@@ -1070,7 +1070,7 @@ module Decode =
         dic
     #endif
 
-    #if THOTH_JSON_NEWTONSOFT
+    #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
     let private toDict (t: System.Type) (keyType: System.Type) (valueType: System.Type) (kvs: obj) =
         let dic = System.Activator.CreateInstance(t)
         let addMethod = t.GetMethod("Add")
@@ -1089,7 +1089,7 @@ module Decode =
         set
     #endif
 
-    #if THOTH_JSON_NEWTONSOFT
+    #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
     let private toHashSet (t: System.Type) (xs: obj) =
         let hashSet = System.Activator.CreateInstance(t)
         let addMethod = t.GetMethod("Add")
@@ -1103,7 +1103,7 @@ module Decode =
         array decoder.Decode |> boxDecoder
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
         boxDecoder(fun value ->
             match array decoder.BoxedDecoder value with
             | Ok items ->
@@ -1126,7 +1126,7 @@ module Decode =
             | Ok ar -> constructor ar |> Ok
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
         let keyType = t.GenericTypeArguments.[0]
         let decoder = autoDecoder extra caseStrategy false keyType
         fun value ->
@@ -1228,7 +1228,7 @@ module Decode =
                     Error("", BadOneOf [ errorMessage1; errorMessage2 ])
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
         let keyType = t.GenericTypeArguments.[0]
         let valueType = t.GenericTypeArguments.[1]
         let valueDecoder = autoDecoder extra caseStrategy false valueType
@@ -1263,19 +1263,19 @@ module Decode =
                 else
                     match keyType with
                     | StringifiableType ofString when Helpers.isObject value ->
-                        (Ok empty, value :?> JObject |> Seq.cast<JProperty>)
-                        ||> Seq.fold (fun acc prop ->
+                        (Ok empty, Helpers.objectKeyValues value)
+                        ||> Seq.fold (fun acc (propertyName, propertyValue) ->
                             match acc with
                             | Error _ -> acc
                             | Ok acc ->
-                                match valueDecoder.Decode(prop.Value) with
+                                match valueDecoder.Decode(propertyValue) with
                                 | Error er ->
                                     er
-                                    |> DecoderError.prependPath ("." + prop.Name)
+                                    |> DecoderError.prependPath ("." + propertyName)
                                     |> Error
 
                                 | Ok v ->
-                                    addMethod.Invoke(acc, [|FSharpValue.MakeTuple([|ofString prop.Name; v|], tupleType)|]) |> ignore
+                                    addMethod.Invoke(acc, [|FSharpValue.MakeTuple([|ofString propertyName; v|], tupleType)|]) |> ignore
                                     Ok acc)
                     | _ ->
                         ("", BadPrimitive ("an array or an object", value)) |> Error
@@ -1306,7 +1306,7 @@ module Decode =
                         (name :string)
                         (values : JsonValue []) =
         let unionCaseInfo =
-            #if THOTH_JSON_NEWTONSOFT && !NETFRAMEWORK
+            #if THOTH_JSON_NEWTONSOFT && !NETFRAMEWORK || THOTH_JSON && !FABLE_COMPILER
             match t with
             | Util.StringEnum attributeType ->
                 unionCasesInfo
@@ -1462,7 +1462,7 @@ If you can't use one of these types, please pass an extra decoder.
             |> boxDecoder
             #endif
 
-            #if THOTH_JSON_NEWTONSOFT
+            #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
             autoDecoder extra caseStrategy true t.GenericTypeArguments.[0]
             |> genericOption t
             |> boxDecoder
@@ -1474,7 +1474,7 @@ If you can't use one of these types, please pass an extra decoder.
             |> boxDecoder
             #endif
 
-            #if THOTH_JSON_NEWTONSOFT
+            #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
             autoDecoder extra caseStrategy false t.GenericTypeArguments.[0]
             |> genericList t
             |> boxDecoder
@@ -1489,7 +1489,7 @@ If you can't use one of these types, please pass an extra decoder.
             |> boxDecoder
             #endif
 
-            #if THOTH_JSON_NEWTONSOFT
+            #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
             autoDecodeMapOrDict (fun t _ _ kvs -> System.Activator.CreateInstance(t, kvs)) extra caseStrategy t
             |> boxDecoder
             #endif
@@ -1508,7 +1508,7 @@ If you can't use one of these types, please pass an extra decoder.
             |> boxDecoder
             #endif
 
-            #if THOTH_JSON_NEWTONSOFT
+            #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
             autoDecodeMapOrDict toDict extra caseStrategy t
             |> boxDecoder
             #endif
@@ -1518,7 +1518,7 @@ If you can't use one of these types, please pass an extra decoder.
             |> boxDecoder
             #endif
 
-            #if THOTH_JSON_NEWTONSOFT
+            #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
             autoDecodeSetOrHashSet (fun t kvs -> System.Activator.CreateInstance(t, kvs)) caseStrategy extra t
             |> boxDecoder
             #endif
@@ -1528,7 +1528,7 @@ If you can't use one of these types, please pass an extra decoder.
             |> boxDecoder
             #endif
 
-            #if THOTH_JSON_NEWTONSOFT
+            #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
             autoDecodeSetOrHashSet toHashSet caseStrategy extra t
             |> boxDecoder
             #endif
@@ -1600,11 +1600,17 @@ If you can't use one of these types, please pass an extra decoder.
                     Ok value
                     #endif
 
-                    #if THOTH_JSON_NEWTONSOFT
+                    #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
                     if Helpers.isNullValue value then
                         Ok(null: obj)
                     else
+                        #if THOTh_JSON_NEWTONSOFT
                         value.Value<obj>() |> Ok
+                        #endif
+
+                        #if (THOTH_JSON && !FABLE_COMPILER)
+                        Ok(box value)
+                        #endif
                     #endif
                 )
             else
@@ -1658,7 +1664,7 @@ If you can't use one of these types, please pass an extra decoder.
             Auto.LowLevel.generateDecoderCached (t, ?caseStrategy = caseStrategy, ?extra = extra)
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
         /// ATTENTION: Use this only when other arguments (isCamelCase, extra) don't change
         static member generateDecoderCached<'T> (?caseStrategy : CaseStrategy, ?extra: ExtraCoders): Decoder<'T> =
             let t = typeof<'T>
@@ -1671,7 +1677,7 @@ If you can't use one of these types, please pass an extra decoder.
             Auto.LowLevel.generateDecoder(t, ?caseStrategy = caseStrategy, ?extra = extra)
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
         static member generateDecoder<'T> (?caseStrategy : CaseStrategy, ?extra: ExtraCoders): Decoder<'T> =
             let t = typeof<'T>
             Auto.LowLevel.generateDecoder(t, ?caseStrategy = caseStrategy, ?extra = extra)
@@ -1683,7 +1689,7 @@ If you can't use one of these types, please pass an extra decoder.
             Decode.fromString decoder json
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
         static member fromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders): Result<'T, string> =
             let decoder = Auto.generateDecoder(?caseStrategy=caseStrategy, ?extra=extra)
             Decode.fromString decoder json
@@ -1697,7 +1703,7 @@ If you can't use one of these types, please pass an extra decoder.
             | Error msg -> failwith msg
         #endif
 
-        #if THOTH_JSON_NEWTONSOFT
+        #if THOTH_JSON_NEWTONSOFT || (THOTH_JSON && !FABLE_COMPILER)
         static member unsafeFromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders): 'T =
             let decoder = Auto.generateDecoder(?caseStrategy=caseStrategy, ?extra=extra)
             match Decode.fromString decoder json with

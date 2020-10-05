@@ -49,7 +49,8 @@ type Json =
         let newLine =
             if saveOptions = JsonSaveOptions.Format then
                 fun indentation plus ->
-                    builder.AppendLine("") |> ignore
+                    // Don't use the default System newline because it breaks the Unit Tests...
+                    builder.Write("\n")
                     System.String(' ', indentation + plus)
                     |> builder.Write
                     |> ignore
@@ -155,7 +156,7 @@ exception JsonParserError of string
 type private JsonParser(jsonText : string) =
 
     let mutable position = 0
-    let text = jsonText
+    let text = jsonText.Replace("\r\n", "\n")
 
     let buffer = StringBuilder() // Pre-allocate buffers for strings
 
@@ -295,7 +296,7 @@ type private JsonParser(jsonText : string) =
         let len = position - start
         let subText = text.Substring(start, len)
 
-        match Double.TryParse subText with
+        match Double.TryParse(subText, NumberStyles.Any, CultureInfo.InvariantCulture) with
         | true, value ->
             Json.Number value
 
@@ -319,7 +320,6 @@ type private JsonParser(jsonText : string) =
         if position < text.Length && text.[position] = '"' then
             pairs.Add(parsePair())
             skipWhiteSpace()
-
             while position < text.Length && text.[position] = ',' do
                 position <- position + 1
                 skipWhiteSpace()

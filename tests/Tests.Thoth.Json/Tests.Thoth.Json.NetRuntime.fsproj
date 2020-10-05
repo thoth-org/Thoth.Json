@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
         <DefineConstants>THOTH_JSON</DefineConstants>
@@ -8,8 +8,8 @@
         <Compile Include="../Shared/Types.fs" />
         <Compile Include="../Shared/Decoders.Manual.fs" />
         <Compile Include="../Shared/Encoders.Manual.fs" />
-<!--        <Compile Include="../Shared/Encoders.Auto.fs" />-->
-<!--        <Compile Include="../Shared/Decoders.Auto.fs" />-->
+        <Compile Include="../Shared/Encoders.Auto.fs" />
+        <Compile Include="../Shared/Decoders.Auto.fs" />
         <Compile Include="../Shared/Main.fs" />
     </ItemGroup>
     <ItemGroup>

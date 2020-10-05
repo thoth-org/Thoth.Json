@@ -12,6 +12,11 @@ open Fable.Mocha
 open Fable.Core.JsInterop
 #endif
 
+#if THOTH_JSON && !FABLE_COMPILER
+open Thoth.Json
+open Expecto
+#endif
+
 #if THOTH_JSON_NEWTONSOFT
 open Thoth.Json.Newtonsoft
 open Expecto

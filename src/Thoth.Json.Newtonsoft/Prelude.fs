@@ -71,3 +71,10 @@ module Helpers =
         |> Seq.map (fun prop ->
             prop.Name
         )
+
+    let objectKeyValues(value: JsonValue) : seq<string * JToken> =
+        let value = value.Value<JObject>()
+        value.Properties()
+        |> Seq.map (fun prop ->
+            prop.Name, prop.Value
+        )
