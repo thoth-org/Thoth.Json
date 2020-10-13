@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 5.0.0 - 2020-10-13
+
+### Fixed
+
+* PR #84: optionalAt now returns `Ok None` even when the path does not exist (by @rommsen)
+
 ## 4.1.0 - 2020-05-07
 
 ### Added
