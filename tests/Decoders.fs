@@ -1248,6 +1248,12 @@ Expecting a string but instead got: 12
 
                 equal expectedUndefinedField actualUndefinedField
 
+                let expectedUndefinedField = Ok(None)
+                let actualUndefinedField =
+                    Decode.fromString (Decode.optionalAt [ "data"; "something_undefined"; "name" ] Decode.string) json
+
+                equal expectedUndefinedField actualUndefinedField
+
             testCase "combining field and option decoders works" <| fun _ ->
                 let json = """{ "name": "maxime", "age": 25, "something_undefined": null }"""
 
