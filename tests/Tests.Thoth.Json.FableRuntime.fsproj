@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <DefineConstants>THOTH_JSON;FABLE_COMPILER</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Types.fs" />
+        <Compile Include="Decoders.Manual.fs" />
+        <Compile Include="Encoders.Manual.fs" />
+        <Compile Include="Encoders.Auto.fs" />
+        <Compile Include="Decoders.Auto.fs" />
+        <Compile Include="Main.fs" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Fable.Mocha" Version="2.9.1" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\src\Thoth.Json.fsproj" />
+    </ItemGroup>
+</Project>

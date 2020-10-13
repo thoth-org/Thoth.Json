@@ -16,15 +16,16 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <DefineConstants>THOTH_JSON_FABLE</DefineConstants>
+        <DefineConstants>THOTH_JSON</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
+        <Compile Include="Parser.fs" />
         <Compile Include="Prelude.fs" />
-        <Compile Include="../Shared/Types.fs" />
+        <Compile Include="Types.fs" />
         <Compile Include="Runners.fs" />
-        <Compile Include="../Shared/Decode.fs" />
-        <Compile Include="../Shared/Encode.fs" />
-        <Compile Include="../Shared/Extra.fs" />
+        <Compile Include="Decode.fs" />
+        <Compile Include="Encode.fs" />
+        <Compile Include="Extra.fs" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="*.fsproj; **\*.fs; **\*.js" PackagePath="fable" />
