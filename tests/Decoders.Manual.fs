@@ -4,25 +4,14 @@ module Tests.Decoders.Manual
 open Fable.Core
 #endif
 
-#if (THOTH_JSON && FABLE_COMPILER)
+#if FABLE_COMPILER
 open Thoth.Json
 open Fable.Mocha
 open Fable.Core.JsInterop
 #endif
 
-#if THOTH_JSON && !FABLE_COMPILER
+#if !FABLE_COMPILER
 open Thoth.Json
-open Expecto
-#endif
-
-#if THOTH_JSON_FABLE
-open Thoth.Json.Fable
-open Fable.Mocha
-open Fable.Core.JsInterop
-#endif
-
-#if THOTH_JSON_NEWTONSOFT
-open Thoth.Json.Newtonsoft
 open Expecto
 #endif
 
@@ -71,17 +60,8 @@ let tests =
             #endif
 
             testCase "invalid json" <| fun _ ->
-                #if THOTH_JSON
                 let expected : Result<float, string> = Error "Given an invalid JSON: Invalid JSON starting at character 0, snippet =\n-----\nmaxime\n-----\njson =\n-----\nmaxime\n-----"
-                #endif
 
-                #if THOTH_JSON_FABLE
-                let expected : Result<float, string> = Error "Given an invalid JSON: Unexpected token m in JSON at position 0"
-                #endif
-
-                #if THOTH_JSON_NEWTONSOFT
-                let expected : Result<float, string> = Error "Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0."
-                #endif
                 let actual = Decode.fromString Decode.float "maxime"
 
                 Expect.equal actual expected ""
@@ -1446,7 +1426,6 @@ Expecting an object with a field named `height` but instead got:
                 Expect.equal actual expected ""
 
             testCase "succeed output an error if the JSON is invalid" <| fun _ ->
-                #if THOTH_JSON
                 let expected =
                     Error(
                         """
@@ -1459,15 +1438,6 @@ json =
 maxime
 -----
                         """.Trim())
-                #endif
-
-                #if THOTH_JSON_FABLE
-                let expected = Error("Given an invalid JSON: Unexpected token m in JSON at position 0")
-                #endif
-
-                #if THOTH_JSON_NEWTONSOFT
-                let expected = Error("Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0.")
-                #endif
 
                 let actual =
                     Decode.fromString (Decode.succeed 7) "maxime"

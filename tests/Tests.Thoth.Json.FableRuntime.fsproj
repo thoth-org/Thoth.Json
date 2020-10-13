@@ -12,9 +12,9 @@
         <Compile Include="Main.fs" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Fable.Mocha" Version="2.9.1" />
+        <ProjectReference Include="..\src\Thoth.Json.fsproj" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\src\Thoth.Json.fsproj" />
+        <PackageReference Include="Fable.Mocha" Version="2.9.1" />
     </ItemGroup>
 </Project>

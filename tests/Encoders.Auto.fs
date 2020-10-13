@@ -4,25 +4,14 @@ module Tests.Encoders.Auto
 open Fable.Core
 #endif
 
-#if THOTH_JSON && FABLE_COMPILER
+#if FABLE_COMPILER
 open Thoth.Json
 open Fable.Mocha
 open Fable.Core.JsInterop
 #endif
 
-#if THOTH_JSON && !FABLE_COMPILER
+#if !FABLE_COMPILER
 open Thoth.Json
-open Expecto
-#endif
-
-#if THOTH_JSON_FABLE
-open Thoth.Json.Fable
-open Fable.Mocha
-open Fable.Core.JsInterop
-#endif
-
-#if THOTH_JSON_NEWTONSOFT
-open Thoth.Json.Newtonsoft
 open Expecto
 #endif
 
@@ -38,13 +27,8 @@ let tests =
         testList "Encode.Auto" [
             testCase "by default, we keep the case defined in type" <| fun _ ->
                 let expected =
-                    // I couldn't find a combination which works for all the libraries
-                    // Order of properties in the type declaration, order of the properties in the type construction, order of the properties in the expected JSON
-                    #if THOTH_JSON
                     """{"Email":"mail@test.com","Id":0,"Name":"Maxime","followers":33}"""
-                    #else
-                    """{"Email":"mail@test.com","followers":33,"Id":0,"Name":"Maxime"}"""
-                    #endif
+
                 let value : UserCaseSensitive =
                     {
                         Email = "mail@test.com"

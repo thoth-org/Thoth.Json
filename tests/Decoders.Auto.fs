@@ -1,28 +1,14 @@
 module Tests.Decoders.Auto
 
-#if THOTH_JSON && FABLE_COMPILER
+#if FABLE_COMPILER
 open Thoth.Json
 open Fable.Mocha
 open Fable.Core.JsInterop
 #endif
 
-#if THOTH_JSON_FABLE
-open Thoth.Json.Fable
-open Fable.Mocha
-open Fable.Core.JsInterop
-#endif
-
-#if THOTH_JSON && !FABLE_COMPILER
+#if !FABLE_COMPILER
 open Thoth.Json
 open Expecto
-#endif
-
-#if THOTH_JSON_NEWTONSOFT
-open Thoth.Json.Newtonsoft
-open Expecto
-#if !NETFRAMEWORK
-open Fable.Core
-#endif
 #endif
 
 open Tests.Types

@@ -28,7 +28,7 @@
         <Compile Include="Extra.fs" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include="*.fsproj; **\*.fs; **\*.js" PackagePath="fable" />
+        <Content Exclude="Thoth.Json.FableRuntime.fsproj" Include="*.fsproj; **\*.fs; **\*.js" PackagePath="fable" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Fable.Core" Version="3.1.5" />

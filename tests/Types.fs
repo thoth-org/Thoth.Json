@@ -1,16 +1,6 @@
 module Tests.Types
 
-#if THOTH_JSON
 open Thoth.Json
-#endif
-
-#if THOTH_JSON_FABLE
-open Thoth.Json.Fable
-#endif
-
-#if THOTH_JSON_NEWTONSOFT
-open Thoth.Json.Newtonsoft
-#endif
 
 open System.Threading
 #if !NETFRAMEWORK

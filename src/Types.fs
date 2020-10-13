@@ -1,14 +1,4 @@
-#if THOTH_JSON
 namespace Thoth.Json
-#endif
-
-#if THOTH_JSON_FABLE
-namespace Thoth.Json.Fable
-#endif
-
-#if THOTH_JSON_NEWTONSOFT
-namespace Thoth.Json.Newtonsoft
-#endif
 
 type CaseStrategy =
     | PascalCase

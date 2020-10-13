@@ -1,20 +1,7 @@
-#if THOTH_JSON
 namespace Thoth.Json
 
 open Thoth.Json.Parser
 open System.Globalization
-#endif
-
-#if THOTH_JSON_FABLE
-namespace Thoth.Json.Fable
-#endif
-
-#if THOTH_JSON_NEWTONSOFT
-namespace Thoth.Json.Newtonsoft
-
-open System.Globalization
-open Newtonsoft.Json.Linq
-#endif
 
 [<RequireQualifiedAccess>]
 module Decode =
