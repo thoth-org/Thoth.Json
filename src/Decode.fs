@@ -256,8 +256,7 @@ module Decode =
                 | Some _ -> curPath, curValue, res
                 | None ->
                     if Helpers.isNullValue curValue then
-                        let res = badPathError fieldNames (Some curPath) firstValue
-                        curPath, curValue, Some res
+                        curPath, curValue, None
                     elif Helpers.isObject curValue then
                         let curValue = Helpers.getField field curValue
                         curPath + "." + field, curValue, None

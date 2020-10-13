@@ -1292,6 +1292,12 @@ Expecting a string but instead got: 12
 
                 Expect.equal expectedUndefinedField actualUndefinedField ""
 
+                let expectedUndefinedField = Ok(None)
+                let actualUndefinedField =
+                    Decode.fromString (Decode.optionalAt [ "data"; "something_undefined"; "name" ] Decode.string) json
+
+                Expect.equal expectedUndefinedField actualUndefinedField ""
+
             testCase "Decode.option works" <| fun _ ->
                 let expected= Ok(Some "maxime")
                 let actual =
