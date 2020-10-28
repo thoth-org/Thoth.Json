@@ -42,7 +42,7 @@ let tests =
                     p = ()
                     r = 'r'
                     s = Guid("2e053897-15a9-4647-a005-e954666e24d3")
-                    // r = seq [ "item n°1"; "item n°2"]
+                    t = seq [ "item n°1"; "item n°2"]
                 }
             let extra =
                 Extra.empty
@@ -72,7 +72,7 @@ let tests =
             Expect.equal () r2.p ""
             Expect.equal 'r' r2.r ""
             Expect.equal (Guid("2e053897-15a9-4647-a005-e954666e24d3")) r2.s ""
-            // Expect.equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.r |> Seq.toList) ""
+            Expect.equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.t |> Seq.toList) ""
 
         testCase "Auto serialization works with recursive types" <| fun _ ->
             let len xs =

@@ -127,7 +127,7 @@ type Record9 =
         p: unit
         r: char
         s: System.Guid
-        // r: string seq
+        t: string seq
     }
 
 type User =
