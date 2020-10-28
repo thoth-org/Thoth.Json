@@ -111,10 +111,10 @@ There are special decoders for the following collections.
 ```fsharp
 open Thoth.Json
 
-> Decode.fromString (array int) "[1, 2, 3]"
+> Decode.fromString (Decode.array int) "[1, 2, 3]"
 val it : Result<int [], string> =  Ok [|1, 2, 3|]
 
-> Decode.fromString (list string) """["Maxime", "Alfonso", "Vesper"]"""
+> Decode.fromString (Decode.list string) """["Maxime", "Alfonso", "Vesper"]"""
 val it : Result<string list, string> = Ok ["Maxime", "Alfonso", "Vesper"]
 
 > Decode.fromString (Decode.index 1 Decode.string) """["maxime", "alfonso", "steffen"]"""
