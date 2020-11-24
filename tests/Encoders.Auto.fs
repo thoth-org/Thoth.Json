@@ -83,6 +83,7 @@ let tests =
                         r = 'p'
                         s = Guid("2e053897-15a9-4647-a005-e954666e24d3")
                         t = seq [ "item n°1"; "item n°2"]
+                        u = SeveralArgs (10, {| Name = "maxime"; Age = 28 |})
                     }
                 let extra =
                     Extra.empty
@@ -117,6 +118,7 @@ let tests =
                         r = 'p'
                         s = Guid("2e053897-15a9-4647-a005-e954666e24d3")
                         t = seq [ "item n°1"; "item n°2"]
+                        u = SeveralArgs (10, {| Name = "maxime"; Age = 28 |})
                     }
                 let extra =
                     Extra.empty
@@ -378,5 +380,33 @@ let tests =
                 d.Add({| ComplexKey = 2 |}, 2)
                 let actual = Encode.Auto.toString(0, d)
                 Expect.equal actual """[[{"ComplexKey":1},1],[{"ComplexKey":2},2]]""" ""
+
+            testCase "Encode.Auto.toString works the same for option as for other DUs" <| fun _ ->
+                // Check Some case of primitive type
+                let realOptionSome : Option<_> = Some "maxime"
+                let fakeOptionSome : Fake.FakeOption<_> = Fake.FakeOption.Some "maxime"
+
+                let realOptionSomeJson = Encode.Auto.toString(0, realOptionSome)
+                let fakeOptionSomeJson = Encode.Auto.toString(0, fakeOptionSome)
+
+                Expect.equal realOptionSomeJson fakeOptionSomeJson ""
+
+                // Check None case
+                let realOptionNone : Option<_> = None
+                let fakeOptionNone : Fake.FakeOption<_> = Fake.FakeOption.None
+
+                let realOptionNoneJson = Encode.Auto.toString(0, realOptionNone)
+                let fakeOptionNoneJson = Encode.Auto.toString(0, fakeOptionNone)
+
+                Expect.equal realOptionNoneJson fakeOptionNoneJson ""
+
+                // Check Some case of complex type
+                let realOptionSomeComplex : Option<_> = Some {| Firstname = "maxime"; Age = 28 |}
+                let fakeOptionSomeComplex : Fake.FakeOption<_> = Fake.FakeOption.Some {| Firstname = "maxime"; Age = 28 |}
+
+                let realOptionSomeComplexJson = Encode.Auto.toString(0, realOptionSomeComplex)
+                let fakeOptionSomeComplexJson = Encode.Auto.toString(0, fakeOptionSomeComplex)
+
+                Expect.equal realOptionSomeComplexJson fakeOptionSomeComplexJson ""
         ]
     ]

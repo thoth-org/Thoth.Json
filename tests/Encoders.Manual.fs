@@ -400,7 +400,7 @@ let tests =
                 Expect.equal actual expected ""
 
             testCase "option with a value `Some ...` works" <| fun _ ->
-                let expected = """{"id":1,"operator":"maxime"}"""
+                let expected = """{"id":1,"operator":{"$Case$":"Some","$Value$":"maxime"}}"""
 
                 let actual =
                     Encode.object
@@ -411,7 +411,7 @@ let tests =
                 Expect.equal actual expected ""
 
             testCase "option without a value `None` works" <| fun _ ->
-                let expected = """{"id":1,"operator":null}"""
+                let expected = """{"id":1,"operator":{"$Case$":"None"}}"""
 
                 let actual =
                     Encode.object

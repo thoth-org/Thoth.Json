@@ -107,6 +107,16 @@ type Record8 =
 
 type MyUnion = Foo of int
 
+type SeveralArgumentDus = SeveralArgs of int * {| Name : string; Age : int |}
+
+// Use a module to not pollute the namespaces
+module Fake =
+
+    [<RequireQualifiedAccess>]
+    type FakeOption<'Value> =
+        | Some of 'Value
+        | None
+
 type Record9 =
     {
         a: int
@@ -128,6 +138,7 @@ type Record9 =
         r: char
         s: System.Guid
         t: string seq
+        u: SeveralArgumentDus
     }
 
 type User =

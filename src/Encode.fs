@@ -391,8 +391,17 @@ module Encode =
     ///
     ///**Exceptions**
     ///
-    let option (encoder : 'a -> JsonValue) =
-        Option.map encoder >> Option.defaultWith (fun _ -> nil)
+    let option (encoder : 'a -> JsonValue) (value : 'a option) =
+        // Replicate the behaviour of Encode.Auto when dealing with DUs
+        match value with
+        | Some value ->
+            tuple2
+                string
+                encoder
+                ("Some", value)
+
+        | None ->
+            string "None"
 
     //////////////////
     // Reflection ///
@@ -457,10 +466,34 @@ module Encode =
 
             match unionCasesInfo.Length with
             | 1 ->
-                let fieldTypes = info.GetFields()
-                // There is only one field so we can use a direct access to it
-                let encoder : BoxedEncoder = autoEncoder extra caseStrategy skipNullField fieldTypes.[0].PropertyType
-                encoder.Encode(fields.[0])
+                match fields.Length with
+                // If there is only one unionCaseInfo and no argument to it output the name of the Case
+                // Type: type SingleNoArguments = SingleNoArguments
+                // Value: let value = SingleNoArguments
+                // JSON: "SingleNoArguments"
+                | 0 ->
+                    string info.Name
+
+                // If there is only one unionCaseInfo and only one argument output the argument JSON representation directly
+                // Type: type Email = Email of string
+                // Value: let value = Email "mail@test.com"
+                // JSON: "mail@test.com"
+                | 1 ->
+                    let fieldTypes = info.GetFields()
+                    let encoder : BoxedEncoder = autoEncoder extra caseStrategy skipNullField fieldTypes.[0].PropertyType
+                    encoder.Encode(fields.[0])
+
+                // If there is only one unionCaseInfo and several arguments output the arguments represented as a tuple
+                // Type: type User = User of string * {| Role : string; Level : int |}
+                // Value: let value = User ("maxime", {| Role = "Admin"; Level = 0 |}
+                // JSON: [ "maxime", { Role = "Admin", Level = 0 } ]
+                | length ->
+                    let fieldTypes = info.GetFields()
+                    let res = Array.zeroCreate(length)
+                    for i = 0 to length - 1 do
+                        let encoder : BoxedEncoder = autoEncoder extra caseStrategy skipNullField fieldTypes.[i].PropertyType
+                        res.[i] <- encoder.Encode(fields.[i])
+                    array res
 
             | _ ->
                 match fields.Length with
@@ -622,7 +655,6 @@ If you can't use one of these types, please pass add a new extra coder.
 
                 // This cast to Map<string, obj> seems to be fine for Fable
                 // We use the same trick for non stringifiable key
-                // TODO: Does it works for .NET runtime?
                 for KeyValue(key, value) in value :?> Map<string, obj> do
                     res.Add(Json.Array [| keyEncoder.Encode key; valueEncoder.Encode value |])
 
@@ -654,13 +686,12 @@ If you can't use one of these types, please pass add a new extra coder.
         if fullName = typedefof<obj option>.FullName then
             #if FABLE_COMPILER
             // Evaluate lazily so we don't need to generate the encoder for null values
-            // TODO: Adapt for running on .NET ?
             let encoder = lazy
                             ((autoEncoder extra caseStrategy skipNullField (t.GenericTypeArguments.[0])).Encode)
                             |> option
                             |> boxEncoder
             boxEncoder(fun (value: obj) ->
-                if isNull value then
+                if skipNullField && isNull value then
                     nil
                 else
                     encoder.Value.Encode value

@@ -43,6 +43,7 @@ let tests =
                     r = 'r'
                     s = Guid("2e053897-15a9-4647-a005-e954666e24d3")
                     t = seq [ "item n°1"; "item n°2"]
+                    u = SeveralArgs (10, {| Name = "maxime"; Age = 28 |})
                 }
             let extra =
                 Extra.empty
