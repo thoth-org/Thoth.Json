@@ -985,14 +985,14 @@ module Decode =
                 | Error _ -> acc
                 | Ok result ->
                     let path = path + "." + name
-                    let value = Helpers.getField name value
+                    let fieldValue = Helpers.getField name value
                     match Map.tryFind name fieldDecoders with
-                    | None -> decoder path value
+                    | None -> decoder path fieldValue
                     | Some fieldDecoder ->
-                        match fieldDecoder path (Option.ofObj value) with
+                        match fieldDecoder path value (Option.ofObj fieldValue) with
                         | UseOk v -> Ok v
                         | UseError e -> Error e
-                        | UseAutoDecoder -> decoder path value
+                        | UseAutoDecoder -> decoder path fieldValue
                     |> Result.map (fun v -> v::result))
 
     let inline private enumDecoder<'UnderlineType when 'UnderlineType : equality>
@@ -1070,7 +1070,7 @@ module Decode =
                 let decoders =
                     FSharpType.GetRecordFields(t, allowAccessToPrivateRepresentation=true)
                     |> Array.map (fun fi ->
-                        let name = Util.Casing.convert extra.CaseStrategy fi.Name
+                        let name = Casing.convert extra.CaseStrategy fi.Name
                         name, autoDecoder extra false fi.PropertyType)
                 fun path value ->
                     autoObject decoders fieldDecoders path value
@@ -1234,7 +1234,7 @@ module Decode =
         let fieldDecoders =
             extra |> Option.map (fun e ->
                 e.FieldDecoders |> Map.map (fun _ kvs ->
-                    kvs |> Seq.map (fun kv -> Util.Casing.convert caseStrategy kv.Key, kv.Value) |> Map))
+                    kvs |> Seq.map (fun kv -> Casing.convert caseStrategy kv.Key, kv.Value) |> Map))
         {
             CaseStrategy = caseStrategy
             Decoders = defaultArg decoders Map.empty

@@ -401,7 +401,7 @@ module Encode =
                 let setters =
                     FSharpType.GetRecordFields(t, allowAccessToPrivateRepresentation=true)
                     |> Array.map (fun fi ->
-                        let targetKey = Util.Casing.convert extra.CaseStrategy fi.Name
+                        let targetKey = Casing.convert extra.CaseStrategy fi.Name
                         let encode = autoEncoder extra skipNullField fi.PropertyType
                         fun (source: obj) (target: JsonValue) ->
                             let value = FSharpValue.GetRecordField(source, fi)
@@ -409,7 +409,7 @@ module Encode =
                                 match Map.tryFind fi.Name fieldEncoders with
                                 | None -> target.[targetKey] <- encode value
                                 | Some fieldEncoder ->
-                                    match fieldEncoder value with
+                                    match fieldEncoder source value with
                                     | UseAutoEncoder -> target.[targetKey] <- encode value
                                     | UseJsonValue v -> target.[targetKey] <- v
                                     | IgnoreField -> ()
