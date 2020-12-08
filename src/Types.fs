@@ -36,7 +36,7 @@ type FieldDecoderResult =
     /// Let Thoth.Json decode the type using the Auto module, this is the default behaviour
     | UseAutoDecoder
 
-type FieldDecoder = string -> JsonValue option -> FieldDecoderResult
+type FieldDecoder = string -> JsonValue -> JsonValue option -> FieldDecoderResult
 
 type FieldEncoderResult =
     /// Use the given JsonValue for the output ignoring what Thoth.Json would have generated for the current field
@@ -46,7 +46,7 @@ type FieldEncoderResult =
     /// Let Thoth.Json generates the encoder automatically, this is the default behaviour
     | UseAutoEncoder
 
-type FieldEncoder = obj -> FieldEncoderResult
+type FieldEncoder = obj -> obj -> FieldEncoderResult
 
 type ExtraCoders =
     { Hash: string
@@ -82,10 +82,11 @@ module internal Util =
 #endif
 
 
-    module Casing =
-        let lowerFirst (str : string) = str.[..0].ToLowerInvariant() + str.[1..]
-        let convert caseStrategy fieldName =
-            match caseStrategy with
-            | CamelCase -> lowerFirst fieldName
-            | SnakeCase -> Regex.Replace(lowerFirst fieldName, "[A-Z]","_$0").ToLowerInvariant()
-            | PascalCase -> fieldName
+module Casing =
+    let lowerFirst (str : string) = str.[..0].ToLowerInvariant() + str.[1..]
+
+    let convert caseStrategy fieldName =
+        match caseStrategy with
+        | CamelCase -> lowerFirst fieldName
+        | SnakeCase -> Regex.Replace(lowerFirst fieldName, "[A-Z]","_$0").ToLowerInvariant()
+        | PascalCase -> fieldName
