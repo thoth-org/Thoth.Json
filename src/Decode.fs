@@ -246,7 +246,7 @@ module Decode =
             (fun () -> System.UInt64.MaxValue)
             uint64
 
-let bigint : Decoder<bigint> =
+    let bigint : Decoder<bigint> =
         fun path value ->
             if Helpers.isNumber value then
                 Helpers.asInt value |> bigint |> Ok
