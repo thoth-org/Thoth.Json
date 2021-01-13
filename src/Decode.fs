@@ -46,15 +46,15 @@ module Decode =
     let inline private integral
                     (name : string)
                     (tryParse : (string -> bool * 'T))
-                    (min : 'T)
-                    (max : 'T)
+                    (min : unit -> 'T)
+                    (max : unit -> 'T)
                     (conv : float -> 'T) : Decoder<'T > =
 
         fun value ->
             if Helpers.isNumber value then
                 if Helpers.isIntegralValue value then
                     let fValue = Helpers.asFloat value
-                    if (float min) <= fValue && fValue <= (float max) then
+                    if (float (min())) <= fValue && fValue <= (float (max())) then
                         Ok(conv fValue)
                     else
                         ("", BadPrimitiveExtra(name, value, "Value was either too large or too small for " + name)) |> Error
@@ -71,8 +71,8 @@ module Decode =
         integral
             "a sbyte"
             System.SByte.TryParse
-            System.SByte.MinValue
-            System.SByte.MaxValue
+            (fun () -> System.SByte.MinValue)
+            (fun () -> System.SByte.MaxValue)
             sbyte
 
     /// Alias to Decode.uint8
@@ -80,56 +80,56 @@ module Decode =
         integral
             "a byte"
             System.Byte.TryParse
-            System.Byte.MinValue
-            System.Byte.MaxValue
+            (fun () -> System.Byte.MinValue)
+            (fun () -> System.Byte.MaxValue)
             byte
 
     let int16<'JsonValue> : Decoder<int16> =
         integral
             "an int16"
             System.Int16.TryParse
-            System.Int16.MinValue
-            System.Int16.MaxValue
+            (fun () -> System.Int16.MinValue)
+            (fun () -> System.Int16.MaxValue)
             int16
 
     let uint16<'JsonValue> : Decoder<uint16> =
         integral
             "an uint16"
             System.UInt16.TryParse
-            System.UInt16.MinValue
-            System.UInt16.MaxValue
+            (fun () -> System.UInt16.MinValue)
+            (fun () -> System.UInt16.MaxValue)
             uint16
 
     let int<'JsonValue> : Decoder<int> =
         integral
             "an int"
             System.Int32.TryParse
-            System.Int32.MinValue
-            System.Int32.MaxValue
+            (fun () -> System.Int32.MinValue)
+            (fun () -> System.Int32.MaxValue)
             int
 
     let uint32<'JsonValue> : Decoder<uint32> =
         integral
             "an uint32"
             System.UInt32.TryParse
-            System.UInt32.MinValue
-            System.UInt32.MaxValue
+            (fun () -> System.UInt32.MinValue)
+            (fun () -> System.UInt32.MaxValue)
             uint32
 
     let int64<'JsonValue> : Decoder<int64> =
         integral
             "an int64"
             System.Int64.TryParse
-            System.Int64.MinValue
-            System.Int64.MaxValue
+            (fun () -> System.Int64.MinValue)
+            (fun () -> System.Int64.MaxValue)
             int64
 
     let uint64<'JsonValue> : Decoder<uint64> =
         integral
             "an uint64"
             System.UInt64.TryParse
-            System.UInt64.MinValue
-            System.UInt64.MaxValue
+            (fun () -> System.UInt64.MinValue)
+            (fun () -> System.UInt64.MaxValue)
             uint64
 
     let bigint : Decoder<bigint> =
