@@ -193,7 +193,7 @@ let mochaTest = BuildTask.create "MochaTest" [ clean.IfNeeded; yarnInstall; dotn
     Yarn.exec ("run mocha " + projDirOutput) id
 }
 
-let publish = BuildTask.create "Publish" [ clean; dotnetRestore ] {
+let publish = BuildTask.create "Publish" [ clean; dotnetRestore; mochaTest ] {
     let version = getLastVersion()
     pushNuget version projectFile
 }
