@@ -349,10 +349,10 @@ type User =
         Decode.object
             (fun get ->
                 { Id = get.Required.Field "id" Decode.int
-                    Name = get.Optional.Field "name" Decode.string
-                            |> Option.defaultValue ""
-                    Email = get.Required.Field "email" Decode.string
-                    Followers = 0 }
+                  Name = get.Optional.Field "name" Decode.string
+                          |> Option.defaultValue ""
+                  Email = get.Required.Field "email" Decode.string
+                  Followers = 0 }
             )
 
     static member Encoder (user : User) =
