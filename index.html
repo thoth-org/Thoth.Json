@@ -461,7 +461,7 @@ and <a href="http://package.elm-lang.org/packages/NoRedInk/elm-decode-pipeline/l
 <span>      Email </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">string</span>
 <span>      Followers </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">int </span><span style="color: #A626A4">}</span>
 
-<span>    </span><span style="color: #A626A4">static member</span><span> </span><span style="color: #E45649">Decoder</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Decode.Decoder</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">User</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span>
+<span>    </span><span style="color: #A626A4">static member</span><span> </span><span style="color: #E45649">Decoder</span><span style="color: #383A42"> </span><span style="color: #A626A4">:</span><span> </span><span style="color: #C18401">Decoder</span><span style="color: #A626A4">&lt;</span><span style="color: #C18401">User</span><span style="color: #A626A4">&gt;</span><span> </span><span style="color: #A626A4">=</span>
 <span>        Decode.object</span>
 <span>            </span><span style="color: #A626A4">(fun</span><span style="color: #383A42"> get </span><span style="color: #A626A4">-&gt;</span>
 <span>                </span><span style="color: #A626A4">{</span><span> Id </span><span style="color: #A626A4">=</span><span> get.Required.Field </span><span style="color: #50A14F">&quot;id&quot;</span><span> Decode.int</span>
