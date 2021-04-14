@@ -97,10 +97,10 @@ There are special decoders for the following collections.
 ```fsharp
 open Thoth.Json
 
-> Decode.fromString (array int) "[1, 2, 3]"
+> Decode.fromString (Decode.array Decode.int) "[1, 2, 3]"
 val it : Result<int [], string> =  Ok [|1, 2, 3|]
 
-> Decode.fromString (list string) """["Maxime", "Alfonso", "Vesper"]"""
+> Decode.fromString (Decode.list Decode.string) """["Maxime", "Alfonso", "Vesper"]"""
 val it : Result<string list, string> = Ok ["Maxime", "Alfonso", "Vesper"]
 
 > Decode.fromString (Decode.index 1 Decode.string) """["maxime", "alfonso", "steffen"]"""
@@ -119,10 +119,10 @@ In order to decode objects, you can use:
 ```fsharp
 open Thoth.Json
 
-> Decode.fromString (field "x" int) """{"x": 10, "y": 21}"""
+> Decode.fromString (Decode.field "x" Decode.int) """{"x": 10, "y": 21}"""
 val it : Result<int, string> = Ok 10
 
-> Decode.fromString (field "y" int) """{"x": 10, "y": 21}"""
+> Decode.fromString (Decode.field "y" Decode.int) """{"x": 10, "y": 21}"""
 val it : Result<int, string> = Ok 21
 ```
 
