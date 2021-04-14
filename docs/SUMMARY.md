@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Thoth.Json](README.md)
+* [Introduction](README.md)
 * [Decoder](decoder.md)
 * [Encoder](encoder.md)
 * [Auto coders](auto-coders.md)
