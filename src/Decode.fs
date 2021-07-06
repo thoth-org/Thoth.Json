@@ -9,7 +9,7 @@ module Decode =
     open Fable.Core
     open Fable.Core.JsInterop
 
-    module internal Helpers =
+    module Helpers =
         [<Emit("typeof $0")>]
         let jsTypeof (_ : JsonValue) : string = jsNative
 
