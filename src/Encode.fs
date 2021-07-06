@@ -557,8 +557,7 @@ If you can't use one of these types, please pass an extra encoder.
         | Some e -> Map.map (fun _ (enc,_) -> ref enc) e.Coders
 
     type Auto =
-        static member generateEncoderCached<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
-            let t = Util.resolveType resolver
+        static member generateBoxedEncoderCached(t: System.Type, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool): BoxedEncoder =
             let caseStrategy = defaultArg caseStrategy PascalCase
             let skipNullField = defaultArg skipNullField true
 
@@ -568,16 +567,21 @@ If you can't use one of these types, please pass an extra encoder.
                 |> (+) (extra |> Option.map (fun e -> e.Hash) |> Option.defaultValue "")
 
             Util.CachedEncoders.GetOrAdd(key , fun _ ->
-                autoEncoder (makeExtra extra) caseStrategy skipNullField t) |> unboxEncoder
+                autoEncoder (makeExtra extra) caseStrategy skipNullField t)
 
-        static member generateEncoder<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>): Encoder<'T> =
+        static member inline generateEncoderCached<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool): Encoder<'T> =
+            Auto.generateBoxedEncoderCached(typeof<'T>, ?caseStrategy=caseStrategy, ?extra=extra) |> unboxEncoder
+
+        static member generateBoxedEncoder(t: System.Type, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool): BoxedEncoder =
             let caseStrategy = defaultArg caseStrategy PascalCase
             let skipNullField = defaultArg skipNullField true
-            Util.resolveType resolver
-            |> autoEncoder (makeExtra extra) caseStrategy skipNullField |> unboxEncoder
+            autoEncoder (makeExtra extra) caseStrategy skipNullField t
 
-        static member toString(space : int, value : 'T, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool, [<Inject>] ?resolver: ITypeResolver<'T>) : string =
-            let encoder = Auto.generateEncoder(?caseStrategy=caseStrategy, ?extra=extra, ?skipNullField=skipNullField, ?resolver=resolver)
+        static member inline generateEncoder<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool): Encoder<'T> =
+            Auto.generateBoxedEncoder(typeof<'T>, ?caseStrategy=caseStrategy, ?extra=extra, ?skipNullField=skipNullField) |> unboxEncoder
+
+        static member inline toString(space : int, value : 'T, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool) : string =
+            let encoder = Auto.generateEncoder(?caseStrategy=caseStrategy, ?extra=extra, ?skipNullField=skipNullField)
             encoder value |> toString space
 
     ///**Description**

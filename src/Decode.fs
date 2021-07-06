@@ -1217,8 +1217,7 @@ If you can't use one of these types, please pass an extra decoder.
         | Some e -> Map.map (fun _ (_,dec) -> ref dec) e.Coders
 
     type Auto =
-        static member generateDecoderCached<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Decoder<'T> =
-            let t = Util.resolveType resolver
+        static member generateBoxedDecoderCached(t: System.Type, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders): BoxedDecoder =
             let caseStrategy = defaultArg caseStrategy PascalCase
 
             let key =
@@ -1226,20 +1225,24 @@ If you can't use one of these types, please pass an extra decoder.
                 |> (+) (Operators.string caseStrategy)
                 |> (+) (extra |> Option.map (fun e -> e.Hash) |> Option.defaultValue "")
 
-            Util.CachedDecoders.GetOrAdd(key, fun _ ->
-                autoDecoder (makeExtra extra) caseStrategy false t) |> unboxDecoder
+            Util.CachedDecoders.GetOrAdd(key, fun _ -> autoDecoder (makeExtra extra) caseStrategy false t)
 
-        static member generateDecoder<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Decoder<'T> =
+        static member inline generateDecoderCached<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders): Decoder<'T> =
+            Auto.generateBoxedDecoderCached(typeof<'T>, ?caseStrategy=caseStrategy, ?extra=extra) |> unboxDecoder
+
+        static member generateBoxedDecoder(t: System.Type, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders): BoxedDecoder =
             let caseStrategy = defaultArg caseStrategy PascalCase
-            Util.resolveType resolver
-            |> autoDecoder (makeExtra extra) caseStrategy false |> unboxDecoder
+            autoDecoder (makeExtra extra) caseStrategy false t
 
-        static member fromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): Result<'T, string> =
-            let decoder = Auto.generateDecoder(?caseStrategy=caseStrategy, ?extra=extra, ?resolver=resolver)
+        static member inline generateDecoder<'T>(?caseStrategy : CaseStrategy, ?extra: ExtraCoders): Decoder<'T> =
+            Auto.generateBoxedDecoder(typeof<'T>, ?caseStrategy=caseStrategy, ?extra=extra) |> unboxDecoder
+
+        static member inline fromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders): Result<'T, string> =
+            let decoder = Auto.generateDecoder<'T>(?caseStrategy=caseStrategy, ?extra=extra)
             fromString decoder json
 
-        static member unsafeFromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, [<Inject>] ?resolver: ITypeResolver<'T>): 'T =
-            let decoder = Auto.generateDecoder(?caseStrategy=caseStrategy, ?extra=extra, ?resolver=resolver)
+        static member inline unsafeFromString<'T>(json: string, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders): 'T =
+            let decoder = Auto.generateDecoder<'T>(?caseStrategy=caseStrategy, ?extra=extra)
             match fromString decoder json with
             | Ok x -> x
             | Error msg -> failwith msg

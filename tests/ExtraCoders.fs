@@ -31,12 +31,12 @@ let pascalCaseCoder = Extra.withCustom
                         Extra.empty
 #if FABLE_COMPILER
 type CachedCoder =
-    static member internal encode<'Data>(data:'Data, ?caseStrategy:CaseStrategy, ?extra:ExtraCoders, [<Inject>]?dataResolver: ITypeResolver<'Data>) =
-        let encode = Encode.Auto.generateEncoderCached<'Data>(?caseStrategy = caseStrategy, ?extra = extra, ?resolver = dataResolver)
+    static member inline internal encode<'Data>(data:'Data, ?caseStrategy:CaseStrategy, ?extra:ExtraCoders) =
+        let encode = Encode.Auto.generateEncoderCached<'Data>(?caseStrategy = caseStrategy, ?extra = extra)
         encode data |> Encode.toString 0
 
-    static member internal decode<'Response>(value:string, ?caseStrategy:CaseStrategy, ?extra:ExtraCoders, [<Inject>]?responseResolver: ITypeResolver<'Response>) =
-        let decoder = Decode.Auto.generateDecoderCached<'Response>(?caseStrategy = caseStrategy, ?extra = extra, ?resolver = responseResolver)
+    static member inline internal decode<'Response>(value:string, ?caseStrategy:CaseStrategy, ?extra:ExtraCoders) =
+        let decoder = Decode.Auto.generateDecoderCached<'Response>(?caseStrategy = caseStrategy, ?extra = extra)
         Decode.unsafeFromString decoder value
 #else
 type CachedCoder =
