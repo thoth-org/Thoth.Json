@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 6.0.0 - 2021-07-06
+
+### Added
+
+* Expose `Helpers` from `Decode` module so users can consume it when writting custom decoders
+
+### Changed
+
+* Remove `[<Inject>]` use in favor of `inline` to prepare for Fable 4
+
 ## 5.1.0 - 2021-01-13
 
 ### Fixed
