@@ -50,20 +50,10 @@ module internal Util =
     let CachedEncoders = Cache<BoxedEncoder>()
     let CachedDecoders = Cache<BoxedDecoder>()
 
-    /// If used from .NET the type resolver won't be injected,
-    /// throw a more informative error than just a null reference.
-    let inline resolveType (resolver: Fable.Core.ITypeResolver<'T> option): System.Type =
-#if !FABLE_COMPILER
-        failwith "Thoth.Json is only compatible with Fable, use Thoth.Json.Net"
-#else
-        resolver.Value.ResolveType()
-#endif
-
-
     module Casing =
         let lowerFirst (str : string) = str.[..0].ToLowerInvariant() + str.[1..]
         let convert caseStrategy fieldName =
             match caseStrategy with
-            | CamelCase -> lowerFirst fieldName 
+            | CamelCase -> lowerFirst fieldName
             | SnakeCase -> Regex.Replace(lowerFirst fieldName, "[A-Z]","_$0").ToLowerInvariant()
-            | PascalCase -> fieldName 
+            | PascalCase -> fieldName
