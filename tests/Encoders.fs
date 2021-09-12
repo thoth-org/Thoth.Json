@@ -20,6 +20,38 @@ let tests : Test =
                     |> Encode.toString 0
                 equal expected actual
 
+            testCase "a string with new line works" <| fun _ ->
+                let expected = "\"a\\nb\""
+                let actual =
+                    Encode.string "a\nb"
+                    |> Encode.toString 4
+
+                equal expected actual
+
+            testCase "a string with new line character works" <| fun _ ->
+                let expected = "\"a\\\\nb\""
+                let actual =
+                    Encode.string "a\\nb"
+                    |> Encode.toString 4
+
+                equal expected actual
+
+            testCase "a string with tab works" <| fun _ ->
+                let expected = "\"a\\tb\""
+                let actual =
+                    Encode.string "a\tb"
+                    |> Encode.toString 4
+
+                equal expected actual
+
+            testCase "a string with tab character works" <| fun _ ->
+                let expected = "\"a\\\\tb\""
+                let actual =
+                    Encode.string "a\\tb"
+                    |> Encode.toString 4
+
+                equal expected actual
+
             testCase "an int works" <| fun _ ->
                 let expected = "1"
                 let actual =
