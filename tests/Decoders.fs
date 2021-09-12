@@ -98,6 +98,34 @@ let tests : Test =
 
                 equal expected actual
 
+            testCase "a string with new line works" <| fun _ ->
+                let expected = Ok("a\nb")
+                let actual =
+                    Decode.fromString Decode.string "\"a\\nb\""
+
+                equal expected actual
+
+            testCase "a string with new line character works" <| fun _ ->
+                let expected = Ok("a\\nb")
+                let actual =
+                    Decode.fromString Decode.string "\"a\\\\nb\""
+
+                equal expected actual
+
+            testCase "a string with tab works" <| fun _ ->
+                let expected = Ok("a\tb")
+                let actual =
+                    Decode.fromString Decode.string "\"a\\tb\""
+
+                equal expected actual
+
+            testCase "a string with tab character works" <| fun _ ->
+                let expected = Ok("a\\tb")
+                let actual =
+                    Decode.fromString Decode.string "\"a\\\\tb\""
+
+                equal expected actual
+
             testCase "a float works" <| fun _ ->
                 let expected = Ok(1.2)
                 let actual =
