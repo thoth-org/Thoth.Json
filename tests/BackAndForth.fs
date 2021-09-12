@@ -11,6 +11,7 @@ let tests : Test =
 
         testList "StringEnum" [
 
+            #if !NETFRAMEWORK
             testCase "works with default rule" <| fun _ ->
                 let expected = FirstPerson
                 let json = Encode.Auto.toString(0, expected)
@@ -38,5 +39,7 @@ let tests : Test =
                 let actual = Decode.Auto.unsafeFromString<Language>(json)
 
                 equal expected actual
+            #endif
+
         ]
     ]
