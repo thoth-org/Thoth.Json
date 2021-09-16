@@ -62,6 +62,17 @@ let tests : Test =
 
                 equal expected actual
 
+            testCase "invalid json #2 - Special case for Thoth.Json.Net" <| fun _ ->
+                // See: https://github.com/thoth-org/Thoth.Json.Net/issues/42
+                #if FABLE_COMPILER
+                let expected : Result<MyUnion, string> = Error "Given an invalid JSON: Unexpected token , in JSON at position 5"
+                #else
+                let expected : Result<MyUnion, string> = Error "Given an invalid JSON: Additional text encountered after finished reading JSON content: ,. Path '', line 1, position 5."
+                #endif
+                let actual = Decode.Auto.fromString<MyUnion>(""""Foo","42"]""")
+
+                equal expected actual
+
             testCase "user exceptions are not captured by the decoders" <| fun _ ->
                 let expected = true
 
