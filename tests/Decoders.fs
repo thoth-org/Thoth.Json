@@ -2896,6 +2896,17 @@ Reason: Unkown value provided for the enum
                 Decode.Auto.fromString<UnionWithMultipleFields>(json, caseStrategy=CamelCase)
                 |> equal (Error "Error at: `$[2]`\nExpecting an int but instead got: \"foo\"")
 
+            // TODO: Should we allow shorter arrays when last fields are options?
+            testCase "Auto.fromString works gives proper error for wrong array length" <| fun _ ->
+                let json = """["Multi", "bar", 1]"""
+                Decode.Auto.fromString<UnionWithMultipleFields>(json, caseStrategy=CamelCase)
+                |> equal (Error "Error at: `$`\nThe following `failure` occurred with the decoder: Expected array of length 4 but got 3")
+
+            testCase "Auto.fromString works gives proper error for wrong case name" <| fun _ ->
+                let json = """[1]"""
+                Decode.Auto.fromString<UnionWithMultipleFields>(json, caseStrategy=CamelCase)
+                |> equal (Error "Error at: `$[0]`\nExpecting a string but instead got: 1")
+
             testCase "Auto.generateDecoderCached works" <| fun _ ->
                 let expected = Ok { Id = 0; Name = "maxime"; Email = "mail@domain.com"; Followers = 0 }
                 let json = """{ "id" : 0, "name": "maxime", "email": "mail@domain.com", "followers": 0 }"""

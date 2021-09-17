@@ -1090,8 +1090,8 @@ module Decode =
                         makeUnion extra caseStrategy t name path [||]
                     elif Helpers.isArray(value) then
                         let values = Helpers.asArray value
-                        let name = Helpers.asString values.[0]
-                        makeUnion extra caseStrategy t name path values
+                        string (path + "[0]") values.[0]
+                        |> Result.bind (fun name -> makeUnion extra caseStrategy t name path values)
                     else (path, BadPrimitive("a string or array", value)) |> Error
 
             else
