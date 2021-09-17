@@ -1036,16 +1036,23 @@ module Decode =
                             | Error er -> Error er
                             | Ok v -> (k,v)::acc |> Ok)
 
-    let private mixedArray msg (decoders: BoxedDecoder[]) (path: string) (values: JsonValue[]): Result<JsonValue list, DecoderError> =
-        if decoders.Length <> values.Length then
-            (path, sprintf "Expected %i %s but got %i" decoders.Length msg values.Length
+    let private mixedArray offset (decoders: BoxedDecoder[]) (path: string) (values: JsonValue[]): Result<JsonValue list, DecoderError> =
+        let expectedLength = decoders.Length + offset
+        if expectedLength <> values.Length then
+            (path, sprintf "Expected array of length %i but got %i" expectedLength values.Length
             |> FailMessage) |> Error
         else
-            (values, decoders, Ok [])
-            |||> Array.foldBack2 (fun value decoder acc ->
-                match acc with
-                | Error _ -> acc
-                | Ok result -> decoder path value |> Result.map (fun v -> v::result))
+            let mutable result = Ok []
+            for i = offset to values.Length - 1 do
+                match result with
+                | Error _ -> ()
+                | Ok acc ->
+                    let path = sprintf "%s[%i]" path i
+                    let decoder = decoders.[i - offset]
+                    let value = values.[i]
+                    result <- decoder path value |> Result.map (fun v -> v::acc)
+            result
+            |> Result.map List.rev
 
     let rec private makeUnion extra caseStrategy t name (path : string) (values: JsonValue[]) =
         let uci =
@@ -1054,11 +1061,11 @@ module Decode =
         match uci with
         | None -> (path, FailMessage("Cannot find case " + name + " in " + t.FullName)) |> Error
         | Some uci ->
-            if values.Length = 0 then
+            if values.Length <= 1 then // First item is the case name
                 FSharpValue.MakeUnion(uci, [||], allowAccessToPrivateRepresentation=true) |> Ok
             else
                 let decoders = uci.GetFields() |> Array.map (fun fi -> autoDecoder extra caseStrategy false fi.PropertyType)
-                mixedArray "union fields" decoders path values
+                mixedArray 1 decoders path values
                 |> Result.map (fun values -> FSharpValue.MakeUnion(uci, List.toArray values, allowAccessToPrivateRepresentation=true))
 
     and private autoDecodeRecordsAndUnions extra (caseStrategy : CaseStrategy) (isOptional : bool) (t: System.Type) : BoxedDecoder =
@@ -1084,7 +1091,7 @@ module Decode =
                     elif Helpers.isArray(value) then
                         let values = Helpers.asArray value
                         let name = Helpers.asString values.[0]
-                        makeUnion extra caseStrategy t name path values.[1..]
+                        makeUnion extra caseStrategy t name path values
                     else (path, BadPrimitive("a string or array", value)) |> Error
 
             else
@@ -1138,7 +1145,7 @@ If you can't use one of these types, please pass an extra decoder.
                 let decoders = FSharpType.GetTupleElements(t) |> Array.map (autoDecoder extra caseStrategy false)
                 fun path value ->
                     if Helpers.isArray value then
-                        mixedArray "tuple elements" decoders path (Helpers.asArray value)
+                        mixedArray 0 decoders path (Helpers.asArray value)
                         |> Result.map (fun xs -> FSharpValue.MakeTuple(List.toArray xs, t))
                     else (path, BadPrimitive ("an array", value)) |> Error
             else
