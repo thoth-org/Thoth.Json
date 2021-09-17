@@ -33,6 +33,8 @@ open Tests.Types
 
 type RecordWithPrivateConstructor = private { Foo1: int; Foo2: float }
 type UnionWithPrivateConstructor = private Bar of string | Baz
+type UnionWithMultipleFields = Multi of string * int * float
+
 let tests : Test =
     testList "Thoth.Json.Decode" [
 
@@ -2888,6 +2890,11 @@ Reason: Unkown value provided for the enum
                 let json = """[ "Baz", ["Bar", "foo"]]"""
                 Decode.Auto.fromString<UnionWithPrivateConstructor list>(json, caseStrategy=CamelCase)
                 |> equal (Ok [Baz; Bar "foo"])
+
+            testCase "Auto.fromString works gives proper error for wrong union fields" <| fun _ ->
+                let json = """["Multi", "bar", "foo", "zas"]"""
+                Decode.Auto.fromString<UnionWithMultipleFields>(json, caseStrategy=CamelCase)
+                |> equal (Error "Error at: `$[2]`\nExpecting an int but instead got: \"foo\"")
 
             testCase "Auto.generateDecoderCached works" <| fun _ ->
                 let expected = Ok { Id = 0; Name = "maxime"; Email = "mail@domain.com"; Followers = 0 }
