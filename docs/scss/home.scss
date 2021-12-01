@@ -1,0 +1,52 @@
+.selling-points {
+
+    .selling-point {
+
+        &:not(:last-child) {
+            margin-bottom: 5rem;
+        }
+
+        max-width: 1024px;
+        display: flex;
+        justify-content: center;
+        margin: auto;
+        flex-wrap: wrap;
+
+        .selling-point-header,
+        .selling-point-showcase {
+            padding: 1rem;
+            width: 45%;
+            margin: auto 0;
+
+            @include touch {
+                width: 100%;
+            }
+        }
+
+        &:not(.is-fullwidth) {
+            .selling-point-header {
+                margin-right: 5%;
+
+                @include touch {
+                    margin-right: 0;
+                }
+            }
+
+            .selling-point-showcase {
+                margin-left: 5%;
+
+                @include touch {
+                    margin-left: 0;
+                }
+            }
+        }
+
+        &.is-fullwidth {
+            .selling-point-header,
+            .selling-point-showcase {
+                width: 80%;
+            }
+        }
+
+    }
+}
