@@ -17,8 +17,10 @@ jobs:
           node-version: '16'
       - name: Install and use custom npm version
         run: npm i -g npm@7
+      - name: Install dependencies
+        run: npm install
       - name: Build site
-        run: ./build.js docs
+        run: node build.js docs
       - name: Deploy site
         uses: peaceiris/actions-gh-pages@v3
         with:

@@ -13,10 +13,9 @@ const getEnvVariable = function (varName) {
     }
 }
 
-const NUGET_KEY = getEnvVariable("NUGET_KEY")
-
 export default async (baseDirectory, relativePathToFsproj) => {
 
+    const NUGET_KEY = getEnvVariable("NUGET_KEY")
     const fullPathToFsproj = path.resolve(baseDirectory, relativePathToFsproj)
     const fsprojDirectory = path.dirname(fullPathToFsproj)
     const projectName = path.basename(fullPathToFsproj, ".fsproj")
