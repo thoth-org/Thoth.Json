@@ -15,6 +15,7 @@
         "chalk": "^5.0.0",
         "changelog-parser": "^2.8.0",
         "concurrently": "^7.0.0",
+        "fable-font": "^1.0.1",
         "gatsby-remark-vscode": "^3.3.0",
         "gh-pages": "^3.2.3",
         "mocha": "^9.1.3",

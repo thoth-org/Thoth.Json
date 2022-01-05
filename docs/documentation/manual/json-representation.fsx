@@ -56,7 +56,9 @@ The decoders accept both string and numeric JSON values.
 :::
 
 :::warning{title="Important"}
-Before Thoth.Json 7.0.0 , the following were using string and not numbers:
+Before Thoth.Json 7.0.0 and Thoth.Json.Net 8.0.0, the following were using string and not numbers:
+
+This was an error.
 
 - `sbyte`
 - `byte`

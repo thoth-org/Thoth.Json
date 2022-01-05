@@ -52,17 +52,34 @@ export default (
                     icon="fas fa-id-card"
                     url="https://github.com/thoth-org/Thoth.Json/blob/main/LICENSE.md" />
             </SitemapSection>
-            <SitemapSection title="Community">
+
+            <SitemapSection title="Other Links">
                 <SitemapSectionItem
-                    text="Support"
+                    text="Fable"
+                    icon="faf faf-fable"
+                    url="https://fable.io" />
+
+                <SitemapSectionItem
+                    text="Fable Gitter"
                     icon="fab fa-gitter"
                     url="https://gitter.im/fable-compiler/Fable" />
+
+                <SitemapSectionItem
+                    text="F# Slack"
+                    icon="fab fa-slack"
+                    url="https://fsharp.org/guides/slack/" />
+
+                <SitemapSectionItem
+                    text="F# Software Foundation"
+                    icon="faf faf-fsharp-org"
+                    url="https://fsharp.org/" />
 
                 <SitemapSectionItem
                     text="Twitter"
                     icon="fab fa-twitter"
                     url="https://twitter.com/MangelMaxime" />
             </SitemapSection>
+
 
         </div>
         <p className="has-text-centered">

@@ -2,6 +2,8 @@
 ---
 layout: standard
 title: JSON representation
+toc:
+    to: 3
 ---
 *)
 
@@ -16,9 +18,11 @@ open Fable.Core
 
 (**
 
+## Configuration
+
 When using auto API, you have a very limited control over the JSON representation.
 
-## Case strategy
+### Case strategy
 
 You can decide which case strategy you want to use:
 
@@ -100,11 +104,117 @@ Decode.Auto.fromString<Device>(
 
 (**
 
+### Skip null fields
+
+By default, optional fields are not included in the JSON representation.
+
+*)
+
+type Response<'T> =
+    {
+        Code : int
+        Data : 'T option
+    }
+
+let response =
+    {
+        Code = 200
+        Data = None
+    }
+
+Encode.Auto.toString(4, response)
+
+// Returns:
+// {
+//     "Code": "200"
+// }
+
+(**
+
+If you want to include the `Data` field, you need to set `skipNullField = false`
+
+*)
+
+Encode.Auto.toString(4, response, skipNullField = false)
+
+// Returns:
+// {
+//     "Code": "200",
+//     "Data": null
+// }
+
+(**
+
+### Extra coders
+
+The auto APIs, accept an `ExtraCoders` objects which is used to extends or override
+the supported types.
+
+In order to minimize the impact on the bundle size, Thoth.Json don't include
+out of the box support for the following types:
+
+- `int64`
+- `uint64`
+- `decimal`
+- `bigint`
+
+If you want to use them, you can add them to the `ExtraCoders` object.
+
+*)
+
+let myExtra =
+    Extra.empty
+    |> Extra.withInt64
+    |> Extra.withUInt64
+    |> Extra.withDecimal
+    |> Extra.withBigInt
+
+Encode.Auto.toString(4, 86UL, extra = myExtra)
+
+// Returns:
+// "86"
+
+(**
+
 ## Primitives
 
-Primitives are represented with their corresponding equivalent in JSON.
+By default, primitives are represented the same way as they are when using the Manual API.
 
-There is a special case for the numbers see [Manual API - JSON representation - Numbers](/Thoth.Json/documentation/manual/json-representation.html#numbers).
+See [Manual API - JSON representation - Numbers](/Thoth.Json/documentation/manual/json-representation.html#numbers) for more information.
+
+If the default is not what you want, you can override them by using the `extra` argument.
+
+**)
+
+let customIntEncoder (value : int) =
+    Encode.object [
+        "type", Encode.string "customInt"
+        "value", Encode.int value
+    ]
+
+let customIntDecoder =
+    Decode.field "type" Decode.string
+    |> Decode.andThen (function
+        | "customInt" ->
+            Decode.field "value" Decode.int
+
+        | _ ->
+            Decode.fail "Invalid type for customInt"
+    )
+
+let extra =
+    Extra.empty
+    |> Extra.withCustom customIntEncoder customIntDecoder
+
+Encode.Auto.toString(4, 42, extra=extra)
+
+// Returns:
+// {
+//     "type": "customInt",
+//     "value": 42
+// }
+
+(**
 
 ## Records
 

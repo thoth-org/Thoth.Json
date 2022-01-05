@@ -22,8 +22,8 @@ Auto decoders use reflection to generate the decoders at runtime.
 To avoid having to regenerate the decoders every time you run you need them,
 you can use the helpers with the `Cached` suffix instead.
 
-The cache is dependent on the `caseStrategy` and `extra` parameters. Meaning if
-change one of these parameters, a new decoder will be generated for the asked type.
+The cache is dependent on the `caseStrategy` and `extra` parameters. If you need
+different case strategies or extra parameters, you need to create as many caches.
 
 The easiest way to use the cache is to add some helpers in your code and use them in
 the rest of your application.

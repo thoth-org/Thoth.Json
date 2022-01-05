@@ -674,6 +674,34 @@ let tests : Test =
                         ex.Message
                 errorMsg.Replace("+", ".") |> equal expected
 
+            testCase "Encode.Auto allows to re-define primitive types" <| fun _ ->
+                let customIntEncoder (value : int) =
+                    Encode.object [
+                        "type", Encode.string "customInt"
+                        "value", Encode.int value
+                    ]
+
+                let customIntDecoder =
+                    Decode.field "type" Decode.string
+                    |> Decode.andThen (function
+                        | "customInt" ->
+                            Decode.field "value" Decode.int
+
+                        | invalid ->
+                            Decode.fail "Invalid type for customInt"
+                    )
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom customIntEncoder customIntDecoder
+
+                let actual = Encode.Auto.toString(0, 42, extra=extra)
+
+                let expected =
+                    """{"type":"customInt","value":42}"""
+
+                equal expected actual
+
     (*
             #if NETFRAMEWORK
             testCase "Encode.Auto.toString works with char based Enums" <| fun _ ->

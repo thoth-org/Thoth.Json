@@ -58,6 +58,7 @@ $body-size: 15px;
 @import "./../node_modules/bulma/bulma.sass";
 @import "./../node_modules/nacara-layout-standard/scss/nacara.scss";
 @import "./scss/home.scss";
+@import "./../node_modules/fable-font/scss/fable-font.scss";
 
 // Begin gatsby-remark-vscode specific
 :root {
@@ -93,65 +94,6 @@ $body-size: 15px;
     .navbar-link {
         &:not(.is-arrowless)::after {
             border-color: $white;
-        }
-    }
-}
-
-// Nacara documentation site specific rules
-
-.content {
-    .table {
-        &.is-vcentered {
-            td,
-            th {
-                vertical-align: middle;
-            }
-        }
-
-        .label-cell {
-            white-space: nowrap;
-            text-align: center !important;
-            vertical-align: middle !important;
-        }
-
-        // Force call to take the maximum place
-        .fullwidth-cell {
-            width: 100%;
-        }
-    }
-}
-
-.index-quick-start {
-    background-color: $primary;
-    color: $white;
-    padding: 3rem;
-
-    @include desktop {
-        border-radius: $radius-large;
-    }
-
-    .terminal {
-        background-color: $black-ter;
-        overflow-x: auto;
-
-        .line {
-            white-space: nowrap;
-
-            .path {
-                color: $primary;
-            }
-
-            .prompt {
-                color: $danger;
-            }
-
-            .command {
-                color: #f0e68c;
-            }
-
-            .output {
-                color: $grey;
-            }
         }
     }
 }

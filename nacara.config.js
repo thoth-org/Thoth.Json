@@ -12,11 +12,6 @@ export default {
                 section: "documentation",
                 label: "Docs",
                 url: "/Thoth.Json/documentation/concept/introduction.html"
-            },
-            {
-                section: "changelog",
-                label: "Changelog",
-                url: "/Thoth.Json/changelog/index.html"
             }
         ],
         end: [
