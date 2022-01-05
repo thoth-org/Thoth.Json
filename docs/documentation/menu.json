@@ -5,7 +5,8 @@
         "items": [
             "documentation/concept/introduction",
             "documentation/concept/decoder",
-            "documentation/concept/encoder"
+            "documentation/concept/encoder",
+            "documentation/concept/fable-and-dotnet-support"
         ]
     },
     {
