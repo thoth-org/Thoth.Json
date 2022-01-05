@@ -11,7 +11,7 @@ export default {
                 pinned: true,
                 section: "documentation",
                 label: "Docs",
-                url: "/Thoth.Json/documentation/index.html"
+                url: "/Thoth.Json/documentation/concept/introduction.html"
             },
             {
                 section: "changelog",

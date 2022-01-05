@@ -61,7 +61,7 @@ export default (
                 <SitemapSectionItem
                     text="Twitter"
                     icon="fab fa-twitter"
-                    url="https://github.com/thoth-org/Thoth.Json/blob/main/LICENSE.md" />
+                    url="https://twitter.com/MangelMaxime" />
             </SitemapSection>
 
         </div>

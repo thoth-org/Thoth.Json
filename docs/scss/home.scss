@@ -45,6 +45,10 @@
             .selling-point-header,
             .selling-point-showcase {
                 width: 80%;
+
+                @include touch {
+                    width: 100%;
+                }
             }
         }
 

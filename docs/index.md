@@ -124,38 +124,31 @@ let userFromJson =
 ```fs
 module Encode =
 
-    let dayIso8601 (value : DateTime) =
-        let utcDate = value.ToUniversalTime()
-
-        $"{utcDate.Year}-{utcDate.Month}-{utcDate.Day}"
+    let timestamp (date : DateTime) =
+        DateTimeOffset(date).ToUnixTimeSeconds()
         |> box
 
 module Decode =
 
-    let dayIso8601 : Decoder<DateTime> =
+    let timestamp : Decoder<DateTime> =
         fun path value ->
-            if Helpers.isString value then
-                // Note: This is a native way to validate the date
-                let m = Regex.Match(value, "\d{4}-\d{1,2}-\d{1,2}")
-
-                if m.Success then
-                    let year = int m.Groups.[0].Value
-                    let month = int m.Groups.[1].Value
-                    let day = int m.Groups.[2].Value
-
-                    DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc) |> Ok
-                else
-                    (path, BadPrimitive("a day with the format YYYY-MM-DD", value)) |> Error
+            if Decode.Helpers.isNumber value then
+                let value : int64 = unbox value
+                let datetime =
+                    DateTimeOffset
+                        .FromUnixTimeSeconds(value)
+                        .DateTime
+                Ok datetime
 
             else
-                (path, BadPrimitive("a day with the format YYYY-MM-DD", value)) |> Error
+                (path, BadPrimitive("a timestamp", value)) |> Error
 
 // Example: decode an invalid JSON
-Decode.fromString Decode.dayIso8601 "\"2021\""
+Decode.fromString Decode.timestamp "\"2022-01-01\""
 
 // Error at: `$`
-// Expecting a day with the format YYYY-MM-DD but instead got:
-// "2021"
+// Expecting a number but instead got:
+// "2022-01-01"
 ```
 </div>
 </div>

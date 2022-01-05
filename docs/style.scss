@@ -49,10 +49,10 @@ $menu-item-radius: $radius-large $radius-large;
 $footer-background-color: $primary;
 $footer-color: $white;
 
-$link: darken($primary, 4%);
+// $link: darken($primary, 4%);
 $code: $red;
 
-$body-size: 14px;
+$body-size: 15px;
 
 @import "../node_modules/bulma/sass/utilities/_all.sass";
 @import "./../node_modules/bulma/bulma.sass";
@@ -168,6 +168,7 @@ $body-size: 14px;
     display: grid;
     grid-gap: 4rem;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    font-size: $size-6;
 
     @include mobile {
         grid-template-columns: 1fr;

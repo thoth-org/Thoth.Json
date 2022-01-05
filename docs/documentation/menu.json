@@ -1,0 +1,31 @@
+[
+    {
+        "type": "section",
+        "label": "Concept",
+        "items": [
+            "documentation/concept/introduction",
+            "documentation/concept/decoder",
+            "documentation/concept/encoder"
+        ]
+    },
+    {
+        "type": "section",
+        "label": "Manual API",
+        "items": [
+            "documentation/manual/introduction",
+            "documentation/manual/convention",
+            "documentation/manual/composition",
+            "documentation/manual/override-defaults",
+            "documentation/manual/json-representation"
+        ]
+    },
+    {
+        "type": "section",
+        "label": "Auto API",
+        "items": [
+            "documentation/auto/introduction",
+            "documentation/auto/caching",
+            "documentation/auto/json-representation"
+        ]
+    }
+]
