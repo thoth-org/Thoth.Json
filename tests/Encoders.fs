@@ -192,7 +192,7 @@ let tests : Test =
                 equal expected actual
 
             testCase "an byte works" <| fun _ ->
-                let expected = "\"99\""
+                let expected = "99"
                 let actual =
                     99uy
                     |> Encode.byte
@@ -201,7 +201,7 @@ let tests : Test =
                 equal expected actual
 
             testCase "an sbyte works" <| fun _ ->
-                let expected = "\"99\""
+                let expected = "99"
                 let actual =
                     99y
                     |> Encode.sbyte
@@ -210,7 +210,7 @@ let tests : Test =
                 equal expected actual
 
             testCase "an int16 works" <| fun _ ->
-                let expected = "\"99\""
+                let expected = "99"
                 let actual =
                     99s
                     |> Encode.int16
@@ -219,7 +219,7 @@ let tests : Test =
                 equal expected actual
 
             testCase "an uint16 works" <| fun _ ->
-                let expected = "\"99\""
+                let expected = "99"
                 let actual =
                     99us
                     |> Encode.uint16
@@ -246,14 +246,14 @@ let tests : Test =
                 equal expected actual
 
             testCase "an enum<sbyte> works" <| fun _ ->
-                let expected = "\"99\""
+                let expected = "99"
                 let actual =
                     Encode.toString 0 (Encode.Enum.sbyte Enum_Int8.NinetyNine)
 
                 equal expected actual
 
             testCase "an enum<byte> works" <| fun _ ->
-                let expected = "\"99\""
+                let expected = "99"
                 let actual =
                     Encode.toString 0 (Encode.Enum.byte Enum_UInt8.NinetyNine)
 
@@ -274,14 +274,14 @@ let tests : Test =
                 equal expected actual
 
             testCase "an enum<int16> works" <| fun _ ->
-                let expected = "\"99\""
+                let expected = "99"
                 let actual =
                     Encode.toString 0 (Encode.Enum.int16 Enum_Int16.NinetyNine)
 
                 equal expected actual
 
             testCase "an enum<uint16> works" <| fun _ ->
-                let expected = "\"99\""
+                let expected = "99"
                 let actual =
                     Encode.toString 0 (Encode.Enum.uint16 Enum_UInt16.NinetyNine)
 
@@ -494,7 +494,7 @@ let tests : Test =
                     |> Extra.withUInt64
                 let encoder = Encode.Auto.generateEncoder<Record9>(extra = extra)
                 let actual = encoder value |> Encode.toString 0
-                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":"120","j":"120","k":"250","l":"250","m":99,"n":"99","o":"999"}"""
+                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":120,"j":120,"k":250,"l":250,"m":99,"n":"99","o":"999"}"""
                 // Don't fail because of non-meaningful decimal digits ("2" vs "2.0")
                 let actual = System.Text.RegularExpressions.Regex.Replace(actual, @"\.0+(?!\d)", "")
                 equal expected actual
@@ -528,7 +528,7 @@ let tests : Test =
                 let encoder2 = Encode.Auto.generateEncoderCached<Record9>(extra = extra)
                 let actual1 = encoder1 value |> Encode.toString 0
                 let actual2 = encoder2 value |> Encode.toString 0
-                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":"120","j":"120","k":"250","l":"250","m":99,"n":"99","o":"999"}"""
+                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":120,"j":120,"k":250,"l":250,"m":99,"n":"99","o":"999"}"""
                 // Don't fail because of non-meaningful decimal digits ("2" vs "2.0")
                 let actual1 = System.Text.RegularExpressions.Regex.Replace(actual1, @"\.0+(?!\d)", "")
                 let actual2 = System.Text.RegularExpressions.Regex.Replace(actual2, @"\.0+(?!\d)", "")

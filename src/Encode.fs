@@ -179,17 +179,17 @@ module Encode =
     let timespan (value : System.TimeSpan) : JsonValue =
         value.ToString() |> string
 
-    let sbyte (value : sbyte) : JsonValue =
-        box (value.ToString(CultureInfo.InvariantCulture))
+    let inline sbyte (value : sbyte) : JsonValue =
+        box value
 
-    let byte (value : byte) : JsonValue =
-        box (value.ToString(CultureInfo.InvariantCulture))
+    let inline byte (value : byte) : JsonValue =
+        box value
 
-    let int16 (value : int16) : JsonValue =
-        box (value.ToString(CultureInfo.InvariantCulture))
+    let inline int16 (value : int16) : JsonValue =
+        box value
 
-    let uint16 (value : uint16) : JsonValue =
-        box (value.ToString(CultureInfo.InvariantCulture))
+    let inline uint16 (value : uint16) : JsonValue =
+        box value
 
     let inline int (value : int) : JsonValue =
         box value
