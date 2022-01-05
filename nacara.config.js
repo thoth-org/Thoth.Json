@@ -16,7 +16,7 @@ export default {
         ],
         end: [
             {
-                url: "https://github.com/MangelMaxime/Thoth-Json",
+                url: "https://github.com/thoth-org/Thoth.Json",
                 icon: "fab fa-github",
                 label: "GitHub"
             },
