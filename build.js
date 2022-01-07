@@ -74,6 +74,8 @@ const testHandler = async (argv) => {
 const documentationHandler = async (argv) => {
     await cleanHandler();
 
+    await simpleSpawn("dotnet build", "./src/");
+
     if (argv.watch) {
         await simpleSpawn("npx nacara watch");
 
