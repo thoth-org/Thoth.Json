@@ -2,8 +2,6 @@
 ---
 layout: standard
 title: Composition
-toc:
-    to: 3
 ---
 *)
 
@@ -137,6 +135,45 @@ If the provided JSON is a string, the decoder will succeed and return an Email t
 
 :::info
 For simplicity, we used `Decode.string` but in a real world scenario, you would probably want to validate the email format.
+:::
+
+## Inconsistent JSON
+
+Sometimes it can happen that the JSON you received is not consistent or have several ways to represent a type.
+
+In these cases, you can use `Decode.oneOf` to try different decoders.
+
+Imagine you are parsing a list of numbers but some of them are represented as `null`.
+
+```json
+[ 1, null, 2, 3 ]
+```
+
+You can write a decoder like that:
+
+*)
+
+let nullableIntDecoder : Decoder<int> =
+    Decode.oneOf
+        [
+            // First try to decode it as a standard int
+            Decode.int
+            // If it fails, try to decode it as a null
+            Decode.nil 0
+        ]
+
+let json =
+    "[ 1, null, 2, 3 ]"
+
+Decode.fromString (Decode.list nullableIntDecoder) json
+
+// Returns:
+// Ok [ 1, 0, 2, 3 ]
+
+(**
+
+:::info
+`Decode.oneOf` tests the decoders in order, so it stop after finding a successful one.
 :::
 
 *)
