@@ -295,6 +295,7 @@ Encode.Auto.toString(4,
     )
 )
 
+// Returns:
 // [
 //     "ExternalLink",
 //     "Fable",
@@ -322,4 +323,57 @@ Then you can't differentiate if `42` is for `Some 42` and `Some (Some 42)`.
 The same goes for `null` and `Some None` or `None `.
 :::
 
+## Class
+
+Classes support need to be added case by case via the `extra` argument.
+
+This is because Fable offer a limited reflection API and classes are not supported.
+
 *)
+
+type Point(x : int, y : int) =
+
+    member __.x with get () = x
+
+    member __.y with get () = y
+
+module Point =
+
+    let decoder : Decoder<Point> =
+        Decode.object (fun get ->
+            Point(
+                get.Required.Field "x" Decode.int,
+                get.Required.Field "y" Decode.int
+            )
+        )
+
+    let encoder (point : Point) =
+        Encode.object [
+            "x", Encode.int point.x
+            "y", Encode.int point.y
+        ]
+
+type Polygon = Point array
+
+let myExtra2 =
+    Extra.empty
+    |> Extra.withCustom Point.encoder Point.decoder
+
+Encode.Auto.toString(4,
+    [
+        Point(1, 2),
+        Point(3, 4)
+    ]
+)
+
+// Returns:
+// [
+//     {
+//         "x": 1,
+//         "y": 2
+//     },
+//     {
+//         "x": 3,
+//         "y": 4
+//     }
+// ]
