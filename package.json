@@ -23,7 +23,7 @@
         "nacara-layout-standard": "^1.5.0",
         "nodemon": "^2.0.15",
         "remark-github": "^11.2.2",
-        "shelljs": "^0.8.4",
+        "shelljs": "^0.8.5",
         "unified": "^10.1.1",
         "vscode-theme-onelight": "github:akamud/vscode-theme-onelight",
         "yargs": "^17.3.1"
