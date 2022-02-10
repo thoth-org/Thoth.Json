@@ -20,7 +20,7 @@
         "gh-pages": "^3.2.3",
         "mocha": "^9.1.3",
         "nacara": "^1.5.1",
-        "nacara-layout-standard": "^1.5.0",
+        "nacara-layout-standard": "^1.6.0",
         "nodemon": "^2.0.15",
         "remark-github": "^11.2.2",
         "shelljs": "^0.8.5",
