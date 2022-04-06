@@ -1155,6 +1155,52 @@ Expecting an array but instead got: 1
 
                 equal expected actual
 
+            testCase "map' works" <| fun _ ->
+                let expected = Ok(Map.ofList([(1, "x") ; (2, "y") ; (3, "z")]))
+
+                let actual =
+                    Decode.fromString (Decode.map' Decode.int Decode.string) """[ [ 1, "x" ], [ 2, "y" ], [ 3, "z" ] ]"""
+
+                equal expected actual
+
+            testCase "map' with custom key decoder works" <| fun _ ->
+                let expected = Ok(Map.ofList([ ((1, 6), "a") ; ((2, 7), "b") ; ((3, 8), "c") ]))
+
+                let decodePoint =
+                    Decode.map2
+                        (fun x y -> x, y)
+                        (Decode.field "x" Decode.int)
+                        (Decode.field "y" Decode.int)
+
+                let actual =
+                    Decode.fromString (Decode.map' decodePoint Decode.string)
+                        """
+[
+    [
+        {
+            "x": 1,
+            "y": 6
+        },
+        "a"
+    ],
+    [
+        {
+            "x": 2,
+            "y": 7
+        },
+        "b"
+    ],
+    [
+        {
+            "x": 3,
+            "y": 8
+        },
+        "c"
+    ]
+]
+                        """
+
+                equal expected actual
         ]
 
         testList "Inconsistent structure" [
@@ -2573,6 +2619,18 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let value = [| 1; 2; 3; 4 |]
                 let json = Encode.Auto.toString(4, value)
                 let res = Decode.Auto.unsafeFromString<int array>(json)
+                equal value res
+
+            testCase "Auto decoders works for Map with string keys" <| fun _ ->
+                let value = Map.ofSeq [ "a", 1; "b", 2; "c", 3 ]
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString<Map<string, int>>(json)
+                equal value res
+
+            testCase "Auto decoders works for Map with complex keys" <| fun _ ->
+                let value = Map.ofSeq [ (1, 6), "a"; (2, 7), "b"; (3, 8), "c" ]
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString<Map<int * int, string>>(json)
                 equal value res
 
             testCase "Auto decoders works for option None" <| fun _ ->
