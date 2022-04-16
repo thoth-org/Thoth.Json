@@ -297,6 +297,11 @@ module Encode =
                enc7 v7
                enc8 v8 |]
 
+    let map (keyEncoder : Encoder<'key>) (valueEncoder : Encoder<'value>) (values : Map<'key, 'value>) : JsonValue =
+        values
+        |> Map.toList
+        |> List.map (tuple2 keyEncoder valueEncoder)
+        |> list
 
     ////////////
     // Enum ///

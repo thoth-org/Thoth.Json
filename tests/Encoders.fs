@@ -130,6 +130,19 @@ let tests : Test =
                     |> Encode.toString 0
                 equal expected actual
 
+            testCase "a map works" <| fun _ ->
+                let expected =
+                    """[["a",1],["b",2],["c",3]]"""
+                let actual =
+                    Map.ofList
+                        [ ("a", 1)
+                          ("b", 2)
+                          ("c", 3)
+                        ]
+                    |> Encode.map Encode.string Encode.int
+                    |> Encode.toString 0
+                equal expected actual
+
             testCase "a bigint works" <| fun _ ->
                 let expected = "\"12\""
                 let actual =
