@@ -1054,12 +1054,9 @@ module Decode =
         match uci with
         | None -> (path, FailMessage("Cannot find case " + name + " in " + t.FullName)) |> Error
         | Some uci ->
-            if values.Length = 0 then
-                FSharpValue.MakeUnion(uci, [||], allowAccessToPrivateRepresentation=true) |> Ok
-            else
-                let decoders = uci.GetFields() |> Array.map (fun fi -> autoDecoder extra caseStrategy false fi.PropertyType)
-                mixedArray "union fields" decoders path values
-                |> Result.map (fun values -> FSharpValue.MakeUnion(uci, List.toArray values, allowAccessToPrivateRepresentation=true))
+            let decoders = uci.GetFields() |> Array.map (fun fi -> autoDecoder extra caseStrategy false fi.PropertyType)
+            mixedArray "union fields" decoders path values
+            |> Result.map (fun values -> FSharpValue.MakeUnion(uci, List.toArray values, allowAccessToPrivateRepresentation=true))
 
     and private autoDecodeRecordsAndUnions extra (caseStrategy : CaseStrategy) (isOptional : bool) (t: System.Type) : BoxedDecoder =
         // Add the decoder to extra in case one of the fields is recursive
