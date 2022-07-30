@@ -1078,7 +1078,12 @@ module Decode =
     and private autoDecodeRecordsAndUnions extra (caseStrategy : CaseStrategy) (isOptional : bool) (t: System.Type) : BoxedDecoder =
         // Add the decoder to extra in case one of the fields is recursive
         let decoderRef = ref Unchecked.defaultof<_>
-        let extra = extra |> Map.add t.FullName decoderRef
+        let extra =
+            // As of 3.7.17 Fable assigns empty name to anonymous record, we shouldn't add them to the map to avoid conflicts.
+            // Anonymous records cannot be recursive anyways, see #144
+            match t.FullName with
+            | "" -> extra
+            | fullName -> extra |> Map.add fullName decoderRef
         let decoder =
             if FSharpType.IsRecord(t, allowAccessToPrivateRepresentation=true) then
                 let decoders =
