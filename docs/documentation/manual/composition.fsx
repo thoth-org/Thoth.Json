@@ -69,10 +69,10 @@ Decode.object (fun get ->
 
 ## Combine decoders
 
-In case your data is strucured in a tree-like manner, you can construct the decoders top down.
-First, you create the decoders of the records themselves, then you put them together to obtain 
-the root of the data tree.
-Extending the example from the introduction, we can assume a data layout as this:
+If your data is composed of several objects, you can construct the decoders top down.
+First, you create the decoders of the different records, then you combine them together.
+
+If we have the following JSON:
 
 ```json
 {
@@ -110,7 +110,7 @@ let json =
 
 (**
 
-We decode both, User and Post, with their matching decoder as seen before:
+We create types and decoders for `User` and `Post`.
 
 *)
 
@@ -125,7 +125,6 @@ module User =
     let decoder : Decoder<User> =
         Decode.object (fun get ->
             {
-                Id = get.Required.Field "id" Decode.guid
                 Name = get.Required.Field "name" Decode.string
                 Age = get.Required.Field "age" Decode.int
             }
@@ -149,7 +148,7 @@ module Post =
 
 (**
 
-Now we combine them to get the complete record at once:
+Now we combine them to form the parent record:
 
 *)
 
