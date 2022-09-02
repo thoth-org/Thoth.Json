@@ -63,6 +63,117 @@ Decode.object (fun get ->
     }
 )
 
+
+
+(**
+
+## Combine decoders
+
+In case your data is strucured in a tree-like manner, you can construct the decoders top down.
+First, you create the decoders of the records themselves, then you put them together to obtain 
+the root of the data tree.
+Extending the example from the introduction, we can assume a data layout as this:
+
+```json
+{
+    "data": {
+        "author": {
+            "name": "Triss Merigold",
+            "age": 42
+        },
+        "post": {
+            "title": "Handle JSON with fable",
+            "abstract": "How to simply read data with Thoth.Json"
+        }
+    }
+}
+```
+*)
+
+(*** hide ***)
+
+let json =
+    """
+{
+    "data": {
+        "author": {
+            "name": "Triss Merigold",
+            "age": 42
+        },
+        "post": {
+            "title": "Handle JSON with Fable",
+            "abstract": "How to simply read data with Thoth.Json"
+        }
+    }
+}
+    """
+
+(**
+
+We decode both, User and Post, with their matching decoder as seen before:
+
+*)
+
+type User =
+    {
+        Name : string
+        Age : int
+    }
+
+module User =
+
+    let decoder : Decoder<User> =
+        Decode.object (fun get ->
+            {
+                Id = get.Required.Field "id" Decode.guid
+                Name = get.Required.Field "name" Decode.string
+                Age = get.Required.Field "age" Decode.int
+            }
+        )
+
+type Post =
+    {
+        Title : string
+        Abstract : string
+    }
+
+module Post =
+
+    let decoder : Decoder<Post> =
+        Decode.object (fun get ->
+            {
+                Title = get.Required.Field "title" Decode.string
+                Abstract = get.Required.Field "abstract" Decode.string
+            }
+        )
+
+(**
+
+Now we combine them to get the complete record at once:
+
+*)
+
+type Data =
+    {
+        User : User
+        Post : Post
+    }
+
+module Data =
+
+    // Get both structures and decode them with their own decoder accordingly
+    let decoder : Decoder<Data> =
+        Decode.object (fun get ->
+            {
+                User = get.Required.Field "user" User.decode
+                Abstract = get.Required.Field "port" Post.decode
+            }
+        )
+
+Decode.fromString
+    (Decode.field "data" Data.decoder)
+    json
+
 (**
 
 ## Map functions
