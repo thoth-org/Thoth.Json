@@ -53,7 +53,7 @@ Node `firstname` is unknown.
 ```fs
 module Author =
     let decoder =
-        Decoder.object (fun get ->
+        Decode.object (fun get ->
             {
                 Name = get.Required.Field "name" Decode.string
                 Profile = get.Required.Field "profile" Decode.string
