@@ -514,7 +514,14 @@ Expecting a bigint but instead got: "maxime"
             testCase "a datetime works" <| fun _ ->
                 let expected = new DateTime(2018, 10, 1, 11, 12, 55, DateTimeKind.Utc)
                 let actual =
-                    Decode.fromString Decode.datetime "\"2018-10-01T11:12:55.00Z\""
+                    Decode.fromString Decode.datetimeUTC "\"2018-10-01T11:12:55.00Z\""
+
+                equal (Ok expected) actual
+
+            testCase "a non-UTC datetime works" <| fun _ ->
+                let expected = new DateTime(2018, 10, 1, 11, 12, 55)
+                let actual =
+                    Decode.fromString Decode.datetimeLocal "\"2018-10-01T11:12:55\""
 
                 equal (Ok expected) actual
 
@@ -527,7 +534,7 @@ Expecting a datetime but instead got: "invalid_string"
                         """.Trim())
 
                 let actual =
-                    Decode.fromString Decode.datetime "\"invalid_string\""
+                    Decode.fromString Decode.datetimeUTC "\"invalid_string\""
 
                 equal expected actual
 
@@ -537,7 +544,7 @@ Expecting a datetime but instead got: "invalid_string"
                 let expected = Ok (localDate.ToUniversalTime())
                 let json = sprintf "\"%s\"" (localDate.ToString("O"))
                 let actual =
-                    Decode.fromString Decode.datetime json
+                    Decode.fromString Decode.datetimeLocal json
 
                 equal expected actual
 
@@ -826,7 +833,7 @@ Expecting a datetime but instead got: false
                             Decode.string
                             Decode.float
                             SmallRecord.Decoder
-                            Decode.datetime) json
+                            Decode.datetimeUTC) json
 
                 equal expected actual
 
@@ -846,7 +853,7 @@ Expecting null but instead got: false
                             Decode.string
                             Decode.float
                             SmallRecord.Decoder
-                            Decode.datetime
+                            Decode.datetimeUTC
                             (Decode.nil null)) json
 
                 equal expected actual
@@ -867,7 +874,7 @@ Expecting an int but instead got: false
                             Decode.string
                             Decode.float
                             SmallRecord.Decoder
-                            Decode.datetime
+                            Decode.datetimeUTC
                             (Decode.nil null)
                             Decode.int) json
 
@@ -889,7 +896,7 @@ Expecting an int but instead got: "maxime"
                             Decode.string
                             Decode.float
                             SmallRecord.Decoder
-                            Decode.datetime
+                            Decode.datetimeUTC
                             (Decode.nil null)
                             Decode.int
                             Decode.int) json
