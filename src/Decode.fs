@@ -687,9 +687,6 @@ module Decode =
             | _,_,_,_,_,_,Error er,_ -> Error er
             | _,_,_,_,_,_,_,Error er -> Error er
 
-    let dict (decoder : Decoder<'value>) : Decoder<Map<string, 'value>> =
-        map Map.ofList (keyValuePairs decoder)
-
     //////////////////////
     // Object builder ///
     ////////////////////
@@ -918,6 +915,16 @@ module Decode =
                 )
             )
         )
+
+    ///////////
+    // Map ///
+    /////////
+
+    let dict (decoder : Decoder<'value>) : Decoder<Map<string, 'value>> =
+        map Map.ofList (keyValuePairs decoder)
+
+    let map' (keyDecoder : Decoder<'key>) (valueDecoder : Decoder<'value>) : Decoder<Map<'key, 'value>> =
+        map Map.ofSeq (array (tuple2 keyDecoder valueDecoder))
 
     ////////////
     // Enum ///
@@ -1157,7 +1164,7 @@ If you can't use one of these types, please pass an extra decoder.
                 // Disable seq support because I don't know how to implement it on Thoth.Json.Net side
                 // elif fullname = typedefof<obj seq>.FullName then
                 //     t.GenericTypeArguments.[0] |> (autoDecoder extra caseStrategy false) |> seq |> boxDecoder
-                elif fullname = typedefof< Map<string, obj> >.FullName then
+                elif fullname = typedefof< Map<System.IComparable, obj> >.FullName then
                     let keyDecoder = t.GenericTypeArguments.[0] |> autoDecoder extra caseStrategy false
                     let valueDecoder = t.GenericTypeArguments.[1] |> autoDecoder extra caseStrategy false
                     oneOf [
