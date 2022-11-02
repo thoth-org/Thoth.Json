@@ -2824,6 +2824,18 @@ Reason: Unkown value provided for the enum
                 let res = Decode.Auto.unsafeFromString<obj>(json)
                 equal value res
 
+            testCase "Auto decoders works for anonymous record" <| fun _ ->
+                let value = {| A = "string" |}
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString(json)
+                equal value res
+
+            testCase "Auto decoders works for nested anonymous record" <| fun _ ->
+                let value = {| A = {| B = "string" |} |}
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString(json)
+                equal value res
+
             testCase "Auto decoders works even if type is determined by the compiler" <| fun _ ->
                 let value = [1; 2; 3; 4]
                 let json = Encode.Auto.toString(4, value)
