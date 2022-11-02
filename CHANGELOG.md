@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+
+* PR #118: Fix path when auto decoding unions (by @alfonsogarciacaro)
+
+### Added
+
+* PR 136: Add `Decode.map'` and `Encode.map` to support `Map<'Key, 'Value>` (by @njlr)
+
 ## 7.0.0 - 2022-01-05
 
 ### Changed
