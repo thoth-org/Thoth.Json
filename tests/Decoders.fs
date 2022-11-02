@@ -514,7 +514,7 @@ Expecting a bigint but instead got: "maxime"
             testCase "a datetime works" <| fun _ ->
                 let expected = new DateTime(2018, 10, 1, 11, 12, 55, DateTimeKind.Utc)
                 let actual =
-                    Decode.fromString Decode.datetimeUTC "\"2018-10-01T11:12:55.00Z\""
+                    Decode.fromString Decode.datetimeUtc "\"2018-10-01T11:12:55.00Z\""
 
                 equal (Ok expected) actual
 
@@ -534,7 +534,7 @@ Expecting a datetime but instead got: "invalid_string"
                         """.Trim())
 
                 let actual =
-                    Decode.fromString Decode.datetimeUTC "\"invalid_string\""
+                    Decode.fromString Decode.datetimeUtc "\"invalid_string\""
 
                 equal expected actual
 
@@ -544,7 +544,7 @@ Expecting a datetime but instead got: "invalid_string"
                 let expected = Ok (localDate.ToUniversalTime())
                 let json = sprintf "\"%s\"" (localDate.ToString("O"))
                 let actual =
-                    Decode.fromString Decode.datetimeLocal json
+                    Decode.fromString Decode.datetimeUtc json
 
                 equal expected actual
 
@@ -833,7 +833,7 @@ Expecting a datetime but instead got: false
                             Decode.string
                             Decode.float
                             SmallRecord.Decoder
-                            Decode.datetimeUTC) json
+                            Decode.datetimeUtc) json
 
                 equal expected actual
 
@@ -853,7 +853,7 @@ Expecting null but instead got: false
                             Decode.string
                             Decode.float
                             SmallRecord.Decoder
-                            Decode.datetimeUTC
+                            Decode.datetimeUtc
                             (Decode.nil null)) json
 
                 equal expected actual
@@ -874,7 +874,7 @@ Expecting an int but instead got: false
                             Decode.string
                             Decode.float
                             SmallRecord.Decoder
-                            Decode.datetimeUTC
+                            Decode.datetimeUtc
                             (Decode.nil null)
                             Decode.int) json
 
@@ -896,7 +896,7 @@ Expecting an int but instead got: "maxime"
                             Decode.string
                             Decode.float
                             SmallRecord.Decoder
-                            Decode.datetimeUTC
+                            Decode.datetimeUtc
                             (Decode.nil null)
                             Decode.int
                             Decode.int) json

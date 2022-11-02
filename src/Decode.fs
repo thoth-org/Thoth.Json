@@ -292,7 +292,7 @@ module Decode =
             else
                 (path, BadPrimitive("a decimal", value)) |> Error
 
-    [<System.Obsolete("Please use datetimeUTC instead.")>]
+    [<System.Obsolete("Please use datetimeUtc instead.")>]
     let datetime : Decoder<System.DateTime> =
         fun path value ->
             if Helpers.isString value then
@@ -303,7 +303,7 @@ module Decode =
                 (path, BadPrimitive("a datetime", value)) |> Error
 
     /// Decode a System.DateTime value using Sytem.DateTime.TryParse, then convert it to UTC.
-    let datetimeUTC : Decoder<System.DateTime> =
+    let datetimeUtc : Decoder<System.DateTime> =
         fun path value ->
             if Helpers.isString value then
                 match System.DateTime.TryParse (Helpers.asString value) with
