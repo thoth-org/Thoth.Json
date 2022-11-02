@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * PR 136: Add `Decode.map'` and `Encode.map` to support `Map<'Key, 'Value>` (by @njlr)
+* PR 146: Add `Decode.datetimeUtc`, `Decode.datetimeLocal` (by @Gastove)
+
+### Deprecated
+
+* PR 146: Mark `Decode.datetime` as deprecated (by @Gastove)
 
 ## 7.0.0 - 2022-01-05
 

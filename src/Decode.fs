@@ -292,11 +292,32 @@ module Decode =
             else
                 (path, BadPrimitive("a decimal", value)) |> Error
 
+    [<System.Obsolete("Please use datetimeUtc instead.")>]
     let datetime : Decoder<System.DateTime> =
         fun path value ->
             if Helpers.isString value then
                 match System.DateTime.TryParse (Helpers.asString value) with
                 | true, x -> x.ToUniversalTime() |> Ok
+                | _ -> (path, BadPrimitive("a datetime", value)) |> Error
+            else
+                (path, BadPrimitive("a datetime", value)) |> Error
+
+    /// Decode a System.DateTime value using Sytem.DateTime.TryParse, then convert it to UTC.
+    let datetimeUtc : Decoder<System.DateTime> =
+        fun path value ->
+            if Helpers.isString value then
+                match System.DateTime.TryParse (Helpers.asString value) with
+                | true, x -> x.ToUniversalTime() |> Ok
+                | _ -> (path, BadPrimitive("a datetime", value)) |> Error
+            else
+                (path, BadPrimitive("a datetime", value)) |> Error
+
+    /// Decode a System.DateTime with DateTime.TryParse; uses default System.DateTimeStyles.
+    let datetimeLocal : Decoder<System.DateTime> =
+        fun path value ->
+            if Helpers.isString value then
+                match System.DateTime.TryParse (Helpers.asString value) with
+                | true, x -> x |> Ok
                 | _ -> (path, BadPrimitive("a datetime", value)) |> Error
             else
                 (path, BadPrimitive("a datetime", value)) |> Error
