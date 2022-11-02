@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * PR #118: Fix path when auto decoding unions (by @alfonsogarciacaro)
+* PR #145: Fix auto coders for nested anon records  (by @alfonsogarciacaro)
 
 ### Added
 
