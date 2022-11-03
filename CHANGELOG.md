@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * PR 136: Add `Decode.map'` and `Encode.map` to support `Map<'Key, 'Value>` (by @njlr)
 * PR 146: Add `Decode.datetimeUtc`, `Decode.datetimeLocal` (by @Gastove)
+* Add support for `'T seq` in the Auto API
 
 ### Deprecated
 

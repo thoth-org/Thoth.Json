@@ -125,7 +125,7 @@ type Record9 =
         o: uint64
         p: unit
         r: Map<Record2, string>
-        // r: string seq
+        s: string seq
     }
 
 type User =

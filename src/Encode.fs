@@ -391,7 +391,7 @@ module Encode =
 
     let rec private autoEncodeRecordsAndUnions extra (caseStrategy : CaseStrategy) (skipNullField : bool) (t: System.Type) : BoxedEncoder =
         // Add the encoder to extra in case one of the fields is recursive
-        let encoderRef = ref Unchecked.defaultof<_>        
+        let encoderRef = ref Unchecked.defaultof<_>
         let extra =
             // As of 3.7.17 Fable assigns empty name to anonymous record, we shouldn't add them to the map to avoid conflicts.
             // Anonymous records cannot be recursive anyways, see #144
@@ -489,9 +489,8 @@ If you can't use one of these types, please pass an extra encoder.
                         if isNull value then nil
                         else encoder.Value value)
                 elif fullname = typedefof<obj list>.FullName
-                    || fullname = typedefof<Set<string>>.FullName then
-                    // Disable seq support for now because I don't know how to implements to on Thoth.Json.Net
-                    // || fullname = typedefof<obj seq>.FullName then
+                    || fullname = typedefof<Set<string>>.FullName
+                    || fullname = typedefof<obj seq>.FullName then
                     let encoder = t.GenericTypeArguments.[0] |> autoEncoder extra caseStrategy skipNullField
                     fun (value: obj) ->
                         value :?> obj seq |> Seq.map encoder |> seq

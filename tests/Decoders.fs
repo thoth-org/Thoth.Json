@@ -2459,7 +2459,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                         o = 999UL
                         p = ()
                         r = Map [( {a = 1.; b = 2.}, "value 1"); ( {a = -2.5; b = 22.1}, "value 2")]
-                        // r = seq [ "item n°1"; "item n°2"]
+                        s = seq [ "item n°1"; "item n°2"]
                     }
                 let extra =
                     Extra.empty
@@ -2488,7 +2488,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                 equal 999UL r2.o
                 equal () r2.p
                 equal (Map [( {a = 1.; b = 2.}, "value 1"); ( {a = -2.5; b = 22.1}, "value 2")]) r2.r
-                // equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.r |> Seq.toList)
+                equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.s |> Seq.toList)
 
             testCase "Auto serialization works with recursive types" <| fun _ ->
                 let len xs =
