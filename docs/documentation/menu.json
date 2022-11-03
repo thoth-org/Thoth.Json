@@ -28,5 +28,13 @@
             "documentation/auto/caching",
             "documentation/auto/json-representation"
         ]
+    },
+    {
+        "type": "section",
+        "label": "Advanced",
+        "items": [
+            "documentation/advanced/introduction",
+            "documentation/advanced/unkown-fields"
+        ]
     }
 ]
