@@ -31,7 +31,9 @@ const cleanHandler = async () => {
 }
 
 const testHandler = async (argv) => {
+
     await cleanHandler();
+    await simpleSpawn("dotnet tool restore", ".");
 
     // Make sure we have the tests/fableBuild folder so nodemon can watch it
     shell.mkdir("-p", "./tests/fableBuild");
