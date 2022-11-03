@@ -37,30 +37,7 @@ In this example, we know that:
         3. `targetCurrency`
     - The value should have a `rate` field which is a `decimal`
 
-We are now going to write a docuder capable of handling such a JSON.
-
-## Helpers
-
-First, we are going to define some helpers to make the code more readable.
-*)
-
-module Option =
-
-    /// Return the value if there is one, otherwise throw an exception
-    let unwrap (value : 'T option) =
-        match value with
-        | Some value -> value
-        | None -> failwith "Option.unwrap: None"
-
-module List =
-
-    /// Returns all the elements in the list which have a value
-    let unwrapOption (list : ('T option) list) =
-        list
-        |> List.filter Option.isSome
-        |> List.map Option.unwrap
-
-(**
+We are now going to write a decoder capable of handling such a JSON.
 
 ## Custom decoders
 
@@ -113,7 +90,7 @@ type Ts =
 module Ts =
 
     let decoder : Decoder<Ts> =
-        Decode.datetime
+        Decode.datetimeUtc
         |> Decode.map Ts
 
 (**
@@ -166,31 +143,27 @@ module Rates =
         // We need to verify if they have a valid name
         |> Decode.andThen (fun rateObjects ->
             rateObjects
-            |> List.map (fun (fieldName, (RateObject value)) ->
+            |> List.map (fun (fieldName, (RateObject rate)) ->
+
                 // We consider the fieldName valid if it contains a `_`
                 // The format is [sourceCurrency]_[targetCurrency]
-                let segments = fieldName.Split('_')
-
-                // If the fieldName is invalid
-                // Returns None, this will allow us to filter invalid fields without failing
-                if segments.Length <> 2 then
-                    None
-                else
+                match fieldName.Split('_') with
+                | [| sourceCurrency; targetCurrency |] ->
                     // The fieldName is valid, we can build the Rate record
-                    let sourceCurrency = segments[0]
-                    let targetCurrency = segments[1]
-
-                    let rate =
+                    Some
                         {
                             SourceCurrency = sourceCurrency
                             TargetCurrency = targetCurrency
-                            Rate = value
+                            Rate = rate
                         }
+                // If the fieldName is invalid
+                // Returns None, this will allow us to filter invalid fields without failing
+                | _ ->
+                    None
 
-                    Some rate
             )
             // Only keep valid fields
-            |> List.unwrapOption
+            |> List.choose id
             // Return a decoder which succeeds
             |> Decode.succeed
         )

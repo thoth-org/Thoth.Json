@@ -5,8 +5,9 @@ title: Introduction
 
 This section focus on providing specifics examples for complex case.
 
-:::info{title="Important"}
-You don't need, to understand this section, to use the library.
+The goal is to create a sort of knowledge database, so others can refer to it if they need to.
 
-It is here because, in some cases people needed explanation to help them handle unusal JSON.
+:::info
+
+If you have a specifics case for Thoth.Json which is not covered or intuitive, please feel free to send a PR to add it to this section.
 :::
