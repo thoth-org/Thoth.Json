@@ -1164,7 +1164,7 @@ module Decode =
             else
                 failwithf
                     """Cannot generate auto decoder for %s.
-Thoth.Json.Net only support the folluwing enum types:
+Thoth.Json.Net only support the following enum types:
 - sbyte
 - byte
 - int16
