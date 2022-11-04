@@ -1136,7 +1136,7 @@ module Decode =
                     // Don't use failwithf here, for some reason F#/Fable compiles it as a function
                     // when the return type is a function too, so it doesn't fail immediately
                     sprintf "Cannot generate auto decoder for %s. Please pass an extra decoder." t.FullName |> failwith
-        decoderRef := decoder
+        decoderRef.Value <- decoder
         decoder
 
     and private autoDecoder (extra: Map<string, ref<BoxedDecoder>>) caseStrategy (isOptional : bool) (t: System.Type) : BoxedDecoder =

@@ -430,7 +430,7 @@ module Encode =
                 // when the return type is a function too, so it doesn't fail immediately
                 sprintf "Cannot generate auto encoder for %s. Please pass an extra encoder." t.FullName
                 |> failwith
-        encoderRef := encoder
+        encoderRef.Value <- encoder
         encoder
 
     and private autoEncoder (extra: Map<string, ref<BoxedEncoder>>) caseStrategy (skipNullField : bool) (t: System.Type) : BoxedEncoder =
