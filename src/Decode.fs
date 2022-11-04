@@ -1239,7 +1239,7 @@ If you can't use one of these types, please pass an extra decoder.
             // elif fullname = typeof<decimal>.FullName then
             //     boxDecoder decimal
             elif fullname = typeof<System.DateTime>.FullName then
-                boxDecoder datetime
+                boxDecoder datetimeUtc
             elif fullname = typeof<System.DateTimeOffset>.FullName then
                 boxDecoder datetimeOffset
             elif fullname = typeof<System.TimeSpan>.FullName then
