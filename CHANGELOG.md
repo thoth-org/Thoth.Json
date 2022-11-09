@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fix #125: Add doc comment to `Decode.fromValue`, `Decode.fromString`, `Decode.unsafeFromString`
 * Fix #36: Add support for `char`
 * Fix #17: Add link to the "extra coders" section when coders fail for missing types information
+* Fix #104: Add `Decode.andMap` allowing to decoder large objects incrementally
 
 ### Deprecated
 

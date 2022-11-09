@@ -129,6 +129,37 @@ type Record9 =
         // s: string seq
     }
 
+type Record10 =
+
+    {
+        a : int
+        b : int
+        c : int
+        d : int
+        e : int
+        f : int
+        g : int
+        h : int
+        i : int
+        j : int
+        k : int
+    }
+
+    static member Create a b c d e f g h i j k =
+        {
+            a = a
+            b = b
+            c = c
+            d = d
+            e = e
+            f = f
+            g = g
+            h = h
+            i = i
+            j = j
+            k = k
+        }
+
 type User =
     { Id : int
       Name : string

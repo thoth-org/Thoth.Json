@@ -758,6 +758,29 @@ module Decode =
     // Object builder ///
     ////////////////////
 
+    /// <summary>
+    /// Allow to incrementally apply a decoder, for building large objects.
+    /// </summary>
+    /// <example>
+    /// <code lang="fsharp">
+    /// type Point =
+    ///     {
+    ///         X : float
+    ///         Y : float
+    ///     }
+    ///
+    /// module Point =
+    ///     let create x y = { X = x; Y = y }
+    ///
+    ///     let decode =
+    ///         Decode.succeed create
+    ///             |> Decode.andMap (Decode.field "x" Decode.float)
+    ///             |> Decode.andMap (Decode.field "y" Decode.float)
+    /// </code>
+    /// </example>
+    let andMap<'a, 'b> : 'a Decoder -> ('a -> 'b) Decoder -> 'b Decoder =
+        map2 (|>)
+
     type IRequiredGetter =
         abstract Field : string -> Decoder<'a> -> 'a
         abstract At : List<string> -> Decoder<'a> -> 'a

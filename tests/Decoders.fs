@@ -1549,6 +1549,32 @@ Expecting an object with a field named `height` but instead got:
 
                 equal expected actual
 
+            testCase "andMap works for any arity" <| fun _ ->
+                // In the past maximum arity in Fable was 8
+                let json =
+                    """{"a": 1,"b": 2,"c": 3,"d": 4,"e": 5,"f": 6,"g": 7,"h": 8,"i": 9,"j": 10,"k": 11}"""
+
+                let decodeRecord10 =
+                    Decode.succeed Record10.Create
+                        |> Decode.andMap (Decode.field "a" Decode.int)
+                        |> Decode.andMap (Decode.field "b" Decode.int)
+                        |> Decode.andMap (Decode.field "c" Decode.int)
+                        |> Decode.andMap (Decode.field "d" Decode.int)
+                        |> Decode.andMap (Decode.field "e" Decode.int)
+                        |> Decode.andMap (Decode.field "f" Decode.int)
+                        |> Decode.andMap (Decode.field "g" Decode.int)
+                        |> Decode.andMap (Decode.field "h" Decode.int)
+                        |> Decode.andMap (Decode.field "i" Decode.int)
+                        |> Decode.andMap (Decode.field "j" Decode.int)
+                        |> Decode.andMap (Decode.field "k" Decode.int)
+
+                let actual =
+                    Decode.fromString decodeRecord10 json
+
+                let expected = Ok { a = 1; b = 2; c = 3; d = 4; e = 5; f = 6; g = 7; h = 8; i = 9; j = 10; k = 11 }
+
+                equal expected actual
+
             testCase "andThen works" <| fun _ ->
                 let expected = Ok 1
                 let infoHelp version =
