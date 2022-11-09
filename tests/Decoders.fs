@@ -75,6 +75,27 @@ let tests : Test =
 
                 equal expected actual
 
+            testCase "invalid json #3 - Special case for Thoth.Json.Net" <| fun _ ->
+                // See: https://github.com/thoth-org/Thoth.Json.Net/pull/48
+                #if FABLE_COMPILER
+                let expected : Result<float, string> = Error "Given an invalid JSON: Unexpected end of JSON input"
+                #else
+                let expected : Result<float, string> = Error "Given an invalid JSON: Unexpected end when reading token. Path 'Ab[1]'."
+                #endif
+
+                let incorrectJson = """
+                {
+                "Ab": [
+                    "RecordC",
+                    {
+                    "C1": "",
+                    "C2": "",
+                """
+
+                let actual = Decode.fromString Decode.float incorrectJson
+
+                equal expected actual
+
             testCase "user exceptions are not captured by the decoders" <| fun _ ->
                 let expected = true
 
