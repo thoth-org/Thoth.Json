@@ -25,6 +25,7 @@
         "label": "Auto API",
         "items": [
             "documentation/auto/introduction",
+            "documentation/auto/extra-coders",
             "documentation/auto/caching",
             "documentation/auto/json-representation"
         ]

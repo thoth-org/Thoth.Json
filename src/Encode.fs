@@ -431,7 +431,9 @@ module Encode =
             else
                 // Don't use failwithf here, for some reason F#/Fable compiles it as a function
                 // when the return type is a function too, so it doesn't fail immediately
-                sprintf "Cannot generate auto encoder for %s. Please pass an extra encoder." t.FullName
+                sprintf """Cannot generate auto encoder for %s. Please pass an extra encoder.
+
+Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders""" t.FullName
                 |> failwith
         encoderRef.Value <- encoder
         encoder
@@ -469,7 +471,10 @@ Thoth.Json.Net only support the following enum types:
 - uint16
 - int
 - uint32
+
 If you can't use one of these types, please pass an extra encoder.
+
+Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders
                     """ t.FullName
         elif t.IsGenericType then
             if FSharpType.IsTuple(t) then

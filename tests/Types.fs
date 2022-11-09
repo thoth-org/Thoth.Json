@@ -310,3 +310,20 @@ type TestStringWithHTML =
     }
 
 type RecordForCharacterCase = { One : int; TwoPart : int; ThreePartField : int }
+
+module IntAsRecord =
+
+    let encode (value : int) =
+        Encode.object [
+            "type", Encode.string "int"
+            "value", Encode.int value
+        ]
+
+    let decode : Decoder<int> =
+        Decode.field "type" Decode.string
+        |> Decode.andThen (fun typ ->
+            if typ = "int" then
+                Decode.field "value" Decode.int
+            else
+                Decode.fail "Invalid type"
+        )

@@ -1181,7 +1181,9 @@ module Decode =
                 else
                     // Don't use failwithf here, for some reason F#/Fable compiles it as a function
                     // when the return type is a function too, so it doesn't fail immediately
-                    sprintf "Cannot generate auto decoder for %s. Please pass an extra decoder." t.FullName |> failwith
+                    sprintf """Cannot generate auto decoder for %s. Please pass an extra decoder.
+
+Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders""" t.FullName |> failwith
         decoderRef.Value <- decoder
         decoder
 

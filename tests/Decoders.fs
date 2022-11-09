@@ -2614,6 +2614,17 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let res = Decode.Auto.unsafeFromString<decimal>(json, extra=extra)
                 equal value res
 
+            testCase "Auto extra decoders can override default decoders" <| fun _ ->
+                let extra = Extra.empty |> Extra.withCustom IntAsRecord.encode IntAsRecord.decode
+                let json = """
+{
+    "type": "int",
+    "value": 12
+}
+                """
+                let res = Decode.Auto.unsafeFromString<int>(json, extra=extra)
+                equal 12 res
+
             // testCase "Auto decoders works for datetime" <| fun _ ->
             //     let value = DateTime.Now
             //     let json = Encode.Auto.toString(4, value)
@@ -2945,7 +2956,10 @@ Reason: Unkown value provided for the enum
                 equal expected actual
 
             testCase "Auto.generateDecoder throws for field using a non optional class" <| fun _ ->
-                let expected = "Cannot generate auto decoder for Tests.Types.BaseClass. Please pass an extra decoder."
+                let expected = """Cannot generate auto decoder for Tests.Types.BaseClass. Please pass an extra decoder.
+
+Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"""
+
                 let errorMsg =
                     try
                         let decoder = Decode.Auto.generateDecoder<RecordWithRequiredClass>(caseStrategy=CamelCase)
@@ -2962,7 +2976,10 @@ Reason: Unkown value provided for the enum
                 equal expected actual
 
             testCase "Auto.generateDecoder throws for Class" <| fun _ ->
-                let expected = "Cannot generate auto decoder for Tests.Types.BaseClass. Please pass an extra decoder."
+                let expected = """Cannot generate auto decoder for Tests.Types.BaseClass. Please pass an extra decoder.
+
+Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"""
+
                 let errorMsg =
                     try
                         let decoder = Decode.Auto.generateDecoder<BaseClass>(caseStrategy=CamelCase)
