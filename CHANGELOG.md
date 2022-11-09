@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * PR 146: Add `Decode.datetimeUtc`, `Decode.datetimeLocal` (by @Gastove)
 * Fix #139: Add `Encode.Auto.toString(value)` which is equivalent to `Encode.Auto.toString(0, value)`
 * Fix #125: Add doc comment to `Decode.fromValue`, `Decode.fromString`, `Decode.unsafeFromString`
+* Fix #36: Add support for `char`
 
 ### Deprecated
 

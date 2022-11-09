@@ -177,6 +177,17 @@ module Decode =
             else
                 (path, BadPrimitive("a string", value)) |> Error
 
+    let char : Decoder<char> =
+        fun path value ->
+            if Helpers.isString value then
+                let str = Helpers.asString value
+                if str.Length = 1 then
+                    Ok(str.[0])
+                else
+                    (path, BadPrimitive("a single character string", value)) |> Error
+            else
+                (path, BadPrimitive("a char", value)) |> Error
+
     let guid : Decoder<System.Guid> =
         fun path value ->
             if Helpers.isString value then
@@ -1246,6 +1257,8 @@ If you can't use one of these types, please pass an extra decoder.
                 boxDecoder unit
             elif fullname = typeof<string>.FullName then
                 boxDecoder string
+            elif fullname = typeof<char>.FullName then
+                boxDecoder char
             elif fullname = typeof<sbyte>.FullName then
                 boxDecoder sbyte
             elif fullname = typeof<byte>.FullName then

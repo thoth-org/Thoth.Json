@@ -160,6 +160,26 @@ let tests : Test =
 
                 equal expected actual
 
+            testCase "a char works" <| fun _ ->
+                let expected = Ok('a')
+                let actual =
+                    Decode.fromString Decode.char "\"a\""
+
+                equal expected actual
+
+            testCase "a char reports an error if there are more than 1 characters in the string" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a single character string but instead got: "ab"
+                        """.Trim())
+
+                let actual =
+                    Decode.fromString Decode.char "\"ab\""
+
+                equal expected actual
+
             testCase "a float works" <| fun _ ->
                 let expected = Ok(1.2)
                 let actual =
@@ -1451,17 +1471,17 @@ Expecting an int but instead got: null
                     equal expected msg
                 | Ok _ -> failwith "Expected type error for `name` field"
 
-                /// Alfonso: Should this test pass? We should use Decode.optional instead
-                /// - `Decode.fromString (Decode.field "height" (Decode.option Decode.int)) json` == `Ok(None)`
-                ///
-                /// Maxime here :)
-                /// I don't think this test should pass.
-                /// For me `Decode.field "height" (Decode.option Decode.int)` means:
-                /// 1. The field `height` is required
-                /// 2. If `height` exist then, it's value can be `Some X` where `X` is an `int` or `None`
-                ///
-                /// I am keep the comments here so we keep track of the explanation if we later need to give it a second though.
-                ///
+                // Alfonso: Should this test pass? We should use Decode.optional instead
+                // - `Decode.fromString (Decode.field "height" (Decode.option Decode.int)) json` == `Ok(None)`
+                //
+                // Maxime here :)
+                // I don't think this test should pass.
+                // For me `Decode.field "height" (Decode.option Decode.int)` means:
+                // 1. The field `height` is required
+                // 2. If `height` exist then, it's value can be `Some X` where `X` is an `int` or `None`
+                //
+                // I am keep the comments here so we keep track of the explanation if we later need to give it a second though.
+                //
                 match Decode.fromString (Decode.field "height" (Decode.option Decode.int)) json with
                 | Error msg ->
                     let expected =
@@ -2480,6 +2500,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                         o = 999UL
                         p = ()
                         r = Map [( {a = 1.; b = 2.}, "value 1"); ( {a = -2.5; b = 22.1}, "value 2")]
+                        s = 'y'
                         // s = seq [ "item n°1"; "item n°2"]
                     }
                 let extra =
@@ -2509,6 +2530,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                 equal 999UL r2.o
                 equal () r2.p
                 equal (Map [( {a = 1.; b = 2.}, "value 1"); ( {a = -2.5; b = 22.1}, "value 2")]) r2.r
+                equal 'y' r2.s
                 // equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.s |> Seq.toList)
 
             testCase "Auto serialization works with recursive types" <| fun _ ->
