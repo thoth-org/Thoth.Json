@@ -717,6 +717,11 @@ let tests : Test =
 
                 equal expected actual
 
+            testCase "Encode.Auto.toString(value, ...) is equivalent to Encode.Auto.toString(0, value, ...)" <| fun _ ->
+                let expected = Encode.Auto.toString(0, {| Name = "Maxime" |})
+                let actual = Encode.Auto.toString({| Name = "Maxime" |})
+                equal expected actual
+
     (*
             #if NETFRAMEWORK
             testCase "Encode.Auto.toString works with char based Enums" <| fun _ ->

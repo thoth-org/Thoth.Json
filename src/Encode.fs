@@ -593,6 +593,9 @@ If you can't use one of these types, please pass an extra encoder.
             let encoder = Auto.generateEncoder(?caseStrategy=caseStrategy, ?extra=extra, ?skipNullField=skipNullField)
             encoder value |> toString space
 
+        static member inline toString(value : 'T, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool) : string =
+            Auto.toString(0, value, ?caseStrategy=caseStrategy, ?extra=extra, ?skipNullField=skipNullField)
+
     ///**Description**
     /// Convert a `Value` into a prettified string.
     ///**Parameters**
