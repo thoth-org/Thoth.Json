@@ -40,7 +40,7 @@ let json =
     """
 {
     "data": {
-        "id": "9d9d9d9d-9d9d-9d9d-9d9d-9d9d9d9d9d9",
+        "id": "9d9d9d9d-9d9d-9d9d-9d9d-9d9d9d9d9d9d",
         "name": "Triss Merigold",
         "age": 42
     }
