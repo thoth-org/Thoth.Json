@@ -124,8 +124,41 @@ type Record9 =
         n: int64
         o: uint64
         p: unit
-        // r: string seq
+        r: Map<Record2, string>
+        s: char
+        // s: string seq
     }
+
+type Record10 =
+
+    {
+        a : int
+        b : int
+        c : int
+        d : int
+        e : int
+        f : int
+        g : int
+        h : int
+        i : int
+        j : int
+        k : int
+    }
+
+    static member Create a b c d e f g h i j k =
+        {
+            a = a
+            b = b
+            c = c
+            d = d
+            e = e
+            f = f
+            g = g
+            h = h
+            i = i
+            j = j
+            k = k
+        }
 
 type User =
     { Id : int
@@ -308,3 +341,20 @@ type TestStringWithHTML =
     }
 
 type RecordForCharacterCase = { One : int; TwoPart : int; ThreePartField : int }
+
+module IntAsRecord =
+
+    let encode (value : int) =
+        Encode.object [
+            "type", Encode.string "int"
+            "value", Encode.int value
+        ]
+
+    let decode : Decoder<int> =
+        Decode.field "type" Decode.string
+        |> Decode.andThen (fun typ ->
+            if typ = "int" then
+                Decode.field "value" Decode.int
+            else
+                Decode.fail "Invalid type"
+        )

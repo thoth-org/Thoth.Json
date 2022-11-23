@@ -353,8 +353,6 @@ module Point =
             "y", Encode.int point.y
         ]
 
-type Polygon = Point array
-
 let myExtra2 =
     Extra.empty
     |> Extra.withCustom Point.encoder Point.decoder
@@ -363,7 +361,8 @@ Encode.Auto.toString(4,
     [
         Point(1, 2),
         Point(3, 4)
-    ]
+    ],
+    extra = myExtra2
 )
 
 // Returns:

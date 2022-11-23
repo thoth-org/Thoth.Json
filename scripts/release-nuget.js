@@ -3,6 +3,8 @@ import path from "node:path"
 
 import { release } from "./release-core.js"
 
+const log = console.log
+
 const getEnvVariable = function (varName) {
     const value = process.env[varName];
     if (value === undefined) {

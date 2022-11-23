@@ -33,6 +33,8 @@ open Tests.Types
 
 type RecordWithPrivateConstructor = private { Foo1: int; Foo2: float }
 type UnionWithPrivateConstructor = private Bar of string | Baz
+type UnionWithMultipleFields = Multi of string * int * float
+
 let tests : Test =
     testList "Thoth.Json.Decode" [
 
@@ -70,6 +72,27 @@ let tests : Test =
                 let expected : Result<MyUnion, string> = Error "Given an invalid JSON: Additional text encountered after finished reading JSON content: ,. Path '', line 1, position 5."
                 #endif
                 let actual = Decode.Auto.fromString<MyUnion>(""""Foo","42"]""")
+
+                equal expected actual
+
+            testCase "invalid json #3 - Special case for Thoth.Json.Net" <| fun _ ->
+                // See: https://github.com/thoth-org/Thoth.Json.Net/pull/48
+                #if FABLE_COMPILER
+                let expected : Result<float, string> = Error "Given an invalid JSON: Unexpected end of JSON input"
+                #else
+                let expected : Result<float, string> = Error "Given an invalid JSON: Unexpected end when reading token. Path 'Ab[1]'."
+                #endif
+
+                let incorrectJson = """
+                {
+                "Ab": [
+                    "RecordC",
+                    {
+                    "C1": "",
+                    "C2": "",
+                """
+
+                let actual = Decode.fromString Decode.float incorrectJson
 
                 equal expected actual
 
@@ -134,6 +157,26 @@ let tests : Test =
                 let expected = Ok("a\\tb")
                 let actual =
                     Decode.fromString Decode.string "\"a\\\\tb\""
+
+                equal expected actual
+
+            testCase "a char works" <| fun _ ->
+                let expected = Ok('a')
+                let actual =
+                    Decode.fromString Decode.char "\"a\""
+
+                equal expected actual
+
+            testCase "a char reports an error if there are more than 1 characters in the string" <| fun _ ->
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting a single character string but instead got: "ab"
+                        """.Trim())
+
+                let actual =
+                    Decode.fromString Decode.char "\"ab\""
 
                 equal expected actual
 
@@ -512,7 +555,14 @@ Expecting a bigint but instead got: "maxime"
             testCase "a datetime works" <| fun _ ->
                 let expected = new DateTime(2018, 10, 1, 11, 12, 55, DateTimeKind.Utc)
                 let actual =
-                    Decode.fromString Decode.datetime "\"2018-10-01T11:12:55.00Z\""
+                    Decode.fromString Decode.datetimeUtc "\"2018-10-01T11:12:55.00Z\""
+
+                equal (Ok expected) actual
+
+            testCase "a non-UTC datetime works" <| fun _ ->
+                let expected = new DateTime(2018, 10, 1, 11, 12, 55)
+                let actual =
+                    Decode.fromString Decode.datetimeLocal "\"2018-10-01T11:12:55\""
 
                 equal (Ok expected) actual
 
@@ -525,7 +575,7 @@ Expecting a datetime but instead got: "invalid_string"
                         """.Trim())
 
                 let actual =
-                    Decode.fromString Decode.datetime "\"invalid_string\""
+                    Decode.fromString Decode.datetimeUtc "\"invalid_string\""
 
                 equal expected actual
 
@@ -535,7 +585,7 @@ Expecting a datetime but instead got: "invalid_string"
                 let expected = Ok (localDate.ToUniversalTime())
                 let json = sprintf "\"%s\"" (localDate.ToString("O"))
                 let actual =
-                    Decode.fromString Decode.datetime json
+                    Decode.fromString Decode.datetimeUtc json
 
                 equal expected actual
 
@@ -824,7 +874,7 @@ Expecting a datetime but instead got: false
                             Decode.string
                             Decode.float
                             SmallRecord.Decoder
-                            Decode.datetime) json
+                            Decode.datetimeUtc) json
 
                 equal expected actual
 
@@ -844,7 +894,7 @@ Expecting null but instead got: false
                             Decode.string
                             Decode.float
                             SmallRecord.Decoder
-                            Decode.datetime
+                            Decode.datetimeUtc
                             (Decode.nil null)) json
 
                 equal expected actual
@@ -865,7 +915,7 @@ Expecting an int but instead got: false
                             Decode.string
                             Decode.float
                             SmallRecord.Decoder
-                            Decode.datetime
+                            Decode.datetimeUtc
                             (Decode.nil null)
                             Decode.int) json
 
@@ -887,7 +937,7 @@ Expecting an int but instead got: "maxime"
                             Decode.string
                             Decode.float
                             SmallRecord.Decoder
-                            Decode.datetime
+                            Decode.datetimeUtc
                             (Decode.nil null)
                             Decode.int
                             Decode.int) json
@@ -1153,6 +1203,52 @@ Expecting an array but instead got: 1
 
                 equal expected actual
 
+            testCase "map' works" <| fun _ ->
+                let expected = Ok(Map.ofList([(1, "x") ; (2, "y") ; (3, "z")]))
+
+                let actual =
+                    Decode.fromString (Decode.map' Decode.int Decode.string) """[ [ 1, "x" ], [ 2, "y" ], [ 3, "z" ] ]"""
+
+                equal expected actual
+
+            testCase "map' with custom key decoder works" <| fun _ ->
+                let expected = Ok(Map.ofList([ ((1, 6), "a") ; ((2, 7), "b") ; ((3, 8), "c") ]))
+
+                let decodePoint =
+                    Decode.map2
+                        (fun x y -> x, y)
+                        (Decode.field "x" Decode.int)
+                        (Decode.field "y" Decode.int)
+
+                let actual =
+                    Decode.fromString (Decode.map' decodePoint Decode.string)
+                        """
+[
+    [
+        {
+            "x": 1,
+            "y": 6
+        },
+        "a"
+    ],
+    [
+        {
+            "x": 2,
+            "y": 7
+        },
+        "b"
+    ],
+    [
+        {
+            "x": 3,
+            "y": 8
+        },
+        "c"
+    ]
+]
+                        """
+
+                equal expected actual
         ]
 
         testList "Inconsistent structure" [
@@ -1375,17 +1471,17 @@ Expecting an int but instead got: null
                     equal expected msg
                 | Ok _ -> failwith "Expected type error for `name` field"
 
-                /// Alfonso: Should this test pass? We should use Decode.optional instead
-                /// - `Decode.fromString (Decode.field "height" (Decode.option Decode.int)) json` == `Ok(None)`
-                ///
-                /// Maxime here :)
-                /// I don't think this test should pass.
-                /// For me `Decode.field "height" (Decode.option Decode.int)` means:
-                /// 1. The field `height` is required
-                /// 2. If `height` exist then, it's value can be `Some X` where `X` is an `int` or `None`
-                ///
-                /// I am keep the comments here so we keep track of the explanation if we later need to give it a second though.
-                ///
+                // Alfonso: Should this test pass? We should use Decode.optional instead
+                // - `Decode.fromString (Decode.field "height" (Decode.option Decode.int)) json` == `Ok(None)`
+                //
+                // Maxime here :)
+                // I don't think this test should pass.
+                // For me `Decode.field "height" (Decode.option Decode.int)` means:
+                // 1. The field `height` is required
+                // 2. If `height` exist then, it's value can be `Some X` where `X` is an `int` or `None`
+                //
+                // I am keep the comments here so we keep track of the explanation if we later need to give it a second though.
+                //
                 match Decode.fromString (Decode.field "height" (Decode.option Decode.int)) json with
                 | Error msg ->
                     let expected =
@@ -1450,6 +1546,32 @@ Expecting an object with a field named `height` but instead got:
                 let expected = Error("Error at: `$`\nThe following `failure` occurred with the decoder: " + msg)
                 let actual =
                     Decode.fromString (Decode.fail msg) "true"
+
+                equal expected actual
+
+            testCase "andMap works for any arity" <| fun _ ->
+                // In the past maximum arity in Fable was 8
+                let json =
+                    """{"a": 1,"b": 2,"c": 3,"d": 4,"e": 5,"f": 6,"g": 7,"h": 8,"i": 9,"j": 10,"k": 11}"""
+
+                let decodeRecord10 =
+                    Decode.succeed Record10.Create
+                        |> Decode.andMap (Decode.field "a" Decode.int)
+                        |> Decode.andMap (Decode.field "b" Decode.int)
+                        |> Decode.andMap (Decode.field "c" Decode.int)
+                        |> Decode.andMap (Decode.field "d" Decode.int)
+                        |> Decode.andMap (Decode.field "e" Decode.int)
+                        |> Decode.andMap (Decode.field "f" Decode.int)
+                        |> Decode.andMap (Decode.field "g" Decode.int)
+                        |> Decode.andMap (Decode.field "h" Decode.int)
+                        |> Decode.andMap (Decode.field "i" Decode.int)
+                        |> Decode.andMap (Decode.field "j" Decode.int)
+                        |> Decode.andMap (Decode.field "k" Decode.int)
+
+                let actual =
+                    Decode.fromString decodeRecord10 json
+
+                let expected = Ok { a = 1; b = 2; c = 3; d = 4; e = 5; f = 6; g = 7; h = 8; i = 9; j = 10; k = 11 }
 
                 equal expected actual
 
@@ -2403,7 +2525,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                         n = 99L
                         o = 999UL
                         p = ()
-                        // r = seq [ "item n°1"; "item n°2"]
+                        r = Map [( {a = 1.; b = 2.}, "value 1"); ( {a = -2.5; b = 22.1}, "value 2")]
+                        s = 'y'
+                        // s = seq [ "item n°1"; "item n°2"]
                     }
                 let extra =
                     Extra.empty
@@ -2431,7 +2555,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                 equal 99L r2.n
                 equal 999UL r2.o
                 equal () r2.p
-                // equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.r |> Seq.toList)
+                equal (Map [( {a = 1.; b = 2.}, "value 1"); ( {a = -2.5; b = 22.1}, "value 2")]) r2.r
+                equal 'y' r2.s
+                // equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.s |> Seq.toList)
 
             testCase "Auto serialization works with recursive types" <| fun _ ->
                 let len xs =
@@ -2514,6 +2640,17 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let res = Decode.Auto.unsafeFromString<decimal>(json, extra=extra)
                 equal value res
 
+            testCase "Auto extra decoders can override default decoders" <| fun _ ->
+                let extra = Extra.empty |> Extra.withCustom IntAsRecord.encode IntAsRecord.decode
+                let json = """
+{
+    "type": "int",
+    "value": 12
+}
+                """
+                let res = Decode.Auto.unsafeFromString<int>(json, extra=extra)
+                equal 12 res
+
             // testCase "Auto decoders works for datetime" <| fun _ ->
             //     let value = DateTime.Now
             //     let json = Encode.Auto.toString(4, value)
@@ -2571,6 +2708,18 @@ Expecting a boolean but instead got: "not_a_boolean"
                 let value = [| 1; 2; 3; 4 |]
                 let json = Encode.Auto.toString(4, value)
                 let res = Decode.Auto.unsafeFromString<int array>(json)
+                equal value res
+
+            testCase "Auto decoders works for Map with string keys" <| fun _ ->
+                let value = Map.ofSeq [ "a", 1; "b", 2; "c", 3 ]
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString<Map<string, int>>(json)
+                equal value res
+
+            testCase "Auto decoders works for Map with complex keys" <| fun _ ->
+                let value = Map.ofSeq [ (1, 6), "a"; (2, 7), "b"; (3, 8), "c" ]
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString<Map<int * int, string>>(json)
                 equal value res
 
             testCase "Auto decoders works for option None" <| fun _ ->
@@ -2762,6 +2911,18 @@ Reason: Unkown value provided for the enum
                 let res = Decode.Auto.unsafeFromString<obj>(json)
                 equal value res
 
+            testCase "Auto decoders works for anonymous record" <| fun _ ->
+                let value = {| A = "string" |}
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString(json)
+                equal value res
+
+            testCase "Auto decoders works for nested anonymous record" <| fun _ ->
+                let value = {| A = {| B = "string" |} |}
+                let json = Encode.Auto.toString(4, value)
+                let res = Decode.Auto.unsafeFromString(json)
+                equal value res
+
             testCase "Auto decoders works even if type is determined by the compiler" <| fun _ ->
                 let value = [1; 2; 3; 4]
                 let json = Encode.Auto.toString(4, value)
@@ -2821,7 +2982,10 @@ Reason: Unkown value provided for the enum
                 equal expected actual
 
             testCase "Auto.generateDecoder throws for field using a non optional class" <| fun _ ->
-                let expected = "Cannot generate auto decoder for Tests.Types.BaseClass. Please pass an extra decoder."
+                let expected = """Cannot generate auto decoder for Tests.Types.BaseClass. Please pass an extra decoder.
+
+Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"""
+
                 let errorMsg =
                     try
                         let decoder = Decode.Auto.generateDecoder<RecordWithRequiredClass>(caseStrategy=CamelCase)
@@ -2838,7 +3002,10 @@ Reason: Unkown value provided for the enum
                 equal expected actual
 
             testCase "Auto.generateDecoder throws for Class" <| fun _ ->
-                let expected = "Cannot generate auto decoder for Tests.Types.BaseClass. Please pass an extra decoder."
+                let expected = """Cannot generate auto decoder for Tests.Types.BaseClass. Please pass an extra decoder.
+
+Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"""
+
                 let errorMsg =
                     try
                         let decoder = Decode.Auto.generateDecoder<BaseClass>(caseStrategy=CamelCase)
@@ -2888,6 +3055,27 @@ Reason: Unkown value provided for the enum
                 let json = """[ "Baz", ["Bar", "foo"]]"""
                 Decode.Auto.fromString<UnionWithPrivateConstructor list>(json, caseStrategy=CamelCase)
                 |> equal (Ok [Baz; Bar "foo"])
+
+            testCase "Auto.fromString works gives proper error for wrong union fields" <| fun _ ->
+                let json = """["Multi", "bar", "foo", "zas"]"""
+                Decode.Auto.fromString<UnionWithMultipleFields>(json, caseStrategy=CamelCase)
+                |> equal (Error "Error at: `$[2]`\nExpecting an int but instead got: \"foo\"")
+
+            // TODO: Should we allow shorter arrays when last fields are options?
+            testCase "Auto.fromString works gives proper error for wrong array length" <| fun _ ->
+                let json = """["Multi", "bar", 1]"""
+                Decode.Auto.fromString<UnionWithMultipleFields>(json, caseStrategy=CamelCase)
+                |> equal (Error "Error at: `$`\nThe following `failure` occurred with the decoder: Expected array of length 4 but got 3")
+
+            testCase "Auto.fromString works gives proper error for wrong array length when no fields" <| fun _ ->
+                let json = """["Multi"]"""
+                Decode.Auto.fromString<UnionWithMultipleFields>(json, caseStrategy=CamelCase)
+                |> equal (Error "Error at: `$`\nThe following `failure` occurred with the decoder: Expected array of length 4 but got 1")
+
+            testCase "Auto.fromString works gives proper error for wrong case name" <| fun _ ->
+                let json = """[1]"""
+                Decode.Auto.fromString<UnionWithMultipleFields>(json, caseStrategy=CamelCase)
+                |> equal (Error "Error at: `$[0]`\nExpecting a string but instead got: 1")
 
             testCase "Auto.generateDecoderCached works" <| fun _ ->
                 let expected = Ok { Id = 0; Name = "maxime"; Email = "mail@domain.com"; Followers = 0 }

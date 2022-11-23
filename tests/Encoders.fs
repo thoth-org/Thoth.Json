@@ -52,6 +52,14 @@ let tests : Test =
 
                 equal expected actual
 
+            testCase "a char works" <| fun _ ->
+                let expected = "\"a\""
+                let actual =
+                    Encode.char 'a'
+                    |> Encode.toString 0
+
+                equal expected actual
+
             testCase "an int works" <| fun _ ->
                 let expected = "1"
                 let actual =
@@ -127,6 +135,19 @@ let tests : Test =
                           ("c", Encode.int 3)
                         ]
                     |> Encode.dict
+                    |> Encode.toString 0
+                equal expected actual
+
+            testCase "a map works" <| fun _ ->
+                let expected =
+                    """[["a",1],["b",2],["c",3]]"""
+                let actual =
+                    Map.ofList
+                        [ ("a", 1)
+                          ("b", 2)
+                          ("c", 3)
+                        ]
+                    |> Encode.map Encode.string Encode.int
                     |> Encode.toString 0
                 equal expected actual
 
@@ -486,7 +507,9 @@ let tests : Test =
                         n = 99L
                         o = 999UL
                         p = ()
-                        // r = seq [ "item n°1"; "item n°2"]
+                        r = Map [( {a = 1.; b = 2.}, "value 1"); ( {a = -2.5; b = 22.1}, "value 2")]
+                        s = 'z'
+                        // s = seq [ "item n°1"; "item n°2"]
                     }
                 let extra =
                     Extra.empty
@@ -494,7 +517,7 @@ let tests : Test =
                     |> Extra.withUInt64
                 let encoder = Encode.Auto.generateEncoder<Record9>(extra = extra)
                 let actual = encoder value |> Encode.toString 0
-                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":120,"j":120,"k":250,"l":250,"m":99,"n":"99","o":"999"}"""
+                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":120,"j":120,"k":250,"l":250,"m":99,"n":"99","o":"999","r":[[{"a":-2.5,"b":22.1},"value 2"],[{"a":1,"b":2},"value 1"]],"s":"z"}"""
                 // Don't fail because of non-meaningful decimal digits ("2" vs "2.0")
                 let actual = System.Text.RegularExpressions.Regex.Replace(actual, @"\.0+(?!\d)", "")
                 equal expected actual
@@ -518,7 +541,9 @@ let tests : Test =
                         n = 99L
                         o = 999UL
                         p = ()
-                        // r = seq [ "item n°1"; "item n°2"]
+                        r = Map [( {a = 1.; b = 2.}, "value 1"); ( {a = -2.5; b = 22.1}, "value 2")]
+                        s = 'z'
+                        // s = seq [ "item n°1"; "item n°2"]
                     }
                 let extra =
                     Extra.empty
@@ -528,7 +553,7 @@ let tests : Test =
                 let encoder2 = Encode.Auto.generateEncoderCached<Record9>(extra = extra)
                 let actual1 = encoder1 value |> Encode.toString 0
                 let actual2 = encoder2 value |> Encode.toString 0
-                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":120,"j":120,"k":250,"l":250,"m":99,"n":"99","o":"999"}"""
+                let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":120,"j":120,"k":250,"l":250,"m":99,"n":"99","o":"999","r":[[{"a":-2.5,"b":22.1},"value 2"],[{"a":1,"b":2},"value 1"]],"s":"z"}"""
                 // Don't fail because of non-meaningful decimal digits ("2" vs "2.0")
                 let actual1 = System.Text.RegularExpressions.Regex.Replace(actual1, @"\.0+(?!\d)", "")
                 let actual2 = System.Text.RegularExpressions.Regex.Replace(actual2, @"\.0+(?!\d)", "")
@@ -665,7 +690,10 @@ let tests : Test =
                 equal expected actual
 
             testCase "Encode.Auto.generateEncoder throws for field using a non optional class" <| fun _ ->
-                let expected = "Cannot generate auto encoder for Tests.Types.BaseClass. Please pass an extra encoder."
+                let expected = """Cannot generate auto encoder for Tests.Types.BaseClass. Please pass an extra encoder.
+
+Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"""
+
                 let errorMsg =
                     try
                         let encoder = Encode.Auto.generateEncoder<RecordWithRequiredClass>(caseStrategy = CamelCase)
@@ -700,6 +728,11 @@ let tests : Test =
                 let expected =
                     """{"type":"customInt","value":42}"""
 
+                equal expected actual
+
+            testCase "Encode.Auto.toString(value, ...) is equivalent to Encode.Auto.toString(0, value, ...)" <| fun _ ->
+                let expected = Encode.Auto.toString(0, {| Name = "Maxime" |})
+                let actual = Encode.Auto.toString({| Name = "Maxime" |})
                 equal expected actual
 
     (*

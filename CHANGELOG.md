@@ -6,6 +6,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 8.0.0 - 2022-11-09
+
+### Fixed
+
+* PR #118: Fix path when auto decoding unions (by @alfonsogarciacaro)
+* PR #145: Fix auto coders for nested anon records  (by @alfonsogarciacaro)
+* Fix type in error message for unsupported Enum types
+
+### Added
+
+* PR 136: Add `Decode.map'` and `Encode.map` to support `Map<'Key, 'Value>` (by @njlr)
+* PR 146: Add `Decode.datetimeUtc`, `Decode.datetimeLocal` (by @Gastove)
+* Fix #139: Add `Encode.Auto.toString(value)` which is equivalent to `Encode.Auto.toString(0, value)`
+* Fix #125: Add doc comment to `Decode.fromValue`, `Decode.fromString`, `Decode.unsafeFromString`
+* Fix #36: Add support for `char`
+* Fix #17: Add link to the "extra coders" section when coders fail for missing types information
+* Fix #104: Add `Decode.andMap` allowing to decoder large objects incrementally
+
+### Deprecated
+
+* PR 146: Mark `Decode.datetime` as deprecated (by @Gastove)
+
 ## 7.0.0 - 2022-01-05
 
 ### Changed

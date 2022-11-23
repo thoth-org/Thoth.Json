@@ -102,6 +102,25 @@ module Decode =
     // Runners ///
     /////////////
 
+    /// <summary>
+    /// Runs the decoder against the given JSON value.
+    ///
+    /// If the decoder fails, it reports the error prefixed with the given path.
+    ///
+    /// </summary>
+    /// <example>
+    /// <code lang="fsharp">
+    /// module Decode =
+    ///     let fromRootValue (decoder : Decoder&lt;'T&gt;) =
+    ///         Decode.fromValue "$" decoder
+    /// </code>
+    /// </example>
+    /// <param name="path">Path used to report the error</param>
+    /// <param name="decoder">Decoder to apply</param>
+    /// <param name="value">JSON value to decoder</param>
+    /// <returns>
+    /// Returns <c>Ok</c> if the decoder succeeds, otherwise <c>Error</c> with the error message.
+    /// </returns>
     let fromValue (path : string) (decoder : Decoder<'T>) =
         fun value ->
             match decoder path value with
@@ -110,6 +129,14 @@ module Decode =
             | Error error ->
                 Error (errorToString error)
 
+    /// <summary>
+    /// Parse the provided string in as JSON and then run the decoder against it.
+    /// </summary>
+    /// <param name="decoder">Decoder to apply</param>
+    /// <param name="value">JSON string to decode</param>
+    /// <returns>
+    /// Returns <c>Ok</c> if the decoder succeeds, otherwise <c>Error</c> with the error message.
+    /// </returns>
     let fromString (decoder : Decoder<'T>) =
         fun value ->
             try
@@ -119,6 +146,14 @@ module Decode =
                 | ex when Helpers.isSyntaxError ex ->
                     Error("Given an invalid JSON: " + ex.Message)
 
+    /// <summary>
+    /// Parse the provided string in as JSON and then run the decoder against it.
+    /// </summary>
+    /// <param name="decoder">Decoder to apply</param>
+    /// <param name="value">JSON string to decode</param>
+    /// <returns>
+    /// Return the decoded value if the decoder succeeds, otherwise throws an exception.
+    /// </returns>
     let unsafeFromString (decoder : Decoder<'T>) =
         fun value ->
             match fromString decoder value with
@@ -141,6 +176,17 @@ module Decode =
                 Ok(Helpers.asString value)
             else
                 (path, BadPrimitive("a string", value)) |> Error
+
+    let char : Decoder<char> =
+        fun path value ->
+            if Helpers.isString value then
+                let str = Helpers.asString value
+                if str.Length = 1 then
+                    Ok(str.[0])
+                else
+                    (path, BadPrimitive("a single character string", value)) |> Error
+            else
+                (path, BadPrimitive("a char", value)) |> Error
 
     let guid : Decoder<System.Guid> =
         fun path value ->
@@ -292,11 +338,32 @@ module Decode =
             else
                 (path, BadPrimitive("a decimal", value)) |> Error
 
+    [<System.Obsolete("Please use datetimeUtc instead.")>]
     let datetime : Decoder<System.DateTime> =
         fun path value ->
             if Helpers.isString value then
                 match System.DateTime.TryParse (Helpers.asString value) with
                 | true, x -> x.ToUniversalTime() |> Ok
+                | _ -> (path, BadPrimitive("a datetime", value)) |> Error
+            else
+                (path, BadPrimitive("a datetime", value)) |> Error
+
+    /// Decode a System.DateTime value using Sytem.DateTime.TryParse, then convert it to UTC.
+    let datetimeUtc : Decoder<System.DateTime> =
+        fun path value ->
+            if Helpers.isString value then
+                match System.DateTime.TryParse (Helpers.asString value) with
+                | true, x -> x.ToUniversalTime() |> Ok
+                | _ -> (path, BadPrimitive("a datetime", value)) |> Error
+            else
+                (path, BadPrimitive("a datetime", value)) |> Error
+
+    /// Decode a System.DateTime with DateTime.TryParse; uses default System.DateTimeStyles.
+    let datetimeLocal : Decoder<System.DateTime> =
+        fun path value ->
+            if Helpers.isString value then
+                match System.DateTime.TryParse (Helpers.asString value) with
+                | true, x -> x |> Ok
                 | _ -> (path, BadPrimitive("a datetime", value)) |> Error
             else
                 (path, BadPrimitive("a datetime", value)) |> Error
@@ -687,12 +754,32 @@ module Decode =
             | _,_,_,_,_,_,Error er,_ -> Error er
             | _,_,_,_,_,_,_,Error er -> Error er
 
-    let dict (decoder : Decoder<'value>) : Decoder<Map<string, 'value>> =
-        map Map.ofList (keyValuePairs decoder)
-
     //////////////////////
     // Object builder ///
     ////////////////////
+
+    /// <summary>
+    /// Allow to incrementally apply a decoder, for building large objects.
+    /// </summary>
+    /// <example>
+    /// <code lang="fsharp">
+    /// type Point =
+    ///     {
+    ///         X : float
+    ///         Y : float
+    ///     }
+    ///
+    /// module Point =
+    ///     let create x y = { X = x; Y = y }
+    ///
+    ///     let decode =
+    ///         Decode.succeed create
+    ///             |> Decode.andMap (Decode.field "x" Decode.float)
+    ///             |> Decode.andMap (Decode.field "y" Decode.float)
+    /// </code>
+    /// </example>
+    let andMap<'a, 'b> : 'a Decoder -> ('a -> 'b) Decoder -> 'b Decoder =
+        map2 (|>)
 
     type IRequiredGetter =
         abstract Field : string -> Decoder<'a> -> 'a
@@ -919,6 +1006,16 @@ module Decode =
             )
         )
 
+    ///////////
+    // Map ///
+    /////////
+
+    let dict (decoder : Decoder<'value>) : Decoder<Map<string, 'value>> =
+        map Map.ofList (keyValuePairs decoder)
+
+    let map' (keyDecoder : Decoder<'key>) (valueDecoder : Decoder<'value>) : Decoder<Map<'key, 'value>> =
+        map Map.ofSeq (array (tuple2 keyDecoder valueDecoder))
+
     ////////////
     // Enum ///
     /////////
@@ -1036,16 +1133,23 @@ module Decode =
                             | Error er -> Error er
                             | Ok v -> (k,v)::acc |> Ok)
 
-    let private mixedArray msg (decoders: BoxedDecoder[]) (path: string) (values: JsonValue[]): Result<JsonValue list, DecoderError> =
-        if decoders.Length <> values.Length then
-            (path, sprintf "Expected %i %s but got %i" decoders.Length msg values.Length
+    let private mixedArray offset (decoders: BoxedDecoder[]) (path: string) (values: JsonValue[]): Result<JsonValue list, DecoderError> =
+        let expectedLength = decoders.Length + offset
+        if expectedLength <> values.Length then
+            (path, sprintf "Expected array of length %i but got %i" expectedLength values.Length
             |> FailMessage) |> Error
         else
-            (values, decoders, Ok [])
-            |||> Array.foldBack2 (fun value decoder acc ->
-                match acc with
-                | Error _ -> acc
-                | Ok result -> decoder path value |> Result.map (fun v -> v::result))
+            let mutable result = Ok []
+            for i = offset to values.Length - 1 do
+                match result with
+                | Error _ -> ()
+                | Ok acc ->
+                    let path = sprintf "%s[%i]" path i
+                    let decoder = decoders.[i - offset]
+                    let value = values.[i]
+                    result <- decoder path value |> Result.map (fun v -> v::acc)
+            result
+            |> Result.map List.rev
 
     let rec private makeUnion extra caseStrategy t name (path : string) (values: JsonValue[]) =
         let uci =
@@ -1055,13 +1159,21 @@ module Decode =
         | None -> (path, FailMessage("Cannot find case " + name + " in " + t.FullName)) |> Error
         | Some uci ->
             let decoders = uci.GetFields() |> Array.map (fun fi -> autoDecoder extra caseStrategy false fi.PropertyType)
-            mixedArray "union fields" decoders path values
-            |> Result.map (fun values -> FSharpValue.MakeUnion(uci, List.toArray values, allowAccessToPrivateRepresentation=true))
+            let values =
+                if decoders.Length = 0 && values.Length <= 1 // First item is the case name
+                then Ok []
+                else mixedArray 1 decoders path values
+            values |> Result.map (fun values -> FSharpValue.MakeUnion(uci, List.toArray values, allowAccessToPrivateRepresentation=true))
 
     and private autoDecodeRecordsAndUnions extra (caseStrategy : CaseStrategy) (isOptional : bool) (t: System.Type) : BoxedDecoder =
         // Add the decoder to extra in case one of the fields is recursive
         let decoderRef = ref Unchecked.defaultof<_>
-        let extra = extra |> Map.add t.FullName decoderRef
+        let extra =
+            // As of 3.7.17 Fable assigns empty name to anonymous record, we shouldn't add them to the map to avoid conflicts.
+            // Anonymous records cannot be recursive anyways, see #144
+            match t.FullName with
+            | "" -> extra
+            | fullName -> extra |> Map.add fullName decoderRef
         let decoder =
             if FSharpType.IsRecord(t, allowAccessToPrivateRepresentation=true) then
                 let decoders =
@@ -1080,8 +1192,8 @@ module Decode =
                         makeUnion extra caseStrategy t name path [||]
                     elif Helpers.isArray(value) then
                         let values = Helpers.asArray value
-                        let name = Helpers.asString values.[0]
-                        makeUnion extra caseStrategy t name path values.[1..]
+                        string (path + "[0]") values.[0]
+                        |> Result.bind (fun name -> makeUnion extra caseStrategy t name path values)
                     else (path, BadPrimitive("a string or array", value)) |> Error
 
             else
@@ -1092,8 +1204,10 @@ module Decode =
                 else
                     // Don't use failwithf here, for some reason F#/Fable compiles it as a function
                     // when the return type is a function too, so it doesn't fail immediately
-                    sprintf "Cannot generate auto decoder for %s. Please pass an extra decoder." t.FullName |> failwith
-        decoderRef := decoder
+                    sprintf """Cannot generate auto decoder for %s. Please pass an extra decoder.
+
+Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders""" t.FullName |> failwith
+        decoderRef.Value <- decoder
         decoder
 
     and private autoDecoder (extra: Map<string, ref<BoxedDecoder>>) caseStrategy (isOptional : bool) (t: System.Type) : BoxedDecoder =
@@ -1121,7 +1235,7 @@ module Decode =
             else
                 failwithf
                     """Cannot generate auto decoder for %s.
-Thoth.Json.Net only support the folluwing enum types:
+Thoth.Json.Net only support the following enum types:
 - sbyte
 - byte
 - int16
@@ -1135,7 +1249,7 @@ If you can't use one of these types, please pass an extra decoder.
                 let decoders = FSharpType.GetTupleElements(t) |> Array.map (autoDecoder extra caseStrategy false)
                 fun path value ->
                     if Helpers.isArray value then
-                        mixedArray "tuple elements" decoders path (Helpers.asArray value)
+                        mixedArray 0 decoders path (Helpers.asArray value)
                         |> Result.map (fun xs -> FSharpValue.MakeTuple(List.toArray xs, t))
                     else (path, BadPrimitive ("an array", value)) |> Error
             else
@@ -1144,10 +1258,9 @@ If you can't use one of these types, please pass an extra decoder.
                     t.GenericTypeArguments.[0] |> (autoDecoder extra caseStrategy true) |> option |> boxDecoder
                 elif fullname = typedefof<obj list>.FullName then
                     t.GenericTypeArguments.[0] |> (autoDecoder extra caseStrategy false) |> list |> boxDecoder
-                // Disable seq support because I don't know how to implement it on Thoth.Json.Net side
-                // elif fullname = typedefof<obj seq>.FullName then
-                //     t.GenericTypeArguments.[0] |> (autoDecoder extra caseStrategy false) |> seq |> boxDecoder
-                elif fullname = typedefof< Map<string, obj> >.FullName then
+                elif fullname = typedefof<obj seq>.FullName then
+                    t.GenericTypeArguments.[0] |> (autoDecoder extra caseStrategy false) |> seq |> boxDecoder
+                elif fullname = typedefof< Map<System.IComparable, obj> >.FullName then
                     let keyDecoder = t.GenericTypeArguments.[0] |> autoDecoder extra caseStrategy false
                     let valueDecoder = t.GenericTypeArguments.[1] |> autoDecoder extra caseStrategy false
                     oneOf [
@@ -1169,6 +1282,8 @@ If you can't use one of these types, please pass an extra decoder.
                 boxDecoder unit
             elif fullname = typeof<string>.FullName then
                 boxDecoder string
+            elif fullname = typeof<char>.FullName then
+                boxDecoder char
             elif fullname = typeof<sbyte>.FullName then
                 boxDecoder sbyte
             elif fullname = typeof<byte>.FullName then
@@ -1197,7 +1312,7 @@ If you can't use one of these types, please pass an extra decoder.
             // elif fullname = typeof<decimal>.FullName then
             //     boxDecoder decimal
             elif fullname = typeof<System.DateTime>.FullName then
-                boxDecoder datetime
+                boxDecoder datetimeUtc
             elif fullname = typeof<System.DateTimeOffset>.FullName then
                 boxDecoder datetimeOffset
             elif fullname = typeof<System.TimeSpan>.FullName then

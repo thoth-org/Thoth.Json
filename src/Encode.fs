@@ -26,6 +26,9 @@ module Encode =
     let inline string (value : string) : JsonValue =
         box value
 
+    let inline char (value : char) : JsonValue =
+        box value
+
     ///**Description**
     /// Encode a GUID
     ///
@@ -297,6 +300,11 @@ module Encode =
                enc7 v7
                enc8 v8 |]
 
+    let map (keyEncoder : Encoder<'key>) (valueEncoder : Encoder<'value>) (values : Map<'key, 'value>) : JsonValue =
+        values
+        |> Map.toList
+        |> List.map (tuple2 keyEncoder valueEncoder)
+        |> list
 
     ////////////
     // Enum ///
@@ -387,7 +395,12 @@ module Encode =
     let rec private autoEncodeRecordsAndUnions extra (caseStrategy : CaseStrategy) (skipNullField : bool) (t: System.Type) : BoxedEncoder =
         // Add the encoder to extra in case one of the fields is recursive
         let encoderRef = ref Unchecked.defaultof<_>
-        let extra = extra |> Map.add t.FullName encoderRef
+        let extra =
+            // As of 3.7.17 Fable assigns empty name to anonymous record, we shouldn't add them to the map to avoid conflicts.
+            // Anonymous records cannot be recursive anyways, see #144
+            match t.FullName with
+            | "" -> extra
+            | fullName -> extra |> Map.add fullName encoderRef
         let encoder =
             if FSharpType.IsRecord(t, allowAccessToPrivateRepresentation=true) then
                 let setters =
@@ -418,9 +431,11 @@ module Encode =
             else
                 // Don't use failwithf here, for some reason F#/Fable compiles it as a function
                 // when the return type is a function too, so it doesn't fail immediately
-                sprintf "Cannot generate auto encoder for %s. Please pass an extra encoder." t.FullName
+                sprintf """Cannot generate auto encoder for %s. Please pass an extra encoder.
+
+Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders""" t.FullName
                 |> failwith
-        encoderRef := encoder
+        encoderRef.Value <- encoder
         encoder
 
     and private autoEncoder (extra: Map<string, ref<BoxedEncoder>>) caseStrategy (skipNullField : bool) (t: System.Type) : BoxedEncoder =
@@ -449,14 +464,17 @@ module Encode =
             else
                 failwithf
                     """Cannot generate auto encoder for %s.
-Thoth.Json.Net only support the folluwing enum types:
+Thoth.Json.Net only support the following enum types:
 - sbyte
 - byte
 - int16
 - uint16
 - int
 - uint32
+
 If you can't use one of these types, please pass an extra encoder.
+
+Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders
                     """ t.FullName
         elif t.IsGenericType then
             if FSharpType.IsTuple(t) then
@@ -479,9 +497,8 @@ If you can't use one of these types, please pass an extra encoder.
                         if isNull value then nil
                         else encoder.Value value)
                 elif fullname = typedefof<obj list>.FullName
-                    || fullname = typedefof<Set<string>>.FullName then
-                    // Disable seq support for now because I don't know how to implements to on Thoth.Json.Net
-                    // || fullname = typedefof<obj seq>.FullName then
+                    || fullname = typedefof<Set<string>>.FullName
+                    || fullname = typedefof<obj seq>.FullName then
                     let encoder = t.GenericTypeArguments.[0] |> autoEncoder extra caseStrategy skipNullField
                     fun (value: obj) ->
                         value :?> obj seq |> Seq.map encoder |> seq
@@ -511,6 +528,8 @@ If you can't use one of these types, please pass an extra encoder.
                 boxEncoder unit
             elif fullname = typeof<string>.FullName then
                 boxEncoder string
+            elif fullname = typeof<char>.FullName then
+                boxEncoder char
             elif fullname = typeof<sbyte>.FullName then
                 boxEncoder sbyte
             elif fullname = typeof<byte>.FullName then
@@ -583,6 +602,9 @@ If you can't use one of these types, please pass an extra encoder.
         static member inline toString(space : int, value : 'T, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool) : string =
             let encoder = Auto.generateEncoder(?caseStrategy=caseStrategy, ?extra=extra, ?skipNullField=skipNullField)
             encoder value |> toString space
+
+        static member inline toString(value : 'T, ?caseStrategy : CaseStrategy, ?extra: ExtraCoders, ?skipNullField: bool) : string =
+            Auto.toString(0, value, ?caseStrategy=caseStrategy, ?extra=extra, ?skipNullField=skipNullField)
 
     ///**Description**
     /// Convert a `Value` into a prettified string.
