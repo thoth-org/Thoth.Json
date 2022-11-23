@@ -104,7 +104,7 @@ module Person =
 
 (**
 
-## Dicriminated union
+## Discriminated union
 
 *)
 
