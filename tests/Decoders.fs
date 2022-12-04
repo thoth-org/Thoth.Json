@@ -3067,6 +3067,11 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
                 Decode.Auto.fromString<UnionWithMultipleFields>(json, caseStrategy=CamelCase)
                 |> equal (Error "Error at: `$`\nThe following `failure` occurred with the decoder: Expected array of length 4 but got 3")
 
+            testCase "Auto.fromString works gives proper error for wrong array length when no fields" <| fun _ ->
+                let json = """["Multi"]"""
+                Decode.Auto.fromString<UnionWithMultipleFields>(json, caseStrategy=CamelCase)
+                |> equal (Error "Error at: `$`\nThe following `failure` occurred with the decoder: Expected array of length 4 but got 1")
+
             testCase "Auto.fromString works gives proper error for wrong case name" <| fun _ ->
                 let json = """[1]"""
                 Decode.Auto.fromString<UnionWithMultipleFields>(json, caseStrategy=CamelCase)
