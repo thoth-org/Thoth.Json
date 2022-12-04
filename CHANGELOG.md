@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 9.0.0 - 2022-12-04
+
+### Changed
+
+* PR #141: Don't throw when union doesn't contain field values (by @alfonsogarciacaro)
+
 ## 8.0.0 - 2022-11-09
 
 ### Fixed
