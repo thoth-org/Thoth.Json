@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 9.1.0 - 2023-01-22
+
+### Changed
+
+* PR #163: Mark the package as ESM module (by @hesxenon)
+
 ## 9.0.0 - 2022-12-04
 
 ### Changed

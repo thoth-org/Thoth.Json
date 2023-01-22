@@ -11,7 +11,7 @@ If you are interested on using it against .NET Core or .NET Framework, please us
     <RepositoryUrl>https://github.com/thoth-org/Thoth.Json</RepositoryUrl>
     <PackageTags>fable;fsharp;json</PackageTags>
     <Authors>Maxime Mangel</Authors>
-    <Version>9.0.0</Version>
+    <Version>9.1.0</Version>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
