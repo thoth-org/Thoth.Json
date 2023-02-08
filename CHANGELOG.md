@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 10.0.0 - 2023-02-08
+
+### Fixed
+
+* Guard `decodeMaybeNull` to evaluates the `decoder` only if the value is not `null`
+
 ## 9.1.0 - 2023-01-22
 
 ### Changed
