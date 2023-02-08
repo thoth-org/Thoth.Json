@@ -358,3 +358,19 @@ module IntAsRecord =
             else
                 Decode.fail "Invalid type"
         )
+
+type Person =
+    {
+        Name: string
+    }
+
+type Post =
+    {
+        Title : string
+    }
+
+type Data =
+    {
+        Person : Person
+        Post : Post option
+    }

@@ -392,10 +392,16 @@ module Decode =
 
     let private decodeMaybeNull path (decoder : Decoder<'T>) value =
         // The decoder may be an option decoder so give it an opportunity to check null values
-        match decoder path value with
-        | Ok v -> Ok(Some v)
-        | Error _ when Helpers.isNullValue value -> Ok None
-        | Error er -> Error er
+
+        // We catch the null value case first to avoid executing the decoder logic
+        // Indeed, if the decoder logic try to access the value to do something with it,
+        // it can throw an exception about the value being null
+        if Helpers.isNullValue value then
+            Ok None
+        else
+            match decoder path value with
+            | Ok v -> Ok(Some v)
+            | Error er -> Error er
 
     let optional (fieldName : string) (decoder : Decoder<'value>) : Decoder<'value option> =
         fun path value ->

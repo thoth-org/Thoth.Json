@@ -2502,6 +2502,52 @@ Expecting a boolean but instead got: "not_a_boolean"
 
                 equal expected actual
 
+            testCase "Test" <| fun _ ->
+                let json =
+                    """
+                    {
+                        "person": {
+                            "name": "maxime"
+                        },
+                        "post": null
+                    }
+                    """
+
+                let personDecoder : Decoder<Person> =
+                    Decode.object (fun get ->
+                        {
+                            Name = get.Required.Field "name" Decode.string
+                        }
+                    )
+
+                let postDecoder : Decoder<Post> =
+                    Decode.object (fun get ->
+                        let title = get.Required.Field "title" Decode.string
+
+                        // Accessing the value and doing something with it
+                        // To reproduce bug reported in:
+                        // https://github.com/thoth-org/Thoth.Json.Net/issues/53
+                        title
+                        |> Seq.head
+                        |> printfn "Title: %A"
+
+                        {
+                            Title = title
+                        }
+                    )
+
+                let dataDecoder =
+                    Decode.object (fun get ->
+                        {
+                            Person = get.Required.Field "person" personDecoder
+                            Post = get.Optional.Field "post" postDecoder
+                        }
+                    )
+
+                let actual = Decode.fromString dataDecoder json
+                let expected = Ok { Person = { Name = "maxime" }; Post = None }
+
+                equal expected actual
         ]
 
         testList "Auto" [
