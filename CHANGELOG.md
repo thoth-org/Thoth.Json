@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 10.1.0 - 2023-03-23
+
+### Changed
+
+* PR #170: Use name to call optional argument (by @alfonsogarciacaro)
+
 ## 10.0.0 - 2023-02-08
 
 ### Fixed
