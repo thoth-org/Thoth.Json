@@ -363,7 +363,7 @@ module Encode =
     ///**Exceptions**
     ///
     let toString (space: int) (value: JsonValue) : string =
-       JS.JSON.stringify(value, !!null, space)
+       JS.JSON.stringify(value, space=space)
 
     ///**Description**
     /// Encode an option
