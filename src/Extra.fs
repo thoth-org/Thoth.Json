@@ -13,7 +13,7 @@ let inline internal withCustomAndKey (encoder: Encoder<'Value>) (decoder: Decode
     { extra with
           Hash = System.Guid.NewGuid().ToString()
           Coders =
-              extra.Coders |> Map.add typeof<'Value>.FullName (Encode.boxEncoder encoder, Decode.boxDecoder decoder) }
+              extra.Coders |> Map.add (getTypeName typeof<'Value>) (Encode.boxEncoder encoder, Decode.boxDecoder decoder) }
 
 let inline withCustom (encoder: Encoder<'Value>) (decoder: Decoder<'Value>) (extra: ExtraCoders): ExtraCoders =
     withCustomAndKey encoder decoder extra

@@ -1117,7 +1117,7 @@ module Decode =
                         System.Enum.Parse(t, toString enumValue)
                         |> Ok
                     | false ->
-                        (path, BadPrimitiveExtra(t.FullName, value, "Unkown value provided for the enum"))
+                        (path, BadPrimitiveExtra(t.FullName, value, "Unknown value provided for the enum"))
                         |> Error
                 | Error msg ->
                     Error msg
@@ -1171,14 +1171,14 @@ module Decode =
                 else mixedArray 1 decoders path values
             values |> Result.map (fun values -> FSharpValue.MakeUnion(uci, List.toArray values, allowAccessToPrivateRepresentation=true))
 
-    and private autoDecodeRecordsAndUnions extra (caseStrategy : CaseStrategy) (isOptional : bool) (t: System.Type) : BoxedDecoder =
+    and private autoDecodeRecordsAndUnions extra  (caseStrategy : CaseStrategy) (isOptional : bool) (t: System.Type) : BoxedDecoder =
         // Add the decoder to extra in case one of the fields is recursive
         let decoderRef = ref Unchecked.defaultof<_>
         let extra =
             // As of 3.7.17 Fable assigns empty name to anonymous record, we shouldn't add them to the map to avoid conflicts.
             // Anonymous records cannot be recursive anyways, see #144
-            match t.FullName with
-            | "" -> extra
+            match getTypeName t with
+            | TypeName "" -> extra
             | fullName -> extra |> Map.add fullName decoderRef
         let decoder =
             if FSharpType.IsRecord(t, allowAccessToPrivateRepresentation=true) then
@@ -1216,8 +1216,8 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
         decoderRef.Value <- decoder
         decoder
 
-    and private autoDecoder (extra: Map<string, ref<BoxedDecoder>>) caseStrategy (isOptional : bool) (t: System.Type) : BoxedDecoder =
-      let fullname = t.FullName
+    and private autoDecoder (extra: Map<TypeName, ref<BoxedDecoder>>) caseStrategy (isOptional : bool) (t: System.Type) : BoxedDecoder =
+      let fullname = getTypeName t
       match Map.tryFind fullname extra with
       | Some decoderRef -> fun path value -> decoderRef.contents path value
       | None ->
@@ -1259,21 +1259,21 @@ If you can't use one of these types, please pass an extra decoder.
                         |> Result.map (fun xs -> FSharpValue.MakeTuple(List.toArray xs, t))
                     else (path, BadPrimitive ("an array", value)) |> Error
             else
-                let fullname = t.GetGenericTypeDefinition().FullName
-                if fullname = typedefof<obj option>.FullName then
+                let fullname = getTypeName t
+                if fullname = getTypeName typedefof<obj option> then
                     t.GenericTypeArguments.[0] |> (autoDecoder extra caseStrategy true) |> option |> boxDecoder
-                elif fullname = typedefof<obj list>.FullName then
+                elif fullname = getTypeName typedefof<obj list> then
                     t.GenericTypeArguments.[0] |> (autoDecoder extra caseStrategy false) |> list |> boxDecoder
-                elif fullname = typedefof<obj seq>.FullName then
+                elif fullname = getTypeName typedefof<obj seq> then
                     t.GenericTypeArguments.[0] |> (autoDecoder extra caseStrategy false) |> seq |> boxDecoder
-                elif fullname = typedefof< Map<System.IComparable, obj> >.FullName then
+                elif fullname = getTypeName typedefof< Map<System.IComparable, obj> > then
                     let keyDecoder = t.GenericTypeArguments.[0] |> autoDecoder extra caseStrategy false
                     let valueDecoder = t.GenericTypeArguments.[1] |> autoDecoder extra caseStrategy false
                     oneOf [
                         autoObject2 keyDecoder valueDecoder
                         list (tuple2 keyDecoder valueDecoder)
                     ] |> map (fun ar -> toMap (unbox ar) |> box)
-                elif fullname = typedefof< Set<string> >.FullName then
+                elif fullname = getTypeName typedefof< Set<string> > then
                     let decoder = t.GenericTypeArguments.[0] |> autoDecoder extra caseStrategy false
                     fun path value ->
                         match array decoder path value with
@@ -1282,29 +1282,29 @@ If you can't use one of these types, please pass an extra decoder.
                 else
                     autoDecodeRecordsAndUnions extra caseStrategy isOptional t
         else
-            if fullname = typeof<bool>.FullName then
+            if fullname = getTypeName typeof<bool> then
                 boxDecoder bool
-            elif fullname = typedefof<unit>.FullName then
+            elif fullname = getTypeName typedefof<unit> then
                 boxDecoder unit
-            elif fullname = typeof<string>.FullName then
+            elif fullname = getTypeName typeof<string> then
                 boxDecoder string
-            elif fullname = typeof<char>.FullName then
+            elif fullname = getTypeName typeof<char> then
                 boxDecoder char
-            elif fullname = typeof<sbyte>.FullName then
+            elif fullname = getTypeName typeof<sbyte> then
                 boxDecoder sbyte
-            elif fullname = typeof<byte>.FullName then
+            elif fullname = getTypeName typeof<byte> then
                 boxDecoder byte
-            elif fullname = typeof<int16>.FullName then
+            elif fullname = getTypeName typeof<int16> then
                 boxDecoder int16
-            elif fullname = typeof<uint16>.FullName then
+            elif fullname = getTypeName typeof<uint16> then
                 boxDecoder uint16
-            elif fullname = typeof<int>.FullName then
+            elif fullname = getTypeName typeof<int> then
                 boxDecoder int
-            elif fullname = typeof<uint32>.FullName then
+            elif fullname = getTypeName typeof<uint32> then
                 boxDecoder uint32
-            elif fullname = typeof<float>.FullName then
+            elif fullname = getTypeName typeof<float> then
                 boxDecoder float
-            elif fullname = typeof<float32>.FullName then
+            elif fullname = getTypeName typeof<float32> then
                 boxDecoder float32
             // These number types require extra libraries in Fable. To prevent penalizing
             // all users, extra decoders (withInt64, etc) must be passed when they're needed.
@@ -1317,15 +1317,15 @@ If you can't use one of these types, please pass an extra decoder.
             //     boxDecoder bigint
             // elif fullname = typeof<decimal>.FullName then
             //     boxDecoder decimal
-            elif fullname = typeof<System.DateTime>.FullName then
+            elif fullname = getTypeName typeof<System.DateTime> then
                 boxDecoder datetimeUtc
-            elif fullname = typeof<System.DateTimeOffset>.FullName then
+            elif fullname = getTypeName typeof<System.DateTimeOffset> then
                 boxDecoder datetimeOffset
-            elif fullname = typeof<System.TimeSpan>.FullName then
+            elif fullname = getTypeName typeof<System.TimeSpan> then
                 boxDecoder timespan
-            elif fullname = typeof<System.Guid>.FullName then
+            elif fullname = getTypeName typeof<System.Guid> then
                 boxDecoder guid
-            elif fullname = typeof<obj>.FullName then
+            elif fullname = getTypeName typeof<obj> then
                 fun _ v -> Ok v
             else autoDecodeRecordsAndUnions extra caseStrategy isOptional t
 
