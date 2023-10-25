@@ -398,8 +398,8 @@ module Encode =
         let extra =
             // As of 3.7.17 Fable assigns empty name to anonymous record, we shouldn't add them to the map to avoid conflicts.
             // Anonymous records cannot be recursive anyways, see #144
-            match t.FullName with
-            | "" -> extra
+            match getTypeName t with
+            | TypeName "" -> extra
             | fullName -> extra |> Map.add fullName encoderRef
         let encoder =
             if FSharpType.IsRecord(t, allowAccessToPrivateRepresentation=true) then
@@ -438,8 +438,8 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
         encoderRef.Value <- encoder
         encoder
 
-    and private autoEncoder (extra: Map<string, ref<BoxedEncoder>>) caseStrategy (skipNullField : bool) (t: System.Type) : BoxedEncoder =
-      let fullname = t.FullName
+    and private autoEncoder (extra: Map<TypeName, ref<BoxedEncoder>>) caseStrategy (skipNullField : bool) (t: System.Type) : BoxedEncoder =
+      let fullname = getTypeName t
       match Map.tryFind fullname extra with
       | Some encoderRef -> fun v -> encoderRef.contents v
       | None ->
@@ -522,29 +522,29 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
                 else
                     autoEncodeRecordsAndUnions extra caseStrategy skipNullField t
         else
-            if fullname = typeof<bool>.FullName then
+            if fullname = getTypeName typeof<bool> then
                 boxEncoder bool
-            elif fullname = typeof<unit>.FullName then
+            elif fullname = getTypeName typeof<unit> then
                 boxEncoder unit
-            elif fullname = typeof<string>.FullName then
+            elif fullname = getTypeName typeof<string> then
                 boxEncoder string
-            elif fullname = typeof<char>.FullName then
+            elif fullname = getTypeName typeof<char> then
                 boxEncoder char
-            elif fullname = typeof<sbyte>.FullName then
+            elif fullname = getTypeName typeof<sbyte> then
                 boxEncoder sbyte
-            elif fullname = typeof<byte>.FullName then
+            elif fullname = getTypeName typeof<byte> then
                 boxEncoder byte
-            elif fullname = typeof<int16>.FullName then
+            elif fullname = getTypeName typeof<int16> then
                 boxEncoder int16
-            elif fullname = typeof<uint16>.FullName then
+            elif fullname = getTypeName typeof<uint16> then
                 boxEncoder uint16
-            elif fullname = typeof<int>.FullName then
+            elif fullname = getTypeName typeof<int> then
                 boxEncoder int
-            elif fullname = typeof<uint32>.FullName then
+            elif fullname = getTypeName typeof<uint32> then
                 boxEncoder uint32
-            elif fullname = typeof<float>.FullName then
+            elif fullname = getTypeName typeof<float> then
                 boxEncoder float
-            elif fullname = typeof<float32>.FullName then
+            elif fullname = getTypeName typeof<float32> then
                 boxEncoder float32
             // These number types require extra libraries in Fable. To prevent penalizing
             // all users, extra encoders (withInt64, etc) must be passed when they're needed.
@@ -557,15 +557,15 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
             //     boxEncoder bigint
             // elif fullname = typeof<decimal>.FullName then
             //     boxEncoder decimal
-            elif fullname = typeof<System.DateTime>.FullName then
+            elif fullname = getTypeName typeof<System.DateTime> then
                 boxEncoder datetime
-            elif fullname = typeof<System.DateTimeOffset>.FullName then
+            elif fullname = getTypeName typeof<System.DateTimeOffset> then
                 boxEncoder datetimeOffset
-            elif fullname = typeof<System.TimeSpan>.FullName then
+            elif fullname = getTypeName typeof<System.TimeSpan> then
                 boxEncoder timespan
-            elif fullname = typeof<System.Guid>.FullName then
+            elif fullname = getTypeName typeof<System.Guid> then
                 boxEncoder guid
-            elif fullname = typeof<obj>.FullName then
+            elif fullname = getTypeName typeof<obj> then
                 boxEncoder id
             else
                 autoEncodeRecordsAndUnions extra caseStrategy skipNullField t

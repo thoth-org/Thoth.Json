@@ -28,9 +28,12 @@ type BoxedDecoder = Decoder<obj>
 
 type BoxedEncoder = Encoder<obj>
 
+/// Represents the `.GetGenericTypeDefinition().FullName` of a type
+type TypeName = TypeName of string
+
 type ExtraCoders =
     { Hash: string
-      Coders: Map<string, BoxedEncoder * BoxedDecoder> }
+      Coders: Map<TypeName, BoxedEncoder * BoxedDecoder> }
 
 module internal Util =
     open System.Collections.Generic
