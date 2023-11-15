@@ -270,3 +270,4 @@ demos/Thoth\.Elmish\.Demo/output/
 docs_deploy/
 .nacara/
 fableBuild/
+**/fable_modules/**

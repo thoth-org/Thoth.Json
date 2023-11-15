@@ -8,14 +8,29 @@ root = true
 # A newline ending every file
 # Use 4 spaces as indentation
 [*]
+end_of_line = lf
 insert_final_newline = true
 indent_style = space
 indent_size = 4
 trim_trailing_whitespace = true
 
-[*.{fs,fsi,fsx,config}]
-charset = utf-8
-trim_trailing_whitespace = true
+[*.{fs,fsx}]
+max_line_length = 80
+fsharp_alternative_long_member_definitions = true
+fsharp_multi_line_lambda_closing_newline = true
+fsharp_bar_before_discriminated_union_declaration = true
+fsharp_multiline_bracket_style = aligned
+fsharp_keep_max_number_of_blank_lines = 2
+fsharp_record_multiline_formatter = number_of_items
+fsharp_array_or_list_multiline_formatter = number_of_items
+fsharp_align_function_signature_to_indentation = true
+fsharp_multi_line_lambda_closing_newline = true
+fsharp_max_infix_operator_expression = 30
+fsharp_max_if_then_else_short_width = 0
+
+[*.yml]
+indent_size = 2
+indent_style = space
 
 [paket.*]
 trim_trailing_whitespace = true
@@ -23,7 +38,4 @@ indent_size = 4
 
 [*.paket.references]
 trim_trailing_whitespace = true
-indent_size = 2
-
-[*.yml]
 indent_size = 2

@@ -5,5 +5,6 @@ storage:none
 
 # Lowest version of Fable.Core that have the improve jsNative error message
 # See: https://github.com/thoth-org/Thoth.Json/issues/128
-nuget Fable.Core >= 3.6.2 lowest_matching: true
-nuget FSharp.Core >= 4.7.2 redirects:force,lowest_matching: true
+nuget Fable.Core >= 4.2.0 lowest_matching: true
+nuget FSharp.Core redirects:force,lowest_matching: true
+nuget Newtonsoft.Json >= 11.0.2 lowest_matching:true

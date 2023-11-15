@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <DefineConstants>$(DefineConstants);FABLE_COMPILER;FABLE_COMPILER_JAVASCRIPT</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Util.fs" />
+    <Compile Include="Types.fs" />
+    <Compile Include="Decoders.fs" />
+    <Compile Include="Main.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\packages\Thoth.Json.Core\Thoth.Json.Core.fsproj" />
+    <ProjectReference Include="..\packages\Thoth.Json.JavaScript\Thoth.Json.JavaScript.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Fable.Mocha" />
+  </ItemGroup>
+</Project>

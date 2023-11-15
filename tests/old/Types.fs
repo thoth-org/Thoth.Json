@@ -1,6 +1,6 @@
 module Tests.Types
 
-open Thoth.Json.Core
+open Thoth.Json
 open System.Threading
 #if !NETFRAMEWORK
 open Fable.Core
@@ -180,10 +180,10 @@ type SmallRecord =
             { fieldA = get.Required.Field "fieldA" Decode.string }
         )
 
-    // static member Encoder x =
-    //     Encode.object [
-    //         "fieldA", Encode.string x.fieldA
-    //     ]
+    static member Encoder x =
+        Encode.object [
+            "fieldA", Encode.string x.fieldA
+        ]
 
 type MediumRecord =
     { FieldA: string
@@ -247,8 +247,8 @@ type BigIntRecord =
 
 type ChildType =
     { ChildField: string }
-    // static member Encode(x: ChildType) =
-    //     Encode.string x.ChildField
+    static member Encode(x: ChildType) =
+        Encode.string x.ChildField
     static member Decoder =
         Decode.string |> Decode.map (fun x -> { ChildField = x })
 
@@ -345,11 +345,10 @@ type RecordForCharacterCase = { One : int; TwoPart : int; ThreePartField : int }
 module IntAsRecord =
 
     let encode (value : int) =
-        // Encode.object [
-        //     "type", Encode.string "int"
-        //     "value", Encode.int value
-        // ]
-        null
+        Encode.object [
+            "type", Encode.string "int"
+            "value", Encode.int value
+        ]
 
     let decode : Decoder<int> =
         Decode.field "type" Decode.string

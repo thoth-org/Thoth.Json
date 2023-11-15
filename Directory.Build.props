@@ -1,0 +1,22 @@
+<Project>
+	<PropertyGroup>
+		<!-- Make all the projects use the highest warning level -->
+		<WarningLevel>5</WarningLevel>
+	</PropertyGroup>
+    <!-- Packages common to all the projects  -->
+    <ItemGroup>
+        <!-- Reproducible builds + SourceLink supports -->
+        <!-- <PackageReference Include="DotNet.ReproducibleBuilds" Version="0.1.26" PrivateAssets="All"/> -->
+        <!-- Depends on the same version of FSharp.Core for all the projects -->
+        <!-- We don't use any feature related to FSharp.Core 5 so we force to use a lower one -->
+        <PackageReference Update="FSharp.Core" />
+    </ItemGroup>
+	<!-- NuGet Metadata -->
+	<!-- <PropertyGroup>
+        <PackageProjectUrl>https://mangelmaxime.gitbook.io/fable-form/</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/MangelMaxime/Fable.Form</RepositoryUrl>
+        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<Authors>Maxime Mangel</Authors>
+	</PropertyGroup> -->
+</Project>
