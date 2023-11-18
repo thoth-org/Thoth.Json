@@ -19,7 +19,7 @@ type NewtonsoftTestRunner() =
     override _.testList = testList
     override _.testCase = testCase
 
-    override _.equal a b = Expect.equal (box a) b ""
+    override _.equal a b = Expect.equal a b ""
 
     override _.Encode = NewtonsoftEncode()
 
