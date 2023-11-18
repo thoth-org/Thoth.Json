@@ -1,4 +1,4 @@
-module Tests.Types
+module Thoth.Json.Tests.Types
 
 open Thoth.Json.Core
 open System.Threading
@@ -180,10 +180,10 @@ type SmallRecord =
             { fieldA = get.Required.Field "fieldA" Decode.string }
         )
 
-    // static member Encoder x =
-    //     Encode.object [
-    //         "fieldA", Encode.string x.fieldA
-    //     ]
+    static member Encoder x =
+        Encode.object [
+            "fieldA", Encode.string x.fieldA
+        ]
 
 type MediumRecord =
     { FieldA: string
@@ -209,10 +209,12 @@ type TestMaybeRecord =
 type BaseClass =
     class end
 
+[<NoComparison>]
 type RecordWithOptionalClass =
     { MaybeClass : BaseClass option
       Must : string }
 
+[<NoComparison>]
 type RecordWithRequiredClass =
     { Class : BaseClass
       Must : string }
@@ -261,6 +263,7 @@ type Price =
     | Zero
 
 
+[<NoComparison>]
 type RecordWithStrangeType =
     { Id : int
       Thread : Thread option }
@@ -274,6 +277,7 @@ type UserCaseSensitive =
 type IAmAnInterface =
     abstract member DoIt : unit -> unit
 
+[<NoComparison>]
 type RecordWithInterface =
     { Id : int
       Interface : IAmAnInterface option }

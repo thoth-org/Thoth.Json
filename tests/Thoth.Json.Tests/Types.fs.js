@@ -1,7 +1,8 @@
-import { FSharpException, Union, Record } from "./fable_modules/fable-library.4.5.0/Types.js";
-import { bigint_type, char_type, unit_type, uint64_type, int64_type, uint32_type, uint16_type, int16_type, uint8_type, int8_type, class_type, array_type, option_type, list_type, tuple_type, bool_type, string_type, union_type, int32_type, record_type, float64_type } from "./fable_modules/fable-library.4.5.0/Reflection.js";
+import { FSharpException, Union, Record } from "./Thoth.Json.JavaScript.Tests/fable_modules/fable-library.4.5.0/Types.js";
+import { bigint_type, char_type, unit_type, uint64_type, int64_type, uint32_type, uint16_type, int16_type, uint8_type, int8_type, class_type, array_type, option_type, list_type, tuple_type, bool_type, string_type, union_type, int32_type, record_type, float64_type } from "./Thoth.Json.JavaScript.Tests/fable_modules/fable-library.4.5.0/Reflection.js";
 import { fail, andThen, tuple2, int, field, map, string, object } from "../packages/Thoth.Json.Core/Decode.fs.js";
-import { defaultOf } from "./fable_modules/fable-library.4.5.0/Util.js";
+import { Json } from "../packages/Thoth.Json.Core/Types.fs.js";
+import { defaultOf } from "./Thoth.Json.JavaScript.Tests/fable_modules/fable-library.4.5.0/Util.js";
 
 export class Record2 extends Record {
     constructor(a, b) {
@@ -238,6 +239,10 @@ export function SmallRecord_get_Decoder() {
         let objectArg;
         return new SmallRecord((objectArg = get$.Required, objectArg.Field("fieldA", string)));
     });
+}
+
+export function SmallRecord_Encoder_Z4AB0BC7(x) {
+    return new Json(6, [[["fieldA", new Json(0, [x.fieldA])]]]);
 }
 
 export class MediumRecord extends Record {

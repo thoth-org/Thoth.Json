@@ -1,0 +1,58 @@
+{
+  "version": 2,
+  "dependencies": {
+    ".NETStandard,Version=v2.0": {
+      "Fable.Core": {
+        "type": "Direct",
+        "requested": "[3.6.2, )",
+        "resolved": "3.6.2",
+        "contentHash": "2djeYq1kZvwfYWUYvFAniS3PC8/4G27xHynsF7cALkjTqIfTYj9LM7PqHhnnxa1hs4X0wwm5p+UK94aMbDvJBA=="
+      },
+      "Fable.Mocha": {
+        "type": "Direct",
+        "requested": "[2.17.0, )",
+        "resolved": "2.17.0",
+        "contentHash": "2N9rjqn6IrNdRbjGwq4DNC1u68Mrzk2Vw+rP5OGd3UOjjxle5pvsTS6bS/7hohQPoHTFqLWqiTSrDlotdbQtzQ==",
+        "dependencies": {
+          "FSharp.Core": "4.7.0",
+          "Fable.Core": "3.0.0"
+        }
+      },
+      "FSharp.Core": {
+        "type": "Direct",
+        "requested": "[4.7.2, )",
+        "resolved": "4.7.2",
+        "contentHash": "w3XFVTnyZUbC8e2QT6a85ern6y7eQPPk+MYemz1FP0iBfgZcembL+wmo5cIZ1kxB8jfoXC8Q9KVkOMsGpkBKbA=="
+      },
+      "NETStandard.Library": {
+        "type": "Direct",
+        "requested": "[2.0.3, )",
+        "resolved": "2.0.3",
+        "contentHash": "st47PosZSHrjECdjeIzZQbzivYBJFv6P2nv4cj2ypdI204DO+vZ7l5raGMiX4eXMJ53RfOIg+/s4DHVZ54Nu2A==",
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "1.1.0"
+        }
+      },
+      "Microsoft.NETCore.Platforms": {
+        "type": "Transitive",
+        "resolved": "1.1.0",
+        "contentHash": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A=="
+      },
+      "thoth.json.core": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[4.7.2, )",
+          "Fable.Core": "[3.6.2, )"
+        }
+      },
+      "thoth.json.javascript": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[4.7.2, )",
+          "Fable.Core": "[3.6.2, )",
+          "Thoth.Json.Core": "[1.0.0, )"
+        }
+      }
+    }
+  }
+}

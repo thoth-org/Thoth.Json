@@ -1,7 +1,21 @@
 <Project>
+    <!-- Make F# support Central Package Management -->
+    <PropertyGroup>
+        <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
+        <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    </PropertyGroup>
+    <!-- Use lock files -->
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+    <PropertyGroup>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
+    </PropertyGroup>
 	<PropertyGroup>
 		<!-- Make all the projects use the highest warning level -->
 		<WarningLevel>5</WarningLevel>
+        <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 	</PropertyGroup>
     <!-- Packages common to all the projects  -->
     <ItemGroup>
@@ -9,7 +23,7 @@
         <!-- <PackageReference Include="DotNet.ReproducibleBuilds" Version="0.1.26" PrivateAssets="All"/> -->
         <!-- Depends on the same version of FSharp.Core for all the projects -->
         <!-- We don't use any feature related to FSharp.Core 5 so we force to use a lower one -->
-        <PackageReference Update="FSharp.Core" />
+        <PackageReference Include="FSharp.Core" />
     </ItemGroup>
 	<!-- NuGet Metadata -->
 	<!-- <PropertyGroup>

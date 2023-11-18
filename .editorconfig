@@ -1,5 +1,4 @@
-# EditorConfig is awesome:
-http://EditorConfig.org
+# EditorConfig is awesome: http://EditorConfig.org
 
 # top-most EditorConfig file
 root = true
@@ -25,7 +24,6 @@ fsharp_record_multiline_formatter = number_of_items
 fsharp_array_or_list_multiline_formatter = number_of_items
 fsharp_align_function_signature_to_indentation = true
 fsharp_multi_line_lambda_closing_newline = true
-fsharp_max_infix_operator_expression = 30
 fsharp_max_if_then_else_short_width = 0
 
 [*.yml]
