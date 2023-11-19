@@ -27,14 +27,14 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[4.7.2, )",
-          "Fable.Core": "[3.6.2, )"
+          "Fable.Core": "[4.1.0, )"
         }
       },
       "thoth.json.javascript": {
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[4.7.2, )",
-          "Fable.Core": "[3.6.2, )",
+          "Fable.Core": "[4.1.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
       },
@@ -42,7 +42,7 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[4.7.2, )",
-          "Fable.Core": "[3.6.2, )",
+          "Fable.Core": "[4.1.0, )",
           "Newtonsoft.Json": "[13.0.1, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
@@ -51,7 +51,7 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[4.7.2, )",
-          "Fable.Core": "[3.6.2, )",
+          "Fable.Core": "[4.1.0, )",
           "Fable.Mocha": "[2.17.0, )",
           "Thoth.Json.Core": "[1.0.0, )",
           "Thoth.Json.JavaScript": "[1.0.0, )"
@@ -59,9 +59,9 @@
       },
       "Fable.Core": {
         "type": "CentralTransitive",
-        "requested": "[3.6.2, )",
-        "resolved": "3.6.2",
-        "contentHash": "2djeYq1kZvwfYWUYvFAniS3PC8/4G27xHynsF7cALkjTqIfTYj9LM7PqHhnnxa1hs4X0wwm5p+UK94aMbDvJBA=="
+        "requested": "[4.1.0, )",
+        "resolved": "4.1.0",
+        "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
       },
       "Fable.Mocha": {
         "type": "CentralTransitive",

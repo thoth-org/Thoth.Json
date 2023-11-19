@@ -8,16 +8,6 @@
         "resolved": "4.1.0",
         "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
       },
-      "Fable.Mocha": {
-        "type": "Direct",
-        "requested": "[2.17.0, )",
-        "resolved": "2.17.0",
-        "contentHash": "2N9rjqn6IrNdRbjGwq4DNC1u68Mrzk2Vw+rP5OGd3UOjjxle5pvsTS6bS/7hohQPoHTFqLWqiTSrDlotdbQtzQ==",
-        "dependencies": {
-          "FSharp.Core": "4.7.0",
-          "Fable.Core": "3.0.0"
-        }
-      },
       "FSharp.Core": {
         "type": "Direct",
         "requested": "[4.7.2, )",
@@ -33,6 +23,12 @@
           "Microsoft.NETCore.Platforms": "1.1.0"
         }
       },
+      "Newtonsoft.Json": {
+        "type": "Direct",
+        "requested": "[13.0.1, )",
+        "resolved": "13.0.1",
+        "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
+      },
       "Microsoft.NETCore.Platforms": {
         "type": "Transitive",
         "resolved": "1.1.0",
@@ -43,24 +39,6 @@
         "dependencies": {
           "FSharp.Core": "[4.7.2, )",
           "Fable.Core": "[4.1.0, )"
-        }
-      },
-      "thoth.json.javascript": {
-        "type": "Project",
-        "dependencies": {
-          "FSharp.Core": "[4.7.2, )",
-          "Fable.Core": "[4.1.0, )",
-          "Thoth.Json.Core": "[1.0.0, )"
-        }
-      },
-      "thoth.json.tests": {
-        "type": "Project",
-        "dependencies": {
-          "FSharp.Core": "[4.7.2, )",
-          "Fable.Core": "[4.1.0, )",
-          "Fable.Mocha": "[2.17.0, )",
-          "Thoth.Json.Core": "[1.0.0, )",
-          "Thoth.Json.JavaScript": "[1.0.0, )"
         }
       }
     }

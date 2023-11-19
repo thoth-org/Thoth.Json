@@ -168,9 +168,15 @@ let tests (runner : TestRunner<_, _>) =
                 runner.equal expected actual
 
             runner.testCase "a datetime works" <| fun _ ->
-                #if FABLE_COMPILER
+                #if FABLE_COMPILER_JAVASCRIPT
                 let expected = "\"2018-10-01T11:12:55.000Z\""
-                #else
+                #endif
+
+                #if FABLE_COMPILER_PYTHON
+                let expected = "\"2018-10-01T11:12:55.000000Z\""
+                #endif
+
+                #if !FABLE_COMPILER
                 let expected = "\"2018-10-01T11:12:55.0000000Z\""
                 #endif
                 let actual =
@@ -353,11 +359,18 @@ let tests (runner : TestRunner<_, _>) =
                 runner.equal expected actual
 
             runner.testCase "a tuple5 works" <| fun _ ->
-                #if FABLE_COMPILER
+                #if FABLE_COMPILER_JAVASCRIPT
                 let expected = """[1,"maxime",2.5,{"fieldA":"test"},"2018-10-01T11:12:55.000Z"]"""
-                #else
+                #endif
+
+                #if FABLE_COMPILER_PYTHON
+                let expected = """[1,"maxime",2.5,{"fieldA":"test"},"2018-10-01T11:12:55.000000Z"]"""
+                #endif
+
+                #if !FABLE_COMPILER
                 let expected = """[1,"maxime",2.5,{"fieldA":"test"},"2018-10-01T11:12:55.0000000Z"]"""
                 #endif
+
                 let actual =
                     Encode.tuple5
                         Encode.int

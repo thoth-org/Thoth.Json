@@ -46,6 +46,10 @@ let tests (runner : TestRunner<_, _>) =
                 let expected : Result<float, string> = Error "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
                 #endif
 
+                #if FABLE_COMPILER_PYTHON
+                let expected : Result<float, string> = Error "Given an invalid JSON: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+                #endif
+
                 #if !FABLE_COMPILER
                 let expected : Result<float, string> = Error "Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0."
                 #endif
@@ -69,6 +73,10 @@ let tests (runner : TestRunner<_, _>) =
                 // See: https://github.com/thoth-org/Thoth.Json.Net/pull/48
                 #if FABLE_COMPILER_JAVASCRIPT
                 let expected : Result<float, string> = Error "Given an invalid JSON: Expected double-quoted property name in JSON at position 172"
+                #endif
+
+                #if FABLE_COMPILER_PYTHON
+                let expected : Result<float, string> = Error "Given an invalid JSON: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
                 #endif
 
                 #if !FABLE_COMPILER
@@ -544,12 +552,14 @@ Expecting a bigint but instead got: "maxime"
 
                 runner.equal (Ok expected) actual
 
+            #if !FABLE_COMPILER_PYTHON
             runner.testCase "a datetime works" <| fun _ ->
                 let expected = new DateTime(2018, 10, 1, 11, 12, 55, DateTimeKind.Utc)
                 let actual =
                     runner.Decode.fromString Decode.datetimeUtc "\"2018-10-01T11:12:55.00Z\""
 
                 runner.equal (Ok expected) actual
+            #endif
 
             runner.testCase "a non-UTC datetime works" <| fun _ ->
                 let expected = new DateTime(2018, 10, 1, 11, 12, 55)
@@ -558,6 +568,7 @@ Expecting a bigint but instead got: "maxime"
 
                 runner.equal (Ok expected) actual
 
+            #if !FABLE_COMPILER_PYTHON
             runner.testCase "a datetime output an error if invalid string" <| fun _ ->
                 let expected =
                     Error(
@@ -580,6 +591,7 @@ Expecting a datetime but instead got: "invalid_string"
                     runner.Decode.fromString Decode.datetimeUtc json
 
                 runner.equal expected actual
+            #endif
 
             runner.testCase "a datetimeOffset works" <| fun _ ->
                 let expected =
@@ -603,6 +615,7 @@ Expecting a datetimeoffset but instead got: "NOT A DATETIMEOFFSET"
 
                 runner.equal expected actual
 
+            #if !FABLE_COMPILER_PYTHON
             runner.testCase "a timespan works" <| fun _ ->
                 let expected =
                     TimeSpan(23, 45, 0)
@@ -624,6 +637,7 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                     runner.Decode.fromString Decode.timespan json
 
                 runner.equal expected actual
+            #endif
 
             runner.testCase "an enum<sbyte> works" <| fun _ ->
                 let expected = Ok Enum_Int8.NinetyNine
@@ -849,7 +863,7 @@ Expecting a string but instead got: false
                             SmallRecord.Decoder) json
 
                 runner.equal expected actual
-
+            #if !FABLE_COMPILER_PYTHON
             runner.testCase "tuple5 returns an error if invalid json" <| fun _ ->
                 let json = """[1, "maxime", 2.5, { "fieldA" : "test" }, false]"""
                 let expected =
@@ -935,7 +949,7 @@ Expecting an int but instead got: "maxime"
                             Decode.int) json
 
                 runner.equal expected actual
-
+            #endif
         ]
 
         runner.testList "Object primitives" [

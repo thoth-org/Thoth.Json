@@ -8,16 +8,6 @@
         "resolved": "4.1.0",
         "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
       },
-      "Fable.Mocha": {
-        "type": "Direct",
-        "requested": "[2.17.0, )",
-        "resolved": "2.17.0",
-        "contentHash": "2N9rjqn6IrNdRbjGwq4DNC1u68Mrzk2Vw+rP5OGd3UOjjxle5pvsTS6bS/7hohQPoHTFqLWqiTSrDlotdbQtzQ==",
-        "dependencies": {
-          "FSharp.Core": "4.7.0",
-          "Fable.Core": "3.0.0"
-        }
-      },
       "FSharp.Core": {
         "type": "Direct",
         "requested": "[4.7.2, )",
@@ -38,6 +28,14 @@
         "resolved": "1.1.0",
         "contentHash": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A=="
       },
+      "prototype.shared": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[4.7.2, )",
+          "Fable.Core": "[4.1.0, )",
+          "Thoth.Json.Core": "[1.0.0, )"
+        }
+      },
       "thoth.json.core": {
         "type": "Project",
         "dependencies": {
@@ -51,16 +49,6 @@
           "FSharp.Core": "[4.7.2, )",
           "Fable.Core": "[4.1.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
-        }
-      },
-      "thoth.json.tests": {
-        "type": "Project",
-        "dependencies": {
-          "FSharp.Core": "[4.7.2, )",
-          "Fable.Core": "[4.1.0, )",
-          "Fable.Mocha": "[2.17.0, )",
-          "Thoth.Json.Core": "[1.0.0, )",
-          "Thoth.Json.JavaScript": "[1.0.0, )"
         }
       }
     }

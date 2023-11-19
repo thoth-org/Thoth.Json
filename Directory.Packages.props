@@ -4,12 +4,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="BlackFox.CommandLine" Version="1.0.0" />
+    <PackageVersion Include="Fable.Python" Version="4.3.0" />
+    <PackageVersion Include="Fable.Pyxpecto" Version="0.1.0" />
     <PackageVersion Include="FSharp.Core" Version="4.7.2" />
     <!--
         We use an older version of Expecto to keep FSharp.Core version as low as possible
     -->
     <PackageVersion Include="Expecto" Version="9.0.4" />
-    <PackageVersion Include="Fable.Core" Version="3.6.2" />
+    <PackageVersion Include="Fable.Core" Version="4.1.0" />
     <PackageVersion Include="Fable.Mocha" Version="2.17.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageVersion Include="Semver" Version="2.3.0" />
