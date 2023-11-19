@@ -5,21 +5,27 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest, macOS-latest, windows-latest ]
+        platform: [ ubuntu-latest, macOS-latest, windows-latest ]
+
+    runs-on: ${{ matrix.platform }}
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '8.0.100'
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
-      - name: Install and use custom npm version
-        run: npm i -g npm@7
-      - name: Install dependencies
-        run: npm install
-      - name: Run the tests
-        run: node build.js test
+          node-version: '20'
+      # - name: Install and use custom npm version
+      #   run: npm i -g npm@7
+      # - name: Install dependencies
+      #   run: npm install
+      - name: Test (Unix)
+        if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'macOS-latest'
+        run: ./build.sh test
+      - name: Test (Windows)
+        if: matrix.platform == 'windows-latest'
+        run: .\build.bat test

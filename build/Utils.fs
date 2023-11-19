@@ -17,5 +17,10 @@ type Path =
     static member Resolve([<ParamArray>] segments: string array) : string =
         let paths = Array.concat [ [| __SOURCE_DIRECTORY__; ".." |]; segments ]
 
+        printfn "__SOURCE_DIRECTORY__: %A" __SOURCE_DIRECTORY__
+        printfn "segments: %A" segments
+        printfn "CWD: %A" Environment.CurrentDirectory
+        printfn "__SOURCE_FILE__: %A" __SOURCE_FILE__
+
         // Use GetFullPath to clean the path
         Path.GetFullPath(Path.Combine(paths))

@@ -103,7 +103,11 @@ let main argv =
     | "test" :: args ->
         match args with
         | "javascript" :: args -> Test.JavaScript.handle args
-        // | "newtonsoft" :: args -> Test.Newtonsoft.handle args
+        | "newtonsoft" :: args -> Test.Newtonsoft.handle args
+        | []
+        | "all" :: _ ->
+            Test.JavaScript.handle []
+            Test.Newtonsoft.handle []
         | _ -> printHelp ()
     // | "publish" :: args -> Publish.handle args
     // | "github-release" :: args -> GithubRelease.handle args

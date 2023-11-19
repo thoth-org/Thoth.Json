@@ -17,9 +17,9 @@ module ProjectDir =
 
     module Tests =
 
-        let javascript = Path.Resolve("tests", "Thoth.Json.JavaScript.Tests")
 
-        let newtonsoft = Path.Resolve("tests", "Thoth.Json.Newtonsoft.Tests")
+        let javascript = Path.Resolve("tests", "Thoth.Json.Tests.JavaScript")
+        let newtonsoft = Path.Resolve("tests", "Thoth.Json.Tests.Newtonsoft")
 
 module Fsproj =
 
@@ -45,11 +45,11 @@ module Fsproj =
         let javascript =
             Path.Combine(
                 ProjectDir.Tests.javascript,
-                "Thoth.Json.JavaScript.Tests.fsproj"
+                "Thoth.Json.Tests.JavaScript.fsproj"
             )
 
         let newtonsoft =
             Path.Combine(
                 ProjectDir.Tests.newtonsoft,
-                "Thoth.Json.Newtonsoft.Tests.fsproj"
+                "Thoth.Json.Tests.Newtonsoft.fsproj"
             )

@@ -1,23 +1,18 @@
 module Build.Test.Newtonsoft
 
-open System.IO
-open System
 open BlackFox.CommandLine
 open Build
 open SimpleExec
 
-// let private mochaComand =
-//     CmdLine.empty
-//     |> CmdLine.appendRaw "npx"
-//     |> CmdLine.appendRaw "mocha"
-//     |> CmdLine.appendRaw Wo
+let handle (args: string list) =
+    let isWatch = args |> List.contains "--watch"
 
-
-// let handle (args: string list) =
-//     let isWatch = args |> List.contains "--watch"
-
-//     if isWatch then
-//         testNewtonsoft isWatch
-//     else
-//         handleMainTests isWatch
-//         ()
+    Command.Run(
+        "dotnet",
+        CmdLine.empty
+        |> CmdLine.appendIf isWatch "watch"
+        |> CmdLine.appendRaw "run"
+        |> CmdLine.appendPrefix "--project" Workspace.Fsproj.Tests.newtonsoft
+        |> CmdLine.toString,
+        workingDirectory = Workspace.ProjectDir.Tests.javascript
+    )
