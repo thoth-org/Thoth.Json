@@ -404,16 +404,16 @@ module Decode =
         { new Decoder<'value option> with
             member _.Decode(helpers, path, value) =
                 if helpers.isObject value then
-                    let fieldValue = helpers.getField (fieldName, value)
 
-                    if helpers.isUndefined fieldValue then
-                        Ok None
-                    else
+                    if helpers.hasProperty fieldName value then
+                        let fieldValue = helpers.getField (fieldName, value)
                         decodeMaybeNull
                             helpers
                             (path + "." + fieldName)
                             decoder
                             fieldValue
+                    else
+                        Ok None
                 else
                     Error(path, BadType("an object", value))
         }
@@ -432,6 +432,26 @@ module Decode =
                 List.tryLast fieldNames |> Option.defaultValue ""
             )
         )
+
+    let map2
+        (ctor: 'a -> 'b -> 'Output)
+        (d1: Decoder<'a>)
+        (d2: Decoder<'b>)
+        : Decoder<'Output>
+        =
+        { new Decoder<'Output> with
+            member _.Decode(helper, path, value) =
+                match
+                    d1.Decode(helper, path, value),
+                    d2.Decode(helper, path, value)
+                with
+                | Ok v1, Ok v2 -> Ok(ctor v1 v2)
+                | Error er, _ -> Error er
+                | _, Error er -> Error er
+        }
+
+    // let custom =
+    //     map2 (|>)
 
     let optionalAt
         (fieldNames: string list)
@@ -460,7 +480,7 @@ module Decode =
                 |> function
                     | _, _, Some res -> res
                     | lastPath, lastValue, None ->
-                        if helpers.isUndefined lastValue then
+                        if helpers.isNullValue lastValue then
                             Ok None
                         else
                             decodeMaybeNull helpers lastPath decoder lastValue
@@ -470,9 +490,14 @@ module Decode =
         { new Decoder<'value> with
             member _.Decode(helpers, path, value) =
                 if helpers.isObject value then
-                    let fieldValue = helpers.getField (fieldName, value)
-
-                    if helpers.isUndefined fieldValue then
+                    if helpers.hasProperty fieldName value then
+                        let fieldValue = helpers.getField (fieldName, value)
+                        decoder.Decode(
+                            helpers,
+                            path + "." + fieldName,
+                            fieldValue
+                        )
+                    else
                         Error(
                             path,
                             BadField(
@@ -481,12 +506,6 @@ module Decode =
                                 + "`",
                                 value
                             )
-                        )
-                    else
-                        decoder.Decode(
-                            helpers,
-                            path + "." + fieldName,
-                            fieldValue
                         )
                 else
                     Error(path, BadType("an object", value))
@@ -513,15 +532,14 @@ module Decode =
 
                             curPath, curValue, Some res
                         elif helpers.isObject curValue then
-                            let curValue = helpers.getField (field, curValue)
-
-                            if helpers.isUndefined curValue then
+                            if helpers.hasProperty field curValue then
+                                let curValue = helpers.getField (field, curValue)
+                                curPath + "." + field, curValue, None
+                            else
                                 let res =
                                     badPathError fieldNames None firstValue
 
                                 curPath, curValue, Some res
-                            else
-                                curPath + "." + field, curValue, None
                         else
                             let res =
                                 Error(curPath, BadType("an object", curValue))
@@ -814,23 +832,6 @@ module Decode =
                 match d1.Decode(helper, path, value) with
                 | Ok v1 -> Ok(ctor v1)
                 | Error er -> Error er
-        }
-
-    let map2
-        (ctor: 'a -> 'b -> 'Output)
-        (d1: Decoder<'a>)
-        (d2: Decoder<'b>)
-        : Decoder<'Output>
-        =
-        { new Decoder<'Output> with
-            member _.Decode(helper, path, value) =
-                match
-                    d1.Decode(helper, path, value),
-                    d2.Decode(helper, path, value)
-                with
-                | Ok v1, Ok v2 -> Ok(ctor v1 v2)
-                | Error er, _ -> Error er
-                | _, Error er -> Error er
         }
 
     let map3

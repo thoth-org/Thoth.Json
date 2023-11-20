@@ -16,8 +16,16 @@ module Interop =
     let numbers: IExports = nativeOnly
 
     [<Global; Emit("list")>]
-    let pyList : obj = nativeOnly
+    let pyList: obj = nativeOnly
 
+    [<Global; Emit("dict")>]
+    let pyDict: obj = nativeOnly
+
+    [<Global; Emit("int")>]
+    let pyInt: obj = nativeOnly
+
+    [<Global; Emit("bool")>]
+    let pyBool: obj = nativeOnly
 
 [<RequireQualifiedAccess>]
 module Decode =
@@ -25,25 +33,26 @@ module Decode =
     let helpers =
         { new IDecoderHelpers<obj> with
             member _.isString jsonValue = jsonValue :? string
-            member _.isNumber jsonValue = pyInstanceof jsonValue numbers.Number
+
+            member _.isNumber jsonValue =
+                pyInstanceof jsonValue numbers.Number
+                // In Python, bool is a subclass of int so we need to check
+                // that the value is not a bool
+                && not (pyInstanceof jsonValue pyBool)
+
             member _.isBoolean jsonValue = jsonValue :? bool
             member _.isNullValue jsonValue = isNull jsonValue
 
-            member _.isArray jsonValue =
-                pyInstanceof jsonValue pyList
+            member _.isArray jsonValue = pyInstanceof jsonValue pyList
 
-            member _.isObject jsonValue =
-//                 emitJsStatement
-//                     jsonValue
-//                     """
-// return $0 === null ? false : (Object.getPrototypeOf($0 || false) === Object.prototype)
-//                 """
-                false
+            member _.isObject jsonValue = pyInstanceof jsonValue pyDict
 
-            member _.isUndefined jsonValue = isNull jsonValue
+            member _.hasProperty fieldName jsonValue =
+                emitPyStatement
+                    (jsonValue, fieldName)
+                    "return $1 in $0"
 
-            member _.isIntegralValue jsonValue =
-                false
+            member _.isIntegralValue jsonValue = pyInstanceof jsonValue pyInt
 
             member _.asString jsonValue = unbox jsonValue
             member _.asBoolean jsonValue = unbox jsonValue
@@ -59,7 +68,7 @@ module Decode =
                 jsonValue?(fieldName)
 
             member _.anyToString jsonValue =
-                ""
+                Python.Json.json.dumps (jsonValue, indent = 4)
         }
 
     let fromString (decoder: Decoder<'T>) =
@@ -69,7 +78,4 @@ module Decode =
                 Decode.fromValue helpers "$" decoder json
             // with ex when Helpers.isSyntaxError ex
             with ex -> // TODO: Capture only the exact exception
-                Error(
-                    "Given an invalid JSON: "
-                    + ex.Message
-                )
+                Error("Given an invalid JSON: " + ex.Message)

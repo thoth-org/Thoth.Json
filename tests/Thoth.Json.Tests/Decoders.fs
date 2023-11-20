@@ -47,7 +47,7 @@ let tests (runner : TestRunner<_, _>) =
                 #endif
 
                 #if FABLE_COMPILER_PYTHON
-                let expected : Result<float, string> = Error "Given an invalid JSON: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+                let expected : Result<float, string> = Error "Given an invalid JSON: Expecting value: line 1 column 1 (char 0)"
                 #endif
 
                 #if !FABLE_COMPILER
@@ -76,7 +76,7 @@ let tests (runner : TestRunner<_, _>) =
                 #endif
 
                 #if FABLE_COMPILER_PYTHON
-                let expected : Result<float, string> = Error "Given an invalid JSON: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+                let expected : Result<float, string> = Error "Given an invalid JSON: Expecting property name enclosed in double quotes: line 8 column 17 (char 172)"
                 #endif
 
                 #if !FABLE_COMPILER

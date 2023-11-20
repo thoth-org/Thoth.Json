@@ -30,7 +30,11 @@ module Decode =
             member _.isObject jsonValue =
                 not (isNull jsonValue) && jsonValue.Type = JTokenType.Object
 
-            member _.isUndefined jsonValue = isNull jsonValue
+            member _.hasProperty fieldName jsonValue =
+                not (isNull jsonValue)
+                && jsonValue.Type = JTokenType.Object
+                && jsonValue.Value<JObject>().Properties()
+                |> Seq.exists (fun prop -> prop.Name = fieldName)
 
             member _.isIntegralValue jsonValue =
                 not (isNull jsonValue) && (jsonValue.Type = JTokenType.Integer)

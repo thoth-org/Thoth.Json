@@ -24,7 +24,18 @@ module Decode =
 return $0 === null ? false : (Object.getPrototypeOf($0 || false) === Object.prototype)
                 """
 
-            member _.isUndefined jsonValue = jsTypeof jsonValue = "undefined"
+            member _.hasProperty fieldName jsonValue =
+                // printfn "fieldValue: %s" jsonValue?(fieldName)
+                // printfn "jsTypeof: %s" (jsTypeof (jsonValue?(fieldName)))
+                // jsTypeof (jsonValue?(fieldName)) <> "undefined"
+                JS.console.log("jsonValue: ", jsonValue)
+                printfn "fieldName: %s" fieldName
+                printfn "-----------------"
+                emitJsStatement
+                    (jsonValue, fieldName)
+                    """
+return $0.hasOwnProperty($1);
+                    """
 
             member _.isIntegralValue jsonValue =
                 emitJsStatement

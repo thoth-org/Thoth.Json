@@ -7,7 +7,7 @@ type IDecoderHelpers<'JsonValue> =
     abstract isNullValue: 'JsonValue -> bool
     abstract isArray: 'JsonValue -> bool
     abstract isObject: 'JsonValue -> bool
-    abstract isUndefined: 'JsonValue -> bool
+    abstract hasProperty: string -> 'JsonValue -> bool
     abstract isIntegralValue: 'JsonValue -> bool
     abstract asString: 'JsonValue -> string
     abstract asFloat: 'JsonValue -> float

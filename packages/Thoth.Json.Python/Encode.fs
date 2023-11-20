@@ -16,9 +16,10 @@ module Encode =
             member _.encodeFloat32 value = box value
             member _.encodeBool value = box value
             member _.encodeNull() = box null
-            member _.createEmptyObject() = emitPyExpr () "{}"
+            member _.createEmptyObject() =
+                emitPyExpr () "{}"
 
-            member _.setPropertyOnObject(o: obj, key: string, value: obj) =
+            member _.setPropertyOnObject(o, key: string, value: obj) =
                 o?(key) <- value
 
             member _.encodeArray values = values

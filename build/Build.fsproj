@@ -42,6 +42,7 @@
     <Compile Include="Workspace.fs" />
     <Compile Include="Test/JavaScript.fs" />
     <Compile Include="Test/Newtonsoft.fs" />
+    <Compile Include="Test/Python.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>

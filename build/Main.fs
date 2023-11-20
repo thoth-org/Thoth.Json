@@ -104,6 +104,7 @@ let main argv =
         match args with
         | "javascript" :: args -> Test.JavaScript.handle args
         | "newtonsoft" :: args -> Test.Newtonsoft.handle args
+        | "python" :: args -> Test.Python.handle args
         | []
         | "all" :: _ ->
             Test.JavaScript.handle []

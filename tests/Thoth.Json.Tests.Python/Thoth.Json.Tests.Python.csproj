@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <DefineConstants>$(DefineConstants);FABLE_COMPILER;FABLE_COMPILER_PYTHON</DefineConstants>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Main.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\packages\Thoth.Json.Core\Thoth.Json.Core.fsproj" />
+    <ProjectReference Include="..\..\packages\Thoth.Json.Python\Thoth.Json.Python.fsproj" />
+    <ProjectReference Include="..\Thoth.Json.Tests\Thoth.Json.Tests.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Fable.Core" />
+    <PackageReference Include="Fable.Pyxpecto" />
+  </ItemGroup>
+</Project>

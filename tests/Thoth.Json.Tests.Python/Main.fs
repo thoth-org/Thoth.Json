@@ -30,11 +30,14 @@ type PythonTestRunner() =
 let main args =
     let runner = PythonTestRunner()
 
-    testList
-        "All"
-        [
-
-            // Decoders.tests runner
-            Encoders.tests runner
-        ]
-    |> Pyxpecto.runTests
+    try
+        testList
+            "All"
+            [
+                Decoders.tests runner
+                Encoders.tests runner
+            ]
+        |> Pyxpecto.runTests
+    with
+        | _ ->
+            1

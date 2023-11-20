@@ -5,14 +5,6 @@ open System
 open Thoth.Json.Tests.Types
 open Thoth.Json.Core
 
-#if FABLE_COMPILER_JAVASCRIPT
-open Thoth.Json.JavaScript
-#endif
-
-// #if !FABLE_COMPILER
-// open Thoth.Json.Newtonsoft
-// #endif
-
 type RecordWithPrivateConstructor = private { Foo1: int; Foo2: float }
 type UnionWithPrivateConstructor = private Bar of string | Baz
 

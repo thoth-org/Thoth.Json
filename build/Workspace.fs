@@ -13,6 +13,8 @@ module ProjectDir =
 
         let javascript = Path.Resolve("packages", "Thoth.Json.JavaScript")
 
+        let python = Path.Resolve("packages", "Thoth.Json.Python")
+
         let core = Path.Resolve("packages", "Thoth.Json.Core")
 
     module Tests =
@@ -20,6 +22,7 @@ module ProjectDir =
 
         let javascript = Path.Resolve("tests", "Thoth.Json.Tests.JavaScript")
         let newtonsoft = Path.Resolve("tests", "Thoth.Json.Tests.Newtonsoft")
+        let python = Path.Resolve("tests", "Thoth.Json.Tests.Python")
 
 module Fsproj =
 
@@ -37,6 +40,9 @@ module Fsproj =
                 "Thoth.Json.JavaScript.fsproj"
             )
 
+        let python =
+            Path.Combine(ProjectDir.Packages.python, "Thoth.Json.Python.fsproj")
+
         let core =
             Path.Combine(ProjectDir.Packages.core, "Thoth.Json.Core.fsproj")
 
@@ -52,4 +58,10 @@ module Fsproj =
             Path.Combine(
                 ProjectDir.Tests.newtonsoft,
                 "Thoth.Json.Tests.Newtonsoft.fsproj"
+            )
+
+        let python =
+            Path.Combine(
+                ProjectDir.Tests.python,
+                "Thoth.Json.Tests.Python.fsproj"
             )
