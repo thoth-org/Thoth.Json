@@ -15,12 +15,13 @@ type Path =
     /// Resolve a path relative to the repository root
     /// </summary>
     static member Resolve([<ParamArray>] segments: string array) : string =
-        let paths = Array.concat [ [| __SOURCE_DIRECTORY__; ".." |]; segments ]
+        // No idea why but __SOURCE_DIRECTORY__ is not working on CI
+        // it doesn't returns the correct path
+        // let paths = Array.concat [ [| __SOURCE_DIRECTORY__; ".." |]; segments ]
 
-        printfn "__SOURCE_DIRECTORY__: %A" __SOURCE_DIRECTORY__
-        printfn "segments: %A" segments
-        printfn "CWD: %A" Environment.CurrentDirectory
-        printfn "__SOURCE_FILE__: %A" __SOURCE_FILE__
+        // Use Environment.CurrentDirectory instead even if it means that we
+        // need to be in the expected directory when running the build script
+        let paths = Array.concat [ [| Environment.CurrentDirectory; |]; segments ]
 
         // Use GetFullPath to clean the path
         Path.GetFullPath(Path.Combine(paths))
