@@ -1,6 +1,7 @@
 module Python
 
 open Fable.Core
+open System
 
 module Json =
 
@@ -11,3 +12,7 @@ module Json =
 
     [<ImportAll("json")>]
     let json: IExports = nativeOnly
+
+    [<Import("JSONDecodeError", "json")>]
+    type JSONDecodeError() =
+        inherit Exception()

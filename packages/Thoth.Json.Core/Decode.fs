@@ -321,7 +321,7 @@ module Decode =
                     (path, BadPrimitive("a decimal", value)) |> Error
         }
 
-    #if !FABLE_COMPILER_PYTHON
+#if !FABLE_COMPILER_PYTHON
     /// Decode a System.DateTime value using Sytem.DateTime.TryParse, then convert it to UTC.
     let datetimeUtc: Decoder<System.DateTime> =
         { new Decoder<System.DateTime> with
@@ -333,7 +333,7 @@ module Decode =
                 else
                     (path, BadPrimitive("a datetime", value)) |> Error
         }
-    #endif
+#endif
 
     /// Decode a System.DateTime with DateTime.TryParse; uses default System.DateTimeStyles.
     let datetimeLocal: Decoder<System.DateTime> =
@@ -361,7 +361,7 @@ module Decode =
                     (path, BadPrimitive("a datetime", value)) |> Error
         }
 
-    #if !FABLE_COMPILER_PYTHON
+#if !FABLE_COMPILER_PYTHON
     let timespan: Decoder<System.TimeSpan> =
         { new Decoder<System.TimeSpan> with
             member _.Decode(helpers, path, value) =
@@ -372,7 +372,7 @@ module Decode =
                 else
                     (path, BadPrimitive("a timespan", value)) |> Error
         }
-    #endif
+#endif
 
     /////////////////////////
     // Object primitives ///
@@ -406,7 +406,8 @@ module Decode =
                 if helpers.isObject value then
 
                     if helpers.hasProperty fieldName value then
-                        let fieldValue = helpers.getField (fieldName, value)
+                        let fieldValue = helpers.getProperty (fieldName, value)
+
                         decodeMaybeNull
                             helpers
                             (path + "." + fieldName)
@@ -468,9 +469,13 @@ module Decode =
                         if helpers.isNullValue curValue then
                             curPath, curValue, Some(Ok None)
                         elif helpers.isObject curValue then
-                            let curValue = helpers.getField (field, curValue)
+                            if helpers.hasProperty field curValue then
+                                let curValue =
+                                    helpers.getProperty (field, curValue)
 
-                            curPath + "." + field, curValue, None
+                                curPath + "." + field, curValue, None
+                            else
+                                curPath, curValue, Some(Ok None)
                         else
                             let res =
                                 Error(curPath, BadType("an object", curValue))
@@ -491,7 +496,8 @@ module Decode =
             member _.Decode(helpers, path, value) =
                 if helpers.isObject value then
                     if helpers.hasProperty fieldName value then
-                        let fieldValue = helpers.getField (fieldName, value)
+                        let fieldValue = helpers.getProperty (fieldName, value)
+
                         decoder.Decode(
                             helpers,
                             path + "." + fieldName,
@@ -533,7 +539,9 @@ module Decode =
                             curPath, curValue, Some res
                         elif helpers.isObject curValue then
                             if helpers.hasProperty field curValue then
-                                let curValue = helpers.getField (field, curValue)
+                                let curValue =
+                                    helpers.getProperty (field, curValue)
+
                                 curPath + "." + field, curValue, None
                             else
                                 let res =
@@ -722,7 +730,7 @@ module Decode =
         { new Decoder<string list> with
             member _.Decode(helpers, path, value) =
                 if helpers.isObject value then
-                    helpers.getObjectKeys value |> List.ofSeq |> Ok
+                    helpers.getProperties value |> List.ofSeq |> Ok
                 else
                     (path, BadPrimitive("an object", value)) |> Error
         }
@@ -741,7 +749,7 @@ module Decode =
                         match acc with
                         | Error _ -> acc
                         | Ok acc ->
-                            let fieldValue = helpers.getField (prop, value)
+                            let fieldValue = helpers.getProperty (prop, value)
 
                             match
                                 decoder.Decode(helpers, path, fieldValue)
@@ -1131,10 +1139,15 @@ module Decode =
             member _.Decode(helpers, path, value) =
                 let getters = Getters(helpers, path, value)
                 let result = builder getters
+                printfn "object %A" getters.Errors
 
                 match getters.Errors with
-                | [] -> Ok result
+                | [] ->
+                    printfn "object ok"
+                    Ok result
                 | fst :: _ as errors ->
+                    printfn "%A" errors
+
                     if errors.Length > 1 then
                         let errors = List.map (errorToString helpers) errors
 

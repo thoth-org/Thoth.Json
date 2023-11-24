@@ -1537,11 +1537,18 @@ Expecting an object with a field named `height` but instead got:
                 runner.equal expected actual
 
             runner.testCase "succeed output an error if the JSON is invalid" <| fun _ ->
-                #if FABLE_COMPILER
+                #if FABLE_COMPILER_JAVASCRIPT
                 let expected = Error("Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON")
-                #else
+                #endif
+
+                #if FABLE_COMPILER_PYTHON
+                let expected = Error("Given an invalid JSON: Expecting value: line 1 column 1 (char 0)")
+                #endif
+
+                #if !FABLE_COMPILER
                 let expected = Error("Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0.")
                 #endif
+
                 let actual =
                     runner.Decode.fromString (Decode.succeed 7) "maxime"
 

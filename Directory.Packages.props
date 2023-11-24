@@ -5,7 +5,7 @@
   <ItemGroup>
     <PackageVersion Include="BlackFox.CommandLine" Version="1.0.0" />
     <PackageVersion Include="Fable.Python" Version="4.3.0" />
-    <PackageVersion Include="Fable.Pyxpecto" Version="0.2.0" />
+    <PackageVersion Include="Fable.Pyxpecto" Version="0.3.0" />
     <PackageVersion Include="FSharp.Core" Version="5.0.0" />
     <!--
         We use an older version of Expecto to keep FSharp.Core version as low as possible

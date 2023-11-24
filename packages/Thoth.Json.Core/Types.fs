@@ -15,8 +15,8 @@ type IDecoderHelpers<'JsonValue> =
     abstract asInt: 'JsonValue -> int
     abstract asBoolean: 'JsonValue -> bool
     abstract asArray: 'JsonValue -> 'JsonValue[]
-    abstract getField: string * 'JsonValue -> 'JsonValue
-    abstract getObjectKeys: 'JsonValue -> string seq
+    abstract getProperty: string * 'JsonValue -> 'JsonValue
+    abstract getProperties: 'JsonValue -> string seq
     abstract anyToString: 'JsonValue -> string
 
 type IEncoderHelpers<'JsonValue> =

@@ -48,30 +48,5 @@ let main args =
 
             Decoders.tests runner
             Encoders.tests runner
-
-            runner.testCase "field output an error explaining why the value is considered invalid" <| fun _ ->
-                let json = """{ "name": null, "age": 25 }"""
-                let expected =
-                    Error(
-                        """
-Error at: `$.name`
-Expecting an int but instead got: null
-                        """.Trim()
-                    )
-
-                let actual =
-                    runner.Decode.fromString (Decode.field "name" Decode.int) json
-
-                runner.equal expected actual
-
-            runner.testCase "at works" <| fun _ ->
-
-                let json = """{ "user": { "name": "maxime", "age": 25 } }"""
-                let expected = Ok "maxime"
-
-                let actual =
-                    runner.Decode.fromString (Decode.at ["user"; "name"] Decode.string) json
-
-                runner.equal expected actual
         ]
     |> Mocha.runTests

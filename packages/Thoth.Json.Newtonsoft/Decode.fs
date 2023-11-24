@@ -49,11 +49,11 @@ module Decode =
             member _.asFloat32 jsonValue = jsonValue.Value<float32>()
             member _.asInt jsonValue = jsonValue.Value<int>()
 
-            member _.getObjectKeys jsonValue =
+            member _.getProperties jsonValue =
                 jsonValue.Value<JObject>().Properties()
                 |> Seq.map (fun prop -> prop.Name)
 
-            member _.getField(fieldName: string, jsonValue: JToken) =
+            member _.getProperty(fieldName: string, jsonValue: JToken) =
                 jsonValue[fieldName]
 
             member _.anyToString jsonValue =

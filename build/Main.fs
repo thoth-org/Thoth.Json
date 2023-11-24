@@ -109,6 +109,7 @@ let main argv =
         | "all" :: _ ->
             Test.JavaScript.handle []
             Test.Newtonsoft.handle []
+            Test.Python.handle []
         | _ -> printHelp ()
     // | "publish" :: args -> Publish.handle args
     // | "github-release" :: args -> GithubRelease.handle args

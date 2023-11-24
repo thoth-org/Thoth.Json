@@ -48,9 +48,7 @@ module Decode =
             member _.isObject jsonValue = pyInstanceof jsonValue pyDict
 
             member _.hasProperty fieldName jsonValue =
-                emitPyStatement
-                    (jsonValue, fieldName)
-                    "return $1 in $0"
+                emitPyStatement (jsonValue, fieldName) "return $1 in $0"
 
             member _.isIntegralValue jsonValue = pyInstanceof jsonValue pyInt
 
@@ -61,10 +59,10 @@ module Decode =
             member _.asFloat32 jsonValue = unbox jsonValue
             member _.asInt jsonValue = unbox jsonValue
 
-            member _.getObjectKeys jsonValue =
-                upcast JS.Constructors.Object.keys (jsonValue)
+            member _.getProperties jsonValue =
+                emitPyStatement jsonValue "return $0.keys()"
 
-            member _.getField(fieldName: string, jsonValue: obj) =
+            member _.getProperty(fieldName: string, jsonValue: obj) =
                 jsonValue?(fieldName)
 
             member _.anyToString jsonValue =
@@ -76,6 +74,5 @@ module Decode =
             try
                 let json = Fable.Python.Json.json.loads value
                 Decode.fromValue helpers "$" decoder json
-            // with ex when Helpers.isSyntaxError ex
-            with ex -> // TODO: Capture only the exact exception
+            with :? Python.Json.JSONDecodeError as ex ->
                 Error("Given an invalid JSON: " + ex.Message)

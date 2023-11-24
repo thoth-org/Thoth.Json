@@ -25,12 +25,6 @@ return $0 === null ? false : (Object.getPrototypeOf($0 || false) === Object.prot
                 """
 
             member _.hasProperty fieldName jsonValue =
-                // printfn "fieldValue: %s" jsonValue?(fieldName)
-                // printfn "jsTypeof: %s" (jsTypeof (jsonValue?(fieldName)))
-                // jsTypeof (jsonValue?(fieldName)) <> "undefined"
-                JS.console.log("jsonValue: ", jsonValue)
-                printfn "fieldName: %s" fieldName
-                printfn "-----------------"
                 emitJsStatement
                     (jsonValue, fieldName)
                     """
@@ -51,10 +45,10 @@ return isFinite($0) && Math.floor($0) === $0
             member _.asFloat32 jsonValue = unbox jsonValue
             member _.asInt jsonValue = unbox jsonValue
 
-            member _.getObjectKeys jsonValue =
+            member _.getProperties jsonValue =
                 upcast JS.Constructors.Object.keys (jsonValue)
 
-            member _.getField(fieldName: string, jsonValue: obj) =
+            member _.getProperty(fieldName: string, jsonValue: obj) =
                 jsonValue?(fieldName)
 
             member _.anyToString jsonValue =
