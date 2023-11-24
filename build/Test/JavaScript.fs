@@ -8,6 +8,7 @@ let private outDir = "fableBuild"
 
 let private mochaComand =
     CmdLine.empty
+    |> CmdLine.appendRaw "npx"
     |> CmdLine.appendRaw "mocha"
     |> CmdLine.appendRaw outDir
     |> CmdLine.appendPrefix "--reporter" "dot"
@@ -27,7 +28,6 @@ let handle (args: string list) =
                 CmdLine.empty
                 |> CmdLine.appendRaw "--watch"
                 |> CmdLine.appendRaw "--runWatch"
-                |> CmdLine.appendRaw "npx"
                 |> CmdLine.appendRaw mochaComand
             else
                 CmdLine.empty
