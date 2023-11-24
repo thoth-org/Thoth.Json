@@ -22,8 +22,7 @@ type IDecoderHelpers<'JsonValue> =
 type IEncoderHelpers<'JsonValue> =
     abstract encodeString: string -> 'JsonValue
     abstract encodeChar: char -> 'JsonValue
-    abstract encodeFloat: float -> 'JsonValue
-    abstract encodeFloat32: float32 -> 'JsonValue
+    abstract encodeDecimalNumber: float -> 'JsonValue
     abstract encodeBool: bool -> 'JsonValue
     abstract encodeNull: unit -> 'JsonValue
     abstract createEmptyObject: unit -> 'JsonValue
@@ -31,7 +30,7 @@ type IEncoderHelpers<'JsonValue> =
     abstract encodeArray: 'JsonValue array -> 'JsonValue
     abstract encodeList: 'JsonValue list -> 'JsonValue
     abstract encodeSeq: 'JsonValue seq -> 'JsonValue
-    abstract encodeNumber: uint32 -> 'JsonValue
+    abstract encodeIntegralNumber: uint32 -> 'JsonValue
 
 
 type ErrorReason<'JsonValue> =
@@ -65,14 +64,13 @@ type Decoder<'T> =
 type Json =
     | String of string
     | Char of char
-    | Float of float
-    | Float32 of float32
+    | DecimalNumber of float
     | Null
     | Boolean of bool
     | Object of (string * Json) seq
     | Array of Json[]
     // Thoth.Json as an abritrary limit to the size of numbers
-    | Number of uint32
+    | IntegralNumber of uint32
     | Unit
 
 type Encoder<'T> = 'T -> Json

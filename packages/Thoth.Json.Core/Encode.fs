@@ -10,8 +10,8 @@ module Encode =
     let inline string value = Json.String value
     let inline char value = Json.Char value
     let inline guid value = value.ToString() |> string
-    let inline float value = Json.Float value
-    let inline float32 value = Json.Float32 value
+    let inline float value = Json.DecimalNumber value
+    let float32 (value: float32) = Json.DecimalNumber (Operators.float value)
     let inline decimal (value: decimal) = value.ToString() |> string
     let inline nil<'T> = Json.Null
     let inline bool value = Json.Boolean value
@@ -33,12 +33,12 @@ module Encode =
         value.ToString("O", CultureInfo.InvariantCulture)
         |> string
 
-    let inline sbyte (value : sbyte) = Json.Number (uint32 value)
-    let inline byte (value : byte) = Json.Number (uint32 value)
-    let inline int16 (value : int16) = Json.Number (uint32 value)
-    let inline uint16 (value : uint16) = Json.Number (uint32 value)
-    let inline int (value : int) = Json.Number (uint32 value)
-    let inline uint32 (value : uint32) = Json.Number value
+    let inline sbyte (value : sbyte) = Json.IntegralNumber (uint32 value)
+    let inline byte (value : byte) = Json.IntegralNumber (uint32 value)
+    let inline int16 (value : int16) = Json.IntegralNumber (uint32 value)
+    let inline uint16 (value : uint16) = Json.IntegralNumber (uint32 value)
+    let inline int (value : int) = Json.IntegralNumber (uint32 value)
+    let inline uint32 (value : uint32) = Json.IntegralNumber value
     let inline int64 (value: int64) = value.ToString(CultureInfo.InvariantCulture) |> string
     let inline uint64 (value: uint64) = value.ToString(CultureInfo.InvariantCulture) |> string
     let inline unit () = Json.Unit
@@ -213,7 +213,7 @@ module Encode =
     let rec toJsonValue (helpers: IEncoderHelpers<'JsonValue>) (json: Json) =
         match json with
         | Json.String value -> helpers.encodeString value
-        | Json.Number value -> helpers.encodeNumber value
+        | Json.IntegralNumber value -> helpers.encodeIntegralNumber value
         | Json.Object values ->
             let o = helpers.createEmptyObject ()
 
@@ -224,8 +224,7 @@ module Encode =
 
             o
         | Json.Char value -> helpers.encodeChar value
-        | Json.Float value -> helpers.encodeFloat value
-        | Json.Float32 value -> helpers.encodeFloat32 value
+        | Json.DecimalNumber value -> helpers.encodeDecimalNumber value
         | Json.Null -> helpers.encodeNull ()
         | Json.Boolean value -> helpers.encodeBool value
         | Json.Array value ->

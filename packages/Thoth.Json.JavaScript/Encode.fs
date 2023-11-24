@@ -12,8 +12,7 @@ module Encode =
         { new IEncoderHelpers<obj> with
             member _.encodeString value = box value
             member _.encodeChar value = box value
-            member _.encodeFloat value = box value
-            member _.encodeFloat32 value = box value
+            member _.encodeDecimalNumber value = box value
             member _.encodeBool value = box value
             member _.encodeNull() = box null
             member _.createEmptyObject() = obj ()
@@ -25,7 +24,7 @@ module Encode =
             member _.encodeList values = JS.Constructors.Array.from values
             member _.encodeSeq values = JS.Constructors.Array.from values
 
-            member _.encodeNumber value = box value
+            member _.encodeIntegralNumber value = box value
         }
 
     let toString (space: int) (value: Json) : string =

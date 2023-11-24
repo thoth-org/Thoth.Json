@@ -36,23 +36,5 @@ let main args =
     testList "All" [
         Decoders.tests runner
         Encoders.tests runner
-
-        runner.testCase
-            "get.Optional.Field returns None value if field is missing"
-        <| fun _ ->
-            let json = """{ "age": 25 }"""
-            let expected = Ok({ optionalField = None })
-
-            let decoder =
-                Decode.object (fun get -> {
-                    optionalField = get.Optional.Field "name" Decode.string
-                })
-
-            let actual = runner.Decode.fromString decoder json
-
-            printfn "%A" actual
-            printfn "%A" expected
-
-            runner.equal expected actual
     ]
     |> Pyxpecto.runTests

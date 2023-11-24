@@ -12,8 +12,7 @@ module Encode =
         { new IEncoderHelpers<JToken> with
             member _.encodeString value = JValue(value)
             member _.encodeChar value = JValue(value)
-            member _.encodeFloat value = JValue(value)
-            member _.encodeFloat32 value = JValue(value)
+            member _.encodeDecimalNumber value = JValue(value)
             member _.encodeBool value = JValue(value)
             member _.encodeNull() = JValue.CreateNull()
             member _.createEmptyObject() = JObject()
@@ -30,7 +29,7 @@ module Encode =
             member _.encodeArray values = JArray(values)
             member _.encodeList values = JArray(values)
             member _.encodeSeq values = JArray(values)
-            member _.encodeNumber(value: uint32) =
+            member _.encodeIntegralNumber(value: uint32) =
                 // We need to force the cast to uint64 here, otherwise
                 // Newtonsoft resolve the constructor to JValue(decimal)
                 // when we actually want to output a number without decimals
