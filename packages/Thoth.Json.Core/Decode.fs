@@ -1139,15 +1139,11 @@ module Decode =
             member _.Decode(helpers, path, value) =
                 let getters = Getters(helpers, path, value)
                 let result = builder getters
-                printfn "object %A" getters.Errors
 
                 match getters.Errors with
                 | [] ->
-                    printfn "object ok"
                     Ok result
                 | fst :: _ as errors ->
-                    printfn "%A" errors
-
                     if errors.Length > 1 then
                         let errors = List.map (errorToString helpers) errors
 
