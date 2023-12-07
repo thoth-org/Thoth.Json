@@ -34,7 +34,7 @@ module Decode =
                 not (isNull jsonValue)
                 && jsonValue.Type = JTokenType.Object
                 && jsonValue.Value<JObject>().Properties()
-                |> Seq.exists (fun prop -> prop.Name = fieldName)
+                   |> Seq.exists (fun prop -> prop.Name = fieldName)
 
             member _.isIntegralValue jsonValue =
                 not (isNull jsonValue) && (jsonValue.Type = JTokenType.Integer)
@@ -87,6 +87,10 @@ module Decode =
                 use reader = new JsonTextReader(new StringReader(value))
                 let res = serializer.Deserialize<JToken>(reader)
 
-                Decode.fromValue helpers "$" decoder res
+                match decoder.Decode(helpers, res) with
+                | Ok success -> Ok success
+                | Error error ->
+                    let finalError = error |> Decode.Helpers.prependPath "$"
+                    Error(Decode.errorToString helpers finalError)
             with :? JsonException as ex ->
                 Error("Given an invalid JSON: " + ex.Message)

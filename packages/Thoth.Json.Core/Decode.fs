@@ -6,6 +6,22 @@ open System.Globalization
 [<RequireQualifiedAccess>]
 module Decode =
 
+    module Helpers =
+
+        let prependPath
+            (path: string)
+            (err: DecoderError<'JsonValue>)
+            : DecoderError<'JsonValue>
+            =
+            let (oldPath, reason) = err
+            (path + oldPath, reason)
+
+        let inline prependPathToResult<'T, 'JsonValue>
+            (path: string)
+            (res: Result<'T, DecoderError<'JsonValue>>)
+            =
+            res |> Result.mapError (prependPath path)
+
     let private genericMsg
         (helpers: IDecoderHelpers<'JsonValue>)
         msg
@@ -30,7 +46,7 @@ module Decode =
                else
                    " ")
 
-    let errorToString
+    let rec errorToString
         (helpers: IDecoderHelpers<'JsonValue>)
         (path: string, error)
         =
@@ -46,7 +62,14 @@ module Decode =
                 + ("\nNode `" + fieldName + "` is unkown.")
             | TooSmallArray(msg, value) ->
                 "Expecting " + msg + ".\n" + (helpers.anyToString value)
-            | BadOneOf messages ->
+            | BadOneOf (errors) ->
+                let messages =
+                    errors
+                    |> List.map (fun error ->
+                        Helpers.prependPath path error
+                        |> errorToString helpers
+                    )
+
                 "The following errors were found:\n\n"
                 + String.concat "\n\n" messages
             | FailMessage msg ->
@@ -72,11 +95,11 @@ module Decode =
     /// </example>
     let string: Decoder<string> =
         { new Decoder<string> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isString value then
                     Ok(helpers.asString value)
                 else
-                    Error(path, BadPrimitive("a string", value))
+                    Error("", BadPrimitive("a string", value))
         }
 
     /// <summary>
@@ -93,17 +116,17 @@ module Decode =
     /// </example>
     let char: Decoder<char> =
         { new Decoder<char> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isString value then
                     let str = helpers.asString value
 
                     if str.Length = 1 then
                         Ok(str.[0])
                     else
-                        (path, BadPrimitive("a single character string", value))
+                        ("", BadPrimitive("a single character string", value))
                         |> Error
                 else
-                    (path, BadPrimitive("a char", value)) |> Error
+                    ("", BadPrimitive("a char", value)) |> Error
         }
 
     /// <summary>
@@ -118,13 +141,13 @@ module Decode =
     /// </example>
     let guid: Decoder<System.Guid> =
         { new Decoder<System.Guid> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isString value then
                     match System.Guid.TryParse(helpers.asString value) with
                     | true, x -> Ok x
-                    | _ -> (path, BadPrimitive("a guid", value)) |> Error
+                    | _ -> ("", BadPrimitive("a guid", value)) |> Error
                 else
-                    (path, BadPrimitive("a guid", value)) |> Error
+                    ("", BadPrimitive("a guid", value)) |> Error
         }
 
     /// <summary>
@@ -139,11 +162,11 @@ module Decode =
     /// </example>
     let unit: Decoder<unit> =
         { new Decoder<unit> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isNullValue value then
                     Ok()
                 else
-                    (path, BadPrimitive("null", value)) |> Error
+                    ("", BadPrimitive("null", value)) |> Error
         }
 
     let inline private integral
@@ -156,7 +179,7 @@ module Decode =
         =
 
         { new Decoder<'T> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isNumber value then
                     if helpers.isIntegralValue value then
                         let floatValue: float = helpers.asFloat value
@@ -167,7 +190,7 @@ module Decode =
                         then
                             Ok(conv floatValue)
                         else
-                            (path,
+                            ("",
                              BadPrimitiveExtra(
                                  name,
                                  value,
@@ -176,7 +199,7 @@ module Decode =
                              ))
                             |> Error
                     else
-                        (path,
+                        ("",
                          BadPrimitiveExtra(
                              name,
                              value,
@@ -186,9 +209,9 @@ module Decode =
                 elif helpers.isString value then
                     match tryParse (helpers.asString value) with
                     | true, x -> Ok x
-                    | _ -> (path, BadPrimitive(name, value)) |> Error
+                    | _ -> ("", BadPrimitive(name, value)) |> Error
                 else
-                    (path, BadPrimitive(name, value)) |> Error
+                    ("", BadPrimitive(name, value)) |> Error
         }
 
     let sbyte: Decoder<sbyte> =
@@ -258,7 +281,7 @@ module Decode =
 
     let bigint: Decoder<bigint> =
         { new Decoder<bigint> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isNumber value then
                     helpers.asInt value |> bigint |> Ok
                 elif helpers.isString value then
@@ -275,104 +298,102 @@ module Decode =
 
                     match parseResult with
                     | true, x -> Ok x
-                    | _ -> (path, BadPrimitive("a bigint", value)) |> Error
+                    | _ -> ("", BadPrimitive("a bigint", value)) |> Error
                 else
-                    (path, BadPrimitive("a bigint", value)) |> Error
+                    ("", BadPrimitive("a bigint", value)) |> Error
         }
 
     let bool: Decoder<bool> =
         { new Decoder<bool> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isBoolean value then
                     Ok(helpers.asBoolean value)
                 else
-                    (path, BadPrimitive("a boolean", value)) |> Error
+                    ("", BadPrimitive("a boolean", value)) |> Error
         }
 
     let float: Decoder<float> =
         { new Decoder<float> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isNumber value then
                     Ok(helpers.asFloat value)
                 else
-                    (path, BadPrimitive("a float", value)) |> Error
+                    ("", BadPrimitive("a float", value)) |> Error
         }
 
 
     let float32: Decoder<float32> =
         { new Decoder<float32> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isNumber value then
                     Ok(helpers.asFloat32 value)
                 else
-                    (path, BadPrimitive("a float32", value)) |> Error
+                    ("", BadPrimitive("a float32", value)) |> Error
         }
 
     let decimal: Decoder<decimal> =
         { new Decoder<decimal> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isNumber value then
                     helpers.asFloat value |> decimal |> Ok
                 elif helpers.isString value then
                     match System.Decimal.TryParse(helpers.asString value) with
                     | true, x -> Ok x
-                    | _ -> (path, BadPrimitive("a decimal", value)) |> Error
+                    | _ -> ("", BadPrimitive("a decimal", value)) |> Error
                 else
-                    (path, BadPrimitive("a decimal", value)) |> Error
+                    ("", BadPrimitive("a decimal", value)) |> Error
         }
 
 #if !FABLE_COMPILER_PYTHON
     /// Decode a System.DateTime value using Sytem.DateTime.TryParse, then convert it to UTC.
     let datetimeUtc: Decoder<System.DateTime> =
         { new Decoder<System.DateTime> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isString value then
                     match System.DateTime.TryParse(helpers.asString value) with
                     | true, datetime -> datetime.ToUniversalTime() |> Ok
-                    | _ -> (path, BadPrimitive("a datetime", value)) |> Error
+                    | _ -> ("", BadPrimitive("a datetime", value)) |> Error
                 else
-                    (path, BadPrimitive("a datetime", value)) |> Error
+                    ("", BadPrimitive("a datetime", value)) |> Error
         }
 #endif
 
     /// Decode a System.DateTime with DateTime.TryParse; uses default System.DateTimeStyles.
     let datetimeLocal: Decoder<System.DateTime> =
         { new Decoder<System.DateTime> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isString value then
                     match System.DateTime.TryParse(helpers.asString value) with
                     | true, datetime -> Ok datetime
-                    | _ -> (path, BadPrimitive("a datetime", value)) |> Error
+                    | _ -> ("", BadPrimitive("a datetime", value)) |> Error
                 else
-                    (path, BadPrimitive("a datetime", value)) |> Error
+                    ("", BadPrimitive("a datetime", value)) |> Error
         }
 
     let datetimeOffset: Decoder<System.DateTimeOffset> =
         { new Decoder<System.DateTimeOffset> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isString value then
                     match
                         System.DateTimeOffset.TryParse(helpers.asString value)
                     with
                     | true, datetimeOffset -> Ok datetimeOffset
                     | _ ->
-                        (path, BadPrimitive("a datetimeoffset", value)) |> Error
+                        ("", BadPrimitive("a datetimeoffset", value)) |> Error
                 else
-                    (path, BadPrimitive("a datetime", value)) |> Error
+                    ("", BadPrimitive("a datetime", value)) |> Error
         }
 
-#if !FABLE_COMPILER_PYTHON
     let timespan: Decoder<System.TimeSpan> =
         { new Decoder<System.TimeSpan> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isString value then
                     match System.TimeSpan.TryParse(helpers.asString value) with
                     | true, timespan -> Ok timespan
-                    | _ -> (path, BadPrimitive("a timespan", value)) |> Error
+                    | _ -> ("", BadPrimitive("a timespan", value)) |> Error
                 else
-                    (path, BadPrimitive("a timespan", value)) |> Error
+                    ("", BadPrimitive("a timespan", value)) |> Error
         }
-#endif
 
     /////////////////////////
     // Object primitives ///
@@ -392,9 +413,9 @@ module Decode =
         if helpers.isNullValue value then
             Ok None
         else
-            match decoder.Decode(helpers, path, value) with
+            match decoder.Decode(helpers, value) with
             | Ok v -> Ok(Some v)
-            | Error er -> Error er
+            | Error er -> er |> Helpers.prependPath path |> Error
 
     let optional
         (fieldName: string)
@@ -402,7 +423,7 @@ module Decode =
         : Decoder<'value option>
         =
         { new Decoder<'value option> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isObject value then
 
                     if helpers.hasProperty fieldName value then
@@ -410,23 +431,23 @@ module Decode =
 
                         decodeMaybeNull
                             helpers
-                            (path + "." + fieldName)
+                            ("." + fieldName)
                             decoder
                             fieldValue
                     else
                         Ok None
                 else
-                    Error(path, BadType("an object", value))
+                    Error("", BadType("an object", value))
         }
 
     let private badPathError fieldNames currentPath value =
         let currentPath =
-            defaultArg currentPath ("$" :: fieldNames |> String.concat ".")
+            defaultArg currentPath (fieldNames |> String.concat ".")
 
         let msg = "an object with path `" + (String.concat "." fieldNames) + "`"
 
         Error(
-            currentPath,
+            "." + currentPath,
             BadPath(
                 msg,
                 value,
@@ -441,11 +462,8 @@ module Decode =
         : Decoder<'Output>
         =
         { new Decoder<'Output> with
-            member _.Decode(helper, path, value) =
-                match
-                    d1.Decode(helper, path, value),
-                    d2.Decode(helper, path, value)
-                with
+            member _.Decode(helpers, value) =
+                match d1.Decode(helpers, value), d2.Decode(helpers, value) with
                 | Ok v1, Ok v2 -> Ok(ctor v1 v2)
                 | Error er, _ -> Error er
                 | _, Error er -> Error er
@@ -460,8 +478,8 @@ module Decode =
         : Decoder<'value option>
         =
         { new Decoder<'value option> with
-            member _.Decode(helpers, firstPath, firstValue) =
-                ((firstPath, firstValue, None), fieldNames)
+            member _.Decode(helpers, firstValue) =
+                (("", firstValue, None), fieldNames)
                 ||> List.fold (fun (curPath, curValue, res) field ->
                     match res with
                     | Some _ -> curPath, curValue, res
@@ -493,19 +511,16 @@ module Decode =
 
     let field (fieldName: string) (decoder: Decoder<'value>) : Decoder<'value> =
         { new Decoder<'value> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isObject value then
                     if helpers.hasProperty fieldName value then
                         let fieldValue = helpers.getProperty (fieldName, value)
 
-                        decoder.Decode(
-                            helpers,
-                            path + "." + fieldName,
-                            fieldValue
-                        )
+                        decoder.Decode(helpers, fieldValue)
+                        |> Helpers.prependPathToResult ("." + fieldName)
                     else
                         Error(
-                            path,
+                            "",
                             BadField(
                                 "an object with a field named `"
                                 + fieldName
@@ -514,7 +529,7 @@ module Decode =
                             )
                         )
                 else
-                    Error(path, BadType("an object", value))
+                    Error("", BadType("an object", value))
         }
 
     let at
@@ -523,8 +538,8 @@ module Decode =
         : Decoder<'value>
         =
         { new Decoder<'value> with
-            member _.Decode(helpers, firstPath, firstValue) =
-                ((firstPath, firstValue, None), fieldNames)
+            member _.Decode(helpers, firstValue) =
+                (("", firstValue, None), fieldNames)
                 ||> List.fold (fun (curPath, curValue, res) field ->
                     match res with
                     | Some _ -> curPath, curValue, res
@@ -557,7 +572,8 @@ module Decode =
                 |> function
                     | _, _, Some res -> res
                     | lastPath, lastValue, None ->
-                        decoder.Decode(helpers, lastPath, lastValue)
+                        decoder.Decode(helpers, lastValue)
+                        |> Helpers.prependPathToResult lastPath
         }
 
     let index
@@ -566,19 +582,15 @@ module Decode =
         : Decoder<'value>
         =
         { new Decoder<'value> with
-            member _.Decode(helpers, path, value) =
-                let currentPath =
-                    path + ".[" + (Operators.string requestedIndex) + "]"
-
+            member _.Decode(helpers, value) =
                 if helpers.isArray value then
                     let vArray = helpers.asArray value
 
+                    let path = ".[" + (Operators.string requestedIndex) + "]"
+
                     if requestedIndex < vArray.Length then
-                        decoder.Decode(
-                            helpers,
-                            currentPath,
-                            vArray.[requestedIndex]
-                        )
+                        decoder.Decode(helpers, vArray.[requestedIndex])
+                        |> Helpers.prependPathToResult path
                     else
                         let msg =
                             "a longer array. Need index `"
@@ -587,19 +599,19 @@ module Decode =
                             + (Operators.string vArray.Length)
                             + "` entries"
 
-                        (currentPath, TooSmallArray(msg, value)) |> Error
+                        (path, TooSmallArray(msg, value)) |> Error
                 else
-                    (currentPath, BadPrimitive("an array", value)) |> Error
+                    ("", BadPrimitive("an array", value)) |> Error
         }
 
 
     let option (decoder: Decoder<'value>) : Decoder<'value option> =
         { new Decoder<'value option> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isNullValue value then
                     Ok None
                 else
-                    decoder.Decode(helpers, path, value) |> Result.map Some
+                    decoder.Decode(helpers, value) |> Result.map Some
         }
 
     /// <summary>
@@ -623,11 +635,10 @@ module Decode =
     /// </returns>
     let fromValue
         (helpers: IDecoderHelpers<'JsonValue>)
-        (path: string)
         (decoder: Decoder<'T>)
         =
         fun value ->
-            match decoder.Decode(helpers, path, value) with
+            match decoder.Decode(helpers, value) with
             | Ok success -> Ok success
             | Error error -> Error(errorToString helpers error)
 
@@ -637,37 +648,43 @@ module Decode =
 
     let list (decoder: Decoder<'value>) : Decoder<'value list> =
         { new Decoder<'value list> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isArray value then
-                    let mutable i = -1
                     let tokens = helpers.asArray value
+                    let mutable i = 0
+                    let mutable result = []
+                    let mutable error: DecoderError<_> option = None
 
-                    (Ok [], tokens)
-                    ||> Array.fold (fun acc value ->
+                    while i < tokens.Length && error.IsNone do
+                        let value = tokens.[i]
+
+                        match decoder.Decode(helpers, value) with
+                        | Ok value -> result <- result @ [ value ]
+                        | Error er ->
+                            let x =
+                                Some(
+                                    er
+                                    |> Helpers.prependPath (
+                                        ".[" + (i.ToString()) + "]"
+                                    )
+                                )
+
+                            error <- x
+
                         i <- i + 1
 
-                        match acc with
-                        | Error _ -> acc
-                        | Ok acc ->
-                            match
-                                decoder.Decode(
-                                    helpers,
-                                    path + ".[" + (i.ToString()) + "]",
-                                    value
-                                )
-                            with
-                            | Error er -> Error er
-                            | Ok value -> Ok(value :: acc)
-                    )
-                    |> Result.map List.rev
+                    if error.IsNone then
+                        Ok result
+                    else
+                        Error error.Value
                 else
-                    (path, BadPrimitive("a list", value)) |> Error
+                    ("", BadPrimitive("a list", value)) |> Error
         }
 
 
     let seq (decoder: Decoder<'value>) : Decoder<'value seq> =
         { new Decoder<'value seq> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isArray value then
                     let mutable i = -1
                     let tokens = helpers.asArray value
@@ -679,24 +696,24 @@ module Decode =
                         match acc with
                         | Error _ -> acc
                         | Ok acc ->
-                            match
-                                decoder.Decode(
-                                    helpers,
-                                    path + ".[" + (i.ToString()) + "]",
-                                    value
+                            match decoder.Decode(helpers, value) with
+                            | Error er ->
+                                Error(
+                                    er
+                                    |> Helpers.prependPath (
+                                        ".[" + (i.ToString()) + "]"
+                                    )
                                 )
-                            with
-                            | Error er -> Error er
                             | Ok value -> Ok(Seq.append [ value ] acc)
                     )
                     |> Result.map Seq.rev
                 else
-                    (path, BadPrimitive("a seq", value)) |> Error
+                    ("", BadPrimitive("a seq", value)) |> Error
         }
 
     let array (decoder: Decoder<'value>) : Decoder<'value array> =
         { new Decoder<'value array> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isArray value then
                     let mutable i = -1
                     let tokens = helpers.asArray value
@@ -709,30 +726,30 @@ module Decode =
                         match acc with
                         | Error _ -> acc
                         | Ok acc ->
-                            match
-                                decoder.Decode(
-                                    helpers,
-                                    path + ".[" + (i.ToString()) + "]",
-                                    value
+                            match decoder.Decode(helpers, value) with
+                            | Error er ->
+                                Error(
+                                    er
+                                    |> Helpers.prependPath (
+                                        ".[" + (i.ToString()) + "]"
+                                    )
                                 )
-                            with
-                            | Error er -> Error er
                             | Ok value ->
                                 acc.[i] <- value
                                 Ok acc
                     )
                 else
-                    (path, BadPrimitive("an array", value)) |> Error
+                    ("", BadPrimitive("an array", value)) |> Error
         }
 
 
     let keys: Decoder<string list> =
         { new Decoder<string list> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isObject value then
                     helpers.getProperties value |> List.ofSeq |> Ok
                 else
-                    (path, BadPrimitive("an object", value)) |> Error
+                    ("", BadPrimitive("an object", value)) |> Error
         }
 
 
@@ -741,8 +758,8 @@ module Decode =
         : Decoder<(string * 'value) list>
         =
         { new Decoder<(string * 'value) list> with
-            member _.Decode(helpers, path, value) =
-                match keys.Decode(helpers, path, value) with
+            member _.Decode(helpers, value) =
+                match keys.Decode(helpers, value) with
                 | Ok objectKeys ->
                     (Ok [], objectKeys)
                     ||> List.fold (fun acc prop ->
@@ -751,9 +768,7 @@ module Decode =
                         | Ok acc ->
                             let fieldValue = helpers.getProperty (prop, value)
 
-                            match
-                                decoder.Decode(helpers, path, fieldValue)
-                            with
+                            match decoder.Decode(helpers, fieldValue) with
                             | Error er -> Error er
                             | Ok value -> (prop, value) :: acc |> Ok
                     )
@@ -767,18 +782,18 @@ module Decode =
 
     let oneOf (decoders: Decoder<'value> list) : Decoder<'value> =
         { new Decoder<'value> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 let rec runner
                     (decoders: Decoder<'value> list)
-                    (errors: string list)
+                    (errors: DecoderError<'JsonValue> list)
                     =
                     match decoders with
                     | head :: tail ->
-                        match fromValue helpers path head value with
+                        match head.Decode(helpers, value) with
                         | Ok v -> Ok v
                         | Error error ->
                             runner tail (List.append errors [ error ])
-                    | [] -> (path, BadOneOf errors) |> Error
+                    | [] -> ("", BadOneOf errors) |> Error
 
                 runner decoders []
         }
@@ -789,40 +804,40 @@ module Decode =
 
     let nil (output: 'a) : Decoder<'a> =
         { new Decoder<'a> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 if helpers.isNullValue value then
                     Ok output
                 else
-                    (path, BadPrimitive("null", value)) |> Error
+                    ("", BadPrimitive("null", value)) |> Error
         }
 
     let value _ v = Ok v
 
     let succeed (output: 'a) : Decoder<'a> =
         { new Decoder<'a> with
-            member _.Decode(_, _, _) = Ok output
+            member _.Decode(_, _) = Ok output
         }
 
     let fail (msg: string) : Decoder<'a> =
         { new Decoder<'a> with
-            member _.Decode(_, path, _) = Error(path, FailMessage msg)
+            member _.Decode(_, _) = Error("", FailMessage msg)
         }
 
     let andThen (cb: 'a -> Decoder<'b>) (decoder: Decoder<'a>) : Decoder<'b> =
         { new Decoder<'b> with
-            member _.Decode(helpers, path, value) =
-                match decoder.Decode(helpers, path, value) with
+            member _.Decode(helpers, value) =
+                match decoder.Decode(helpers, value) with
                 | Error er -> Error er
-                | Ok result -> (cb result).Decode(helpers, path, value)
+                | Ok result -> (cb result).Decode(helpers, value)
         }
 
     let all (decoders: Decoder<'a> list) : Decoder<'a list> =
         { new Decoder<'a list> with
-            member _.Decode(helpers, path, value) =
+            member _.Decode(helpers, value) =
                 let rec runner (decoders: Decoder<'a> list) (values: 'a list) =
                     match decoders with
                     | decoder :: tail ->
-                        match decoder.Decode(helpers, path, value) with
+                        match decoder.Decode(helpers, value) with
                         | Ok value -> runner tail (List.append values [ value ])
                         | Error error -> Error error
                     | [] -> Ok values
@@ -836,8 +851,8 @@ module Decode =
 
     let map (ctor: 'a -> 'Output) (d1: Decoder<'a>) : Decoder<'Output> =
         { new Decoder<'Output> with
-            member _.Decode(helper, path, value) =
-                match d1.Decode(helper, path, value) with
+            member _.Decode(helpers, value) =
+                match d1.Decode(helpers, value) with
                 | Ok v1 -> Ok(ctor v1)
                 | Error er -> Error er
         }
@@ -850,11 +865,11 @@ module Decode =
         : Decoder<'Output>
         =
         { new Decoder<'Output> with
-            member _.Decode(helper, path, value) =
+            member _.Decode(helpers, value) =
                 match
-                    d1.Decode(helper, path, value),
-                    d2.Decode(helper, path, value),
-                    d3.Decode(helper, path, value)
+                    d1.Decode(helpers, value),
+                    d2.Decode(helpers, value),
+                    d3.Decode(helpers, value)
                 with
                 | Ok v1, Ok v2, Ok v3 -> Ok(ctor v1 v2 v3)
                 | Error er, _, _ -> Error er
@@ -871,12 +886,12 @@ module Decode =
         : Decoder<'Output>
         =
         { new Decoder<'Output> with
-            member _.Decode(helper, path, value) =
+            member _.Decode(helpers, value) =
                 match
-                    d1.Decode(helper, path, value),
-                    d2.Decode(helper, path, value),
-                    d3.Decode(helper, path, value),
-                    d4.Decode(helper, path, value)
+                    d1.Decode(helpers, value),
+                    d2.Decode(helpers, value),
+                    d3.Decode(helpers, value),
+                    d4.Decode(helpers, value)
                 with
                 | Ok v1, Ok v2, Ok v3, Ok v4 -> Ok(ctor v1 v2 v3 v4)
                 | Error er, _, _, _ -> Error er
@@ -895,13 +910,13 @@ module Decode =
         : Decoder<'Output>
         =
         { new Decoder<'Output> with
-            member _.Decode(helper, path, value) =
+            member _.Decode(helpers, value) =
                 match
-                    d1.Decode(helper, path, value),
-                    d2.Decode(helper, path, value),
-                    d3.Decode(helper, path, value),
-                    d4.Decode(helper, path, value),
-                    d5.Decode(helper, path, value)
+                    d1.Decode(helpers, value),
+                    d2.Decode(helpers, value),
+                    d3.Decode(helpers, value),
+                    d4.Decode(helpers, value),
+                    d5.Decode(helpers, value)
                 with
                 | Ok v1, Ok v2, Ok v3, Ok v4, Ok v5 -> Ok(ctor v1 v2 v3 v4 v5)
                 | Error er, _, _, _, _ -> Error er
@@ -922,14 +937,14 @@ module Decode =
         : Decoder<'Output>
         =
         { new Decoder<'Output> with
-            member _.Decode(helper, path, value) =
+            member _.Decode(helpers, value) =
                 match
-                    d1.Decode(helper, path, value),
-                    d2.Decode(helper, path, value),
-                    d3.Decode(helper, path, value),
-                    d4.Decode(helper, path, value),
-                    d5.Decode(helper, path, value),
-                    d6.Decode(helper, path, value)
+                    d1.Decode(helpers, value),
+                    d2.Decode(helpers, value),
+                    d3.Decode(helpers, value),
+                    d4.Decode(helpers, value),
+                    d5.Decode(helpers, value),
+                    d6.Decode(helpers, value)
                 with
                 | Ok v1, Ok v2, Ok v3, Ok v4, Ok v5, Ok v6 ->
                     Ok(ctor v1 v2 v3 v4 v5 v6)
@@ -953,15 +968,15 @@ module Decode =
         : Decoder<'Output>
         =
         { new Decoder<'Output> with
-            member _.Decode(helper, path, value) =
+            member _.Decode(helpers, value) =
                 match
-                    d1.Decode(helper, path, value),
-                    d2.Decode(helper, path, value),
-                    d3.Decode(helper, path, value),
-                    d4.Decode(helper, path, value),
-                    d5.Decode(helper, path, value),
-                    d6.Decode(helper, path, value),
-                    d7.Decode(helper, path, value)
+                    d1.Decode(helpers, value),
+                    d2.Decode(helpers, value),
+                    d3.Decode(helpers, value),
+                    d4.Decode(helpers, value),
+                    d5.Decode(helpers, value),
+                    d6.Decode(helpers, value),
+                    d7.Decode(helpers, value)
                 with
                 | Ok v1, Ok v2, Ok v3, Ok v4, Ok v5, Ok v6, Ok v7 ->
                     Ok(ctor v1 v2 v3 v4 v5 v6 v7)
@@ -987,16 +1002,16 @@ module Decode =
         : Decoder<'Output>
         =
         { new Decoder<'Output> with
-            member _.Decode(helper, path, value) =
+            member _.Decode(helpers, value) =
                 match
-                    d1.Decode(helper, path, value),
-                    d2.Decode(helper, path, value),
-                    d3.Decode(helper, path, value),
-                    d4.Decode(helper, path, value),
-                    d5.Decode(helper, path, value),
-                    d6.Decode(helper, path, value),
-                    d7.Decode(helper, path, value),
-                    d8.Decode(helper, path, value)
+                    d1.Decode(helpers, value),
+                    d2.Decode(helpers, value),
+                    d3.Decode(helpers, value),
+                    d4.Decode(helpers, value),
+                    d5.Decode(helpers, value),
+                    d6.Decode(helpers, value),
+                    d7.Decode(helpers, value),
+                    d8.Decode(helpers, value)
                 with
                 | Ok v1, Ok v2, Ok v3, Ok v4, Ok v5, Ok v6, Ok v7, Ok v8 ->
                     Ok(ctor v1 v2 v3 v4 v5 v6 v7 v8)
@@ -1054,12 +1069,11 @@ module Decode =
     let private unwrapWith
         (errors: ResizeArray<DecoderError<'JsonValue>>)
         (helpers: IDecoderHelpers<'JsonValue>)
-        (path: string)
         (decoder: Decoder<'T>)
         (value: 'JsonValue)
         : 'T
         =
-        match decoder.Decode(helpers, path, value) with
+        match decoder.Decode(helpers, value) with
         | Ok v -> v
         | Error er ->
             errors.Add(er)
@@ -1067,47 +1081,36 @@ module Decode =
 
 
     type Getters<'JsonValue, 'T>
-        (helpers: IDecoderHelpers<'JsonValue>, path: string, value: 'JsonValue)
+        (helpers: IDecoderHelpers<'JsonValue>, value: 'JsonValue)
         =
         let mutable errors = ResizeArray<DecoderError<'JsonValue>>()
 
         let required =
             { new IRequiredGetter with
                 member __.Field (fieldName: string) (decoder: Decoder<_>) =
-                    unwrapWith
-                        errors
-                        helpers
-                        path
-                        (field fieldName decoder)
-                        value
+                    unwrapWith errors helpers (field fieldName decoder) value
 
                 member __.At (fieldNames: string list) (decoder: Decoder<_>) =
-                    unwrapWith errors helpers path (at fieldNames decoder) value
+                    unwrapWith errors helpers (at fieldNames decoder) value
 
                 member __.Raw(decoder: Decoder<_>) =
-                    unwrapWith errors helpers path decoder value
+                    unwrapWith errors helpers decoder value
             }
 
         let optional =
             { new IOptionalGetter with
                 member __.Field (fieldName: string) (decoder: Decoder<_>) =
-                    unwrapWith
-                        errors
-                        helpers
-                        path
-                        (optional fieldName decoder)
-                        value
+                    unwrapWith errors helpers (optional fieldName decoder) value
 
                 member __.At (fieldNames: string list) (decoder: Decoder<_>) =
                     unwrapWith
                         errors
                         helpers
-                        path
                         (optionalAt fieldNames decoder)
                         value
 
                 member __.Raw(decoder: Decoder<_>) =
-                    match decoder.Decode(helpers, path, value) with
+                    match decoder.Decode(helpers, value) with
                     | Ok v -> Some v
                     | Error((_, reason) as error) ->
                         match reason with
@@ -1136,18 +1139,15 @@ module Decode =
 
     let object (builder: IGetters -> 'value) : Decoder<'value> =
         { new Decoder<'value> with
-            member _.Decode(helpers, path, value) =
-                let getters = Getters(helpers, path, value)
+            member _.Decode(helpers, value) =
+                let getters = Getters(helpers, value)
                 let result = builder getters
 
                 match getters.Errors with
-                | [] ->
-                    Ok result
+                | [] -> Ok result
                 | fst :: _ as errors ->
                     if errors.Length > 1 then
-                        let errors = List.map (errorToString helpers) errors
-
-                        (path, BadOneOf errors) |> Error
+                        ("", BadOneOf errors) |> Error
                     else
                         Error fst
         }

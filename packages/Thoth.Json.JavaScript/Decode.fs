@@ -68,7 +68,13 @@ return JSON.stringify($0, null, 4) + ''
         fun value ->
             try
                 let json = JS.JSON.parse value
-                Decode.fromValue helpers "$" decoder json
+
+                match decoder.Decode(helpers, json) with
+                | Ok success -> Ok success
+                | Error error ->
+                    let finalError = error |> Decode.Helpers.prependPath "$"
+                    Error(Decode.errorToString helpers finalError)
+
             with ex when Helpers.isSyntaxError ex ->
                 Error(
                     "Given an invalid JSON: "

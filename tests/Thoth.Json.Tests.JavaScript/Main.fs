@@ -21,7 +21,7 @@ type JavascriptTestRunner() =
     override _.testList = testList
     override _.testCase = testCase
 
-    override _.equal a b = Assert.AreEqual(a, b)
+    override _.equal a b = Assert.AreEqual(b, a )
 
     override _.Encode = JavaScriptEncode()
 
@@ -41,12 +41,13 @@ let main args =
                 a?child <- b
                 b?child <- a
 
-                let expected : Result<float, string> = Error "Error at: `$`\nExpecting a float but decoder failed. Couldn\'t report given value due to circular structure. "
-                let actual = Decode.fromValue Decode.helpers "$" Decode.float b
+                let expected : Result<float, string> = Error "Error at: ``\nExpecting a float but decoder failed. Couldn\'t report given value due to circular structure. "
+                let actual = Decode.fromValue Decode.helpers Decode.float b
 
                 runner.equal expected actual
 
             Decoders.tests runner
             Encoders.tests runner
+
         ]
     |> Mocha.runTests

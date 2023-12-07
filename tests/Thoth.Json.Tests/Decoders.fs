@@ -101,7 +101,7 @@ let tests (runner : TestRunner<_, _>) =
 
                 let decoder =
                     { new Decoder<'a> with
-                        member _.Decode(_, _, _) = raise CustomException
+                        member _.Decode(_, _) = raise CustomException
                     }
 
                 let actual =
@@ -1075,7 +1075,7 @@ Expecting a longer array. Need index `5` but there are only `3` entries.
                 let expected =
                     Error(
                         """
-Error at: `$.[5]`
+Error at: `$`
 Expecting an array but instead got: 1
                         """.Trim())
 
@@ -1113,6 +1113,14 @@ Expecting an array but instead got: 1
 
                 let actual =
                     runner.Decode.fromString (Decode.list Decode.int) "1"
+
+                runner.equal expected actual
+
+            runner.testCase "a list with some invalid element output an error" <| fun _ ->
+                let expected = Error("Error at: `$.[2]`\nExpecting an int but instead got: \"maxime\"")
+
+                let actual =
+                    runner.Decode.fromString (Decode.list Decode.int) "[1, 2, \"maxime\"]"
 
                 runner.equal expected actual
 

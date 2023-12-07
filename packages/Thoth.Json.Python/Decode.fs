@@ -73,6 +73,12 @@ module Decode =
         fun value ->
             try
                 let json = Fable.Python.Json.json.loads value
-                Decode.fromValue helpers "$" decoder json
+
+                match decoder.Decode(helpers, json) with
+                | Ok success -> Ok success
+                | Error error ->
+                    let finalError = error |> Decode.Helpers.prependPath "$"
+                    Error(Decode.errorToString helpers finalError)
+
             with :? Python.Json.JSONDecodeError as ex ->
                 Error("Given an invalid JSON: " + ex.Message)

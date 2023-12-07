@@ -41,13 +41,13 @@ type ErrorReason<'JsonValue> =
     | BadPath of string * 'JsonValue * string
     | TooSmallArray of string * 'JsonValue
     | FailMessage of string
-    | BadOneOf of string list
+    | BadOneOf of DecoderError<'JsonValue> list
 
-type DecoderError<'JsonValue> = string * ErrorReason<'JsonValue>
+and DecoderError<'JsonValue> = string * ErrorReason<'JsonValue>
 
 type Decoder<'T> =
     abstract member Decode<'JsonValue> :
-        helpers: IDecoderHelpers<'JsonValue> * path: string * value: 'JsonValue ->
+        helpers: IDecoderHelpers<'JsonValue> * value: 'JsonValue ->
             Result<'T, DecoderError<'JsonValue>>
 
 /// <summary>

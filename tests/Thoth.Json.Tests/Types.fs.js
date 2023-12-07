@@ -1,8 +1,8 @@
-import { FSharpException, Union, Record } from "./Thoth.Json.JavaScript.Tests/fable_modules/fable-library.4.5.0/Types.js";
-import { bigint_type, char_type, unit_type, uint64_type, int64_type, uint32_type, uint16_type, int16_type, uint8_type, int8_type, class_type, array_type, option_type, list_type, tuple_type, bool_type, string_type, union_type, int32_type, record_type, float64_type } from "./Thoth.Json.JavaScript.Tests/fable_modules/fable-library.4.5.0/Reflection.js";
-import { fail, andThen, tuple2, int, field, map, string, object } from "../packages/Thoth.Json.Core/Decode.fs.js";
-import { Json } from "../packages/Thoth.Json.Core/Types.fs.js";
-import { defaultOf } from "./Thoth.Json.JavaScript.Tests/fable_modules/fable-library.4.5.0/Util.js";
+import { FSharpException, Union, Record } from "../Thoth.Json.Tests.JavaScript/fable_modules/fable-library.4.5.0/Types.js";
+import { bigint_type, char_type, unit_type, uint64_type, int64_type, uint32_type, uint16_type, int16_type, uint8_type, int8_type, class_type, array_type, option_type, list_type, tuple_type, bool_type, string_type, union_type, int32_type, record_type, float64_type } from "../Thoth.Json.Tests.JavaScript/fable_modules/fable-library.4.5.0/Reflection.js";
+import { fail, andThen, tuple2, int, field, map, string, object } from "../../packages/Thoth.Json.Core/Decode.fs.js";
+import { Json } from "../../packages/Thoth.Json.Core/Types.fs.js";
+import { defaultOf } from "../Thoth.Json.Tests.JavaScript/fable_modules/fable-library.4.5.0/Util.js";
 
 export class Record2 extends Record {
     constructor(a, b) {
@@ -13,7 +13,7 @@ export class Record2 extends Record {
 }
 
 export function Record2_$reflection() {
-    return record_type("Tests.Types.Record2", [], Record2, () => [["a", float64_type], ["b", float64_type]]);
+    return record_type("Thoth.Json.Tests.Types.Record2", [], Record2, () => [["a", float64_type], ["b", float64_type]]);
 }
 
 export function Record2_Create(a, b) {
@@ -30,7 +30,7 @@ export class Record3 extends Record {
 }
 
 export function Record3_$reflection() {
-    return record_type("Tests.Types.Record3", [], Record3, () => [["a", float64_type], ["b", float64_type], ["c", float64_type]]);
+    return record_type("Thoth.Json.Tests.Types.Record3", [], Record3, () => [["a", float64_type], ["b", float64_type], ["c", float64_type]]);
 }
 
 export function Record3_Create(a, b, c) {
@@ -48,7 +48,7 @@ export class Record4 extends Record {
 }
 
 export function Record4_$reflection() {
-    return record_type("Tests.Types.Record4", [], Record4, () => [["a", float64_type], ["b", float64_type], ["c", float64_type], ["d", float64_type]]);
+    return record_type("Thoth.Json.Tests.Types.Record4", [], Record4, () => [["a", float64_type], ["b", float64_type], ["c", float64_type], ["d", float64_type]]);
 }
 
 export function Record4_Create(a, b, c, d) {
@@ -67,7 +67,7 @@ export class Record5 extends Record {
 }
 
 export function Record5_$reflection() {
-    return record_type("Tests.Types.Record5", [], Record5, () => [["a", float64_type], ["b", float64_type], ["c", float64_type], ["d", float64_type], ["e", float64_type]]);
+    return record_type("Thoth.Json.Tests.Types.Record5", [], Record5, () => [["a", float64_type], ["b", float64_type], ["c", float64_type], ["d", float64_type], ["e", float64_type]]);
 }
 
 export function Record5_Create(a, b, c, d, e) {
@@ -87,7 +87,7 @@ export class Record6 extends Record {
 }
 
 export function Record6_$reflection() {
-    return record_type("Tests.Types.Record6", [], Record6, () => [["a", float64_type], ["b", float64_type], ["c", float64_type], ["d", float64_type], ["e", float64_type], ["f", float64_type]]);
+    return record_type("Thoth.Json.Tests.Types.Record6", [], Record6, () => [["a", float64_type], ["b", float64_type], ["c", float64_type], ["d", float64_type], ["e", float64_type], ["f", float64_type]]);
 }
 
 export function Record6_Create(a, b, c, d, e, f) {
@@ -108,7 +108,7 @@ export class Record7 extends Record {
 }
 
 export function Record7_$reflection() {
-    return record_type("Tests.Types.Record7", [], Record7, () => [["a", float64_type], ["b", float64_type], ["c", float64_type], ["d", float64_type], ["e", float64_type], ["f", float64_type], ["g", float64_type]]);
+    return record_type("Thoth.Json.Tests.Types.Record7", [], Record7, () => [["a", float64_type], ["b", float64_type], ["c", float64_type], ["d", float64_type], ["e", float64_type], ["f", float64_type], ["g", float64_type]]);
 }
 
 export function Record7_Create(a, b, c, d, e, f, g) {
@@ -130,7 +130,7 @@ export class Record8 extends Record {
 }
 
 export function Record8_$reflection() {
-    return record_type("Tests.Types.Record8", [], Record8, () => [["a", float64_type], ["b", float64_type], ["c", float64_type], ["d", float64_type], ["e", float64_type], ["f", float64_type], ["g", float64_type], ["h", float64_type]]);
+    return record_type("Thoth.Json.Tests.Types.Record8", [], Record8, () => [["a", float64_type], ["b", float64_type], ["c", float64_type], ["d", float64_type], ["e", float64_type], ["f", float64_type], ["g", float64_type], ["h", float64_type]]);
 }
 
 export function Record8_Create(a, b, c, d, e, f, g, h) {
@@ -149,7 +149,7 @@ export class MyUnion extends Union {
 }
 
 export function MyUnion_$reflection() {
-    return union_type("Tests.Types.MyUnion", [], MyUnion, () => [[["Item", int32_type]]]);
+    return union_type("Thoth.Json.Tests.Types.MyUnion", [], MyUnion, () => [[["Item", int32_type]]]);
 }
 
 export class Record9 extends Record {
@@ -177,7 +177,7 @@ export class Record9 extends Record {
 }
 
 export function Record9_$reflection() {
-    return record_type("Tests.Types.Record9", [], Record9, () => [["a", int32_type], ["b", string_type], ["c", list_type(tuple_type(bool_type, int32_type))], ["d", array_type(option_type(MyUnion_$reflection()))], ["e", class_type("Microsoft.FSharp.Collections.FSharpMap`2", [string_type, Record2_$reflection()])], ["f", class_type("System.DateTime")], ["g", class_type("Microsoft.FSharp.Collections.FSharpSet`1", [Record2_$reflection()])], ["h", class_type("System.TimeSpan")], ["i", int8_type], ["j", uint8_type], ["k", int16_type], ["l", uint16_type], ["m", uint32_type], ["n", int64_type], ["o", uint64_type], ["p", unit_type], ["r", class_type("Microsoft.FSharp.Collections.FSharpMap`2", [Record2_$reflection(), string_type])], ["s", char_type]]);
+    return record_type("Thoth.Json.Tests.Types.Record9", [], Record9, () => [["a", int32_type], ["b", string_type], ["c", list_type(tuple_type(bool_type, int32_type))], ["d", array_type(option_type(MyUnion_$reflection()))], ["e", class_type("Microsoft.FSharp.Collections.FSharpMap`2", [string_type, Record2_$reflection()])], ["f", class_type("System.DateTime")], ["g", class_type("Microsoft.FSharp.Collections.FSharpSet`1", [Record2_$reflection()])], ["h", class_type("System.TimeSpan")], ["i", int8_type], ["j", uint8_type], ["k", int16_type], ["l", uint16_type], ["m", uint32_type], ["n", int64_type], ["o", uint64_type], ["p", unit_type], ["r", class_type("Microsoft.FSharp.Collections.FSharpMap`2", [Record2_$reflection(), string_type])], ["s", char_type]]);
 }
 
 export class Record10 extends Record {
@@ -198,7 +198,7 @@ export class Record10 extends Record {
 }
 
 export function Record10_$reflection() {
-    return record_type("Tests.Types.Record10", [], Record10, () => [["a", int32_type], ["b", int32_type], ["c", int32_type], ["d", int32_type], ["e", int32_type], ["f", int32_type], ["g", int32_type], ["h", int32_type], ["i", int32_type], ["j", int32_type], ["k", int32_type]]);
+    return record_type("Thoth.Json.Tests.Types.Record10", [], Record10, () => [["a", int32_type], ["b", int32_type], ["c", int32_type], ["d", int32_type], ["e", int32_type], ["f", int32_type], ["g", int32_type], ["h", int32_type], ["i", int32_type], ["j", int32_type], ["k", int32_type]]);
 }
 
 export function Record10_Create(a, b, c, d, e, f, g, h, i, j, k) {
@@ -216,7 +216,7 @@ export class User extends Record {
 }
 
 export function User_$reflection() {
-    return record_type("Tests.Types.User", [], User, () => [["Id", int32_type], ["Name", string_type], ["Email", string_type], ["Followers", int32_type]]);
+    return record_type("Thoth.Json.Tests.Types.User", [], User, () => [["Id", int32_type], ["Name", string_type], ["Email", string_type], ["Followers", int32_type]]);
 }
 
 export function User_Create(id, name, email, followers) {
@@ -231,7 +231,7 @@ export class SmallRecord extends Record {
 }
 
 export function SmallRecord_$reflection() {
-    return record_type("Tests.Types.SmallRecord", [], SmallRecord, () => [["fieldA", string_type]]);
+    return record_type("Thoth.Json.Tests.Types.SmallRecord", [], SmallRecord, () => [["fieldA", string_type]]);
 }
 
 export function SmallRecord_get_Decoder() {
@@ -241,8 +241,8 @@ export function SmallRecord_get_Decoder() {
     });
 }
 
-export function SmallRecord_Encoder_Z4AB0BC7(x) {
-    return new Json(6, [[["fieldA", new Json(0, [x.fieldA])]]]);
+export function SmallRecord_Encoder_Z60B4A1D2(x) {
+    return new Json(5, [[["fieldA", new Json(0, [x.fieldA])]]]);
 }
 
 export class MediumRecord extends Record {
@@ -256,7 +256,7 @@ export class MediumRecord extends Record {
 }
 
 export function MediumRecord_$reflection() {
-    return record_type("Tests.Types.MediumRecord", [], MediumRecord, () => [["FieldA", string_type], ["FieldB", string_type], ["FieldC", int32_type], ["FieldD", bool_type]]);
+    return record_type("Thoth.Json.Tests.Types.MediumRecord", [], MediumRecord, () => [["FieldA", string_type], ["FieldB", string_type], ["FieldC", int32_type], ["FieldD", bool_type]]);
 }
 
 export class SmallRecord2 extends Record {
@@ -267,7 +267,7 @@ export class SmallRecord2 extends Record {
 }
 
 export function SmallRecord2_$reflection() {
-    return record_type("Tests.Types.SmallRecord2", [], SmallRecord2, () => [["optionalField", option_type(string_type)]]);
+    return record_type("Thoth.Json.Tests.Types.SmallRecord2", [], SmallRecord2, () => [["optionalField", option_type(string_type)]]);
 }
 
 export class Model extends Record {
@@ -279,7 +279,7 @@ export class Model extends Record {
 }
 
 export function Model_$reflection() {
-    return record_type("Tests.Types.Model", [], Model, () => [["User", option_type(User_$reflection())], ["Field2", int32_type]]);
+    return record_type("Thoth.Json.Tests.Types.Model", [], Model, () => [["User", option_type(User_$reflection())], ["Field2", int32_type]]);
 }
 
 export class MyList$1 extends Union {
@@ -294,7 +294,7 @@ export class MyList$1 extends Union {
 }
 
 export function MyList$1_$reflection(gen0) {
-    return union_type("Tests.Types.MyList`1", [gen0], MyList$1, () => [[], [["Item1", gen0], ["Item2", MyList$1_$reflection(gen0)]]]);
+    return union_type("Thoth.Json.Tests.Types.MyList`1", [gen0], MyList$1, () => [[], [["Item1", gen0], ["Item2", MyList$1_$reflection(gen0)]]]);
 }
 
 export class TestMaybeRecord extends Record {
@@ -306,7 +306,7 @@ export class TestMaybeRecord extends Record {
 }
 
 export function TestMaybeRecord_$reflection() {
-    return record_type("Tests.Types.TestMaybeRecord", [], TestMaybeRecord, () => [["Maybe", option_type(string_type)], ["Must", string_type]]);
+    return record_type("Thoth.Json.Tests.Types.TestMaybeRecord", [], TestMaybeRecord, () => [["Maybe", option_type(string_type)], ["Must", string_type]]);
 }
 
 export class BaseClass {
@@ -315,7 +315,7 @@ export class BaseClass {
 }
 
 export function BaseClass_$reflection() {
-    return class_type("Tests.Types.BaseClass", void 0, BaseClass);
+    return class_type("Thoth.Json.Tests.Types.BaseClass", void 0, BaseClass);
 }
 
 export class RecordWithOptionalClass extends Record {
@@ -327,7 +327,7 @@ export class RecordWithOptionalClass extends Record {
 }
 
 export function RecordWithOptionalClass_$reflection() {
-    return record_type("Tests.Types.RecordWithOptionalClass", [], RecordWithOptionalClass, () => [["MaybeClass", option_type(BaseClass_$reflection())], ["Must", string_type]]);
+    return record_type("Thoth.Json.Tests.Types.RecordWithOptionalClass", [], RecordWithOptionalClass, () => [["MaybeClass", option_type(BaseClass_$reflection())], ["Must", string_type]]);
 }
 
 export class RecordWithRequiredClass extends Record {
@@ -339,7 +339,7 @@ export class RecordWithRequiredClass extends Record {
 }
 
 export function RecordWithRequiredClass_$reflection() {
-    return record_type("Tests.Types.RecordWithRequiredClass", [], RecordWithRequiredClass, () => [["Class", BaseClass_$reflection()], ["Must", string_type]]);
+    return record_type("Thoth.Json.Tests.Types.RecordWithRequiredClass", [], RecordWithRequiredClass, () => [["Class", BaseClass_$reflection()], ["Must", string_type]]);
 }
 
 export class Shape extends Union {
@@ -354,7 +354,7 @@ export class Shape extends Union {
 }
 
 export function Shape_$reflection() {
-    return union_type("Tests.Types.Shape", [], Shape, () => [[["radius", int32_type]], [["width", int32_type], ["height", int32_type]]]);
+    return union_type("Thoth.Json.Tests.Types.Shape", [], Shape, () => [[["radius", int32_type]], [["width", int32_type], ["height", int32_type]]]);
 }
 
 export function Shape_get_DecoderCircle() {
@@ -374,7 +374,7 @@ export class MyObj extends Record {
 }
 
 export function MyObj_$reflection() {
-    return record_type("Tests.Types.MyObj", [], MyObj, () => [["Enabled", bool_type], ["Shape", Shape_$reflection()]]);
+    return record_type("Thoth.Json.Tests.Types.MyObj", [], MyObj, () => [["Enabled", bool_type], ["Shape", Shape_$reflection()]]);
 }
 
 export class MyObj2 extends Record {
@@ -386,7 +386,7 @@ export class MyObj2 extends Record {
 }
 
 export function MyObj2_$reflection() {
-    return record_type("Tests.Types.MyObj2", [], MyObj2, () => [["Enabled", bool_type], ["Shape", option_type(Shape_$reflection())]]);
+    return record_type("Thoth.Json.Tests.Types.MyObj2", [], MyObj2, () => [["Enabled", bool_type], ["Shape", option_type(Shape_$reflection())]]);
 }
 
 export class CustomException extends FSharpException {
@@ -396,7 +396,7 @@ export class CustomException extends FSharpException {
 }
 
 export function CustomException_$reflection() {
-    return class_type("Tests.Types.CustomException", void 0, CustomException, class_type("System.Exception"));
+    return class_type("Thoth.Json.Tests.Types.CustomException", void 0, CustomException, class_type("System.Exception"));
 }
 
 export class BigIntRecord extends Record {
@@ -407,7 +407,7 @@ export class BigIntRecord extends Record {
 }
 
 export function BigIntRecord_$reflection() {
-    return record_type("Tests.Types.BigIntRecord", [], BigIntRecord, () => [["bigintField", bigint_type]]);
+    return record_type("Thoth.Json.Tests.Types.BigIntRecord", [], BigIntRecord, () => [["bigintField", bigint_type]]);
 }
 
 export class ChildType extends Record {
@@ -418,7 +418,7 @@ export class ChildType extends Record {
 }
 
 export function ChildType_$reflection() {
-    return record_type("Tests.Types.ChildType", [], ChildType, () => [["ChildField", string_type]]);
+    return record_type("Thoth.Json.Tests.Types.ChildType", [], ChildType, () => [["ChildField", string_type]]);
 }
 
 export function ChildType_get_Decoder() {
@@ -433,7 +433,7 @@ export class ParentRecord extends Record {
 }
 
 export function ParentRecord_$reflection() {
-    return record_type("Tests.Types.ParentRecord", [], ParentRecord, () => [["ParentField", ChildType_$reflection()]]);
+    return record_type("Thoth.Json.Tests.Types.ParentRecord", [], ParentRecord, () => [["ParentField", ChildType_$reflection()]]);
 }
 
 export class Price extends Union {
@@ -448,7 +448,7 @@ export class Price extends Union {
 }
 
 export function Price_$reflection() {
-    return union_type("Tests.Types.Price", [], Price, () => [[["Item", float64_type]], [["Item", option_type(float64_type)]], []]);
+    return union_type("Thoth.Json.Tests.Types.Price", [], Price, () => [[["Item", float64_type]], [["Item", option_type(float64_type)]], []]);
 }
 
 export class RecordWithStrangeType extends Record {
@@ -460,7 +460,7 @@ export class RecordWithStrangeType extends Record {
 }
 
 export function RecordWithStrangeType_$reflection() {
-    return record_type("Tests.Types.RecordWithStrangeType", [], RecordWithStrangeType, () => [["Id", int32_type], ["Thread", option_type(class_type("System.Threading.Thread"))]]);
+    return record_type("Thoth.Json.Tests.Types.RecordWithStrangeType", [], RecordWithStrangeType, () => [["Id", int32_type], ["Thread", option_type(class_type("System.Threading.Thread"))]]);
 }
 
 export class UserCaseSensitive extends Record {
@@ -474,7 +474,7 @@ export class UserCaseSensitive extends Record {
 }
 
 export function UserCaseSensitive_$reflection() {
-    return record_type("Tests.Types.UserCaseSensitive", [], UserCaseSensitive, () => [["Id", int32_type], ["Name", string_type], ["Email", string_type], ["followers", int32_type]]);
+    return record_type("Thoth.Json.Tests.Types.UserCaseSensitive", [], UserCaseSensitive, () => [["Id", int32_type], ["Name", string_type], ["Email", string_type], ["followers", int32_type]]);
 }
 
 export class RecordWithInterface extends Record {
@@ -486,7 +486,7 @@ export class RecordWithInterface extends Record {
 }
 
 export function RecordWithInterface_$reflection() {
-    return record_type("Tests.Types.RecordWithInterface", [], RecordWithInterface, () => [["Id", int32_type], ["Interface", option_type(class_type("Tests.Types.IAmAnInterface"))]]);
+    return record_type("Thoth.Json.Tests.Types.RecordWithInterface", [], RecordWithInterface, () => [["Id", int32_type], ["Interface", option_type(class_type("Thoth.Json.Tests.Types.IAmAnInterface"))]]);
 }
 
 export class MyRecType extends Record {
@@ -498,7 +498,7 @@ export class MyRecType extends Record {
 }
 
 export function MyRecType_$reflection() {
-    return record_type("Tests.Types.MyRecType", [], MyRecType, () => [["Name", string_type], ["Children", list_type(MyRecType_$reflection())]]);
+    return record_type("Thoth.Json.Tests.Types.MyRecType", [], MyRecType, () => [["Name", string_type], ["Children", list_type(MyRecType_$reflection())]]);
 }
 
 export class TestStringWithHTML extends Record {
@@ -510,7 +510,7 @@ export class TestStringWithHTML extends Record {
 }
 
 export function TestStringWithHTML_$reflection() {
-    return record_type("Tests.Types.TestStringWithHTML", [], TestStringWithHTML, () => [["FeedName", string_type], ["Content", string_type]]);
+    return record_type("Thoth.Json.Tests.Types.TestStringWithHTML", [], TestStringWithHTML, () => [["FeedName", string_type], ["Content", string_type]]);
 }
 
 export class RecordForCharacterCase extends Record {
@@ -523,7 +523,7 @@ export class RecordForCharacterCase extends Record {
 }
 
 export function RecordForCharacterCase_$reflection() {
-    return record_type("Tests.Types.RecordForCharacterCase", [], RecordForCharacterCase, () => [["One", int32_type], ["TwoPart", int32_type], ["ThreePartField", int32_type]]);
+    return record_type("Thoth.Json.Tests.Types.RecordForCharacterCase", [], RecordForCharacterCase, () => [["One", int32_type], ["TwoPart", int32_type], ["ThreePartField", int32_type]]);
 }
 
 export function IntAsRecord_encode(value) {
@@ -547,7 +547,7 @@ export class Person extends Record {
 }
 
 export function Person_$reflection() {
-    return record_type("Tests.Types.Person", [], Person, () => [["Name", string_type]]);
+    return record_type("Thoth.Json.Tests.Types.Person", [], Person, () => [["Name", string_type]]);
 }
 
 export class Post extends Record {
@@ -558,7 +558,7 @@ export class Post extends Record {
 }
 
 export function Post_$reflection() {
-    return record_type("Tests.Types.Post", [], Post, () => [["Title", string_type]]);
+    return record_type("Thoth.Json.Tests.Types.Post", [], Post, () => [["Title", string_type]]);
 }
 
 export class Data extends Record {
@@ -570,6 +570,6 @@ export class Data extends Record {
 }
 
 export function Data_$reflection() {
-    return record_type("Tests.Types.Data", [], Data, () => [["Person", Person_$reflection()], ["Post", option_type(Post_$reflection())]]);
+    return record_type("Thoth.Json.Tests.Types.Data", [], Data, () => [["Person", Person_$reflection()], ["Post", option_type(Post_$reflection())]]);
 }
 
