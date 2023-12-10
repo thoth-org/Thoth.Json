@@ -13,6 +13,7 @@
     <PackageVersion Include="Expecto" Version="9.0.4" />
     <PackageVersion Include="Fable.Core" Version="4.1.0" />
     <PackageVersion Include="Fable.Mocha" Version="2.17.0" />
+    <PackageVersion Include="Ionide.KeepAChangelog.Tasks" Version="0.1.8" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageVersion Include="Semver" Version="2.3.0" />
     <PackageVersion Include="SimpleExec" Version="11.0.0" />

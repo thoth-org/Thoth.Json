@@ -47,33 +47,36 @@ We need some specific decoder in order to work with our JSON.
 
 module Decode =
 
-(**
+    (**
 
 1. We need a decoder which ignore failed decoder
 
 *)
 
-    let ignoreFail (decoder : Decoder<'T>) : Decoder<'T option> =
+    let ignoreFail (decoder: Decoder<'T>) : Decoder<'T option> =
         fun path token ->
             match decoder path token with
             | Ok x -> Ok(Some x)
             | Error _ -> Ok None
 
-(**
+    (**
 
 2. We need a decoder which decodes all the object fields and only keep the valid ones
 
 *)
 
-    let keyValueOptions (decoder: Decoder<'a option>) : Decoder<(string * 'a) list> =
+    let keyValueOptions
+        (decoder: Decoder<'a option>)
+        : Decoder<(string * 'a) list>
+        =
         decoder
         |> Decode.keyValuePairs
         |> Decode.map (
-            List.collect
-                (fun (key, aOpt) ->
-                    match aOpt with
-                    | Some a -> [ key, a ]
-                    | None -> [])
+            List.collect (fun (key, aOpt) ->
+                match aOpt with
+                | Some a -> [ key, a ]
+                | None -> []
+            )
         )
 
 (**
@@ -84,14 +87,11 @@ First, we need a type to represent the time field.
 *)
 
 
-type Ts =
-    Ts of System.DateTime
+type Ts = | Ts of System.DateTime
 
 module Ts =
 
-    let decoder : Decoder<Ts> =
-        Decode.datetimeUtc
-        |> Decode.map Ts
+    let decoder: Decoder<Ts> = Decode.datetimeUtc |> Decode.map Ts
 
 (**
 
@@ -99,14 +99,12 @@ Then a type to represent a valid `Rate` field.
 
 *)
 
-type RateObject =
-    RateObject of decimal
+type RateObject = | RateObject of decimal
 
 module RateObject =
 
-    let decoder : Decoder<RateObject> =
-        Decode.field "rate" Decode.decimal
-        |> Decode.map RateObject
+    let decoder: Decoder<RateObject> =
+        Decode.field "rate" Decode.decimal |> Decode.map RateObject
 
 (**
 
@@ -119,9 +117,9 @@ This type contains the name of the 2 currencies and the rate.
 
 type Rate =
     {
-        SourceCurrency : string
-        TargetCurrency : string
-        Rate : decimal
+        SourceCurrency: string
+        TargetCurrency: string
+        Rate: decimal
     }
 
 (**
@@ -136,7 +134,7 @@ In order, to work with this JSON we are going to directly works on all the field
 
 module Rates =
 
-    let decoder : Decoder<Rate list> =
+    let decoder: Decoder<Rate list> =
         // 1. We retrieve all the valid RateObject fields and their associated name
         Decode.keyValueOptions (Decode.ignoreFail RateObject.decoder)
         // 2. Now that we have all the potential valid Rate fields
@@ -158,8 +156,7 @@ module Rates =
                         }
                 // If the fieldName is invalid
                 // Returns None, this will allow us to filter invalid fields without failing
-                | _ ->
-                    None
+                | _ -> None
 
             )
             // Only keep valid fields
@@ -180,23 +177,20 @@ It consist in an object with the time and the list of rates retrieved from the J
 
 type ExchangeRate =
     {
-        Time : System.DateTime
-        Rates : Rate list
+        Time: System.DateTime
+        Rates: Rate list
     }
 
 module ExchangeRate =
 
-    let private ctor (Ts time : Ts) (rates : Rate list) =
+    let private ctor (Ts time: Ts) (rates: Rate list) =
         {
             Time = time
             Rates = rates
         }
 
-    let decoder : Decoder<ExchangeRate> =
-        Decode.map2
-            ctor
-            (Decode.field "ts" Ts.decoder)
-            Rates.decoder
+    let decoder: Decoder<ExchangeRate> =
+        Decode.map2 ctor (Decode.field "ts" Ts.decoder) Rates.decoder
 
 (**
 

@@ -76,7 +76,4 @@ return JSON.stringify($0, null, 4) + ''
                     Error(Decode.errorToString helpers finalError)
 
             with ex when Helpers.isSyntaxError ex ->
-                Error(
-                    "Given an invalid JSON: "
-                    + ex.Message
-                )
+                Error("Given an invalid JSON: " + ex.Message)

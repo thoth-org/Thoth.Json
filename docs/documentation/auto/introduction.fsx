@@ -27,8 +27,8 @@ if your JSON is a one-to-one mapping with your F# type.
 
 type User =
     {
-        Name : string
-        Age : int
+        Name: string
+        Age: int
     }
 
 let userJson =
@@ -39,6 +39,6 @@ let userJson =
 }
     """
 
-Decode.Auto.fromString<User>(userJson)
+Decode.Auto.fromString<User> (userJson)
 
 // Ok { Name = "Geralt de Riv", Age = 92 }

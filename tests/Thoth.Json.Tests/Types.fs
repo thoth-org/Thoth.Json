@@ -7,111 +7,139 @@ open Fable.Core
 #endif
 
 type Record2 =
-    { a : float
-      b : float }
+    {
+        a: float
+        b: float
+    }
 
     static member Create a b =
-        { a = a
-          b = b }
+        {
+            a = a
+            b = b
+        }
 
 type Record3 =
-    { a : float
-      b : float
-      c : float }
+    {
+        a: float
+        b: float
+        c: float
+    }
 
     static member Create a b c =
-        { a = a
-          b = b
-          c = c }
+        {
+            a = a
+            b = b
+            c = c
+        }
 
 type Record4 =
-    { a : float
-      b : float
-      c : float
-      d : float }
+    {
+        a: float
+        b: float
+        c: float
+        d: float
+    }
 
     static member Create a b c d =
-        { a = a
-          b = b
-          c = c
-          d = d }
+        {
+            a = a
+            b = b
+            c = c
+            d = d
+        }
 
 type Record5 =
-    { a : float
-      b : float
-      c : float
-      d : float
-      e : float }
+    {
+        a: float
+        b: float
+        c: float
+        d: float
+        e: float
+    }
 
     static member Create a b c d e =
-        { a = a
-          b = b
-          c = c
-          d = d
-          e = e }
+        {
+            a = a
+            b = b
+            c = c
+            d = d
+            e = e
+        }
 
 type Record6 =
-    { a : float
-      b : float
-      c : float
-      d : float
-      e : float
-      f : float }
+    {
+        a: float
+        b: float
+        c: float
+        d: float
+        e: float
+        f: float
+    }
 
     static member Create a b c d e f =
-        { a = a
-          b = b
-          c = c
-          d = d
-          e = e
-          f = f }
+        {
+            a = a
+            b = b
+            c = c
+            d = d
+            e = e
+            f = f
+        }
 
 type Record7 =
-    { a : float
-      b : float
-      c : float
-      d : float
-      e : float
-      f : float
-      g : float }
+    {
+        a: float
+        b: float
+        c: float
+        d: float
+        e: float
+        f: float
+        g: float
+    }
 
     static member Create a b c d e f g =
-        { a = a
-          b = b
-          c = c
-          d = d
-          e = e
-          f = f
-          g = g }
+        {
+            a = a
+            b = b
+            c = c
+            d = d
+            e = e
+            f = f
+            g = g
+        }
 
 type Record8 =
-    { a : float
-      b : float
-      c : float
-      d : float
-      e : float
-      f : float
-      g : float
-      h : float }
+    {
+        a: float
+        b: float
+        c: float
+        d: float
+        e: float
+        f: float
+        g: float
+        h: float
+    }
 
     static member Create a b c d e f g h =
-        { a = a
-          b = b
-          c = c
-          d = d
-          e = e
-          f = f
-          g = g
-          h = h }
+        {
+            a = a
+            b = b
+            c = c
+            d = d
+            e = e
+            f = f
+            g = g
+            h = h
+        }
 
-type MyUnion = Foo of int
+type MyUnion = | Foo of int
 
 type Record9 =
     {
         a: int
         b: string
         c: (bool * int) list
-        d: (MyUnion option) []
+        d: (MyUnion option)[]
         e: Map<string, Record2>
         f: System.DateTime
         g: Set<Record2>
@@ -126,23 +154,23 @@ type Record9 =
         p: unit
         r: Map<Record2, string>
         s: char
-        // s: string seq
+    // s: string seq
     }
 
 type Record10 =
 
     {
-        a : int
-        b : int
-        c : int
-        d : int
-        e : int
-        f : int
-        g : int
-        h : int
-        i : int
-        j : int
-        k : int
+        a: int
+        b: int
+        c: int
+        d: int
+        e: int
+        f: int
+        g: int
+        h: int
+        i: int
+        j: int
+        k: int
     }
 
     static member Create a b c d e f g h i j k =
@@ -161,63 +189,82 @@ type Record10 =
         }
 
 type User =
-    { Id : int
-      Name : string
-      Email : string
-      Followers : int }
+    {
+        Id: int
+        Name: string
+        Email: string
+        Followers: int
+    }
 
     static member Create id name email followers =
-        { Id = id
-          Name = name
-          Email = email
-          Followers = followers }
+        {
+            Id = id
+            Name = name
+            Email = email
+            Followers = followers
+        }
 
 type SmallRecord =
-    { fieldA: string }
+    {
+        fieldA: string
+    }
 
     static member Decoder =
         Decode.object (fun get ->
-            { fieldA = get.Required.Field "fieldA" Decode.string }
+            {
+                fieldA = get.Required.Field "fieldA" Decode.string
+            }
         )
 
     static member Encoder x =
-        Encode.object [
-            "fieldA", Encode.string x.fieldA
-        ]
+        Encode.object [ "fieldA", Encode.string x.fieldA ]
 
 type MediumRecord =
-    { FieldA: string
-      FieldB: string
-      FieldC: int
-      FieldD: bool }
+    {
+        FieldA: string
+        FieldB: string
+        FieldC: int
+        FieldD: bool
+    }
 
 type SmallRecord2 =
-    { optionalField : string option }
+    {
+        optionalField: string option
+    }
 
 type Model =
-    { User : User option
-      Field2 : int }
+    {
+        User: User option
+        Field2: int
+    }
 
 type MyList<'T> =
     | Nil
     | Cons of 'T * MyList<'T>
 
 type TestMaybeRecord =
-    { Maybe : string option
-      Must : string }
+    {
+        Maybe: string option
+        Must: string
+    }
 
 type BaseClass =
-    class end
+    class
+    end
 
 [<NoComparison>]
 type RecordWithOptionalClass =
-    { MaybeClass : BaseClass option
-      Must : string }
+    {
+        MaybeClass: BaseClass option
+        Must: string
+    }
 
 [<NoComparison>]
 type RecordWithRequiredClass =
-    { Class : BaseClass
-      Must : string }
+    {
+        Class: BaseClass
+        Must: string
+    }
 
 
 type Shape =
@@ -225,8 +272,7 @@ type Shape =
     | Rectangle of width: int * height: int
 
     static member DecoderCircle =
-        Decode.field "radius" Decode.int
-        |> Decode.map Circle
+        Decode.field "radius" Decode.int |> Decode.map Circle
 
     static member DecoderRectangle =
         Decode.tuple2
@@ -235,27 +281,42 @@ type Shape =
         |> Decode.map Rectangle
 
 type MyObj =
-    { Enabled: bool
-      Shape: Shape }
+    {
+        Enabled: bool
+        Shape: Shape
+    }
 
 type MyObj2 =
-    { Enabled: bool
-      Shape: Shape option }
+    {
+        Enabled: bool
+        Shape: Shape option
+    }
 
 exception CustomException
 
 type BigIntRecord =
-    { bigintField: bigint }
+    {
+        bigintField: bigint
+    }
 
 type ChildType =
-    { ChildField: string }
+    {
+        ChildField: string
+    }
     // static member Encode(x: ChildType) =
     //     Encode.string x.ChildField
     static member Decoder =
-        Decode.string |> Decode.map (fun x -> { ChildField = x })
+        Decode.string
+        |> Decode.map (fun x ->
+            {
+                ChildField = x
+            }
+        )
 
 type ParentRecord =
-    { ParentField: ChildType }
+    {
+        ParentField: ChildType
+    }
 
 type Price =
     | Normal of float
@@ -265,26 +326,34 @@ type Price =
 
 [<NoComparison>]
 type RecordWithStrangeType =
-    { Id : int
-      Thread : Thread option }
+    {
+        Id: int
+        Thread: Thread option
+    }
 
 type UserCaseSensitive =
-    { Id : int
-      Name : string
-      Email : string
-      followers : int }
+    {
+        Id: int
+        Name: string
+        Email: string
+        followers: int
+    }
 
 type IAmAnInterface =
-    abstract member DoIt : unit -> unit
+    abstract member DoIt: unit -> unit
 
 [<NoComparison>]
 type RecordWithInterface =
-    { Id : int
-      Interface : IAmAnInterface option }
+    {
+        Id: int
+        Interface: IAmAnInterface option
+    }
 
 type MyRecType =
-    { Name: string
-      Children: MyRecType List }
+    {
+        Name: string
+        Children: MyRecType List
+    }
 
 #if !NETFRAMEWORK
 [<StringEnum>]
@@ -336,26 +405,31 @@ type NoAlloc = StructAttribute
 #endif
 
 [<NoAlloc>]
-type NoAllocAttributeId = NoAllocAttributeId of System.Guid
+type NoAllocAttributeId = | NoAllocAttributeId of System.Guid
 
 type TestStringWithHTML =
     {
-        FeedName : string
-        Content : string
+        FeedName: string
+        Content: string
     }
 
-type RecordForCharacterCase = { One : int; TwoPart : int; ThreePartField : int }
+type RecordForCharacterCase =
+    {
+        One: int
+        TwoPart: int
+        ThreePartField: int
+    }
 
 module IntAsRecord =
 
-    let encode (value : int) =
+    let encode (value: int) =
         // Encode.object [
         //     "type", Encode.string "int"
         //     "value", Encode.int value
         // ]
         null
 
-    let decode : Decoder<int> =
+    let decode: Decoder<int> =
         Decode.field "type" Decode.string
         |> Decode.andThen (fun typ ->
             if typ = "int" then
@@ -371,11 +445,11 @@ type Person =
 
 type Post =
     {
-        Title : string
+        Title: string
     }
 
 type Data =
     {
-        Person : Person
-        Post : Post option
+        Person: Person
+        Post: Post option
     }

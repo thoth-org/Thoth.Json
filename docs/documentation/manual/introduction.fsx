@@ -55,15 +55,15 @@ Then you can write a decoder like this:
 
 type User =
     {
-        Id : System.Guid
-        Name : string
-        Age : int
+        Id: System.Guid
+        Name: string
+        Age: int
     }
 
 module User =
 
     // Decoder specific to the user type
-    let decoder : Decoder<User> =
+    let decoder: Decoder<User> =
         Decode.object (fun get ->
             {
                 Id = get.Required.Field "id" Decode.guid

@@ -62,12 +62,11 @@ module Decode =
                 + ("\nNode `" + fieldName + "` is unkown.")
             | TooSmallArray(msg, value) ->
                 "Expecting " + msg + ".\n" + (helpers.anyToString value)
-            | BadOneOf (errors) ->
+            | BadOneOf(errors) ->
                 let messages =
                     errors
                     |> List.map (fun error ->
-                        Helpers.prependPath path error
-                        |> errorToString helpers
+                        Helpers.prependPath path error |> errorToString helpers
                     )
 
                 "The following errors were found:\n\n"

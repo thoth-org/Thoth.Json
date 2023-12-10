@@ -5,11 +5,11 @@ open Thoth.Json.Tests.Testing
 open Thoth.Json.Core
 open Thoth.Json.Newtonsoft
 
-type NewtonsoftEncode () =
+type NewtonsoftEncode() =
     interface IEncode with
         override _.toString spaces json = Encode.toString spaces json
 
-type NewtonsoftDecode () =
+type NewtonsoftDecode() =
     interface IDecode with
         override _.fromString decoder json = Decode.fromString decoder json
 
@@ -34,18 +34,24 @@ let main args =
         [
             Decoders.tests runner
             Encoders.tests runner
-            runner.testCase "field output an error explaining why the value is considered invalid" <| fun _ ->
+            runner.testCase
+                "field output an error explaining why the value is considered invalid"
+            <| fun _ ->
                 let json = """{ "name": null, "age": 25 }"""
+
                 let expected =
                     Error(
                         """
 Error at: `$.name`
 Expecting an int but instead got: null
-                        """.Trim()
+                        """
+                            .Trim()
                     )
 
                 let actual =
-                    runner.Decode.fromString (Decode.field "name" Decode.int) json
+                    runner.Decode.fromString
+                        (Decode.field "name" Decode.int)
+                        json
 
                 runner.equal expected actual
         ]

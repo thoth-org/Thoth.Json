@@ -31,12 +31,13 @@ open Fable.Core.JS
 
 console.log encodedUser
 
-let l = [ "a"; "b"; "c" ]
+let l =
+    [
+        "a"
+        "b"
+        "c"
+    ]
 
 open Thoth.Json.Core
 
-let json2 =
-    l
-    |> List.map Encode.string
-    |> Encode.list
-    |> Encode.toString 4
+let json2 = l |> List.map Encode.string |> Encode.list |> Encode.toString 4

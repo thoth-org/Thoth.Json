@@ -14,6 +14,12 @@
         "resolved": "5.0.0",
         "contentHash": "iHoYXA0VaSQUONGENB1aVafjDDZDZpwu39MtaRCTrmwFW/cTcK0b2yKNVYneFHJMc3ChtsSoM9lNtJ1dYXkHfA=="
       },
+      "Ionide.KeepAChangelog.Tasks": {
+        "type": "Direct",
+        "requested": "[0.1.8, )",
+        "resolved": "0.1.8",
+        "contentHash": "hHUZIVz9BlF++B5w183c5HwbqSIXUtJU+lxhKz3ebQ5X8INBIWV7dS/FK8uSqSMUTYavuKkRRTZvJlbYXPUykg=="
+      },
       "NETStandard.Library": {
         "type": "Direct",
         "requested": "[2.0.3, )",

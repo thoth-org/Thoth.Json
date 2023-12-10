@@ -82,19 +82,20 @@ Code:
 
 type Person =
     {
-        Name : string
-        Age : int option
+        Name: string
+        Age: int option
     }
 
 module Person =
 
-    let encoder (person : Person) =
-        Encode.object [
-            "name", Encode.string person.Name
-            "age", Encode.option Encode.int person.Age
-        ]
+    let encoder (person: Person) =
+        Encode.object
+            [
+                "name", Encode.string person.Name
+                "age", Encode.option Encode.int person.Age
+            ]
 
-    let decoder : Decoder<Person> =
+    let decoder: Decoder<Person> =
         Decode.object (fun get ->
             {
                 Name = get.Required.Field "name" Decode.string
@@ -110,7 +111,7 @@ module Person =
 
 type Color =
     | Red
-    | Rgb of red : int * green : int * blue : int
+    | Rgb of red: int * green: int * blue: int
 
 (**
 
@@ -133,15 +134,11 @@ Code:
 
 module Color =
 
-    let encoder (color : Color) =
+    let encoder (color: Color) =
         match color with
-        | Red ->
-            [
-                Encode.string "Red"
-            ]
-            |> Encode.list
+        | Red -> [ Encode.string "Red" ] |> Encode.list
 
-        | Rgb (red, green, blue) ->
+        | Rgb(red, green, blue) ->
             [
                 Encode.string "Rgb"
                 Encode.int red
@@ -150,23 +147,22 @@ module Color =
             ]
             |> Encode.list
 
-    let decoder : Decoder<Color> =
+    let decoder: Decoder<Color> =
         Decode.index 0 Decode.string
         |> Decode.andThen (fun caseName ->
             match caseName with
-            | "Red" ->
-                Decode.succeed Red
+            | "Red" -> Decode.succeed Red
 
             | "Rgb" ->
-                Decode.map3 (fun red green blue ->
-                    Rgb (red, green, blue)
-                )
+                Decode.map3
+                    (fun red green blue -> Rgb(red, green, blue))
                     (Decode.index 1 Decode.int)
                     (Decode.index 2 Decode.int)
                     (Decode.index 3 Decode.int)
 
             | invalid ->
-                Decode.fail $"""`%s{invalid}` is not a valid case for Color. Expecting one of the following:
+                Decode.fail
+                    $"""`%s{invalid}` is not a valid case for Color. Expecting one of the following:
 - Red
 - Rgb"""
         )
@@ -191,31 +187,28 @@ Code:
 
 module Color2 =
 
-    let encoder (color : Color) =
+    let encoder (color: Color) =
         match color with
-        | Red ->
-            Encode.object [
-                "$case", Encode.string "Red"
-            ]
+        | Red -> Encode.object [ "$case", Encode.string "Red" ]
 
-        | Rgb (red, green, blue) ->
-            Encode.object [
-                "$case", Encode.string "Rgb"
-                "red", Encode.int red
-                "green", Encode.int green
-                "blue", Encode.int blue
-            ]
+        | Rgb(red, green, blue) ->
+            Encode.object
+                [
+                    "$case", Encode.string "Rgb"
+                    "red", Encode.int red
+                    "green", Encode.int green
+                    "blue", Encode.int blue
+                ]
 
-    let decoder : Decoder<Color> =
+    let decoder: Decoder<Color> =
         Decode.field "$case" Decode.string
         |> Decode.andThen (fun caseName ->
             match caseName with
-            | "Red" ->
-                Decode.succeed Red
+            | "Red" -> Decode.succeed Red
 
             | "Rgb" ->
                 Decode.object (fun get ->
-                    Rgb (
+                    Rgb(
                         red = get.Required.Field "red" Decode.int,
                         green = get.Required.Field "green" Decode.int,
                         blue = get.Required.Field "blue" Decode.int
@@ -223,7 +216,8 @@ module Color2 =
                 )
 
             | invalid ->
-                Decode.fail $"""`%s{invalid}` is not a valid case for Color. Expecting one of the following:
+                Decode.fail
+                    $"""`%s{invalid}` is not a valid case for Color. Expecting one of the following:
 - Red
 - Rgb"""
         )

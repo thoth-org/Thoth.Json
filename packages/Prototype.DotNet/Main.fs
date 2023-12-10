@@ -11,12 +11,10 @@ let json =
 }
     """
 
-let userResult =
-    Decode.fromString User.decoder json
+let userResult = Decode.fromString User.decoder json
 
 match userResult with
 | Ok user ->
     printfn "Fist name: %s" user.FirstName
     printfn "Last name: %s" user.LastName
-| Error err ->
-    printfn "Error: %s" err
+| Error err -> printfn "Error: %s" err

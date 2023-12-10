@@ -29,6 +29,7 @@ module Encode =
             member _.encodeArray values = JArray(values)
             member _.encodeList values = JArray(values)
             member _.encodeSeq values = JArray(values)
+
             member _.encodeIntegralNumber(value: uint32) =
                 // We need to force the cast to uint64 here, otherwise
                 // Newtonsoft resolve the constructor to JValue(decimal)

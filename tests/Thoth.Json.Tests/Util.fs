@@ -21,20 +21,19 @@ open Thoth.Json.Core
 // // type Test = string * seq<string * seq<string * (obj -> unit)>>
 
 
-
 // type ITestContrat =
 //     abstract
 
 type IEncode =
-    abstract toString : int -> Json -> string
+    abstract toString: int -> Json -> string
 
 type IDecode =
-    abstract fromString<'T> : Decoder<'T> -> string -> Result<'T,string>
+    abstract fromString<'T> : Decoder<'T> -> string -> Result<'T, string>
 
 [<AbstractClass>]
-type TestRunner<'Test, 'JsonValue> () =
-    abstract testList : (string -> 'Test list -> 'Test) with get
-    abstract testCase : (string -> (unit -> unit) -> 'Test) with get
-    abstract equal<'a when 'a : equality> : 'a -> 'a -> unit
-    abstract Encode : IEncode with get
-    abstract Decode : IDecode with get
+type TestRunner<'Test, 'JsonValue>() =
+    abstract testList: (string -> 'Test list -> 'Test) with get
+    abstract testCase: (string -> (unit -> unit) -> 'Test) with get
+    abstract equal<'a when 'a: equality> : 'a -> 'a -> unit
+    abstract Encode: IEncode with get
+    abstract Decode: IDecode with get

@@ -31,12 +31,20 @@ the rest of your application.
 *)
 
 // Build your extra coders if needed
-let myExtraCoders =
-    Extra.empty
+let myExtraCoders = Extra.empty
 
 // Note the helpers must be inlined to resolve generic parameters in Fable
-let inline myDecoder<'T> = Decode.Auto.generateDecoderCached<'T>(caseStrategy = CamelCase, extra = myExtraCoders)
-let inline myyEncoder<'T> = Encode.Auto.generateEncoderCached<'T>(caseStrategy = CamelCase, extra = myExtraCoders)
+let inline myDecoder<'T> =
+    Decode.Auto.generateDecoderCached<'T> (
+        caseStrategy = CamelCase,
+        extra = myExtraCoders
+    )
+
+let inline myyEncoder<'T> =
+    Encode.Auto.generateEncoderCached<'T> (
+        caseStrategy = CamelCase,
+        extra = myExtraCoders
+    )
 
 (**
 
@@ -46,8 +54,8 @@ Now you can use this helper when you need to decode a type:
 
 type User =
     {
-        Name : string
-        Age : int
+        Name: string
+        Age: int
     }
 
 let userJson =

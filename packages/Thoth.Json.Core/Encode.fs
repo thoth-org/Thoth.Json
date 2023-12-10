@@ -11,7 +11,10 @@ module Encode =
     let inline char value = Json.Char value
     let inline guid value = value.ToString() |> string
     let inline float value = Json.DecimalNumber value
-    let float32 (value: float32) = Json.DecimalNumber (Operators.float value)
+
+    let float32 (value: float32) =
+        Json.DecimalNumber(Operators.float value)
+
     let inline decimal (value: decimal) = value.ToString() |> string
     let inline nil<'T> = Json.Null
     let inline bool value = Json.Boolean value
@@ -24,23 +27,26 @@ module Encode =
     let inline bigint (value: bigint) = value.ToString() |> string
 
     let inline datetimeOffset (value: DateTimeOffset) =
-        value.ToString("O", CultureInfo.InvariantCulture)
-        |> string
+        value.ToString("O", CultureInfo.InvariantCulture) |> string
 
     let inline timespan value = value.ToString() |> string
 
     let inline datetime (value: DateTime) =
-        value.ToString("O", CultureInfo.InvariantCulture)
-        |> string
+        value.ToString("O", CultureInfo.InvariantCulture) |> string
 
-    let inline sbyte (value : sbyte) = Json.IntegralNumber (uint32 value)
-    let inline byte (value : byte) = Json.IntegralNumber (uint32 value)
-    let inline int16 (value : int16) = Json.IntegralNumber (uint32 value)
-    let inline uint16 (value : uint16) = Json.IntegralNumber (uint32 value)
-    let inline int (value : int) = Json.IntegralNumber (uint32 value)
-    let inline uint32 (value : uint32) = Json.IntegralNumber value
-    let inline int64 (value: int64) = value.ToString(CultureInfo.InvariantCulture) |> string
-    let inline uint64 (value: uint64) = value.ToString(CultureInfo.InvariantCulture) |> string
+    let inline sbyte (value: sbyte) = Json.IntegralNumber(uint32 value)
+    let inline byte (value: byte) = Json.IntegralNumber(uint32 value)
+    let inline int16 (value: int16) = Json.IntegralNumber(uint32 value)
+    let inline uint16 (value: uint16) = Json.IntegralNumber(uint32 value)
+    let inline int (value: int) = Json.IntegralNumber(uint32 value)
+    let inline uint32 (value: uint32) = Json.IntegralNumber value
+
+    let inline int64 (value: int64) =
+        value.ToString(CultureInfo.InvariantCulture) |> string
+
+    let inline uint64 (value: uint64) =
+        value.ToString(CultureInfo.InvariantCulture) |> string
+
     let inline unit () = Json.Unit
 
     let tuple2 (enc1: Encoder<'T1>) (enc2: Encoder<'T2>) (v1, v2) : Json =
@@ -183,32 +189,25 @@ module Encode =
     module Enum =
 
         let byte<'TEnum when 'TEnum: enum<byte>> (value: 'TEnum) : Json =
-            LanguagePrimitives.EnumToValue value
-            |> byte
+            LanguagePrimitives.EnumToValue value |> byte
 
         let sbyte<'TEnum when 'TEnum: enum<sbyte>> (value: 'TEnum) : Json =
-            LanguagePrimitives.EnumToValue value
-            |> sbyte
+            LanguagePrimitives.EnumToValue value |> sbyte
 
         let int16<'TEnum when 'TEnum: enum<int16>> (value: 'TEnum) : Json =
-            LanguagePrimitives.EnumToValue value
-            |> int16
+            LanguagePrimitives.EnumToValue value |> int16
 
         let uint16<'TEnum when 'TEnum: enum<uint16>> (value: 'TEnum) : Json =
-            LanguagePrimitives.EnumToValue value
-            |> uint16
+            LanguagePrimitives.EnumToValue value |> uint16
 
         let int<'TEnum when 'TEnum: enum<int>> (value: 'TEnum) : Json =
-            LanguagePrimitives.EnumToValue value
-            |> int
+            LanguagePrimitives.EnumToValue value |> int
 
         let uint32<'TEnum when 'TEnum: enum<uint32>> (value: 'TEnum) : Json =
-            LanguagePrimitives.EnumToValue value
-            |> uint32
+            LanguagePrimitives.EnumToValue value |> uint32
 
     let option (encoder: 'a -> Json) =
-        Option.map encoder
-        >> Option.defaultWith (fun _ -> nil)
+        Option.map encoder >> Option.defaultWith (fun _ -> nil)
 
     let rec toJsonValue (helpers: IEncoderHelpers<'JsonValue>) (json: Json) =
         match json with
@@ -228,7 +227,5 @@ module Encode =
         | Json.Null -> helpers.encodeNull ()
         | Json.Boolean value -> helpers.encodeBool value
         | Json.Array value ->
-            value
-            |> Array.map (toJsonValue helpers)
-            |> helpers.encodeArray
+            value |> Array.map (toJsonValue helpers) |> helpers.encodeArray
         | Json.Unit -> helpers.encodeNull ()

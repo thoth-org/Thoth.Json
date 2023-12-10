@@ -1,7 +1,7 @@
 module Build.Workspace
 
 open System.IO
-open Build.Utils
+open Build.Utils.Path
 
 let root = Path.Resolve()
 

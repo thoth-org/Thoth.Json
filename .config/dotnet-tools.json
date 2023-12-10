@@ -15,7 +15,7 @@
       ]
     },
     "fable": {
-      "version": "4.5.0",
+      "version": "900.0.0-local-build-20231210-13138",
       "commands": [
         "fable"
       ]
@@ -24,6 +24,12 @@
       "version": "6.2.3",
       "commands": [
         "fantomas"
+      ]
+    },
+    "husky": {
+      "version": "0.6.3",
+      "commands": [
+        "husky"
       ]
     }
   }

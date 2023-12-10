@@ -36,14 +36,14 @@ Then you describe, for each property, how to decode it.
 
 type Point =
     {
-        X : int
-        Y : int
+        X: int
+        Y: int
     }
 
 Decode.object (fun get ->
     {
-        X = get.Required.Raw (Decode.field "x" Decode.int)
-        Y = get.Required.Raw (Decode.field "y" Decode.int)
+        X = get.Required.Raw(Decode.field "x" Decode.int)
+        Y = get.Required.Raw(Decode.field "y" Decode.int)
     }
 )
 
@@ -62,7 +62,6 @@ Decode.object (fun get ->
         Y = get.Required.Field "y" Decode.int
     }
 )
-
 
 
 (**
@@ -116,13 +115,13 @@ We create types and decoders for `User` and `Post`.
 
 type User =
     {
-        Name : string
-        Age : int
+        Name: string
+        Age: int
     }
 
 module User =
 
-    let decoder : Decoder<User> =
+    let decoder: Decoder<User> =
         Decode.object (fun get ->
             {
                 Name = get.Required.Field "name" Decode.string
@@ -132,13 +131,13 @@ module User =
 
 type Post =
     {
-        Title : string
-        Abstract : string
+        Title: string
+        Abstract: string
     }
 
 module Post =
 
-    let decoder : Decoder<Post> =
+    let decoder: Decoder<Post> =
         Decode.object (fun get ->
             {
                 Title = get.Required.Field "title" Decode.string
@@ -154,14 +153,14 @@ Now we combine them to form the parent record:
 
 type Data =
     {
-        User : User
-        Post : Post
+        User: User
+        Post: Post
     }
 
 module Data =
 
     // Get both structures and decode them with their own decoder accordingly
-    let decoder : Decoder<Data> =
+    let decoder: Decoder<Data> =
         Decode.object (fun get ->
             {
                 User = get.Required.Field "user" User.decode
@@ -169,9 +168,7 @@ module Data =
             }
         )
 
-Decode.fromString
-    (Decode.field "data" Data.decoder)
-    json
+Decode.fromString (Decode.field "data" Data.decoder) json
 
 (**
 
@@ -184,7 +181,8 @@ consider using [Object builder](#object-builder) or implementing your own `mapX`
 
 *)
 
-Decode.map2 (fun x y ->
+Decode.map2
+    (fun x y ->
         {
             X = x
             Y = y
@@ -207,18 +205,17 @@ type PersonType =
 
 module PersonType =
 
-    let decoder : Decoder<PersonType> =
+    let decoder: Decoder<PersonType> =
         Decode.string
         |> Decode.andThen (fun textValue ->
             match textValue with
-            | "student" ->
-                Decode.succeed Student
+            | "student" -> Decode.succeed Student
 
-            | "teacher" ->
-                Decode.succeed Teacher
+            | "teacher" -> Decode.succeed Teacher
 
             | invalid ->
-                Decode.fail $"""Expecting "student" or "teacher" but instead got: "%s{invalid}"""
+                Decode.fail
+                    $"""Expecting "student" or "teacher" but instead got: "%s{invalid}"""
         )
 
 (**
@@ -231,13 +228,11 @@ When using DDD (aka Domain Driven Design) you often need to map your types.
 
 *)
 
-type Email = Email of string
+type Email = | Email of string
 
 module Email =
 
-    let decoder : Decoder<Email> =
-        Decode.string
-        |> Decode.map Email
+    let decoder: Decoder<Email> = Decode.string |> Decode.map Email
 
 (**
 
@@ -263,7 +258,7 @@ You can write a decoder like that:
 
 *)
 
-let nullableIntDecoder : Decoder<int> =
+let nullableIntDecoder: Decoder<int> =
     Decode.oneOf
         [
             // First try to decode it as a standard int
@@ -272,8 +267,7 @@ let nullableIntDecoder : Decoder<int> =
             Decode.nil 0
         ]
 
-let json =
-    "[ 1, null, 2, 3 ]"
+let json = "[ 1, null, 2, 3 ]"
 
 Decode.fromString (Decode.list nullableIntDecoder) json
 

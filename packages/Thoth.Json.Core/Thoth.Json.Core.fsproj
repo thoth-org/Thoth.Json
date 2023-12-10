@@ -12,9 +12,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Fable.Core" />
+    <PackageReference Include="Ionide.KeepAChangelog.Tasks" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="*.fsproj; **\*.fs; **\*.js; package.json" PackagePath="fable" />
+    <Content Include="*.fsproj; **\*.fs; **\*.js" PackagePath="fable" />
   </ItemGroup>
-  <!-- <Import Project="..\..\.paket\Paket.Restore.targets" /> -->
 </Project>

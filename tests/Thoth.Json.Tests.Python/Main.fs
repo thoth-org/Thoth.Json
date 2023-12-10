@@ -33,8 +33,10 @@ let main args =
     let runner = PythonTestRunner()
 
 
-    testList "All" [
-        Decoders.tests runner
-        Encoders.tests runner
-    ]
+    testList
+        "All"
+        [
+            Decoders.tests runner
+            Encoders.tests runner
+        ]
     |> Pyxpecto.runTests

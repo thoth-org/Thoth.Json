@@ -15,8 +15,7 @@ module Encode =
             member _.encodeDecimalNumber value = box value
             member _.encodeBool value = box value
             member _.encodeNull() = box null
-            member _.createEmptyObject() =
-                emitPyExpr () "{}"
+            member _.createEmptyObject() = emitPyExpr () "{}"
 
             member _.setPropertyOnObject(o, key: string, value: obj) =
                 o?(key) <- value
@@ -40,6 +39,13 @@ module Encode =
 
         // Python.Json.json.dumps(json, ?indent = space)
         if space = 0 then
-            Python.Json.json.dumps(json, separators = [| ","; ":" |])
+            Python.Json.json.dumps (
+                json,
+                separators =
+                    [|
+                        ","
+                        ":"
+                    |]
+            )
         else
-            Python.Json.json.dumps(json, indent = space)
+            Python.Json.json.dumps (json, indent = space)

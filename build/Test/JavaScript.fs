@@ -18,22 +18,23 @@ let handle (args: string list) =
     let isWatch = args |> List.contains "--watch"
 
     let fableArgs =
-        CmdLine.concat [
-            CmdLine.empty
-            |> CmdLine.appendRaw "fable"
-            |> CmdLine.appendPrefix "--outDir" outDir
-            |> CmdLine.appendRaw "--noCache"
+        CmdLine.concat
+            [
+                CmdLine.empty
+                |> CmdLine.appendRaw "fable"
+                |> CmdLine.appendPrefix "--outDir" outDir
+                |> CmdLine.appendRaw "--noCache"
 
-            if isWatch then
-                CmdLine.empty
-                |> CmdLine.appendRaw "--watch"
-                |> CmdLine.appendRaw "--runWatch"
-                |> CmdLine.appendRaw mochaComand
-            else
-                CmdLine.empty
-                |> CmdLine.appendRaw "--run"
-                |> CmdLine.appendRaw mochaComand
-        ]
+                if isWatch then
+                    CmdLine.empty
+                    |> CmdLine.appendRaw "--watch"
+                    |> CmdLine.appendRaw "--runWatch"
+                    |> CmdLine.appendRaw mochaComand
+                else
+                    CmdLine.empty
+                    |> CmdLine.appendRaw "--run"
+                    |> CmdLine.appendRaw mochaComand
+            ]
         |> CmdLine.toString
 
     Command.Run(

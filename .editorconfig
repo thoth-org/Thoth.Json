@@ -25,6 +25,7 @@ fsharp_array_or_list_multiline_formatter = number_of_items
 fsharp_align_function_signature_to_indentation = true
 fsharp_multi_line_lambda_closing_newline = true
 fsharp_max_if_then_else_short_width = 0
+fsharp_max_record_number_of_items = 0
 
 [*.yml]
 indent_size = 2

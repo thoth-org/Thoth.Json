@@ -1,13 +1,11 @@
-module Build.Utils
+module Build.Utils.Path
 
 open System.IO
 open System
 
-module Path =
+module Operators =
 
-    module Operators =
-
-        let (</>) (p1: string) (p2: string) : string = Path.Combine(p1, p2)
+    let (</>) (p1: string) (p2: string) : string = Path.Combine(p1, p2)
 
 type Path =
 
@@ -21,7 +19,12 @@ type Path =
 
         // Use Environment.CurrentDirectory instead even if it means that we
         // need to be in the expected directory when running the build script
-        let paths = Array.concat [ [| Environment.CurrentDirectory; |]; segments ]
+        let paths =
+            Array.concat
+                [
+                    [| Environment.CurrentDirectory |]
+                    segments
+                ]
 
         // Use GetFullPath to clean the path
         Path.GetFullPath(Path.Combine(paths))
