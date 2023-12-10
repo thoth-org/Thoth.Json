@@ -17,6 +17,7 @@ let publish (projectDir: string) =
     ()
 
 let handle (_args: string list) =
+    publish Workspace.Fsproj.Packages.legacy
     publish Workspace.Fsproj.Packages.core
     publish Workspace.Fsproj.Packages.javascript
     publish Workspace.Fsproj.Packages.newtonsoft

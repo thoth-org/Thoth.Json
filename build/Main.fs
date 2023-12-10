@@ -12,6 +12,7 @@ Usage: dotnet run <command> [<args>]
 Available commands:
     test                            Run the main tests suite
         Subcommands:
+            legacy                  Run the tests for the legacy version
             javascript              Run the tests for JavaScript
             newtonsoft              Run the tests for Newtonsoft
             python                  Run the tests for Python
@@ -26,7 +27,7 @@ Available commands:
                                     the package will be published
         """
 
-    printfn "%s" helpText
+    printfn $"%s{helpText}"
 
 [<EntryPoint>]
 let main argv =
@@ -37,6 +38,7 @@ let main argv =
     match argv with
     | "test" :: args ->
         match args with
+        | "legacy" :: args -> Test.Legacy.handle args
         | "javascript" :: args -> Test.JavaScript.handle args
         | "newtonsoft" :: args -> Test.Newtonsoft.handle args
         | "python" :: args -> Test.Python.handle args

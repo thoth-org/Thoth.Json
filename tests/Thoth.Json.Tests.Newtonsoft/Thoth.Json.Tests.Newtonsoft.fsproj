@@ -1,17 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <OutputType>Exe</OutputType>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Main.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\packages\Thoth.Json.Core\Thoth.Json.Core.fsproj" />
-    <ProjectReference Include="..\..\packages\Thoth.Json.Newtonsoft\Thoth.Json.Newtonsoft.fsproj" />
-    <ProjectReference Include="..\Thoth.Json.Tests\Thoth.Json.Tests.fsproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Expecto" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Main.fs" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\packages\Thoth.Json.Core\Thoth.Json.Core.fsproj" />
+        <ProjectReference
+            Include="..\..\packages\Thoth.Json.Newtonsoft\Thoth.Json.Newtonsoft.fsproj" />
+        <ProjectReference Include="..\Thoth.Json.Tests\Thoth.Json.Tests.fsproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Expecto" />
+    </ItemGroup>
 </Project>

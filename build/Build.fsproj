@@ -7,6 +7,7 @@
     <Compile Include="Utils/Nuget.fs" />
     <Compile Include="Utils/Path.fs" />
     <Compile Include="Workspace.fs" />
+    <Compile Include="Test/Legacy.fs" />
     <Compile Include="Test/JavaScript.fs" />
     <Compile Include="Test/Newtonsoft.fs" />
     <Compile Include="Test/Python.fs" />

@@ -26,11 +26,12 @@
         <PackageReference Include="FSharp.Core" />
     </ItemGroup>
 	<!-- NuGet Metadata -->
-	<!-- <PropertyGroup>
-        <PackageProjectUrl>https://mangelmaxime.gitbook.io/fable-form/</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/MangelMaxime/Fable.Form</RepositoryUrl>
-        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+	<PropertyGroup>
+        <PackageProjectUrl>https://github.com/thoth-org/Thoth.Json</PackageProjectUrl>
+        <Packagelicense>https://github.com/thoth-org/Thoth.Json/blob/master/LICENSE.md</Packagelicense>
+        <RepositoryUrl>https://github.com/thoth-org/Thoth.Json</RepositoryUrl>
+        <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<Authors>Maxime Mangel</Authors>
-	</PropertyGroup> -->
+	</PropertyGroup>
 </Project>

@@ -3,15 +3,15 @@
         <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="..\..\packages\Thoth.Json\Thoth.Json.fsproj" />
+    </ItemGroup>
+    <ItemGroup>
         <Compile Include="Util.fs" />
         <Compile Include="Types.fs" />
         <Compile Include="Decoders.fs" />
         <Compile Include="Encoders.fs" />
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\..\packages\Thoth.Json.Core\Thoth.Json.Core.fsproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Fable.Core" />
+        <Compile Include="BackAndForth.fs" />
+        <Compile Include="ExtraCoders.fs" />
+        <Compile Include="Main.fs" />
     </ItemGroup>
 </Project>

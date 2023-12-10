@@ -11,6 +11,7 @@
     "devDependencies": {
         "@babel/preset-react": "^7.16.7",
         "@fortawesome/fontawesome-free": "^5.15.4",
+        "@prettier/plugin-xml": "3.2.2",
         "bulma": "^0.9.3",
         "chalk": "^5.0.0",
         "changelog-parser": "^2.8.0",
@@ -22,6 +23,7 @@
         "nacara": "^1.5.1",
         "nacara-layout-standard": "^1.6.0",
         "nodemon": "^2.0.20",
+        "prettier": "3.1.1",
         "remark-github": "^11.2.2",
         "shelljs": "^0.8.5",
         "unified": "^10.1.1",
