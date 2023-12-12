@@ -4,9 +4,9 @@
     "net6.0": {
       "Fable.Core": {
         "type": "Direct",
-        "requested": "[4.2.0, )",
-        "resolved": "4.2.0",
-        "contentHash": "ikacgHRLZpNVS33oBzl4uDHXZJDH660SaNPYCDGvFb7Hhm4WCXq0qTik8bpPJAhCnLDVrXLCAIoGKsKQ5pfx2A=="
+        "requested": "[4.1.0, )",
+        "resolved": "4.1.0",
+        "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
       },
       "Fable.Pyxpecto": {
         "type": "Direct",

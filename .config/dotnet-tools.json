@@ -15,7 +15,7 @@
       ]
     },
     "fable": {
-      "version": "900.0.0-local-build-20231210-13138",
+      "version": "4.8.0",
       "commands": [
         "fable"
       ]
