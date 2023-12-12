@@ -10,11 +10,12 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Fable.Core" />
-    </ItemGroup>
-    <ItemGroup>
-        <Content Include="*.fsproj; **\*.fs" PackagePath="fable" />
+        <PackageReference Include="Ionide.KeepAChangelog.Tasks" PrivateAssets="all" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Thoth.Json.Core\Thoth.Json.Core.fsproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="*.fsproj; **\*.fs" PackagePath="fable" />
     </ItemGroup>
 </Project>

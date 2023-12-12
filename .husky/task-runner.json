@@ -13,6 +13,18 @@
                 "**/*.fsx",
                 "**/*.fsi"
             ]
+        },
+        {
+            "name": "lint-markdown-staged-files",
+            "group": "pre-commit-operations",
+            "command": "npx",
+            "args": [
+                "markdownlint-cli",
+                "${staged}"
+            ],
+            "include": [
+                "**/CHANGELOG.md"
+            ]
         }
     ]
 }

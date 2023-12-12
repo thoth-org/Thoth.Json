@@ -1,3 +1,5 @@
+<!-- markdownlint-disable -->
+
 <h1 align="center">Sponsors & Backers</h1>
 
 The development of this project is made possible thanks to the support of these awesome sponsors & backers.

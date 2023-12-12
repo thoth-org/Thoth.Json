@@ -19,9 +19,10 @@ If you are interested on using it against .NET Core or .NET Framework, please us
         <Compile Include="Extra.fs" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include="*.fsproj; **\*.fs; **\*.js" PackagePath="fable" />
+        <PackageReference Include="Fable.Core" />
+        <PackageReference Include="Ionide.KeepAChangelog.Tasks" PrivateAssets="all" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="Fable.Core" />
+        <Content Include="*.fsproj; **\*.fs; **\*.js" PackagePath="fable" />
     </ItemGroup>
 </Project>
