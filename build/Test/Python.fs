@@ -9,6 +9,12 @@ let private outDir = "fableBuild"
 let handle (args: string list) =
     let isWatch = args |> List.contains "--watch"
 
+    let runArg =
+        if isWatch then
+            "--runWatch"
+        else
+            "--run"
+
     Command.Run(
         "dotnet",
         CmdLine.empty
@@ -17,7 +23,9 @@ let handle (args: string list) =
         |> CmdLine.appendPrefix "--lang" "python"
         |> CmdLine.appendRaw "--noCache"
         |> CmdLine.appendIf isWatch "--watch"
-        |> CmdLine.appendRaw "--runScript"
+        |> CmdLine.appendRaw runArg
+        |> CmdLine.appendRaw "python"
+        |> CmdLine.appendRaw "fableBuild/main.py"
         |> CmdLine.toString,
         workingDirectory = Workspace.ProjectDir.Tests.python
     )
