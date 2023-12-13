@@ -33,7 +33,7 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             Encode.string "maxime" |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a string with new line works"
                     <| fun _ ->
@@ -42,7 +42,7 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             Encode.string "a\nb" |> runner.Encode.toString 4
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a string with new line character works"
                     <| fun _ ->
@@ -51,7 +51,7 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             Encode.string "a\\nb" |> runner.Encode.toString 4
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a string with tab works"
                     <| fun _ ->
@@ -60,7 +60,7 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             Encode.string "a\tb" |> runner.Encode.toString 4
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a string with tab character works"
                     <| fun _ ->
@@ -69,20 +69,20 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             Encode.string "a\\tb" |> runner.Encode.toString 4
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a char works"
                     <| fun _ ->
                         let expected = "\"a\""
                         let actual = Encode.char 'a' |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an int works"
                     <| fun _ ->
                         let expected = "1"
                         let actual = Encode.int 1 |> runner.Encode.toString 0
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a float works"
                     <| fun _ ->
@@ -91,7 +91,7 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             Encode.float 1.2 |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an array works"
                     <| fun _ ->
@@ -105,7 +105,7 @@ let tests (runner: TestRunner<_, _>) =
                                 |]
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a list works"
                     <| fun _ ->
@@ -119,7 +119,7 @@ let tests (runner: TestRunner<_, _>) =
                                 ]
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a bool works"
                     <| fun _ ->
@@ -128,19 +128,19 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             Encode.bool false |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a null works"
                     <| fun _ ->
                         let expected = "null"
                         let actual = Encode.nil |> runner.Encode.toString 0
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "unit works"
                     <| fun _ ->
                         let expected = "null"
                         let actual = Encode.unit () |> runner.Encode.toString 0
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an object works"
                     <| fun _ ->
@@ -154,7 +154,7 @@ let tests (runner: TestRunner<_, _>) =
                                 ]
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a dict works"
                     <| fun _ ->
@@ -170,7 +170,7 @@ let tests (runner: TestRunner<_, _>) =
                             |> Encode.dict
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a map works"
                     <| fun _ ->
@@ -186,7 +186,7 @@ let tests (runner: TestRunner<_, _>) =
                             |> Encode.map Encode.string Encode.int
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a bigint works"
                     <| fun _ ->
@@ -195,7 +195,7 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             Encode.bigint 12I |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a datetime works"
                     <| fun _ ->
@@ -215,7 +215,7 @@ let tests (runner: TestRunner<_, _>) =
                             |> Encode.datetime
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a datetimeOffset works"
                     <| fun _ ->
@@ -238,7 +238,7 @@ let tests (runner: TestRunner<_, _>) =
                             |> Encode.datetimeOffset
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a timeSpan works"
                     <| fun _ ->
@@ -249,9 +249,9 @@ let tests (runner: TestRunner<_, _>) =
                             |> Encode.timespan
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
-                    runner.testCase "a decimal works"
+                    runner.ftestCase "a decimal works"
                     <| fun _ ->
                         let expected = "\"0.7833\""
 
@@ -260,7 +260,7 @@ let tests (runner: TestRunner<_, _>) =
                             |> Encode.decimal
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a guid works"
                     <| fun _ ->
@@ -272,7 +272,7 @@ let tests (runner: TestRunner<_, _>) =
                             |> Encode.guid
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an byte works"
                     <| fun _ ->
@@ -281,7 +281,7 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             99uy |> Encode.byte |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an sbyte works"
                     <| fun _ ->
@@ -290,7 +290,7 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             99y |> Encode.sbyte |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an int16 works"
                     <| fun _ ->
@@ -299,7 +299,7 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             99s |> Encode.int16 |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an uint16 works"
                     <| fun _ ->
@@ -308,7 +308,7 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             99us |> Encode.uint16 |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an int64 works"
                     <| fun _ ->
@@ -317,7 +317,7 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             7923209L |> Encode.int64 |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an uint64 works"
                     <| fun _ ->
@@ -328,7 +328,7 @@ let tests (runner: TestRunner<_, _>) =
                             |> Encode.uint64
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an enum<sbyte> works"
                     <| fun _ ->
@@ -339,7 +339,7 @@ let tests (runner: TestRunner<_, _>) =
                                 0
                                 (Encode.Enum.sbyte Enum_Int8.NinetyNine)
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an enum<byte> works"
                     <| fun _ ->
@@ -350,7 +350,7 @@ let tests (runner: TestRunner<_, _>) =
                                 0
                                 (Encode.Enum.byte Enum_UInt8.NinetyNine)
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an enum<int> works"
                     <| fun _ ->
@@ -361,7 +361,7 @@ let tests (runner: TestRunner<_, _>) =
                                 0
                                 (Encode.Enum.int Enum_Int.One)
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an enum<uint32> works"
                     <| fun _ ->
@@ -372,7 +372,7 @@ let tests (runner: TestRunner<_, _>) =
                                 0
                                 (Encode.Enum.uint32 Enum_UInt32.NinetyNine)
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an enum<int16> works"
                     <| fun _ ->
@@ -383,7 +383,7 @@ let tests (runner: TestRunner<_, _>) =
                                 0
                                 (Encode.Enum.int16 Enum_Int16.NinetyNine)
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "an enum<uint16> works"
                     <| fun _ ->
@@ -394,7 +394,7 @@ let tests (runner: TestRunner<_, _>) =
                                 0
                                 (Encode.Enum.uint16 Enum_UInt16.NinetyNine)
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a tuple2 works"
                     <| fun _ ->
@@ -404,7 +404,7 @@ let tests (runner: TestRunner<_, _>) =
                             Encode.tuple2 Encode.int Encode.string (1, "maxime")
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a tuple3 works"
                     <| fun _ ->
@@ -418,7 +418,7 @@ let tests (runner: TestRunner<_, _>) =
                                 (1, "maxime", 2.5)
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a tuple4 works"
                     <| fun _ ->
@@ -438,7 +438,7 @@ let tests (runner: TestRunner<_, _>) =
                                  })
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a tuple5 works"
                     <| fun _ ->
@@ -481,7 +481,7 @@ let tests (runner: TestRunner<_, _>) =
                                  ))
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a tuple6 works"
                     <| fun _ ->
@@ -506,7 +506,7 @@ let tests (runner: TestRunner<_, _>) =
                                  null)
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a tuple7 works"
                     <| fun _ ->
@@ -533,7 +533,7 @@ let tests (runner: TestRunner<_, _>) =
                                  true)
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "a tuple8 works"
                     <| fun _ ->
@@ -562,7 +562,7 @@ let tests (runner: TestRunner<_, _>) =
                                  98)
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "using pretty space works"
                     <| fun _ ->
@@ -577,7 +577,7 @@ let tests (runner: TestRunner<_, _>) =
                                 ]
                             |> runner.Encode.toString 4
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "complex structure works"
                     <| fun _ ->
@@ -598,7 +598,7 @@ let tests (runner: TestRunner<_, _>) =
                                 ]
                             |> runner.Encode.toString 4
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "option with a value `Some ...` works"
                     <| fun _ ->
@@ -613,7 +613,7 @@ let tests (runner: TestRunner<_, _>) =
                                 ]
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                     runner.testCase "option without a value `None` works"
                     <| fun _ ->
@@ -628,7 +628,7 @@ let tests (runner: TestRunner<_, _>) =
                                 ]
                             |> runner.Encode.toString 0
 
-                        runner.equal expected actual
+                        runner.equal actual expected
 
                 //             runner.testCase "by default, we keep the case defined in type" <| fun _ ->
                 //                 let expected =
@@ -640,14 +640,14 @@ let tests (runner: TestRunner<_, _>) =
                 //                       followers = 33 }
 
                 //                 let actual = Encode.Auto.toString(0, value)
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "force_snake_case works" <| fun _ ->
                 //                 let expected =
                 //                     """{"one":1,"two_part":2,"three_part_field":3}"""
                 //                 let value = { One = 1; TwoPart = 2; ThreePartField = 3 }
                 //                 let actual = Encode.Auto.toString(0, value, SnakeCase)
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "forceCamelCase works" <| fun _ ->
                 //                 let expected =
@@ -659,7 +659,7 @@ let tests (runner: TestRunner<_, _>) =
                 //                       followers = 33 }
 
                 //                 let actual = Encode.Auto.toString(0, value, CamelCase)
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "Encode.Auto.generateEncoder works" <| fun _ ->
                 //                 let value =
@@ -693,7 +693,7 @@ let tests (runner: TestRunner<_, _>) =
                 //                 let expected = """{"a":5,"b":"bar","c":[[false,3],[true,5],[false,10]],"d":[["Foo",14],null],"e":{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}},"f":"2018-11-28T11:10:29Z","g":[{"a":-1.5,"b":0},{"a":2,"b":2}],"h":"00:00:05","i":120,"j":120,"k":250,"l":250,"m":99,"n":"99","o":"999","r":[[{"a":-2.5,"b":22.1},"value 2"],[{"a":1,"b":2},"value 1"]],"s":"z"}"""
                 //                 // Don't fail because of non-meaningful decimal digits ("2" vs "2.0")
                 //                 let actual = System.Text.RegularExpressions.Regex.Replace(actual, @"\.0+(?!\d)", "")
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "Encode.Auto.generateEncoderCached works" <| fun _ ->
                 //                 let value =
@@ -730,15 +730,15 @@ let tests (runner: TestRunner<_, _>) =
                 //                 // Don't fail because of non-meaningful decimal digits ("2" vs "2.0")
                 //                 let actual1 = System.Text.RegularExpressions.Regex.Replace(actual1, @"\.0+(?!\d)", "")
                 //                 let actual2 = System.Text.RegularExpressions.Regex.Replace(actual2, @"\.0+(?!\d)", "")
-                //                 runner.equal expected actual1
-                //                 runner.equal expected actual2
+                //                 runner.equal actual expected 1
+                //                 runner.equal actual expected 2
                 //                 runner.equal actual1 actual2
 
                 //             runner.testCase "Encode.Auto.toString emit null field if setted for" <| fun _ ->
                 //                 let value = { fieldA = null }
                 //                 let expected = """{"fieldA":null}"""
                 //                 let actual = Encode.Auto.toString(0, value, skipNullField = false)
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "Encode.Auto.toString works with bigint extra" <| fun _ ->
                 //                 let extra =
@@ -747,7 +747,7 @@ let tests (runner: TestRunner<_, _>) =
                 //                 let expected = """{"bigintField":"9999999999999999999999"}"""
                 //                 let value = { bigintField = 9999999999999999999999I }
                 //                 let actual = Encode.Auto.toString(0, value, extra=extra)
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "Encode.Auto.toString works with custom extra" <| fun _ ->
                 //                 let extra =
@@ -756,7 +756,7 @@ let tests (runner: TestRunner<_, _>) =
                 //                 let expected = """{"ParentField":"bumbabon"}"""
                 //                 let value = { ParentField = { ChildField = "bumbabon" } }
                 //                 let actual = Encode.Auto.toString(0, value, extra=extra)
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "Encode.Auto.toString serializes maps with Guid keys as JSON objects" <| fun _ ->
                 //                 let m = Map [Guid.NewGuid(), 1; Guid.NewGuid(), 2]
@@ -810,33 +810,33 @@ let tests (runner: TestRunner<_, _>) =
                 //             runner.testCase "Encode.Auto.toString works with [<StringEnum>]" <| fun _ ->
                 //                 let expected = "\"firstPerson\""
                 //                 let actual = Encode.Auto.toString(0, Camera.FirstPerson)
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "Encode.Auto.toString works with [<StringEnum(CaseRules.LowerFirst)>]" <| fun _ ->
                 //                 let expected = "\"react\""
                 //                 let actual = Encode.Auto.toString(0, Framework.React)
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "Encode.Auto.toString works with [<StringEnum(CaseRules.None)>]" <| fun _ ->
                 //                 let expected = "\"Fsharp\""
                 //                 let actual = Encode.Auto.toString(0, Language.Fsharp)
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "Encode.Auto.toString works with [<StringEnum>] + [<CompiledName>]" <| fun _ ->
                 //                 let expected = "\"C#\""
                 //                 let actual = Encode.Auto.toString(0, Language.Csharp)
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
                 //             #endif
 
                 //             runner.testCase "Encode.Auto.toString works with normal Enums" <| fun _ ->
                 //                 let expected = "2"
                 //                 let actual = Encode.Auto.toString(0, Enum_Int.Two)
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "Encode.Auto.toString works with System.DayOfWeek" <| fun _ ->
                 //                 let expected = "2"
                 //                 let actual = Encode.Auto.toString(0, DayOfWeek.Tuesday)
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "Encode.Auto.toString generate `null` if skipNullField is true and the optional field value of type classes is None" <| fun _ ->
                 //                 let value =
@@ -848,7 +848,7 @@ let tests (runner: TestRunner<_, _>) =
                 //                 let actual = Encode.Auto.toString(0, value, caseStrategy = CamelCase, skipNullField = false)
                 //                 let expected =
                 //                     """{"maybeClass":null,"must":"must value"}"""
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "Encode.Auto.toString doesn't generate the optional field of type classe if it's value is None" <| fun _ ->
                 //                 let value =
@@ -860,7 +860,7 @@ let tests (runner: TestRunner<_, _>) =
                 //                 let actual = Encode.Auto.toString(0, value, caseStrategy = CamelCase)
                 //                 let expected =
                 //                     """{"must":"must value"}"""
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "Encode.Auto.generateEncoder throws for field using a non optional class" <| fun _ ->
                 //                 let expected = """Cannot generate auto encoder for Tests.Types.BaseClass. Please pass an extra encoder.
@@ -901,19 +901,19 @@ let tests (runner: TestRunner<_, _>) =
                 //                 let expected =
                 //                     """{"type":"customInt","value":42}"""
 
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 //             runner.testCase "Encode.Auto.toString(value, ...) is equivalent to Encode.Auto.toString(0, value, ...)" <| fun _ ->
                 //                 let expected = Encode.Auto.toString(0, {| Name = "Maxime" |})
                 //                 let actual = Encode.Auto.toString({| Name = "Maxime" |})
-                //                 runner.equal expected actual
+                //                 runner.equal actual expected
 
                 (*
 #if NETFRAMEWORK
             runner.testCase "Encode.Auto.toString works with char based Enums" <| fun _ ->
                 let expected = ((int) 'A').ToString()  // "65"
                 let actual = Encode.Auto.toString(0, CharEnum.A)
-                runner.equal expected actual
+                runner.equal actual expected 
 #endif
     *)
                 ]
