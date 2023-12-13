@@ -20,6 +20,7 @@ type JavascriptTestRunner() =
 
     override _.testList = testList
     override _.testCase = testCase
+    override _.ftestCase = ftestCase
 
     override _.equal a b = Assert.AreEqual(b, a)
 
