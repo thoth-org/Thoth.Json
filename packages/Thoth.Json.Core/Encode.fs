@@ -15,14 +15,7 @@ module Encode =
     let float32 (value: float32) =
         Json.DecimalNumber(Operators.float value)
 
-    let inline private _toString (a: 'a :> IConvertible) =
-#if !FABLE_COMPILER
-        a.ToString(new System.Globalization.CultureInfo("en-US"))
-#else
-        a.ToString()
-#endif
-
-    let inline decimal (value: decimal) = _toString value |> string
+    let inline decimal (value: decimal) = value.ToString() |> string
     let inline nil<'T> = Json.Null
     let inline bool value = Json.Boolean value
     let inline object values = Json.Object values
