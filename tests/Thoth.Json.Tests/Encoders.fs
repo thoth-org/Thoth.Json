@@ -251,7 +251,7 @@ let tests (runner: TestRunner<_, _>) =
 
                         runner.equal actual expected
 
-                    runner.ftestCase "a decimal works"
+                    runner.testCase "a decimal works"
                     <| fun _ ->
                         let expected = "\"0.7833\""
 

@@ -21,6 +21,7 @@ type PythonTestRunner() =
 
     override _.testList = testList
     override _.testCase = testCase
+    override _.ftestCase = ftestCase
 
     override _.equal a b = Expect.equal b a ""
 
