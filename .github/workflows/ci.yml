@@ -19,10 +19,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '20'
-      # - name: Install and use custom npm version
-      #   run: npm i -g npm@7
-      # - name: Install dependencies
-      #   run: npm install
       - name: Test (Unix)
         if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'macOS-latest'
         run: ./build.sh test
