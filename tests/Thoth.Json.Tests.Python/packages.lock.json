@@ -22,9 +22,9 @@
       },
       "Fable.Pyxpecto": {
         "type": "Direct",
-        "requested": "[0.3.0, )",
-        "resolved": "0.3.0",
-        "contentHash": "IrlYxeR9IdXy6I4xn12FWnMsCOyi67ib51i456Gf58Dxq+k/oM7RzMxcd1aKf7cSbzOiknxzQlGWK7h/YfKIDw==",
+        "requested": "[1.0.1, )",
+        "resolved": "1.0.1",
+        "contentHash": "Yx2kfGLin4UN8Wmo/BEnr6AY5IoOs0ylf/ozoFphUnkUExKdLAaKRtXNY6Jvyqb9vSVUmFq+7/899LErlOTFxQ==",
         "dependencies": {
           "FSharp.Core": "5.0.0",
           "Fable.Core": "4.1.0",
