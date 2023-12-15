@@ -15,7 +15,9 @@ module Encode =
     let float32 (value: float32) =
         Json.DecimalNumber(Operators.float value)
 
-    let inline decimal (value: decimal) = value.ToString() |> string
+    let inline decimal (value: decimal) =
+        value.ToString(CultureInfo.InvariantCulture) |> string
+
     let inline nil<'T> = Json.Null
     let inline bool value = Json.Boolean value
     let inline object values = Json.Object values

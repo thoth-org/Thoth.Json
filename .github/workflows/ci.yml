@@ -19,10 +19,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '20'
-      # - name: Install and use custom npm version
-      #   run: npm i -g npm@7
-      # - name: Install dependencies
-      #   run: npm install
+      - name: Install Python (Windows)
+        if: matrix.platform == 'windows-latest'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' 
+      - run: python --version
       - name: Test (Unix)
         if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'macOS-latest'
         run: ./build.sh test

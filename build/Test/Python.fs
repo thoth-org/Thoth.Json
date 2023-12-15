@@ -26,6 +26,7 @@ let handle (args: string list) =
         |> CmdLine.appendRaw runArg
         |> CmdLine.appendRaw "python"
         |> CmdLine.appendRaw "fableBuild/main.py"
+        |> CmdLine.appendRaw "--silent"
         |> CmdLine.toString,
         workingDirectory = Workspace.ProjectDir.Tests.python
     )

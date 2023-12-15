@@ -7,6 +7,7 @@ open Thoth.Json.Python
 open System
 open Thoth.Json.Tests.Types
 open Fable.Core.Testing
+open Fable.Pyxpecto.Model
 
 type PythonEncode() =
     interface IEncode with
@@ -21,6 +22,7 @@ type PythonTestRunner() =
 
     override _.testList = testList
     override _.testCase = testCase
+    override _.ftestCase = ftestCase
 
     override _.equal a b = Expect.equal b a ""
 
@@ -39,4 +41,4 @@ let main args =
             Decoders.tests runner
             Encoders.tests runner
         ]
-    |> Pyxpecto.runTests
+    |> Pyxpecto.runTests [||]

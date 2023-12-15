@@ -369,6 +369,7 @@ module Decode =
                     ("", BadPrimitive("a datetime", value)) |> Error
         }
 
+#if !FABLE_COMPILER_PYTHON
     let datetimeOffset: Decoder<System.DateTimeOffset> =
         { new Decoder<System.DateTimeOffset> with
             member _.Decode(helpers, value) =
@@ -382,6 +383,7 @@ module Decode =
                 else
                     ("", BadPrimitive("a datetime", value)) |> Error
         }
+#endif
 
     let timespan: Decoder<System.TimeSpan> =
         { new Decoder<System.TimeSpan> with
