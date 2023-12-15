@@ -217,6 +217,7 @@ let tests (runner: TestRunner<_, _>) =
 
                         runner.equal actual expected
 
+#if !FABLE_COMPILER_PYTHON
                     runner.testCase "a datetimeOffset works"
                     <| fun _ ->
 #if FABLE_COMPILER
@@ -239,6 +240,7 @@ let tests (runner: TestRunner<_, _>) =
                             |> runner.Encode.toString 0
 
                         runner.equal actual expected
+#endif
 
                     runner.testCase "a timeSpan works"
                     <| fun _ ->
@@ -913,7 +915,7 @@ let tests (runner: TestRunner<_, _>) =
             runner.testCase "Encode.Auto.toString works with char based Enums" <| fun _ ->
                 let expected = ((int) 'A').ToString()  // "65"
                 let actual = Encode.Auto.toString(0, CharEnum.A)
-                runner.equal actual expected 
+                runner.equal actual expected
 #endif
     *)
                 ]

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 0.2.0 - 2023-12-12
+
+* Disable `Encode.datetimeOffset` for Python as it seems like the implementation of `DateTimeOffset.ToString("O")` is not complete in Fable
+
 ## 0.1.0 - 2023-12-12
 
 * [GH-43](https://github.com/thoth-org/Thoth.Json/issues/43) Build path only if the decoder fails (small perfermance improvement)
