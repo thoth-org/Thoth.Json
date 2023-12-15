@@ -24,20 +24,19 @@ open System
 
 module Encode =
 
-    let datetime (date : DateTime) =
-        DateTimeOffset(date).ToUnixTimeSeconds()
-        |> box
+    let datetime (date: DateTime) =
+        DateTimeOffset(date).ToUnixTimeSeconds() |> box
 
 module Decode =
 
-    let datetime : Decoder<DateTime> =
+    let datetime: Decoder<DateTime> =
         fun path value ->
             if Decode.Helpers.isNumber value then
-                let value : int64 = unbox value
+                let value: int64 = unbox value
+
                 let datetime =
-                    DateTimeOffset
-                        .FromUnixTimeSeconds(value)
-                        .DateTime
+                    DateTimeOffset.FromUnixTimeSeconds(value).DateTime
+
                 Ok datetime
 
             else

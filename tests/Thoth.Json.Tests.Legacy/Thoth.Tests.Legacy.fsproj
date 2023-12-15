@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\packages\Thoth.Json\Thoth.Json.fsproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Util.fs" />
+        <Compile Include="Types.fs" />
+        <Compile Include="Decoders.fs" />
+        <Compile Include="Encoders.fs" />
+        <Compile Include="BackAndForth.fs" />
+        <Compile Include="ExtraCoders.fs" />
+        <Compile Include="Main.fs" />
+    </ItemGroup>
+</Project>

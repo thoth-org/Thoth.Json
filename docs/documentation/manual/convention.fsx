@@ -21,13 +21,13 @@ same name as the type they correspond to.
 
 type User =
     {
-        Name : string
-        Age : int
+        Name: string
+        Age: int
     }
 
 module User =
 
-    let decoder : Decoder<User> =
+    let decoder: Decoder<User> =
         Decode.object (fun get ->
             {
                 Name = get.Required.Field "name" Decode.string
@@ -35,11 +35,12 @@ module User =
             }
         )
 
-    let encode (user : User) : JsonValue =
-        Encode.object [
-            "name", Encode.string user.Name
-            "age", Encode.int user.Age
-        ]
+    let encode (user: User) : JsonValue =
+        Encode.object
+            [
+                "name", Encode.string user.Name
+                "age", Encode.int user.Age
+            ]
 
 (**
 
@@ -55,18 +56,16 @@ type Rating =
 
 module Rating =
 
-    let decoder : Decoder<Rating> =
+    let decoder: Decoder<Rating> =
         Decode.int
-        |> Decode.andThen (function
-            | 1 ->
-                Decode.succeed Rating.One
-            | 2 ->
-                Decode.succeed Rating.Two
-            | 3 ->
-                Decode.succeed Rating.Three
+        |> Decode.andThen (
+            function
+            | 1 -> Decode.succeed Rating.One
+            | 2 -> Decode.succeed Rating.Two
+            | 3 -> Decode.succeed Rating.Three
             | invalid ->
-                Decode.fail $"%i{invalid} is not a valid rating value. Expecting an integer between 1 and 3"
+                Decode.fail
+                    $"%i{invalid} is not a valid rating value. Expecting an integer between 1 and 3"
         )
 
-    let encoder (rating : Rating) : JsonValue =
-        Encode.int (int rating)
+    let encoder (rating: Rating) : JsonValue = Encode.int (int rating)

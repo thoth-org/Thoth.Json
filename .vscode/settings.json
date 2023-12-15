@@ -1,0 +1,6 @@
+{
+    "msbuildProjectTools.nuget.includePreRelease": false,
+    "[msbuild]": {
+        "editor.defaultFormatter": "redhat.vscode-xml"
+    }
+}

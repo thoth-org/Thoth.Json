@@ -34,8 +34,8 @@ You can decide which case strategy you want to use:
 
 type Device =
     {
-        EquipmentId : int
-        SerialNumber : string
+        EquipmentId: int
+        SerialNumber: string
     }
 
 let myDevice =
@@ -44,7 +44,7 @@ let myDevice =
         SerialNumber = "1452-48-4298"
     }
 
-Encode.Auto.toString(4, myDevice)
+Encode.Auto.toString (4, myDevice)
 
 // Returns:
 // {
@@ -52,7 +52,7 @@ Encode.Auto.toString(4, myDevice)
 //     "SerialNumber": "1452-48-4298"
 // }
 
-Encode.Auto.toString(4, myDevice, caseStrategy = CaseStrategy.CamelCase)
+Encode.Auto.toString (4, myDevice, caseStrategy = CaseStrategy.CamelCase)
 
 // Returns:
 // {
@@ -60,7 +60,7 @@ Encode.Auto.toString(4, myDevice, caseStrategy = CaseStrategy.CamelCase)
 //     "serialNumber": "1452-48-4298"
 // }
 
-Encode.Auto.toString(4, myDevice, caseStrategy = CaseStrategy.SnakeCase)
+Encode.Auto.toString (4, myDevice, caseStrategy = CaseStrategy.SnakeCase)
 
 // Returns:
 // {
@@ -74,7 +74,7 @@ When decoding the case strategy is also respected.
 
 *)
 
-Decode.Auto.fromString<Device>(
+Decode.Auto.fromString<Device> (
     """
 {
     "equipment_id": "5862",
@@ -87,7 +87,7 @@ Decode.Auto.fromString<Device>(
 // Returns:
 // Ok { EquipmentId = 5862; SerialNumber = "1452-48-4298" }
 
-Decode.Auto.fromString<Device>(
+Decode.Auto.fromString<Device> (
     """
 {
     "EquipmentId": "5862",
@@ -112,8 +112,8 @@ By default, optional fields are not included in the JSON representation.
 
 type Response<'T> =
     {
-        Code : int
-        Data : 'T option
+        Code: int
+        Data: 'T option
     }
 
 let response =
@@ -122,7 +122,7 @@ let response =
         Data = None
     }
 
-Encode.Auto.toString(4, response)
+Encode.Auto.toString (4, response)
 
 // Returns:
 // {
@@ -135,7 +135,7 @@ If you want to include the `Data` field, you need to set `skipNullField = false`
 
 *)
 
-Encode.Auto.toString(4, response, skipNullField = false)
+Encode.Auto.toString (4, response, skipNullField = false)
 
 // Returns:
 // {
@@ -169,7 +169,7 @@ let myExtra =
     |> Extra.withDecimal
     |> Extra.withBigInt
 
-Encode.Auto.toString(4, 86UL, extra = myExtra)
+Encode.Auto.toString (4, 86UL, extra = myExtra)
 
 // Returns:
 // "86"
@@ -186,27 +186,25 @@ If the default is not what you want, you can override them by using the `extra` 
 
 **)
 
-let customIntEncoder (value : int) =
-    Encode.object [
-        "type", Encode.string "customInt"
-        "value", Encode.int value
-    ]
+let customIntEncoder (value: int) =
+    Encode.object
+        [
+            "type", Encode.string "customInt"
+            "value", Encode.int value
+        ]
 
 let customIntDecoder =
     Decode.field "type" Decode.string
-    |> Decode.andThen (function
-        | "customInt" ->
-            Decode.field "value" Decode.int
+    |> Decode.andThen (
+        function
+        | "customInt" -> Decode.field "value" Decode.int
 
-        | _ ->
-            Decode.fail "Invalid type for customInt"
+        | _ -> Decode.fail "Invalid type for customInt"
     )
 
-let extra =
-    Extra.empty
-    |> Extra.withCustom customIntEncoder customIntDecoder
+let extra = Extra.empty |> Extra.withCustom customIntEncoder customIntDecoder
 
-Encode.Auto.toString(4, 42, extra=extra)
+Encode.Auto.toString (4, 42, extra = extra)
 
 // Returns:
 // {
@@ -224,11 +222,11 @@ Records are represented as JSON objects.
 
 type User =
     {
-        Name : string
-        Age : int
+        Name: string
+        Age: int
     }
 
-Encode.Auto.toString(
+Encode.Auto.toString (
     4,
     {
         Name = "Geralt de Riv"
@@ -259,11 +257,11 @@ type Language =
     | FSharp
     | [<CompiledName("C#")>] CSharp
 
-Encode.Auto.toString(4, Language.FSharp)
+Encode.Auto.toString (4, Language.FSharp)
 
 // Returns: "FSharp"
 
-Encode.Auto.toString(4, Language.CSharp)
+Encode.Auto.toString (4, Language.CSharp)
 
 // Returns: "C#"
 
@@ -277,10 +275,10 @@ of the case followed by as much elements as the tuple arguments.
 *)
 
 type MenuElement =
-    | Label of label : string
-    | ExternalLink of label : string * url : string
+    | Label of label: string
+    | ExternalLink of label: string * url: string
 
-Encode.Auto.toString(4, Label "Introduction")
+Encode.Auto.toString (4, Label "Introduction")
 
 // Returns:
 // [
@@ -288,12 +286,7 @@ Encode.Auto.toString(4, Label "Introduction")
 //     "Introduction"
 // ]
 
-Encode.Auto.toString(4,
-    ExternalLink (
-        label = "Fable",
-        url = "http://fable.io"
-    )
-)
+Encode.Auto.toString (4, ExternalLink(label = "Fable", url = "http://fable.io"))
 
 // Returns:
 // [
@@ -331,15 +324,15 @@ This is because Fable offer a limited reflection API and classes are not support
 
 *)
 
-type Point(x : int, y : int) =
+type Point(x: int, y: int) =
 
-    member __.x with get () = x
+    member __.x = x
 
-    member __.y with get () = y
+    member __.y = y
 
 module Point =
 
-    let decoder : Decoder<Point> =
+    let decoder: Decoder<Point> =
         Decode.object (fun get ->
             Point(
                 get.Required.Field "x" Decode.int,
@@ -347,23 +340,16 @@ module Point =
             )
         )
 
-    let encoder (point : Point) =
-        Encode.object [
-            "x", Encode.int point.x
-            "y", Encode.int point.y
-        ]
+    let encoder (point: Point) =
+        Encode.object
+            [
+                "x", Encode.int point.x
+                "y", Encode.int point.y
+            ]
 
-let myExtra2 =
-    Extra.empty
-    |> Extra.withCustom Point.encoder Point.decoder
+let myExtra2 = Extra.empty |> Extra.withCustom Point.encoder Point.decoder
 
-Encode.Auto.toString(4,
-    [
-        Point(1, 2),
-        Point(3, 4)
-    ],
-    extra = myExtra2
-)
+Encode.Auto.toString (4, [ Point(1, 2), Point(3, 4) ], extra = myExtra2)
 
 // Returns:
 // [

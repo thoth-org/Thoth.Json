@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Utils/Nuget.fs" />
+    <Compile Include="Utils/Path.fs" />
+    <Compile Include="Workspace.fs" />
+    <Compile Include="Test/Legacy.fs" />
+    <Compile Include="Test/JavaScript.fs" />
+    <Compile Include="Test/Newtonsoft.fs" />
+    <Compile Include="Test/Python.fs" />
+    <Compile Include="Publish.fs" />
+    <Compile Include="Main.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BlackFox.CommandLine" />
+    <PackageReference Include="Semver" />
+    <PackageReference Include="SimpleExec" />
+  </ItemGroup>
+</Project>

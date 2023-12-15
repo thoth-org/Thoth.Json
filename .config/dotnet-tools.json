@@ -2,22 +2,22 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "paket": {
-      "version": "5.249.2",
-      "commands": [
-        "paket"
-      ]
-    },
-    "fake-cli": {
-      "version": "5.20.3",
-      "commands": [
-        "fake"
-      ]
-    },
     "fable": {
-      "version": "3.6.3",
+      "version": "4.8.0",
       "commands": [
         "fable"
+      ]
+    },
+    "fantomas": {
+      "version": "6.2.3",
+      "commands": [
+        "fantomas"
+      ]
+    },
+    "husky": {
+      "version": "0.6.3",
+      "commands": [
+        "husky"
       ]
     }
   }

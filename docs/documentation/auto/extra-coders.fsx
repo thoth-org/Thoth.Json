@@ -48,7 +48,7 @@ let myExtra =
     |> Extra.withDecimal
     |> Extra.withBigInt
 
-Decode.Auto.fromString<uint64>("123", extra = myExtra)
+Decode.Auto.fromString<uint64> ("123", extra = myExtra)
 // Result: Ok 123UL
 
 (**
@@ -65,15 +65,15 @@ You can also create your own extra coders. You can use the `withCustom` function
 *)
 
 
-type Point(x : int, y : int) =
+type Point(x: int, y: int) =
 
-    member __.x with get () = x
+    member __.x = x
 
-    member __.y with get () = y
+    member __.y = y
 
 module Point =
 
-    let decoder : Decoder<Point> =
+    let decoder: Decoder<Point> =
         Decode.object (fun get ->
             Point(
                 get.Required.Field "x" Decode.int,
@@ -81,23 +81,16 @@ module Point =
             )
         )
 
-    let encoder (point : Point) =
-        Encode.object [
-            "x", Encode.int point.x
-            "y", Encode.int point.y
-        ]
+    let encoder (point: Point) =
+        Encode.object
+            [
+                "x", Encode.int point.x
+                "y", Encode.int point.y
+            ]
 
-let myExtra2 =
-    Extra.empty
-    |> Extra.withCustom Point.encoder Point.decoder
+let myExtra2 = Extra.empty |> Extra.withCustom Point.encoder Point.decoder
 
-Encode.Auto.toString(4,
-    [
-        Point(1, 2),
-        Point(3, 4)
-    ],
-    extra = myExtra2
-)
+Encode.Auto.toString (4, [ Point(1, 2), Point(3, 4) ], extra = myExtra2)
 
 (**
 ## Override the default behavior
@@ -123,13 +116,14 @@ You can do it like this:
 
 module IntAsRecord =
 
-    let encode (value : int) =
-        Encode.object [
-            "type", Encode.string "int"
-            "value", Encode.int value
-        ]
+    let encode (value: int) =
+        Encode.object
+            [
+                "type", Encode.string "int"
+                "value", Encode.int value
+            ]
 
-    let decode : Decoder<int> =
+    let decode: Decoder<int> =
         Decode.field "type" Decode.string
         |> Decode.andThen (fun typ ->
             if typ = "int" then
@@ -139,7 +133,6 @@ module IntAsRecord =
         )
 
 let overrideDefaults =
-    Extra.empty
-    |> Extra.withCustom IntAsRecord.encode IntAsRecord.decode
+    Extra.empty |> Extra.withCustom IntAsRecord.encode IntAsRecord.decode
 
-Encode.Auto.toString(4, 42, extra = overrideDefaults)
+Encode.Auto.toString (4, 42, extra = overrideDefaults)

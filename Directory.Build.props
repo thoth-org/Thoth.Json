@@ -1,0 +1,43 @@
+<Project>
+    <!-- Make F# support Central Package Management -->
+    <PropertyGroup>
+        <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
+        <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    </PropertyGroup>
+    <!-- Use lock files -->
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+    <PropertyGroup>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
+    </PropertyGroup>
+	<PropertyGroup>
+		<!-- Make all the projects use the highest warning level -->
+		<WarningLevel>5</WarningLevel>
+        <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+	</PropertyGroup>
+    <!-- Packages common to all the projects  -->
+    <ItemGroup>
+        <!-- Reproducible builds + SourceLink supports -->
+        <PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="All"/>
+        <!-- Depends on the same version of FSharp.Core for all the projects -->
+        <!-- We don't use any feature related to FSharp.Core 5 so we force to use a lower one -->
+        <PackageReference Include="FSharp.Core" />
+    </ItemGroup>
+	<!-- NuGet Metadata -->
+	<PropertyGroup>
+        <PackageProjectUrl>https://github.com/thoth-org/Thoth.Json</PackageProjectUrl>
+        <Packagelicense>https://github.com/thoth-org/Thoth.Json/blob/master/LICENSE.md</Packagelicense>
+        <RepositoryUrl>https://github.com/thoth-org/Thoth.Json</RepositoryUrl>
+        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<Authors>Maxime Mangel</Authors>
+	</PropertyGroup>
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)/LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)"/>
+        <None Include="$(MSBuildThisFileDirectory)\README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+</Project>

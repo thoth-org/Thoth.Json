@@ -24,17 +24,16 @@ type User =
     {
         Name: string
         Age: int
-        KnownLangs : string list
+        KnownLangs: string list
     }
 
 module User =
 
-    let encoder (user : User) =
-        Encode.object [
-            "name", Encode.string user.Name
-            "age", Encode.int user.Age
-            "known-langs",
-                user.KnownLangs
-                |> List.map Encode.string
-                |> Encode.list
-        ]
+    let encoder (user: User) =
+        Encode.object
+            [
+                "name", Encode.string user.Name
+                "age", Encode.int user.Age
+                "known-langs",
+                user.KnownLangs |> List.map Encode.string |> Encode.list
+            ]
