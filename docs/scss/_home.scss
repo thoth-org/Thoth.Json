@@ -1,5 +1,11 @@
 .selling-points {
 
+    .content pre,
+    .content code {
+        word-break: break-all;
+        white-space: break-spaces;
+    }
+
     .selling-point {
 
         &:not(:last-child) {

@@ -1,0 +1,539 @@
+
+
+
+
+
+
+
+
+<!doctype html>
+<html class="has-navbar-fixed-top" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        
+            <link type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ctext%20y%3D%22.9em%22%20font-size%3D%2290%22%3E%F0%9F%9A%A8%3C%2Ftext%3E%3C%2Fsvg%3E" rel="icon" />
+        
+
+        <meta name="referrer" content="no-referrer-when-downgrade">
+
+        <link rel="stylesheet" href="/style.css">
+        <link rel="preconnect" href="/" crossorigin="crossorigin">
+        <title>Unkown fields</title>
+        <script src="/assets/nacara/js/navbar.js" defer="defer"></script>
+        <link href="https://cdn.jsdelivr.net/gh/PrismJS/prism-themes@447479fc7b2be2051fe27e561aceed7cc87a589f/themes/prism-one-light.css" rel="stylesheet">
+    </head>
+    <body class="page--documentation_advanced_unkown-fields layout--nacara_layouts_docs has-footer">
+
+        
+            
+
+<nav class="navbar is-fixed-top is-spaced" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item title is-4" href="https://mangelmaxime.github.io">
+            Eleventy Nacara
+        </a>
+    </div>
+    <div class="navbar-menu">
+        <div class="navbar-start">
+            
+                
+                
+                    
+                    <a class="navbar-item
+                        is-hidden-mobile" href="/documentation/concept/introduction.html">
+                        Docs
+                    </a>
+                
+
+            
+                
+                
+                    
+                    <a class="navbar-item
+                        is-hidden-mobile" href="changelog/">
+                        Changelog
+                    </a>
+                
+
+            
+                
+                
+                    
+                    <a class="navbar-item
+                        is-hidden-mobile" href="https://gitter.im/fable-compiler/Fable">
+                        Support
+                    </a>
+                
+
+            
+                
+                
+                    
+                    <a class="navbar-item
+                        is-hidden-mobile" href="https://www.patreon.com/MangelMaxime">
+                        Donate
+                    </a>
+                
+
+            
+
+            <div class="navbar-item navbar-burger-dots is-hidden-tablet">
+                <svg height="4" stroke="none" viewbox="0 0 22 4" width="22">
+                    <circle cx="2" cy="2" r="2"></circle>
+                    <circle cx="2" cy="2" r="2" transform="translate(9,0)"></circle>
+                    <circle cx="2" cy="2" r="2" transform="translate(18,0)"></circle>
+                </svg>
+            </div>
+        </div>
+        <div class="navbar-end is-hidden-mobile">
+            
+                <a class="navbar-item" href="https://github.com/MangelMaxime/Nacara">
+                    <span class="icon">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path></svg>
+                    </span>
+                </a>
+            
+                <a class="navbar-item" href="https://twitter.com/MangelMaxime">
+                    <span class="icon">
+                        <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><title>Twitter</title><path d="M21.543 7.104c.015.211.015.423.015.636 0 6.507-4.954 14.01-14.01 14.01v-.003A13.94 13.94 0 0 1 0 19.539a9.88 9.88 0 0 0 7.287-2.041 4.93 4.93 0 0 1-4.6-3.42 4.916 4.916 0 0 0 2.223-.084A4.926 4.926 0 0 1 .96 9.167v-.062a4.887 4.887 0 0 0 2.235.616A4.928 4.928 0 0 1 1.67 3.148 13.98 13.98 0 0 0 11.82 8.292a4.929 4.929 0 0 1 8.39-4.49 9.868 9.868 0 0 0 3.128-1.196 4.941 4.941 0 0 1-2.165 2.724A9.828 9.828 0 0 0 24 4.555a10.019 10.019 0 0 1-2.457 2.549z"></path></svg>
+                    </span>
+                </a>
+            
+        </div>
+    </div>
+    <div class="nacara-navbar-menu">
+        
+        
+            
+            
+                
+                
+                    <a class="nacara-navbar-menu-item" href="/documentation/concept/introduction.html">
+                        <span>Docs</span>
+                    </a>
+                
+            
+        
+            
+            
+                
+                
+                    <a class="nacara-navbar-menu-item" href="changelog/">
+                        <span>Changelog</span>
+                    </a>
+                
+            
+        
+            
+            
+                
+                
+                    <a class="nacara-navbar-menu-item" href="https://gitter.im/fable-compiler/Fable">
+                        <span>Support</span>
+                    </a>
+                
+            
+        
+            
+            
+                
+                
+                    <a class="nacara-navbar-menu-item" href="https://www.patreon.com/MangelMaxime">
+                        <span>Donate</span>
+                    </a>
+                
+            
+        
+        
+        
+            <a class="nacara-navbar-menu-item" href="https://github.com/MangelMaxime/Nacara">
+                <span>Github</span>
+            </a>
+        
+            <a class="nacara-navbar-menu-item" href="https://twitter.com/MangelMaxime">
+                <span>Twitter</span>
+            </a>
+        
+    </div>
+</nav>
+<div class="grey-overlay"></div>
+
+        
+
+        
+    <div class="page-content nacara-content">
+        <div class="container">
+
+            <div class="columns is-gapless is-mobile">
+                <div class="column is-menu-column is-3-desktop is-hidden-touch">
+                    <div class="menu-container"><aside class="menu"><p class="menu-label">Concept</p><ul class="menu-list"><li><a href="//documentation/concept/introduction.html" class="">Introduction</a></li><li><a href="//documentation/concept/decoder.html" class="">Decoder</a></li><li><a href="//documentation/concept/encoder.html" class="">Encoder</a></li><li><a href="//documentation/concept/fable-and-dotnet-support.html" class="">Fable & .NET Support</a></li></ul><p class="menu-label">Manual API</p><ul class="menu-list"><li><a href="//documentation/manual/introduction.html" class="">Introduction</a></li><li><a href="//documentation/manual/convention.html" class="">Convention</a></li><li><a href="//documentation/manual/composition.html" class="">Composition</a></li><li><a href="//documentation/manual/override-defaults.html" class="">Override defaults</a></li><li><a href="//documentation/manual/json-representation.html" class="">JSON representation</a></li></ul><p class="menu-label">Auto API</p><ul class="menu-list"><li><a href="//documentation/auto/introduction.html" class="">Introduction</a></li><li><a href="//documentation/auto/extra-coders.html" class="">Extra coders</a></li><li><a href="//documentation/auto/caching.html" class="">Cache</a></li><li><a href="//documentation/auto/json-representation.html" class="">JSON representation</a></li></ul><p class="menu-label">Advanced</p><ul class="menu-list"><li><a href="//documentation/advanced/introduction.html" class="">Introduction</a></li><li><a href="//documentation/advanced/unkown-fields.html" class="is-active">Unkown fields</a></li><li><ul class="table-of-content"><li data-toc-rank="2"><a href="#Custom-decoders" data-toc-element="true">Custom decoders </a></li><li data-toc-rank="2"><a href="#Define-our-domain-types" data-toc-element="true">Define our domain types </a></li><li data-toc-rank="2"><a href="#Compose-everything" data-toc-element="true">Compose everything </a></li></ul></li></ul></aside></div>
+
+
+<script src="/assets/nacara/js/menu.js?hash=f7e4f62449" defer="defer" type="module"></script>
+
+                </div>
+                <div class="column is-9-desktop is-full-touch">
+                    <section class="section">
+                        <div class="content">
+                            <header class="page-header">
+                                <div class="columns is-vcentered is-hidden-touch">
+                                    <div class="column">
+                                        <nav class="breadcrumb"><ul><li class="is-active"><a>Advanced</a></li><li class="is-active"><a>Unkown fields</a></li></ul></nav>
+                                    </div>
+                                    <div class="column is-narrow">
+                                        <a class="button is-ghost" target="_blank" href="https://github.com/MangelMaxime/eleventy-layout-nacara/edit/main/docs/documentation/advanced/unkown-fields.fsx">
+                                                Edit
+                                            </a>
+                                    </div>
+                                </div>
+                                <h1 class="title is-1">
+                                    Unkown fields
+                                </h1>
+                            </header>
+
+                            <p>It can happens that you receive a JSON but you don't know which fields are going to be present.</p>
+<p>Consider the following JSON:</p>
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+    <span class="token property">"ts"</span><span class="token operator">:</span> <span class="token string">"2020-01-01T00:00:00Z"</span><span class="token punctuation">,</span>
+    <span class="token property">"EUR_PLN"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"rate"</span><span class="token operator">:</span> <span class="token string">"4.55"</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"GBP_PLN"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"error"</span><span class="token operator">:</span> <span class="token string">"Rate is not available at the moment"</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"USD_PLN"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"rate"</span><span class="token operator">:</span> <span class="token string">"4.01"</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>In this example, we know that:</p>
+<ul>
+<li>The <code>ts</code> field required</li>
+<li>There is an unkown number of <code>Rate</code> fields which consists of:
+<ul>
+<li>The key property which has the format:
+<ol>
+<li><code>sourceCurrency</code></li>
+<li><code>_</code></li>
+<li><code>targetCurrency</code></li>
+</ol>
+</li>
+<li>The value should have a <code>rate</code> field which is a <code>decimal</code></li>
+</ul>
+</li>
+</ul>
+<p>We are now going to write a decoder capable of handling such a JSON.</p>
+<h2 id="Custom-decoders" tabindex="-1">Custom decoders <a class="header-anchor" href="#Custom-decoders">#</a></h2>
+<p>We need some specific decoder in order to work with our JSON.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">module</span> Decode <span class="token operator">=</span></code></pre>
+<ol>
+<li>We need a decoder which ignore failed decoder</li>
+</ol>
+<pre class="language-fs"><code class="language-fs">    <span class="token keyword">let</span> ignoreFail <span class="token punctuation">(</span>decoder<span class="token punctuation">:</span> <span class="token class-name">Decoder</span><span class="token operator">&lt;</span>'T<span class="token operator">></span><span class="token punctuation">)</span> <span class="token punctuation">:</span> Decoder<span class="token operator">&lt;</span>'T option<span class="token operator">></span> <span class="token operator">=</span>
+        <span class="token keyword">fun</span> path token <span class="token operator">-></span>
+            <span class="token keyword">match</span> decoder path token <span class="token keyword">with</span>
+            <span class="token operator">|</span> Ok x <span class="token operator">-></span> <span class="token function">Ok</span><span class="token punctuation">(</span>Some x<span class="token punctuation">)</span>
+            <span class="token operator">|</span> Error _ <span class="token operator">-></span> Ok None</code></pre>
+<ol start="2">
+<li>We need a decoder which decodes all the object fields and only keep the valid ones</li>
+</ol>
+<pre class="language-fs"><code class="language-fs">    <span class="token keyword">let</span> keyValueOptions
+        <span class="token punctuation">(</span>decoder<span class="token punctuation">:</span> <span class="token class-name">Decoder</span><span class="token operator">&lt;</span>'a option<span class="token operator">></span><span class="token punctuation">)</span>
+        <span class="token punctuation">:</span> Decoder<span class="token operator">&lt;</span><span class="token punctuation">(</span>string <span class="token operator">*</span> 'a<span class="token punctuation">)</span> list<span class="token operator">></span>
+        <span class="token operator">=</span>
+        decoder
+        <span class="token operator">|></span> Decode<span class="token punctuation">.</span>keyValuePairs
+        <span class="token operator">|></span> Decode<span class="token punctuation">.</span>map <span class="token punctuation">(</span>
+            List<span class="token punctuation">.</span>collect <span class="token punctuation">(</span><span class="token keyword">fun</span> <span class="token punctuation">(</span>key<span class="token punctuation">,</span> aOpt<span class="token punctuation">)</span> <span class="token operator">-></span>
+                <span class="token keyword">match</span> aOpt <span class="token keyword">with</span>
+                <span class="token operator">|</span> Some a <span class="token operator">-></span> <span class="token punctuation">[</span> key<span class="token punctuation">,</span> a <span class="token punctuation">]</span>
+                <span class="token operator">|</span> None <span class="token operator">-></span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+            <span class="token punctuation">)</span>
+        <span class="token punctuation">)</span></code></pre>
+<h2 id="Define-our-domain-types" tabindex="-1">Define our domain types <a class="header-anchor" href="#Define-our-domain-types">#</a></h2>
+<p>First, we need a type to represent the time field.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">type</span> <span class="token class-name">Ts</span> <span class="token operator">=</span> <span class="token operator">|</span> Ts <span class="token keyword">of</span> <span class="token class-name">System<span class="token punctuation">.</span>DateTime</span>
+
+<span class="token keyword">module</span> Ts <span class="token operator">=</span>
+
+    <span class="token keyword">let</span> decoder<span class="token punctuation">:</span> <span class="token class-name">Decoder</span><span class="token operator">&lt;</span>Ts<span class="token operator">></span> <span class="token operator">=</span> Decode<span class="token punctuation">.</span>datetimeUtc <span class="token operator">|></span> Decode<span class="token punctuation">.</span>map Ts</code></pre>
+<p>Then a type to represent a valid <code>Rate</code> field.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">type</span> <span class="token class-name">RateObject</span> <span class="token operator">=</span> <span class="token operator">|</span> RateObject <span class="token keyword">of</span> <span class="token class-name">decimal</span>
+
+<span class="token keyword">module</span> RateObject <span class="token operator">=</span>
+
+    <span class="token keyword">let</span> decoder<span class="token punctuation">:</span> <span class="token class-name">Decoder</span><span class="token operator">&lt;</span>RateObject<span class="token operator">></span> <span class="token operator">=</span>
+        Decode<span class="token punctuation">.</span>field <span class="token string">"rate"</span> Decode<span class="token punctuation">.</span>decimal <span class="token operator">|></span> Decode<span class="token punctuation">.</span>map RateObject</code></pre>
+<p>Now, we need a type to store all the information associated to a rate.</p>
+<p>This type contains the name of the 2 currencies and the rate.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">type</span> <span class="token class-name">Rate</span> <span class="token operator">=</span>
+    <span class="token punctuation">{</span>
+        SourceCurrency<span class="token punctuation">:</span> <span class="token class-name">string</span>
+        TargetCurrency<span class="token punctuation">:</span> <span class="token class-name">string</span>
+        Rate<span class="token punctuation">:</span> <span class="token class-name">decimal</span>
+    <span class="token punctuation">}</span></code></pre>
+<p>We don't have a <code>Decoder&lt;Rate&gt;</code> because the informations required to build a <code>Rate</code> are not stored in a standard object.</p>
+<p>Indeed, they are coming from both the field name and the associated value.</p>
+<p>In order, to work with this JSON we are going to directly works on all the field of the JSON.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">module</span> Rates <span class="token operator">=</span>
+
+    <span class="token keyword">let</span> decoder<span class="token punctuation">:</span> <span class="token class-name">Decoder</span><span class="token operator">&lt;</span>Rate list<span class="token operator">></span> <span class="token operator">=</span>
+        <span class="token comment">// 1. We retrieve all the valid RateObject fields and their associated name</span>
+        Decode<span class="token punctuation">.</span>keyValueOptions <span class="token punctuation">(</span>Decode<span class="token punctuation">.</span>ignoreFail RateObject<span class="token punctuation">.</span>decoder<span class="token punctuation">)</span>
+        <span class="token comment">// 2. Now that we have all the potential valid Rate fields</span>
+        <span class="token comment">// We need to verify if they have a valid name</span>
+        <span class="token operator">|></span> Decode<span class="token punctuation">.</span>andThen <span class="token punctuation">(</span><span class="token keyword">fun</span> rateObjects <span class="token operator">-></span>
+            rateObjects
+            <span class="token operator">|></span> List<span class="token punctuation">.</span>map <span class="token punctuation">(</span><span class="token keyword">fun</span> <span class="token punctuation">(</span>fieldName<span class="token punctuation">,</span> <span class="token punctuation">(</span>RateObject rate<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">-></span>
+
+                <span class="token comment">// We consider the fieldName valid if it contains a `_`</span>
+                <span class="token comment">// The format is [sourceCurrency]_[targetCurrency]</span>
+                <span class="token keyword">match</span> fieldName<span class="token punctuation">.</span><span class="token function">Split</span><span class="token punctuation">(</span><span class="token char">'_'</span><span class="token punctuation">)</span> <span class="token keyword">with</span>
+                <span class="token operator">|</span> <span class="token punctuation">[</span><span class="token operator">|</span> sourceCurrency<span class="token punctuation">;</span> targetCurrency <span class="token operator">|</span><span class="token punctuation">]</span> <span class="token operator">-></span>
+                    <span class="token comment">// The fieldName is valid, we can build the Rate record</span>
+                    <span class="token computation-expression keyword">Some</span>
+                        <span class="token punctuation">{</span>
+                            SourceCurrency <span class="token operator">=</span> sourceCurrency
+                            TargetCurrency <span class="token operator">=</span> targetCurrency
+                            Rate <span class="token operator">=</span> rate
+                        <span class="token punctuation">}</span>
+                <span class="token comment">// If the fieldName is invalid</span>
+                <span class="token comment">// Returns None, this will allow us to filter invalid fields without failing</span>
+                <span class="token operator">|</span> _ <span class="token operator">-></span> None
+
+            <span class="token punctuation">)</span>
+            <span class="token comment">// Only keep valid fields</span>
+            <span class="token operator">|></span> List<span class="token punctuation">.</span>choose id
+            <span class="token comment">// Return a decoder which succeeds</span>
+            <span class="token operator">|></span> Decode<span class="token punctuation">.</span>succeed
+        <span class="token punctuation">)</span></code></pre>
+<h2 id="Compose-everything" tabindex="-1">Compose everything <a class="header-anchor" href="#Compose-everything">#</a></h2>
+<p>Now, we have everything we need to build our final type.</p>
+<p>It consist in an object with the time and the list of rates retrieved from the JSON.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">type</span> <span class="token class-name">ExchangeRate</span> <span class="token operator">=</span>
+    <span class="token punctuation">{</span>
+        Time<span class="token punctuation">:</span> <span class="token class-name">System<span class="token punctuation">.</span>DateTime</span>
+        Rates<span class="token punctuation">:</span> <span class="token class-name">Rate</span> list
+    <span class="token punctuation">}</span>
+
+<span class="token keyword">module</span> ExchangeRate <span class="token operator">=</span>
+
+    <span class="token keyword">let</span> <span class="token keyword">private</span> ctor <span class="token punctuation">(</span>Ts time<span class="token punctuation">:</span> <span class="token class-name">Ts</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>rates<span class="token punctuation">:</span> <span class="token class-name">Rate</span> list<span class="token punctuation">)</span> <span class="token operator">=</span>
+        <span class="token punctuation">{</span>
+            Time <span class="token operator">=</span> time
+            Rates <span class="token operator">=</span> rates
+        <span class="token punctuation">}</span>
+
+    <span class="token keyword">let</span> decoder<span class="token punctuation">:</span> <span class="token class-name">Decoder</span><span class="token operator">&lt;</span>ExchangeRate<span class="token operator">></span> <span class="token operator">=</span>
+        Decode<span class="token punctuation">.</span>map2 ctor <span class="token punctuation">(</span>Decode<span class="token punctuation">.</span>field <span class="token string">"ts"</span> Ts<span class="token punctuation">.</span>decoder<span class="token punctuation">)</span> Rates<span class="token punctuation">.</span>decoder</code></pre>
+<p>Here is our decoder tested against different JSONs and their result.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">let</span> jsonWithError <span class="token operator">=</span>
+    <span class="token string">"""
+{
+    "ts": "2020-01-01T00:00:00Z",
+    "EUR_PLN": { "rate": "4.55" },
+    "GBP_PLN": { "error": "Rate is not available at the moment" },
+    "USD_PLN": { "rate": "4.01" }
+}
+    """</span>
+
+Decode<span class="token punctuation">.</span>fromString ExchangeRate<span class="token punctuation">.</span>decoder jsonWithError
+
+<span class="token comment">// Returns:</span>
+<span class="token comment">// Ok</span>
+<span class="token comment">//    {</span>
+<span class="token comment">//        Time = System.DateTime(2020, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc)</span>
+<span class="token comment">//        Rates = [</span>
+<span class="token comment">//                {</span>
+<span class="token comment">//                    SourceCurrency = "EUR"</span>
+<span class="token comment">//                    TargetCurrency = "PLN"</span>
+<span class="token comment">//                    Rate = 4.55m</span>
+<span class="token comment">//                }</span>
+<span class="token comment">//                {</span>
+<span class="token comment">//                    SourceCurrency = "USD"</span>
+<span class="token comment">//                    TargetCurrency = "PLN"</span>
+<span class="token comment">//                    Rate = 4.01m</span>
+<span class="token comment">//                }</span>
+<span class="token comment">//            ]</span>
+<span class="token comment">//    }</span></code></pre>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">let</span> jsonEmptyRates <span class="token operator">=</span>
+    <span class="token string">"""
+{
+    "ts": "2020-01-01T00:00:00Z"
+}
+    """</span>
+
+Decode<span class="token punctuation">.</span>fromString ExchangeRate<span class="token punctuation">.</span>decoder jsonEmptyRates
+
+<span class="token comment">// Returns:</span>
+<span class="token comment">// Ok</span>
+<span class="token comment">//    {</span>
+<span class="token comment">//        Time = System.DateTime(2020, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc)</span>
+<span class="token comment">//        Rates = [ ]</span>
+<span class="token comment">//    }</span></code></pre>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">let</span> jsonMissingTime <span class="token operator">=</span>
+    <span class="token string">"""
+{
+    "EUR_PLN": { "rate": "4.55" }
+}
+    """</span>
+
+Decode<span class="token punctuation">.</span>fromString ExchangeRate<span class="token punctuation">.</span>decoder jsonMissingTime
+
+<span class="token comment">// Returns:</span>
+<span class="token comment">// Error at: `$`</span>
+<span class="token comment">// Expecting an object with a field named `ts` but instead got:</span>
+<span class="token comment">// {</span>
+<span class="token comment">//     "EUR_PLN": {</span>
+<span class="token comment">//         "rate": "4.55"</span>
+<span class="token comment">//     }</span>
+<span class="token comment">// }</span></code></pre>
+
+                        </div>
+
+                        <div class="section bd-docs-pagination bd-pagination-links"><a class="button bd-fat-button is-primary is-light bd-pagination-prev" href="//documentation/advanced/introduction.html"><i>←</i><span class="is-hidden-mobile"><em>Advanced</em><strong>Introduction</strong></span></a><a class="button navigate-to-next is-invisible"></a></div>
+
+
+                    </section>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+        
+            
+
+
+
+    <footer class="footer">
+        <div class="is-size-5">
+            
+            
+                <div class="sitemap">
+                    
+                        
+                        <div class="sitemap-section">
+                            <div class="sitemap-section-title">
+                                Project ressources
+                            </div>
+                            <ul class="sitemap-section-list">
+                                
+                                    <li>
+                                        <a href="https://github.com/mangelmaxime/eleventy-layout-nacara/" class="icon-text sitemap-section-list-item">
+                                            
+                                            
+                                                <span class="icon">
+                                                    <svg class="lucide lucide-file-code" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+  <polyline points="14 2 14 8 20 8"></polyline>
+  <path d="m10 13-2 2 2 2"></path>
+  <path d="m14 17 2-2-2-2"></path>
+</svg>
+                                                </span>
+                                            
+                                            <span class="sitemap-section-list-item-text">
+                                                Repository
+                                            </span>
+                                        </a>
+                                    </li>
+                                
+                                    <li>
+                                        <a href="https://github.com/MangelMaxime/eleventy-layout-nacara/blob/main/LICENSE.md" class="icon-text sitemap-section-list-item">
+                                            
+                                            
+                                                <span class="icon">
+                                                    <svg class="lucide lucide-copyright" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="10"></circle>
+  <path d="M14.83 14.83a4 4 0 1 1 0-5.66"></path>
+</svg>
+                                                </span>
+                                            
+                                            <span class="sitemap-section-list-item-text">
+                                                License
+                                            </span>
+                                        </a>
+                                    </li>
+                                
+                            </ul>
+                        </div>
+                    
+                        
+                        <div class="sitemap-section">
+                            <div class="sitemap-section-title">
+                                Social
+                            </div>
+                            <ul class="sitemap-section-list">
+                                
+                                    <li>
+                                        <a href="https://twitter.com/MangelMaxime" class="icon-text sitemap-section-list-item">
+                                            
+                                            
+                                                <span class="icon">
+                                                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><title>Twitter</title><path d="M21.543 7.104c.015.211.015.423.015.636 0 6.507-4.954 14.01-14.01 14.01v-.003A13.94 13.94 0 0 1 0 19.539a9.88 9.88 0 0 0 7.287-2.041 4.93 4.93 0 0 1-4.6-3.42 4.916 4.916 0 0 0 2.223-.084A4.926 4.926 0 0 1 .96 9.167v-.062a4.887 4.887 0 0 0 2.235.616A4.928 4.928 0 0 1 1.67 3.148 13.98 13.98 0 0 0 11.82 8.292a4.929 4.929 0 0 1 8.39-4.49 9.868 9.868 0 0 0 3.128-1.196 4.941 4.941 0 0 1-2.165 2.724A9.828 9.828 0 0 0 24 4.555a10.019 10.019 0 0 1-2.457 2.549z"></path></svg>
+                                                </span>
+                                            
+                                            <span class="sitemap-section-list-item-text">
+                                                Twitter
+                                            </span>
+                                        </a>
+                                    </li>
+                                
+                                    <li>
+                                        <a href="https://www.patreon.com/MangelMaxime" class="icon-text sitemap-section-list-item">
+                                            
+                                            
+                                                <span class="icon">
+                                                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><title>Patreon</title><path d="M22.957 7.21c-.004-3.064-2.391-5.576-5.191-6.482-3.478-1.125-8.064-.962-11.384.604C2.357 3.231 1.093 7.391 1.046 11.54c-.039 3.411.302 12.396 5.369 12.46 3.765.047 4.326-4.804 6.068-7.141 1.24-1.662 2.836-2.132 4.801-2.618 3.376-.836 5.678-3.501 5.673-7.031Z"></path></svg>
+                                                </span>
+                                            
+                                            <span class="sitemap-section-list-item-text">
+                                                Patreon
+                                            </span>
+                                        </a>
+                                    </li>
+                                
+                            </ul>
+                        </div>
+                    
+                </div>
+            
+
+            
+            
+                <p class="has-text-centered">
+                    Built with <a class="is-underlined" href="https://github.com/mangelmaxime/eleventy-layout-nacara/">eleventy-layout-nacara</a>
+                </p>
+            
+
+            
+            
+                <p class="has-text-centered">
+                    Copyright ©
+                    2021-<span id="copyright-end-year"></span>
+                    
+                </p>
+
+                
+                <script type="text/javascript">
+                    // Use IIFE to avoid polluting the global scope
+                    // This also avoid conflict because of `const year` on the components/footer page
+                    (function () {
+                        const year = new Date().getFullYear();
+                        document
+                            .getElementById('copyright-end-year')
+                            .innerHTML = year;
+                    })();
+                </script>
+            
+        </div>
+    </footer>
+
+
+        
+
+        
+            
+            <script src="/assets/nacara/js/copyButton.js?hash=1a5e987c54" defer="defer" type="module"></script>
+        
+    </body>
+
+</html>

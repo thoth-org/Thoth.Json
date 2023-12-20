@@ -1,0 +1,35 @@
+{
+    "$schema": "../../node_modules/@mangelmaxime/eleventy-layout-nacara/schemas/navbar-schema.json",
+    "start": [
+        {
+            "section": "docs",
+            "label": "Docs",
+            "url": "documentation/concept/introduction.html"
+        },
+        {
+            "section": "docs",
+            "label": "Changelog",
+            "url": "/changelog/"
+        },
+        {
+            "url": "https://gitter.im/fable-compiler/Fable",
+            "label": "Support"
+        },
+        {
+            "url": "https://www.patreon.com/MangelMaxime",
+            "label": "Donate"
+        }
+    ],
+    "end": [
+        {
+            "url": "https://github.com/MangelMaxime/Nacara",
+            "icon": "simpleIcons:github",
+            "label": "Github"
+        },
+        {
+            "url": "https://twitter.com/MangelMaxime",
+            "icon": "simpleIcons:twitter",
+            "label": "Twitter"
+        }
+    ]
+}

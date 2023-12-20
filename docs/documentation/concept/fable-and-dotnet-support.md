@@ -1,5 +1,5 @@
 ---
-layout: standard
+layout: nacara/layouts/docs.njk
 title: Fable & .NET Support
 ---
 

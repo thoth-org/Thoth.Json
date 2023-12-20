@@ -1,0 +1,39 @@
+{
+    "$schema": "../../node_modules/@mangelmaxime/eleventy-layout-nacara/schemas/footer-schema.json",
+    "copyright": {
+        "startDate": "2021"
+    },
+    "text": "Built with <a class=\"is-underlined\" href=\"https://github.com/mangelmaxime/eleventy-layout-nacara/\">eleventy-layout-nacara</a>",
+    "sitemapSections": [
+        {
+            "title": "Project ressources",
+            "items": [
+                {
+                    "label": "Repository",
+                    "icon": "lucide:file-code",
+                    "url": "https://github.com/mangelmaxime/eleventy-layout-nacara/"
+                },
+                {
+                    "label": "License",
+                    "icon": "lucide:copyright",
+                    "url": "https://github.com/MangelMaxime/eleventy-layout-nacara/blob/main/LICENSE.md"
+                }
+            ]
+        },
+        {
+            "title": "Social",
+            "items": [
+                {
+                    "label": "Twitter",
+                    "icon": "simpleIcons:twitter",
+                    "url": "https://twitter.com/MangelMaxime"
+                },
+                {
+                    "label": "Patreon",
+                    "icon": "simpleIcons:patreon",
+                    "url": "https://www.patreon.com/MangelMaxime"
+                }
+            ]
+        }
+    ]
+}

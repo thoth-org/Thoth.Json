@@ -1,0 +1,12 @@
+{
+    "$schema": "../../node_modules/@mangelmaxime/eleventy-layout-nacara/schemas/metadata-schema.json",
+    "url": "https://mangelmaxime.github.io",
+    "editUrl": "https://github.com/MangelMaxime/eleventy-layout-nacara/edit/main/docs",
+    "baseUrl": "/eleventy-layout-nacara/",
+    "title": "Eleventy Nacara",
+    "description": "",
+    "author": {
+        "name": "Maxime Mangel",
+        "twitter": "MangelMaxime"
+    }
+}

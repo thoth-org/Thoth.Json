@@ -2,5 +2,9 @@
     "msbuildProjectTools.nuget.includePreRelease": false,
     "[msbuild]": {
         "editor.defaultFormatter": "redhat.vscode-xml"
+    },
+    "files.associations": {
+        "*.menu": "json",
+        "*.nacara": "json"
     }
 }

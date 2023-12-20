@@ -1,5 +1,5 @@
 ---
 title: Changelog
-layout: changelog
-changelog_path: ./../../CHANGELOG.md
+layout: nacara/layouts/changelog.njk
+changelog_path: ./../../packages/Thoth.Json/CHANGELOG.md
 ---

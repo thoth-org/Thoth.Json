@@ -1,9 +1,7 @@
-(**
----
-layout: standard
+(***
+layout: nacara/layouts/docs.njk
 title: JSON representation
----
-*)
+***)
 
 (*** hide ***)
 

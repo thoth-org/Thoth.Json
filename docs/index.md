@@ -1,9 +1,9 @@
 ---
-layout: navbar-only
+layout: nacara/layouts/base.njk
 title: Thoth.Json
 ---
 
-<div class="container mt-5" date-disable-copy-button="true">
+<div class="container mt-5" data-disable-copy-button="true">
     <!-- <section class="section">
         <h2 class="title is-2 has-text-primary has-text-centered">
             Thoth.Json
@@ -71,6 +71,7 @@ module Post =
             }
         )
 ```
+
 </div>
 </div>
 
@@ -106,9 +107,9 @@ let userJson =
 let userFromJson =
     Decode.Auto.fromString<User> userJson
 ```
-</div>
-</div>
 
+</div>
+</div>
 
 <div class="selling-point is-fullwidth">
     <div class="selling-point-header">
@@ -150,6 +151,7 @@ Decode.fromString Decode.timestamp "\"2022-01-01\""
 // Expecting a number but instead got:
 // "2022-01-01"
 ```
+
 </div>
 </div>
 

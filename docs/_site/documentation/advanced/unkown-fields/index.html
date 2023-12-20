@@ -1,0 +1,193 @@
+<hr>
+<h2 id="layout:-nacaralayoutsdocs.njktitle:-Unkown-fields" tabindex="-1">layout: nacara/layouts/docs.njk
+title: Unkown fields <a class="header-anchor" href="#layout:-nacaralayoutsdocs.njktitle:-Unkown-fields">#</a></h2>
+<p>It can happens that you receive a JSON but you don't know which fields are going to be present.</p>
+<p>Consider the following JSON:</p>
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+    <span class="token property">"ts"</span><span class="token operator">:</span> <span class="token string">"2020-01-01T00:00:00Z"</span><span class="token punctuation">,</span>
+    <span class="token property">"EUR_PLN"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"rate"</span><span class="token operator">:</span> <span class="token string">"4.55"</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"GBP_PLN"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"error"</span><span class="token operator">:</span> <span class="token string">"Rate is not available at the moment"</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"USD_PLN"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"rate"</span><span class="token operator">:</span> <span class="token string">"4.01"</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>In this example, we know that:</p>
+<ul>
+<li>The <code>ts</code> field required</li>
+<li>There is an unkown number of <code>Rate</code> fields which consists of:
+<ul>
+<li>The key property which has the format:
+<ol>
+<li><code>sourceCurrency</code></li>
+<li><code>_</code></li>
+<li><code>targetCurrency</code></li>
+</ol>
+</li>
+<li>The value should have a <code>rate</code> field which is a <code>decimal</code></li>
+</ul>
+</li>
+</ul>
+<p>We are now going to write a decoder capable of handling such a JSON.</p>
+<h2 id="Custom-decoders" tabindex="-1">Custom decoders <a class="header-anchor" href="#Custom-decoders">#</a></h2>
+<p>We need some specific decoder in order to work with our JSON.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">module</span> Decode <span class="token operator">=</span></code></pre>
+<ol>
+<li>We need a decoder which ignore failed decoder</li>
+</ol>
+<pre class="language-fs"><code class="language-fs">    <span class="token keyword">let</span> ignoreFail <span class="token punctuation">(</span>decoder<span class="token punctuation">:</span> <span class="token class-name">Decoder</span><span class="token operator">&lt;</span>'T<span class="token operator">></span><span class="token punctuation">)</span> <span class="token punctuation">:</span> Decoder<span class="token operator">&lt;</span>'T option<span class="token operator">></span> <span class="token operator">=</span>
+        <span class="token keyword">fun</span> path token <span class="token operator">-></span>
+            <span class="token keyword">match</span> decoder path token <span class="token keyword">with</span>
+            <span class="token operator">|</span> Ok x <span class="token operator">-></span> <span class="token function">Ok</span><span class="token punctuation">(</span>Some x<span class="token punctuation">)</span>
+            <span class="token operator">|</span> Error _ <span class="token operator">-></span> Ok None</code></pre>
+<ol start="2">
+<li>We need a decoder which decodes all the object fields and only keep the valid ones</li>
+</ol>
+<pre class="language-fs"><code class="language-fs">    <span class="token keyword">let</span> keyValueOptions
+        <span class="token punctuation">(</span>decoder<span class="token punctuation">:</span> <span class="token class-name">Decoder</span><span class="token operator">&lt;</span>'a option<span class="token operator">></span><span class="token punctuation">)</span>
+        <span class="token punctuation">:</span> Decoder<span class="token operator">&lt;</span><span class="token punctuation">(</span>string <span class="token operator">*</span> 'a<span class="token punctuation">)</span> list<span class="token operator">></span>
+        <span class="token operator">=</span>
+        decoder
+        <span class="token operator">|></span> Decode<span class="token punctuation">.</span>keyValuePairs
+        <span class="token operator">|></span> Decode<span class="token punctuation">.</span>map <span class="token punctuation">(</span>
+            List<span class="token punctuation">.</span>collect <span class="token punctuation">(</span><span class="token keyword">fun</span> <span class="token punctuation">(</span>key<span class="token punctuation">,</span> aOpt<span class="token punctuation">)</span> <span class="token operator">-></span>
+                <span class="token keyword">match</span> aOpt <span class="token keyword">with</span>
+                <span class="token operator">|</span> Some a <span class="token operator">-></span> <span class="token punctuation">[</span> key<span class="token punctuation">,</span> a <span class="token punctuation">]</span>
+                <span class="token operator">|</span> None <span class="token operator">-></span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+            <span class="token punctuation">)</span>
+        <span class="token punctuation">)</span></code></pre>
+<h2 id="Define-our-domain-types" tabindex="-1">Define our domain types <a class="header-anchor" href="#Define-our-domain-types">#</a></h2>
+<p>First, we need a type to represent the time field.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">type</span> <span class="token class-name">Ts</span> <span class="token operator">=</span> <span class="token operator">|</span> Ts <span class="token keyword">of</span> <span class="token class-name">System<span class="token punctuation">.</span>DateTime</span>
+
+<span class="token keyword">module</span> Ts <span class="token operator">=</span>
+
+    <span class="token keyword">let</span> decoder<span class="token punctuation">:</span> <span class="token class-name">Decoder</span><span class="token operator">&lt;</span>Ts<span class="token operator">></span> <span class="token operator">=</span> Decode<span class="token punctuation">.</span>datetimeUtc <span class="token operator">|></span> Decode<span class="token punctuation">.</span>map Ts</code></pre>
+<p>Then a type to represent a valid <code>Rate</code> field.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">type</span> <span class="token class-name">RateObject</span> <span class="token operator">=</span> <span class="token operator">|</span> RateObject <span class="token keyword">of</span> <span class="token class-name">decimal</span>
+
+<span class="token keyword">module</span> RateObject <span class="token operator">=</span>
+
+    <span class="token keyword">let</span> decoder<span class="token punctuation">:</span> <span class="token class-name">Decoder</span><span class="token operator">&lt;</span>RateObject<span class="token operator">></span> <span class="token operator">=</span>
+        Decode<span class="token punctuation">.</span>field <span class="token string">"rate"</span> Decode<span class="token punctuation">.</span>decimal <span class="token operator">|></span> Decode<span class="token punctuation">.</span>map RateObject</code></pre>
+<p>Now, we need a type to store all the information associated to a rate.</p>
+<p>This type contains the name of the 2 currencies and the rate.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">type</span> <span class="token class-name">Rate</span> <span class="token operator">=</span>
+    <span class="token punctuation">{</span>
+        SourceCurrency<span class="token punctuation">:</span> <span class="token class-name">string</span>
+        TargetCurrency<span class="token punctuation">:</span> <span class="token class-name">string</span>
+        Rate<span class="token punctuation">:</span> <span class="token class-name">decimal</span>
+    <span class="token punctuation">}</span></code></pre>
+<p>We don't have a <code>Decoder&lt;Rate&gt;</code> because the informations required to build a <code>Rate</code> are not stored in a standard object.</p>
+<p>Indeed, they are coming from both the field name and the associated value.</p>
+<p>In order, to work with this JSON we are going to directly works on all the field of the JSON.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">module</span> Rates <span class="token operator">=</span>
+
+    <span class="token keyword">let</span> decoder<span class="token punctuation">:</span> <span class="token class-name">Decoder</span><span class="token operator">&lt;</span>Rate list<span class="token operator">></span> <span class="token operator">=</span>
+        <span class="token comment">// 1. We retrieve all the valid RateObject fields and their associated name</span>
+        Decode<span class="token punctuation">.</span>keyValueOptions <span class="token punctuation">(</span>Decode<span class="token punctuation">.</span>ignoreFail RateObject<span class="token punctuation">.</span>decoder<span class="token punctuation">)</span>
+        <span class="token comment">// 2. Now that we have all the potential valid Rate fields</span>
+        <span class="token comment">// We need to verify if they have a valid name</span>
+        <span class="token operator">|></span> Decode<span class="token punctuation">.</span>andThen <span class="token punctuation">(</span><span class="token keyword">fun</span> rateObjects <span class="token operator">-></span>
+            rateObjects
+            <span class="token operator">|></span> List<span class="token punctuation">.</span>map <span class="token punctuation">(</span><span class="token keyword">fun</span> <span class="token punctuation">(</span>fieldName<span class="token punctuation">,</span> <span class="token punctuation">(</span>RateObject rate<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">-></span>
+
+                <span class="token comment">// We consider the fieldName valid if it contains a `_`</span>
+                <span class="token comment">// The format is [sourceCurrency]_[targetCurrency]</span>
+                <span class="token keyword">match</span> fieldName<span class="token punctuation">.</span><span class="token function">Split</span><span class="token punctuation">(</span><span class="token char">'_'</span><span class="token punctuation">)</span> <span class="token keyword">with</span>
+                <span class="token operator">|</span> <span class="token punctuation">[</span><span class="token operator">|</span> sourceCurrency<span class="token punctuation">;</span> targetCurrency <span class="token operator">|</span><span class="token punctuation">]</span> <span class="token operator">-></span>
+                    <span class="token comment">// The fieldName is valid, we can build the Rate record</span>
+                    <span class="token computation-expression keyword">Some</span>
+                        <span class="token punctuation">{</span>
+                            SourceCurrency <span class="token operator">=</span> sourceCurrency
+                            TargetCurrency <span class="token operator">=</span> targetCurrency
+                            Rate <span class="token operator">=</span> rate
+                        <span class="token punctuation">}</span>
+                <span class="token comment">// If the fieldName is invalid</span>
+                <span class="token comment">// Returns None, this will allow us to filter invalid fields without failing</span>
+                <span class="token operator">|</span> _ <span class="token operator">-></span> None
+
+            <span class="token punctuation">)</span>
+            <span class="token comment">// Only keep valid fields</span>
+            <span class="token operator">|></span> List<span class="token punctuation">.</span>choose id
+            <span class="token comment">// Return a decoder which succeeds</span>
+            <span class="token operator">|></span> Decode<span class="token punctuation">.</span>succeed
+        <span class="token punctuation">)</span></code></pre>
+<h2 id="Compose-everything" tabindex="-1">Compose everything <a class="header-anchor" href="#Compose-everything">#</a></h2>
+<p>Now, we have everything we need to build our final type.</p>
+<p>It consist in an object with the time and the list of rates retrieved from the JSON.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">type</span> <span class="token class-name">ExchangeRate</span> <span class="token operator">=</span>
+    <span class="token punctuation">{</span>
+        Time<span class="token punctuation">:</span> <span class="token class-name">System<span class="token punctuation">.</span>DateTime</span>
+        Rates<span class="token punctuation">:</span> <span class="token class-name">Rate</span> list
+    <span class="token punctuation">}</span>
+
+<span class="token keyword">module</span> ExchangeRate <span class="token operator">=</span>
+
+    <span class="token keyword">let</span> <span class="token keyword">private</span> ctor <span class="token punctuation">(</span>Ts time<span class="token punctuation">:</span> <span class="token class-name">Ts</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>rates<span class="token punctuation">:</span> <span class="token class-name">Rate</span> list<span class="token punctuation">)</span> <span class="token operator">=</span>
+        <span class="token punctuation">{</span>
+            Time <span class="token operator">=</span> time
+            Rates <span class="token operator">=</span> rates
+        <span class="token punctuation">}</span>
+
+    <span class="token keyword">let</span> decoder<span class="token punctuation">:</span> <span class="token class-name">Decoder</span><span class="token operator">&lt;</span>ExchangeRate<span class="token operator">></span> <span class="token operator">=</span>
+        Decode<span class="token punctuation">.</span>map2 ctor <span class="token punctuation">(</span>Decode<span class="token punctuation">.</span>field <span class="token string">"ts"</span> Ts<span class="token punctuation">.</span>decoder<span class="token punctuation">)</span> Rates<span class="token punctuation">.</span>decoder</code></pre>
+<p>Here is our decoder tested against different JSONs and their result.</p>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">let</span> jsonWithError <span class="token operator">=</span>
+    <span class="token string">"""
+{
+    "ts": "2020-01-01T00:00:00Z",
+    "EUR_PLN": { "rate": "4.55" },
+    "GBP_PLN": { "error": "Rate is not available at the moment" },
+    "USD_PLN": { "rate": "4.01" }
+}
+    """</span>
+
+Decode<span class="token punctuation">.</span>fromString ExchangeRate<span class="token punctuation">.</span>decoder jsonWithError
+
+<span class="token comment">// Returns:</span>
+<span class="token comment">// Ok</span>
+<span class="token comment">//    {</span>
+<span class="token comment">//        Time = System.DateTime(2020, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc)</span>
+<span class="token comment">//        Rates = [</span>
+<span class="token comment">//                {</span>
+<span class="token comment">//                    SourceCurrency = "EUR"</span>
+<span class="token comment">//                    TargetCurrency = "PLN"</span>
+<span class="token comment">//                    Rate = 4.55m</span>
+<span class="token comment">//                }</span>
+<span class="token comment">//                {</span>
+<span class="token comment">//                    SourceCurrency = "USD"</span>
+<span class="token comment">//                    TargetCurrency = "PLN"</span>
+<span class="token comment">//                    Rate = 4.01m</span>
+<span class="token comment">//                }</span>
+<span class="token comment">//            ]</span>
+<span class="token comment">//    }</span></code></pre>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">let</span> jsonEmptyRates <span class="token operator">=</span>
+    <span class="token string">"""
+{
+    "ts": "2020-01-01T00:00:00Z"
+}
+    """</span>
+
+Decode<span class="token punctuation">.</span>fromString ExchangeRate<span class="token punctuation">.</span>decoder jsonEmptyRates
+
+<span class="token comment">// Returns:</span>
+<span class="token comment">// Ok</span>
+<span class="token comment">//    {</span>
+<span class="token comment">//        Time = System.DateTime(2020, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc)</span>
+<span class="token comment">//        Rates = [ ]</span>
+<span class="token comment">//    }</span></code></pre>
+<pre class="language-fs"><code class="language-fs"><span class="token keyword">let</span> jsonMissingTime <span class="token operator">=</span>
+    <span class="token string">"""
+{
+    "EUR_PLN": { "rate": "4.55" }
+}
+    """</span>
+
+Decode<span class="token punctuation">.</span>fromString ExchangeRate<span class="token punctuation">.</span>decoder jsonMissingTime
+
+<span class="token comment">// Returns:</span>
+<span class="token comment">// Error at: `$`</span>
+<span class="token comment">// Expecting an object with a field named `ts` but instead got:</span>
+<span class="token comment">// {</span>
+<span class="token comment">//     "EUR_PLN": {</span>
+<span class="token comment">//         "rate": "4.55"</span>
+<span class="token comment">//     }</span>
+<span class="token comment">// }</span></code></pre>

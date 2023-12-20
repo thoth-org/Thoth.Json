@@ -1,0 +1,44 @@
+{
+    "$schema": "../../node_modules/@mangelmaxime/eleventy-layout-nacara/schemas/menu-schema.json",
+    "items": [
+        {
+            "type": "section",
+            "label": "Concept",
+            "items": [
+                "./concept/introduction.md",
+                "./concept/decoder.fsx",
+                "./concept/encoder.fsx",
+                "./concept/fable-and-dotnet-support.md"
+            ]
+        },
+        {
+            "type": "section",
+            "label": "Manual API",
+            "items": [
+                "./manual/introduction.fsx",
+                "./manual/convention.fsx",
+                "./manual/composition.fsx",
+                "./manual/override-defaults.fsx",
+                "./manual/json-representation.fsx"
+            ]
+        },
+        {
+            "type": "section",
+            "label": "Auto API",
+            "items": [
+                "./auto/introduction.fsx",
+                "./auto/extra-coders.fsx",
+                "./auto/caching.fsx",
+                "./auto/json-representation.fsx"
+            ]
+        },
+        {
+            "type": "section",
+            "label": "Advanced",
+            "items": [
+                "./advanced/introduction.md",
+                "./advanced/unkown-fields.fsx"
+            ]
+        }
+    ]
+}
