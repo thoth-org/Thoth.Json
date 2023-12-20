@@ -4,7 +4,7 @@
         {
             "section": "docs",
             "label": "Docs",
-            "url": "documentation/concept/introduction.html"
+            "url": "/eleventy-layout-nacara/documentation/concept/introduction.html"
         },
         {
             "section": "docs",

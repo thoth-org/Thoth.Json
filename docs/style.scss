@@ -41,7 +41,7 @@ $navbar-dropdown-item-active-color: $white;
 $menu-item-active-background-color: $primary;
 $menu-item-active-color: $white;
 $menu-item-hover-color: $primary;
-$menu-item-hover-background-color: transparent;
+$menu-item-hover-background-color: lighten($primary, 70%);
 $menu-label-font-size: $size-6;
 $menu-item-radius: $radius-large $radius-large;
 

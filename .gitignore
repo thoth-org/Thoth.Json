@@ -262,3 +262,5 @@ packages/
 !/packages/
 __pycache__/
 *.fs.*
+
+docs/_site/
