@@ -48,7 +48,8 @@ $menu-item-radius: $radius-large $radius-large;
 $footer-background-color: $primary;
 $footer-color: $white;
 
-$link: darken($primary, 4%);
+// $link: darken($primary, 4%);
+$link-hover: $link;
 $code: $red;
 
 $body-size: 15px;

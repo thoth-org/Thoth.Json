@@ -1,7 +1,7 @@
 {
     "$schema": "../../node_modules/@mangelmaxime/eleventy-layout-nacara/schemas/metadata-schema.json",
-    "url": "https://mangelmaxime.github.io",
-    "editUrl": "https://github.com/MangelMaxime/eleventy-layout-nacara/edit/main/docs",
+    "url": "https://mangelmaxime.github.io/eleventy-layout-nacara/",
+    "editUrl": "https://github.com/thoth-org/Thoth.Json/edit/main/docs",
     "baseUrl": "/eleventy-layout-nacara/",
     "title": "Eleventy Nacara",
     "description": "",

@@ -18,8 +18,8 @@ devDependencies:
     specifier: ^0.1.0
     version: link:../../MangelMaxime/eleventy-layout-nacara
   '@mangelmaxime/eleventy-plugin-fsharp':
-    specifier: ^1.2.0
-    version: link:../../MangelMaxime/eleventy-plugin-fsharp
+    specifier: ^1.4.0
+    version: 1.4.0(@11ty/eleventy@2.0.1)
   bulma:
     specifier: ^0.9.4
     version: 0.9.4
@@ -172,6 +172,15 @@ packages:
 
   /@iarna/toml@2.2.5:
     resolution: {integrity: sha512-trnsAYxU3xnS1gPHPyU961coFyLkh4gAD/0zQ5mymY4yOZ+CYvsPqUbOFSw0aDM4y0tV7tiFxL/1XfXPNC6IPg==}
+    dev: true
+
+  /@mangelmaxime/eleventy-plugin-fsharp@1.4.0(@11ty/eleventy@2.0.1):
+    resolution: {integrity: sha512-Z1Lo1crsHBkMiV0MNatyTgsr8EYSwvFavGAQjadazsOIwZaK/LNrqZtmrRLQXK9FMf2EwsWXHaaEcucpGBE2/g==}
+    peerDependencies:
+      '@11ty/eleventy': ^1.0.0
+    dependencies:
+      '@11ty/eleventy': 2.0.1
+      gray-matter: 4.0.3
     dev: true
 
   /@nodelib/fs.scandir@2.1.5:

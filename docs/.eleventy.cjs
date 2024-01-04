@@ -20,7 +20,11 @@ module.exports = function (eleventyConfig) {
     });
     eleventyConfig.addPlugin(eleventyFsharpLiterate);
 
-    // eleventyConfig.addWatchTarget("./../CHANGELOG.md");
+    eleventyConfig.addWatchTarget("./../packages/Thoth.Json/CHANGELOG.md");
+    eleventyConfig.addWatchTarget("./../packages/Thoth.Json.Core/CHANGELOG.md");
+    eleventyConfig.addWatchTarget("./../packages/Thoth.Json.JavaScript/CHANGELOG.md");
+    eleventyConfig.addWatchTarget("./../packages/Thoth.Json.Newtonsoft/CHANGELOG.md");
+    eleventyConfig.addWatchTarget("./../packages/Thoth.Json.Python/CHANGELOG.md");
 
     // Configure Eleventy options to your liking
     return {

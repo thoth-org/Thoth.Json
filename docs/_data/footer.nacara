@@ -11,12 +11,12 @@
                 {
                     "label": "Repository",
                     "icon": "lucide:file-code",
-                    "url": "https://github.com/mangelmaxime/eleventy-layout-nacara/"
+                    "url": "https://github.com/thoth-org/Thoth.Json/"
                 },
                 {
                     "label": "License",
                     "icon": "lucide:copyright",
-                    "url": "https://github.com/MangelMaxime/eleventy-layout-nacara/blob/main/LICENSE.md"
+                    "url": "https://github.com/thoth-org/Thoth.Json/blob/main/LICENSE.txt"
                 }
             ]
         },
@@ -37,3 +37,30 @@
         }
     ]
 }
+
+Concept
+    - Introduction
+    - Decoder
+    - Encoder
+Core API
+    - Introduction
+    - Conventions
+    - Decoders
+    - Encoders
+Runtime API
+    - Introduction
+
+
+
+Extensions
+    - Auto API
+    - Codec
+    - 
+
+OU
+
+- Auto API
+    - Introduction
+    - Extra coders
+    - Cache
+    - JSON representation

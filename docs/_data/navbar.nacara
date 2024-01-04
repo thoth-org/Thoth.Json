@@ -12,6 +12,36 @@
             "url": "/changelog/"
         },
         {
+            "label": "Changelogs",
+            "items": [
+                {
+                    "label": "Thoth.Json",
+                    "section": "",
+                    "url": "/eleventy-layout-nacara/changelogs/thoth-json"
+                },
+                {
+                    "label": "Thoth.Json.Core",
+                    "section": "",
+                    "url": "/eleventy-layout-nacara/changelogs/thoth-json-core"
+                },
+                {
+                    "label": "Thoth.Json.JavaScript",
+                    "section": "",
+                    "url": "/eleventy-layout-nacara/changelogs/thoth-json-javascript"
+                },
+                {
+                    "label": "Thoth.Json.Newtonsoft",
+                    "section": "",
+                    "url": "/eleventy-layout-nacara/changelogs/thoth-json-newtonsoft"
+                },
+                {
+                    "label": "Thoth.Json.Python",
+                    "section": "",
+                    "url": "/eleventy-layout-nacara/changelogs/thoth-json-python"
+                }
+            ]
+        },
+        {
             "url": "https://gitter.im/fable-compiler/Fable",
             "label": "Support"
         },
@@ -22,7 +52,7 @@
     ],
     "end": [
         {
-            "url": "https://github.com/MangelMaxime/Nacara",
+            "url": "https://github.com/thoth-org/Thoth.Json",
             "icon": "simpleIcons:github",
             "label": "Github"
         },

@@ -23,7 +23,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Thoth.Json.Tests.Newtonsoft
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Thoth.Json.Tests.Python", "tests\Thoth.Json.Tests.Python\Thoth.Json.Tests.Python.fsproj", "{5DD6593A-A2BB-48C8-90A2-5DD3E957CE75}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Thoth.Tests.Tests.Legacy", "tests\Thoth.Tests.Tests.Legacy\Thoth.Tests.Tests.Legacy.fsproj", "{81253746-095B-405B-BA26-E8CBDA25C992}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Thoth.Json.Tests.Legacy", "tests\Thoth.Json.Tests.Legacy\Thoth.Json.Tests.Legacy.fsproj", "{81253746-095B-405B-BA26-E8CBDA25C992}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Thoth.Json", "packages\Thoth.Json\Thoth.Json.fsproj", "{D03314F6-68F9-46BD-A0D1-75B2B18E76A0}"
 EndProject
