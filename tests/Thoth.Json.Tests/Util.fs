@@ -29,6 +29,7 @@ type IEncode =
 
 type IDecode =
     abstract fromString<'T> : Decoder<'T> -> string -> Result<'T, string>
+    abstract unsafeFromString<'T> : Decoder<'T> -> string -> 'T
 
 [<AbstractClass>]
 type TestRunner<'Test, 'JsonValue>() =

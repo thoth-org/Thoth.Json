@@ -17,6 +17,9 @@ type PythonDecode() =
     interface IDecode with
         override _.fromString a b = Decode.fromString a b
 
+        override _.unsafeFromString decoder json =
+            Decode.unsafeFromString decoder json
+
 type PythonTestRunner() =
     inherit TestRunner<TestCase, obj>()
 

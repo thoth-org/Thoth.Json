@@ -151,6 +151,48 @@ let tests (runner: TestRunner<_, _>) =
                 ]
 
             runner.testList
+                "Decode.unsafeString"
+                [
+
+                    runner.testCase "works"
+                    <| fun _ ->
+                        let expected = "maxime"
+
+                        let actual =
+                            runner.Decode.unsafeFromString
+                                Decode.string
+                                "\"maxime\""
+
+                        runner.equal expected actual
+
+                    runner.testCase "throw an exception if the json is invalid"
+                    <| fun _ ->
+#if FABLE_COMPILER_JAVASCRIPT
+                        let expected =
+                            "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
+#endif
+
+#if FABLE_COMPILER_PYTHON
+                        let expected =
+                            "Given an invalid JSON: Expecting value: line 1 column 1 (char 0)"
+#endif
+
+#if !FABLE_COMPILER
+                        let expected =
+                            "Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0."
+#endif
+
+                        try
+                            runner.Decode.unsafeFromString
+                                Decode.string
+                                "maxime"
+                            |> ignore // Ignore the result as we only want to trigger the decoder and capture the exception
+
+                        with ex ->
+                            runner.equal expected ex.Message
+                ]
+
+            runner.testList
                 "Primitives"
                 [
 

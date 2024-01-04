@@ -82,3 +82,9 @@ module Decode =
 
             with :? Python.Json.JSONDecodeError as ex ->
                 Error("Given an invalid JSON: " + ex.Message)
+
+    let unsafeFromString (decoder: Decoder<'T>) =
+        fun value ->
+            match fromString decoder value with
+            | Ok x -> x
+            | Error e -> failwith e

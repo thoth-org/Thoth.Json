@@ -15,6 +15,9 @@ type JavaScriptDecode() =
     interface IDecode with
         override _.fromString decoder json = Decode.fromString decoder json
 
+        override _.unsafeFromString decoder json =
+            Decode.unsafeFromString decoder json
+
 type JavascriptTestRunner() =
     inherit TestRunner<TestCase, obj>()
 

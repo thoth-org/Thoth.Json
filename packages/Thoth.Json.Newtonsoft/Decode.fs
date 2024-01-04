@@ -94,3 +94,9 @@ module Decode =
                     Error(Decode.errorToString helpers finalError)
             with :? JsonException as ex ->
                 Error("Given an invalid JSON: " + ex.Message)
+
+    let unsafeFromString (decoder: Decoder<'T>) =
+        fun value ->
+            match fromString decoder value with
+            | Ok x -> x
+            | Error e -> failwith e

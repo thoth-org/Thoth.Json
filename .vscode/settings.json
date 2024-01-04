@@ -6,5 +6,8 @@
     "files.associations": {
         "*.menu": "json",
         "*.nacara": "json"
+    },
+    "explorer.fileNesting.patterns": {
+        "*.d.ts": "${capture}.fsx"
     }
 }
