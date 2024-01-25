@@ -23,6 +23,6 @@ If you are interested on using it against .NET Core or .NET Framework, please us
         <PackageReference Include="Ionide.KeepAChangelog.Tasks" PrivateAssets="all" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include="*.fsproj; **\*.fs; **\*.js" PackagePath="fable" />
+        <Content Include="*.fsproj; **\*.fs" PackagePath="fable" />
     </ItemGroup>
 </Project>

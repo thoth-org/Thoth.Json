@@ -18,6 +18,6 @@
         <ProjectReference Include="..\Thoth.Json.Core\Thoth.Json.Core.fsproj" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include="*.fsproj; **\*.fs; **\*.js;" PackagePath="fable" />
+        <Content Include="*.fsproj; **\*.fs" PackagePath="fable" />
     </ItemGroup>
 </Project>
