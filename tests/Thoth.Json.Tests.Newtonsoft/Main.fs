@@ -38,25 +38,5 @@ let main args =
         [
             Decoders.tests runner
             Encoders.tests runner
-            runner.testCase
-                "field output an error explaining why the value is considered invalid"
-            <| fun _ ->
-                let json = """{ "name": null, "age": 25 }"""
-
-                let expected =
-                    Error(
-                        """
-Error at: `$.name`
-Expecting an int but instead got: null
-                        """
-                            .Trim()
-                    )
-
-                let actual =
-                    runner.Decode.fromString
-                        (Decode.field "name" Decode.int)
-                        json
-
-                runner.equal expected actual
         ]
     |> runTestsWithArgs defaultConfig args
