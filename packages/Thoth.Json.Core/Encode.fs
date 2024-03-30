@@ -8,84 +8,71 @@ open System
 module Encode =
 
     let inline string value =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    helpers.encodeString(value)
+        { new IEncodable with
+            member this.Encode(helpers) = helpers.encodeString (value)
         }
 
     let inline char value =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    helpers.encodeChar(value)
+        { new IEncodable with
+            member this.Encode(helpers) = helpers.encodeChar (value)
         }
 
     let inline guid value = value.ToString() |> string
 
     let inline float value =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    helpers.encodeDecimalNumber(value)
+        { new IEncodable with
+            member this.Encode(helpers) = helpers.encodeDecimalNumber (value)
         }
 
-    let float32 (value: float32) =
-        float (Operators.float value)
+    let float32 (value: float32) = float (Operators.float value)
 
     let inline decimal (value: decimal) =
         value.ToString(CultureInfo.InvariantCulture) |> string
 
     let inline nil<'T> =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    helpers.encodeNull()
+        { new IEncodable with
+            member this.Encode(helpers) = helpers.encodeNull ()
         }
 
     let inline bool value =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    helpers.encodeBool(value)
+        { new IEncodable with
+            member this.Encode(helpers) = helpers.encodeBool (value)
         }
 
-    let inline object (values : seq<string * IEncodable>) =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    let o = helpers.createEmptyObject()
-                    for k, v in values do
-                        let ve = v.Encode(helpers)
-                        helpers.setPropertyOnObject(o, k, ve)
-                    o
+    let inline object (values: seq<string * IEncodable>) =
+        { new IEncodable with
+            member this.Encode(helpers) =
+                let o = helpers.createEmptyObject ()
+
+                for k, v in values do
+                    let ve = v.Encode(helpers)
+                    helpers.setPropertyOnObject (o, k, ve)
+
+                o
         }
 
-    let inline array (values : IEncodable array) =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    values
-                    |> Array.map (fun v -> v.Encode(helpers))
-                    |> helpers.encodeArray
+    let inline array (values: IEncodable array) =
+        { new IEncodable with
+            member this.Encode(helpers) =
+                values
+                |> Array.map (fun v -> v.Encode(helpers))
+                |> helpers.encodeArray
         }
 
-    let list (values : IEncodable list) =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    values
-                    |> List.map (fun v -> v.Encode(helpers))
-                    |> helpers.encodeList
+    let list (values: IEncodable list) =
+        { new IEncodable with
+            member this.Encode(helpers) =
+                values
+                |> List.map (fun v -> v.Encode(helpers))
+                |> helpers.encodeList
         }
 
-    let seq (values : IEncodable seq) =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    values
-                    |> Seq.map (fun v -> v.Encode(helpers))
-                    |> helpers.encodeSeq
+    let seq (values: IEncodable seq) =
+        { new IEncodable with
+            member this.Encode(helpers) =
+                values
+                |> Seq.map (fun v -> v.Encode(helpers))
+                |> helpers.encodeSeq
         }
 
     let dict (values: Map<string, IEncodable>) : IEncodable =
@@ -102,45 +89,38 @@ module Encode =
         value.ToString("O", CultureInfo.InvariantCulture) |> string
 
     let inline sbyte (value: sbyte) =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    helpers.encodeIntegralNumber(uint32 value)
+        { new IEncodable with
+            member this.Encode(helpers) =
+                helpers.encodeIntegralNumber (uint32 value)
         }
 
     let inline byte (value: byte) =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    helpers.encodeIntegralNumber(uint32 value)
+        { new IEncodable with
+            member this.Encode(helpers) =
+                helpers.encodeIntegralNumber (uint32 value)
         }
 
     let inline int16 (value: int16) =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    helpers.encodeIntegralNumber(uint32 value)
+        { new IEncodable with
+            member this.Encode(helpers) =
+                helpers.encodeIntegralNumber (uint32 value)
         }
 
     let inline uint16 (value: uint16) =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    helpers.encodeIntegralNumber(uint32 value)
+        { new IEncodable with
+            member this.Encode(helpers) =
+                helpers.encodeIntegralNumber (uint32 value)
         }
 
     let inline int (value: int) =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    helpers.encodeIntegralNumber(uint32 value)
+        { new IEncodable with
+            member this.Encode(helpers) =
+                helpers.encodeIntegralNumber (uint32 value)
         }
 
     let inline uint32 (value: uint32) =
-        {
-            new IEncodable with
-                member this.Encode(helpers) =
-                    helpers.encodeIntegralNumber(value)
+        { new IEncodable with
+            member this.Encode(helpers) = helpers.encodeIntegralNumber (value)
         }
 
     let inline int64 (value: int64) =
@@ -293,23 +273,38 @@ module Encode =
         let byte<'TEnum when 'TEnum: enum<byte>> (value: 'TEnum) : IEncodable =
             LanguagePrimitives.EnumToValue value |> byte
 
-        let sbyte<'TEnum when 'TEnum: enum<sbyte>> (value: 'TEnum) : IEncodable =
+        let sbyte<'TEnum when 'TEnum: enum<sbyte>>
+            (value: 'TEnum)
+            : IEncodable
+            =
             LanguagePrimitives.EnumToValue value |> sbyte
 
-        let int16<'TEnum when 'TEnum: enum<int16>> (value: 'TEnum) : IEncodable =
+        let int16<'TEnum when 'TEnum: enum<int16>>
+            (value: 'TEnum)
+            : IEncodable
+            =
             LanguagePrimitives.EnumToValue value |> int16
 
-        let uint16<'TEnum when 'TEnum: enum<uint16>> (value: 'TEnum) : IEncodable =
+        let uint16<'TEnum when 'TEnum: enum<uint16>>
+            (value: 'TEnum)
+            : IEncodable
+            =
             LanguagePrimitives.EnumToValue value |> uint16
 
         let int<'TEnum when 'TEnum: enum<int>> (value: 'TEnum) : IEncodable =
             LanguagePrimitives.EnumToValue value |> int
 
-        let uint32<'TEnum when 'TEnum: enum<uint32>> (value: 'TEnum) : IEncodable =
+        let uint32<'TEnum when 'TEnum: enum<uint32>>
+            (value: 'TEnum)
+            : IEncodable
+            =
             LanguagePrimitives.EnumToValue value |> uint32
 
     let option (encoder: Encoder<'a>) =
         Option.map encoder >> Option.defaultWith (fun _ -> nil)
 
-    let rec toJsonValue (helpers: IEncoderHelpers<'JsonValue>) (json: IEncodable) =
+    let inline toJsonValue
+        (helpers: IEncoderHelpers<'JsonValue>)
+        (json: IEncodable)
+        =
         json.Encode(helpers)
