@@ -7,24 +7,89 @@ open System
 [<RequireQualifiedAccess>]
 module Encode =
 
-    let inline string value = Json.String value
-    let inline char value = Json.Char value
+    let inline string value =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    helpers.encodeString(value)
+        }
+
+    let inline char value =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    helpers.encodeChar(value)
+        }
+
     let inline guid value = value.ToString() |> string
-    let inline float value = Json.DecimalNumber value
+
+    let inline float value =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    helpers.encodeDecimalNumber(value)
+        }
 
     let float32 (value: float32) =
-        Json.DecimalNumber(Operators.float value)
+        float (Operators.float value)
 
     let inline decimal (value: decimal) =
         value.ToString(CultureInfo.InvariantCulture) |> string
 
-    let inline nil<'T> = Json.Null
-    let inline bool value = Json.Boolean value
-    let inline object values = Json.Object values
-    let inline array values = Json.Array values
-    let list values = Json.Array(values |> List.toArray)
-    let seq values = Json.Array(values |> Seq.toArray)
-    let dict (values: Map<string, Json>) : Json = values |> Map.toList |> object
+    let inline nil<'T> =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    helpers.encodeNull()
+        }
+
+    let inline bool value =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    helpers.encodeBool(value)
+        }
+
+    let inline object (values : seq<string * IEncodable>) =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    let o = helpers.createEmptyObject()
+                    for k, v in values do
+                        let ve = v.Encode(helpers)
+                        helpers.setPropertyOnObject(o, k, ve)
+                    o
+        }
+
+    let inline array (values : IEncodable array) =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    values
+                    |> Array.map (fun v -> v.Encode(helpers))
+                    |> helpers.encodeArray
+        }
+
+    let list (values : IEncodable list) =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    values
+                    |> List.map (fun v -> v.Encode(helpers))
+                    |> helpers.encodeList
+        }
+
+    let seq (values : IEncodable seq) =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    values
+                    |> Seq.map (fun v -> v.Encode(helpers))
+                    |> helpers.encodeSeq
+        }
+
+    let dict (values: Map<string, IEncodable>) : IEncodable =
+        values |> Map.toSeq |> object
 
     let inline bigint (value: bigint) = value.ToString() |> string
 
@@ -36,12 +101,47 @@ module Encode =
     let inline datetime (value: DateTime) =
         value.ToString("O", CultureInfo.InvariantCulture) |> string
 
-    let inline sbyte (value: sbyte) = Json.IntegralNumber(uint32 value)
-    let inline byte (value: byte) = Json.IntegralNumber(uint32 value)
-    let inline int16 (value: int16) = Json.IntegralNumber(uint32 value)
-    let inline uint16 (value: uint16) = Json.IntegralNumber(uint32 value)
-    let inline int (value: int) = Json.IntegralNumber(uint32 value)
-    let inline uint32 (value: uint32) = Json.IntegralNumber value
+    let inline sbyte (value: sbyte) =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    helpers.encodeIntegralNumber(uint32 value)
+        }
+
+    let inline byte (value: byte) =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    helpers.encodeIntegralNumber(uint32 value)
+        }
+
+    let inline int16 (value: int16) =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    helpers.encodeIntegralNumber(uint32 value)
+        }
+
+    let inline uint16 (value: uint16) =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    helpers.encodeIntegralNumber(uint32 value)
+        }
+
+    let inline int (value: int) =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    helpers.encodeIntegralNumber(uint32 value)
+        }
+
+    let inline uint32 (value: uint32) =
+        {
+            new IEncodable with
+                member this.Encode(helpers) =
+                    helpers.encodeIntegralNumber(value)
+        }
 
     let inline int64 (value: int64) =
         value.ToString(CultureInfo.InvariantCulture) |> string
@@ -49,9 +149,9 @@ module Encode =
     let inline uint64 (value: uint64) =
         value.ToString(CultureInfo.InvariantCulture) |> string
 
-    let inline unit () = Json.Unit
+    let inline unit () = nil
 
-    let tuple2 (enc1: Encoder<'T1>) (enc2: Encoder<'T2>) (v1, v2) : Json =
+    let tuple2 (enc1: Encoder<'T1>) (enc2: Encoder<'T2>) (v1, v2) : IEncodable =
         array
             [|
                 enc1 v1
@@ -63,7 +163,7 @@ module Encode =
         (enc2: Encoder<'T2>)
         (enc3: Encoder<'T3>)
         (v1, v2, v3)
-        : Json
+        : IEncodable
         =
         array
             [|
@@ -78,7 +178,7 @@ module Encode =
         (enc3: Encoder<'T3>)
         (enc4: Encoder<'T4>)
         (v1, v2, v3, v4)
-        : Json
+        : IEncodable
         =
         array
             [|
@@ -95,7 +195,7 @@ module Encode =
         (enc4: Encoder<'T4>)
         (enc5: Encoder<'T5>)
         (v1, v2, v3, v4, v5)
-        : Json
+        : IEncodable
         =
         array
             [|
@@ -114,7 +214,7 @@ module Encode =
         (enc5: Encoder<'T5>)
         (enc6: Encoder<'T6>)
         (v1, v2, v3, v4, v5, v6)
-        : Json
+        : IEncodable
         =
         array
             [|
@@ -135,7 +235,7 @@ module Encode =
         (enc6: Encoder<'T6>)
         (enc7: Encoder<'T7>)
         (v1, v2, v3, v4, v5, v6, v7)
-        : Json
+        : IEncodable
         =
         array
             [|
@@ -158,7 +258,7 @@ module Encode =
         (enc7: Encoder<'T7>)
         (enc8: Encoder<'T8>)
         (v1, v2, v3, v4, v5, v6, v7, v8)
-        : Json
+        : IEncodable
         =
         array
             [|
@@ -177,7 +277,7 @@ module Encode =
         (keyEncoder: Encoder<'key>)
         (valueEncoder: Encoder<'value>)
         (values: Map<'key, 'value>)
-        : Json
+        : IEncodable
         =
         values
         |> Map.toList
@@ -190,44 +290,26 @@ module Encode =
 
     module Enum =
 
-        let byte<'TEnum when 'TEnum: enum<byte>> (value: 'TEnum) : Json =
+        let byte<'TEnum when 'TEnum: enum<byte>> (value: 'TEnum) : IEncodable =
             LanguagePrimitives.EnumToValue value |> byte
 
-        let sbyte<'TEnum when 'TEnum: enum<sbyte>> (value: 'TEnum) : Json =
+        let sbyte<'TEnum when 'TEnum: enum<sbyte>> (value: 'TEnum) : IEncodable =
             LanguagePrimitives.EnumToValue value |> sbyte
 
-        let int16<'TEnum when 'TEnum: enum<int16>> (value: 'TEnum) : Json =
+        let int16<'TEnum when 'TEnum: enum<int16>> (value: 'TEnum) : IEncodable =
             LanguagePrimitives.EnumToValue value |> int16
 
-        let uint16<'TEnum when 'TEnum: enum<uint16>> (value: 'TEnum) : Json =
+        let uint16<'TEnum when 'TEnum: enum<uint16>> (value: 'TEnum) : IEncodable =
             LanguagePrimitives.EnumToValue value |> uint16
 
-        let int<'TEnum when 'TEnum: enum<int>> (value: 'TEnum) : Json =
+        let int<'TEnum when 'TEnum: enum<int>> (value: 'TEnum) : IEncodable =
             LanguagePrimitives.EnumToValue value |> int
 
-        let uint32<'TEnum when 'TEnum: enum<uint32>> (value: 'TEnum) : Json =
+        let uint32<'TEnum when 'TEnum: enum<uint32>> (value: 'TEnum) : IEncodable =
             LanguagePrimitives.EnumToValue value |> uint32
 
-    let option (encoder: 'a -> Json) =
+    let option (encoder: Encoder<'a>) =
         Option.map encoder >> Option.defaultWith (fun _ -> nil)
 
-    let rec toJsonValue (helpers: IEncoderHelpers<'JsonValue>) (json: Json) =
-        match json with
-        | Json.String value -> helpers.encodeString value
-        | Json.IntegralNumber value -> helpers.encodeIntegralNumber value
-        | Json.Object values ->
-            let o = helpers.createEmptyObject ()
-
-            values
-            |> Seq.iter (fun (k, v) ->
-                helpers.setPropertyOnObject (o, k, toJsonValue helpers v)
-            )
-
-            o
-        | Json.Char value -> helpers.encodeChar value
-        | Json.DecimalNumber value -> helpers.encodeDecimalNumber value
-        | Json.Null -> helpers.encodeNull ()
-        | Json.Boolean value -> helpers.encodeBool value
-        | Json.Array value ->
-            value |> Array.map (toJsonValue helpers) |> helpers.encodeArray
-        | Json.Unit -> helpers.encodeNull ()
+    let rec toJsonValue (helpers: IEncoderHelpers<'JsonValue>) (json: IEncodable) =
+        json.Encode(helpers)

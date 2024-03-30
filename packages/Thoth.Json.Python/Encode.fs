@@ -27,7 +27,7 @@ module Encode =
             member _.encodeIntegralNumber value = box value
         }
 
-    let toString (space: int) (value: Json) : string =
+    let toString (space: int) (value: IEncodable) : string =
         let json = Encode.toJsonValue helpers value
         // If we pass an indention of 0 to Python's json.dumps, it will
         // insert newlines, between each element instead of compressing

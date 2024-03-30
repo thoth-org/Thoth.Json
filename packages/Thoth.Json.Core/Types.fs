@@ -73,4 +73,9 @@ type Json =
     | IntegralNumber of uint32
     | Unit
 
-type Encoder<'T> = 'T -> Json
+type IEncodable =
+    abstract member Encode<'JsonValue> :
+        helpers: IEncoderHelpers<'JsonValue> ->
+            'JsonValue
+
+type Encoder<'T> = 'T -> IEncodable

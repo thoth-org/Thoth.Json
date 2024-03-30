@@ -27,6 +27,6 @@ module Encode =
             member _.encodeIntegralNumber value = box value
         }
 
-    let toString (space: int) (value: Json) : string =
+    let toString (space: int) (value: IEncodable) : string =
         let json = Encode.toJsonValue helpers value
         JS.JSON.stringify (json, space = space)
