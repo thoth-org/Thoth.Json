@@ -45,7 +45,8 @@ module Encode =
                     [|
                         ","
                         ":"
-                    |]
+                    |],
+                ensure_ascii = false
             )
         else
             Python.Json.json.dumps (json, indent = space)

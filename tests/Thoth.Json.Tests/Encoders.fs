@@ -71,6 +71,17 @@ let tests (runner: TestRunner<_, _>) =
 
                         runner.equal actual expected
 
+                    runner.testCase
+                        "a string with non ascii characters works returns the characters as is"
+                    <| fun _ ->
+                        let expected = "\"Timo Mühlhaus\""
+
+                        let actual =
+                            Encode.string "Timo Mühlhaus"
+                            |> runner.Encode.toString 0
+
+                        runner.equal actual expected
+
                     runner.testCase "a char works"
                     <| fun _ ->
                         let expected = "\"a\""
