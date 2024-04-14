@@ -375,7 +375,7 @@ type Language =
 #endif
 
 type Enum_Int8 =
-    | Zero = (0y: int8)
+    | Zero = 0y
     | NinetyNine = 99y
 
 type Enum_UInt8 =
@@ -429,7 +429,6 @@ module IntAsRecord =
                 "type", Encode.string "int"
                 "value", Encode.int value
             ]
-    // null
 
     let decode: Decoder<int> =
         Decode.field "type" Decode.string
