@@ -56,28 +56,6 @@ module Extra =
             DecoderOverrides = Map.empty
         }
 
-    // let overrideEncoderImpl (typeKey : TypeKey) (encoder : obj) (opts : ExtraCoders) =
-    //   {
-    //     opts with
-    //       EncoderOverrides =
-    //         opts.EncoderOverrides
-    //         |> Map.add typeKey encoder
-    //   }
-
-    // let inline overrideEncoder (encoder : Encoder<'t>) (opts : ExtraCoders) =
-    //   overrideEncoderImpl (TypeKey.ofType typeof<'t>) encoder opts
-
-    // let overrideDecoderImpl (typeKey : TypeKey) (decoder : obj) (opts : ExtraCoders) =
-    //   {
-    //     opts with
-    //       DecoderOverrides =
-    //         opts.DecoderOverrides
-    //         |> Map.add typeKey decoder
-    //   }
-
-    // let inline overrideDecoder (decoder : Decoder<'t>) (opts : ExtraCoders) =
-    //   overrideDecoderImpl (TypeKey.ofType typeof<'t>) decoder opts
-
     let inline withCustom
         (encoder: Encoder<'t>)
         (decoder: Decoder<'t>)
