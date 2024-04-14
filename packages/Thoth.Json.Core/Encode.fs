@@ -211,6 +211,8 @@ module Encode =
     let option (encoder: 'a -> Json) =
         Option.map encoder >> Option.defaultWith (fun _ -> nil)
 
+    let lazily (enc: Lazy<Encoder<'t>>) : Encoder<'t> = fun x -> enc.Value x
+
     let rec toJsonValue (helpers: IEncoderHelpers<'JsonValue>) (json: Json) =
         match json with
         | Json.String value -> helpers.encodeString value
@@ -218,10 +220,8 @@ module Encode =
         | Json.Object values ->
             let o = helpers.createEmptyObject ()
 
-            values
-            |> Seq.iter (fun (k, v) ->
+            for k, v in values do
                 helpers.setPropertyOnObject (o, k, toJsonValue helpers v)
-            )
 
             o
         | Json.Char value -> helpers.encodeChar value

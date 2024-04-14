@@ -303,8 +303,9 @@ type ChildType =
     {
         ChildField: string
     }
-    // static member Encode(x: ChildType) =
-    //     Encode.string x.ChildField
+
+    static member Encode(x: ChildType) = Encode.string x.ChildField
+
     static member Decoder =
         Decode.string
         |> Decode.map (fun x ->
@@ -374,7 +375,7 @@ type Language =
 #endif
 
 type Enum_Int8 =
-    | Zero = 0y
+    | Zero = (0y: int8)
     | NinetyNine = 99y
 
 type Enum_UInt8 =
@@ -423,11 +424,12 @@ type RecordForCharacterCase =
 module IntAsRecord =
 
     let encode (value: int) =
-        // Encode.object [
-        //     "type", Encode.string "int"
-        //     "value", Encode.int value
-        // ]
-        null
+        Encode.object
+            [
+                "type", Encode.string "int"
+                "value", Encode.int value
+            ]
+    // null
 
     let decode: Decoder<int> =
         Decode.field "type" Decode.string
