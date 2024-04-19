@@ -30,9 +30,9 @@ In this example, we know that:
 - The `ts` field required
 - There is an unkown number of `Rate` fields which consists of:
     - The key property which has the format:
-        1. `sourceCurrency`
+        1. `baseCurrency`
         2. `_`
-        3. `targetCurrency`
+        3. `quoteCurrency`
     - The value should have a `rate` field which is a `decimal`
 
 We are now going to write a decoder capable of handling such a JSON.
@@ -115,8 +115,8 @@ This type contains the name of the 2 currencies and the rate.
 
 type Rate =
     {
-        SourceCurrency: string
-        TargetCurrency: string
+        BaseCurrency: string
+        QuoteCurrency: string
         Rate: decimal
     }
 
@@ -142,14 +142,14 @@ module Rates =
             |> List.map (fun (fieldName, (RateObject rate)) ->
 
                 // We consider the fieldName valid if it contains a `_`
-                // The format is [sourceCurrency]_[targetCurrency]
+                // The format is [baseCurrency]_[quoteCurrency]
                 match fieldName.Split('_') with
-                | [| sourceCurrency; targetCurrency |] ->
+                | [| baseCurrency; quoteCurrency |] ->
                     // The fieldName is valid, we can build the Rate record
                     Some
                         {
-                            SourceCurrency = sourceCurrency
-                            TargetCurrency = targetCurrency
+                            BaseCurrency = baseCurrency
+                            QuoteCurrency = quoteCurrency
                             Rate = rate
                         }
                 // If the fieldName is invalid
@@ -214,13 +214,13 @@ Decode.fromString ExchangeRate.decoder jsonWithError
 //        Time = System.DateTime(2020, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc)
 //        Rates = [
 //                {
-//                    SourceCurrency = "EUR"
-//                    TargetCurrency = "PLN"
+//                    BaseCurrency = "EUR"
+//                    QuoteCurrency = "PLN"
 //                    Rate = 4.55m
 //                }
 //                {
-//                    SourceCurrency = "USD"
-//                    TargetCurrency = "PLN"
+//                    BaseCurrency = "USD"
+//                    QuoteCurrency = "PLN"
 //                    Rate = 4.01m
 //                }
 //            ]
