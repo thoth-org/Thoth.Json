@@ -14,5 +14,5 @@ let handle (args: string list) =
         |> CmdLine.appendRaw "run"
         |> CmdLine.appendPrefix "--project" Workspace.Fsproj.Tests.newtonsoft
         |> CmdLine.toString,
-        workingDirectory = Workspace.ProjectDir.Tests.javascript
+        workingDirectory = Workspace.ProjectDir.Tests.newtonsoft
     )

@@ -216,14 +216,9 @@ module Encode =
         | Json.String value -> helpers.encodeString value
         | Json.IntegralNumber value -> helpers.encodeIntegralNumber value
         | Json.Object values ->
-            let o = helpers.createEmptyObject ()
-
             values
-            |> Seq.iter (fun (k, v) ->
-                helpers.setPropertyOnObject (o, k, toJsonValue helpers v)
-            )
-
-            o
+            |> Seq.map (fun (k, v) -> k, toJsonValue helpers v)
+            |> helpers.encodeObject
         | Json.Char value -> helpers.encodeChar value
         | Json.DecimalNumber value -> helpers.encodeDecimalNumber value
         | Json.Null -> helpers.encodeNull ()
