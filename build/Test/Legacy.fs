@@ -24,6 +24,7 @@ let handle (args: string list) =
                 |> CmdLine.appendRaw "fable"
                 |> CmdLine.appendPrefix "--outDir" outDir
                 |> CmdLine.appendRaw "--noCache"
+                |> CmdLine.appendRaw "--test:MSBuildCracker"
 
                 if isWatch then
                     CmdLine.empty
