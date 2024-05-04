@@ -417,7 +417,7 @@ module Encode =
 
 #if !FABLE_COMPILER
     let private makeEncoderType (ty: Type) : Type =
-        FSharpType.MakeFunctionType(ty, typeof<Json>)
+        FSharpType.MakeFunctionType(ty, typeof<IEncodable>)
     // typedefof<Encoder<obj>>.MakeGenericType(ty)
 #endif
 
@@ -602,7 +602,7 @@ module Encode =
                     | _ -> failwith $"Expected an F# record type"
 
                 for pi in recordFields do
-                    let fieldEncoder: obj -> Json =
+                    let fieldEncoder: obj -> IEncodable =
                         generateEncoder
                             caseStyle
                             existingEncoders
@@ -691,7 +691,8 @@ module Encode =
                     let invokeMethodInfo =
                         fieldEncoder.GetType().GetMethods()
                         |> Array.find (fun x ->
-                            x.Name = "Invoke" && x.ReturnType = typedefof<Json>
+                            x.Name = "Invoke"
+                            && x.ReturnType = typedefof<IEncodable>
                         )
 
                     let reader = FSharpValue.PreComputeRecordFieldReader(pi)
@@ -703,7 +704,7 @@ module Encode =
                             None
                         else
                             invokeMethodInfo.Invoke(fieldEncoder, [| value |])
-                            :?> Json
+                            :?> IEncodable
                             |> Some
 
                     pi.Name, readAndEncode
@@ -789,7 +790,7 @@ module Encode =
                         let fieldEncoders =
                             [|
                                 for pi in unionCase.GetFields() do
-                                    let encoder: obj -> Json =
+                                    let encoder: obj -> IEncodable =
                                         generateEncoder
                                             caseStyle
                                             existingEncoders
@@ -812,7 +813,7 @@ module Encode =
                                     for i = 0 to n do
                                         let value = values[i]
 
-                                        let encoder: obj -> Json =
+                                        let encoder: obj -> IEncodable =
                                             unbox fieldEncoders[i]
 
                                         encoder value
@@ -917,7 +918,7 @@ module Encode =
                                         encoder.GetType().GetMethods()
                                         |> Array.find (fun x ->
                                             x.Name = "Invoke"
-                                            && x.ReturnType = typeof<Json>
+                                            && x.ReturnType = typeof<IEncodable>
                                         )
 
                                     fun o ->
@@ -925,7 +926,7 @@ module Encode =
                                             encoder,
                                             [| o |]
                                         )
-                                        :?> Json
+                                        :?> IEncodable
                             |]
 
                         let n = Array.length fieldEncoders - 1
@@ -990,7 +991,7 @@ module Encode =
                     [|
                         for i = 0 to Array.length encoders - 1 do
                             let value = unbox values[i]
-                            let encode: obj -> Json = unbox encoders[i]
+                            let encode: obj -> IEncodable = unbox encoders[i]
 
                             encode value
                     |]
@@ -1014,12 +1015,13 @@ module Encode =
                     let invokeMethodInfo =
                         elementEncoder.GetType().GetMethods()
                         |> Array.find (fun x ->
-                            x.Name = "Invoke" && x.ReturnType = typedefof<Json>
+                            x.Name = "Invoke"
+                            && x.ReturnType = typedefof<IEncodable>
                         )
 
                     let encode (value: obj) =
                         invokeMethodInfo.Invoke(elementEncoder, [| value |])
-                        :?> Json
+                        :?> IEncodable
 
                     encode
             |]
