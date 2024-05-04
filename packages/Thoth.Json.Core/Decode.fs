@@ -743,7 +743,6 @@ module Decode =
                     ("", BadPrimitive("an array", value)) |> Error
         }
 
-
     let keys: Decoder<string list> =
         { new Decoder<string list> with
             member _.Decode(helpers, value) =
@@ -845,6 +844,23 @@ module Decode =
 
                 runner decoders []
         }
+
+    [<NoComparison>]
+    type private LazyDecoder<'t>(x: Lazy<Decoder<'t>>) =
+        struct
+        end
+
+        interface Decoder<'t> with
+            member this.Decode<'json>
+                (
+                    helpers: IDecoderHelpers<'json>,
+                    json: 'json
+                )
+                =
+                let decoder = x.Force()
+                decoder.Decode(helpers, json)
+
+    let lazily (x: Lazy<Decoder<'t>>) : Decoder<'t> = LazyDecoder(x) :> _
 
     /////////////////////
     // Map functions ///
@@ -1355,36 +1371,99 @@ module Decode =
         let inline byte<'TEnum when 'TEnum: enum<byte>> : Decoder<'TEnum> =
             byte
             |> andThen (fun value ->
-                LanguagePrimitives.EnumOfValue<byte, 'TEnum> value |> succeed
+                if System.Enum.IsDefined(typeof<'TEnum>, value) then
+                    LanguagePrimitives.EnumOfValue<_, 'TEnum> value |> succeed
+                else
+                    { new Decoder<_> with
+                        member _.Decode<'JsonValue>(_, value: 'JsonValue) =
+                            ("",
+                             BadPrimitiveExtra(
+                                 typeof<'TEnum>.FullName,
+                                 value,
+                                 "Unkown value provided for the enum"
+                             ))
+                            |> Error
+                    }
             )
 
         let inline sbyte<'TEnum when 'TEnum: enum<sbyte>> : Decoder<'TEnum> =
             sbyte
             |> andThen (fun value ->
-                LanguagePrimitives.EnumOfValue<sbyte, 'TEnum> value |> succeed
+                if System.Enum.IsDefined(typeof<'TEnum>, value) then
+                    LanguagePrimitives.EnumOfValue<_, 'TEnum> value |> succeed
+                else
+                    { new Decoder<_> with
+                        member _.Decode<'JsonValue>(_, value: 'JsonValue) =
+                            ("",
+                             BadPrimitiveExtra(
+                                 typeof<'TEnum>.FullName,
+                                 value,
+                                 "Unkown value provided for the enum"
+                             ))
+                            |> Error
+                    }
             )
 
         let inline int16<'TEnum when 'TEnum: enum<int16>> : Decoder<'TEnum> =
             int16
             |> andThen (fun value ->
-                LanguagePrimitives.EnumOfValue<int16, 'TEnum> value |> succeed
+                if System.Enum.IsDefined(typeof<'TEnum>, value) then
+                    LanguagePrimitives.EnumOfValue<_, 'TEnum> value |> succeed
+                else
+                    { new Decoder<_> with
+                        member _.Decode<'JsonValue>(_, value: 'JsonValue) =
+                            ("",
+                             BadPrimitiveExtra(
+                                 typeof<'TEnum>.FullName,
+                                 value,
+                                 "Unkown value provided for the enum"
+                             ))
+                            |> Error
+                    }
             )
 
         let inline uint16<'TEnum when 'TEnum: enum<uint16>> : Decoder<'TEnum> =
             uint16
             |> andThen (fun value ->
-                LanguagePrimitives.EnumOfValue<uint16, 'TEnum> value |> succeed
+                if System.Enum.IsDefined(typeof<'TEnum>, value) then
+                    LanguagePrimitives.EnumOfValue<_, 'TEnum> value |> succeed
+                else
+                    { new Decoder<_> with
+                        member _.Decode<'JsonValue>(_, value: 'JsonValue) =
+                            ("",
+                             BadPrimitiveExtra(
+                                 typeof<'TEnum>.FullName,
+                                 value,
+                                 "Unkown value provided for the enum"
+                             ))
+                            |> Error
+                    }
             )
 
         let inline int<'TEnum when 'TEnum: enum<int>> : Decoder<'TEnum> =
             int
             |> andThen (fun value ->
-                LanguagePrimitives.EnumOfValue<int, 'TEnum> value |> succeed
+                if System.Enum.IsDefined(typeof<'TEnum>, value) then
+                    LanguagePrimitives.EnumOfValue<_, 'TEnum> value |> succeed
+                else
+                    { new Decoder<_> with
+                        member _.Decode<'JsonValue>(_, value: 'JsonValue) =
+                            ("",
+                             BadPrimitiveExtra(
+                                 typeof<'TEnum>.FullName,
+                                 value,
+                                 "Unkown value provided for the enum"
+                             ))
+                            |> Error
+                    }
             )
 
         let inline uint32<'TEnum when 'TEnum: enum<uint32>> : Decoder<'TEnum> =
             uint32
             |> andThen (fun value ->
-                LanguagePrimitives.EnumOfValue<uint32, 'TEnum> value |> succeed
+                if System.Enum.IsDefined(typeof<'TEnum>, value) then
+                    LanguagePrimitives.EnumOfValue<_, 'TEnum> value |> succeed
+                else
+                    fail "Unkown value provided for the enum"
             )
 #endif
