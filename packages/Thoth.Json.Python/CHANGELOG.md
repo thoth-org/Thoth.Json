@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Rework encoder API to not need a custom DU ([GH-188](https://github.com/thoth-org/Thoth.Json/pull/188/))
 
+### Fixed
+
+* Encoding negative integers should keep their sign ([GH-187](https://github.com/thoth-org/Thoth.Json/issues/187))
+* Emit non ascii characters as is when encoding to JSON (JSON specs advice to use utf-8 string and not limit to ascii) (align non compacted JSON behaviour with compacted JSON)
+
 ## 0.2.0 - 2024-04-03
 
 ### Added
