@@ -25,7 +25,7 @@ open Thoth.Json.Core
 //     abstract
 
 type IEncode =
-    abstract toString: int -> Json -> string
+    abstract toString: int -> IEncodable -> string
 
 type IDecode =
     abstract fromString<'T> : Decoder<'T> -> string -> Result<'T, string>

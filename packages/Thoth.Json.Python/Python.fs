@@ -9,7 +9,11 @@ module Json =
     type IExports =
         [<NamedParams(1)>]
         abstract dumps:
-            obj: obj * ?separators: string array * ?indent: int -> string
+            obj: obj *
+            ?separators: string array *
+            ?indent: int *
+            ?ensure_ascii: bool ->
+                string
 
     [<ImportAll("json")>]
     let json: IExports = nativeOnly

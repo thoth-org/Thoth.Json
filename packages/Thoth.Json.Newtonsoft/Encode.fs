@@ -15,29 +15,29 @@ module Encode =
             member _.encodeDecimalNumber value = JValue(value)
             member _.encodeBool value = JValue(value)
             member _.encodeNull() = JValue.CreateNull()
-            member _.createEmptyObject() = JObject()
 
-            member _.setPropertyOnObject
-                (
-                    o: JToken,
-                    key: string,
-                    value: JToken
-                )
-                =
-                o[key] <- value
+            member _.encodeObject(values) =
+                let o = JObject()
+
+                for key, value in values do
+                    o.[key] <- value
+
+                o
 
             member _.encodeArray values = JArray(values)
             member _.encodeList values = JArray(values)
             member _.encodeSeq values = JArray(values)
 
-            member _.encodeIntegralNumber(value: uint32) =
+            member _.encodeSignedIntegralNumber(value: int32) = JValue(value)
+
+            member _.encodeUnsignedIntegralNumber(value: uint32) =
                 // We need to force the cast to uint64 here, otherwise
                 // Newtonsoft resolve the constructor to JValue(decimal)
                 // when we actually want to output a number without decimals
                 JValue(uint64 value)
         }
 
-    let toString (space: int) (value: Json) : string =
+    let toString (space: int) (value: IEncodable) : string =
         let format =
             if space = 0 then
                 Formatting.None

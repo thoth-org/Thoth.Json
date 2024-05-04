@@ -72,6 +72,17 @@ let tests (runner: TestRunner<_, _>) =
 
                         runner.equal actual expected
 
+                    runner.testCase
+                        "a string with non ascii characters works returns the characters as is"
+                    <| fun _ ->
+                        let expected = "\"Timo Mühlhaus\""
+
+                        let actual =
+                            Encode.string "Timo Mühlhaus"
+                            |> runner.Encode.toString 0
+
+                        runner.equal actual expected
+
                     runner.testCase "a char works"
                     <| fun _ ->
                         let expected = "\"a\""
@@ -83,6 +94,12 @@ let tests (runner: TestRunner<_, _>) =
                     <| fun _ ->
                         let expected = "1"
                         let actual = Encode.int 1 |> runner.Encode.toString 0
+                        runner.equal actual expected
+
+                    runner.testCase "negative int keeps the sign"
+                    <| fun _ ->
+                        let expected = "-1"
+                        let actual = Encode.int -1 |> runner.Encode.toString 0
                         runner.equal actual expected
 
                     runner.testCase "a float works"
@@ -295,12 +312,30 @@ let tests (runner: TestRunner<_, _>) =
 
                         runner.equal actual expected
 
+                    runner.testCase "negative sbyte keeps the sign"
+                    <| fun _ ->
+                        let expected = "-99"
+
+                        let actual =
+                            -99y |> Encode.sbyte |> runner.Encode.toString 0
+
+                        runner.equal actual expected
+
                     runner.testCase "an int16 works"
                     <| fun _ ->
                         let expected = "99"
 
                         let actual =
                             99s |> Encode.int16 |> runner.Encode.toString 0
+
+                        runner.equal actual expected
+
+                    runner.testCase "negative int16 keeps the sign"
+                    <| fun _ ->
+                        let expected = "-99"
+
+                        let actual =
+                            -99s |> Encode.int16 |> runner.Encode.toString 0
 
                         runner.equal actual expected
 

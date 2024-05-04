@@ -15,18 +15,23 @@ module Encode =
             member _.encodeDecimalNumber value = box value
             member _.encodeBool value = box value
             member _.encodeNull() = box null
-            member _.createEmptyObject() = obj ()
 
-            member _.setPropertyOnObject(o: obj, key: string, value: obj) =
-                o?(key) <- value
+            member _.encodeObject(values) =
+                let o = obj ()
+
+                for key, value in values do
+                    o?(key) <- value
+
+                o
 
             member _.encodeArray values = JS.Constructors.Array.from values
             member _.encodeList values = JS.Constructors.Array.from values
             member _.encodeSeq values = JS.Constructors.Array.from values
 
-            member _.encodeIntegralNumber value = box value
+            member _.encodeSignedIntegralNumber value = box value
+            member _.encodeUnsignedIntegralNumber value = box value
         }
 
-    let toString (space: int) (value: Json) : string =
+    let toString (space: int) (value: IEncodable) : string =
         let json = Encode.toJsonValue helpers value
         JS.JSON.stringify (json, space = space)

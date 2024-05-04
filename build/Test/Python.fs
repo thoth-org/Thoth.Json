@@ -22,6 +22,7 @@ let handle (args: string list) =
         |> CmdLine.appendPrefix "--outDir" outDir
         |> CmdLine.appendPrefix "--lang" "python"
         |> CmdLine.appendRaw "--noCache"
+        |> CmdLine.appendRaw "--test:MSBuildCracker"
         |> CmdLine.appendIf isWatch "--watch"
         |> CmdLine.appendRaw runArg
         |> CmdLine.appendRaw "python"

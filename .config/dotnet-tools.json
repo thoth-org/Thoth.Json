@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "fable": {
-      "version": "4.9.0",
+      "version": "4.17.0",
       "commands": [
         "fable"
       ]
@@ -18,6 +18,12 @@
       "version": "0.6.3",
       "commands": [
         "husky"
+      ]
+    },
+    "easybuild.commitlinter": {
+      "version": "0.1.0",
+      "commands": [
+        "commit-linter"
       ]
     }
   }
