@@ -42,13 +42,9 @@ module Encode =
     let inline object (values: seq<string * IEncodable>) =
         { new IEncodable with
             member _.Encode(helpers) =
-                let o = helpers.createEmptyObject ()
-
-                for k, v in values do
-                    let ve = v.Encode(helpers)
-                    helpers.setPropertyOnObject (o, k, ve)
-
-                o
+                values
+                |> Seq.map (fun (k, v) -> (k, v.Encode(helpers)))
+                |> helpers.encodeObject
         }
 
     let inline array (values: IEncodable array) =

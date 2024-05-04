@@ -25,8 +25,7 @@ type IEncoderHelpers<'JsonValue> =
     abstract encodeDecimalNumber: float -> 'JsonValue
     abstract encodeBool: bool -> 'JsonValue
     abstract encodeNull: unit -> 'JsonValue
-    abstract createEmptyObject: unit -> 'JsonValue
-    abstract setPropertyOnObject: 'JsonValue * string * 'JsonValue -> unit
+    abstract encodeObject: (string * 'JsonValue) seq -> 'JsonValue
     abstract encodeArray: 'JsonValue array -> 'JsonValue
     abstract encodeList: 'JsonValue list -> 'JsonValue
     abstract encodeSeq: 'JsonValue seq -> 'JsonValue

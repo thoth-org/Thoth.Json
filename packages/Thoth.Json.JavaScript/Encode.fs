@@ -15,10 +15,14 @@ module Encode =
             member _.encodeDecimalNumber value = box value
             member _.encodeBool value = box value
             member _.encodeNull() = box null
-            member _.createEmptyObject() = obj ()
 
-            member _.setPropertyOnObject(o: obj, key: string, value: obj) =
-                o?(key) <- value
+            member _.encodeObject(values) =
+                let o = obj ()
+
+                for key, value in values do
+                    o?(key) <- value
+
+                o
 
             member _.encodeArray values = JS.Constructors.Array.from values
             member _.encodeList values = JS.Constructors.Array.from values

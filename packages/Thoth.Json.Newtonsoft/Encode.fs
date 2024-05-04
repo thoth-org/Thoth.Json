@@ -15,16 +15,14 @@ module Encode =
             member _.encodeDecimalNumber value = JValue(value)
             member _.encodeBool value = JValue(value)
             member _.encodeNull() = JValue.CreateNull()
-            member _.createEmptyObject() = JObject()
 
-            member _.setPropertyOnObject
-                (
-                    o: JToken,
-                    key: string,
-                    value: JToken
-                )
-                =
-                o[key] <- value
+            member _.encodeObject(values) =
+                let o = JObject()
+
+                for key, value in values do
+                    o.[key] <- value
+
+                o
 
             member _.encodeArray values = JArray(values)
             member _.encodeList values = JArray(values)
