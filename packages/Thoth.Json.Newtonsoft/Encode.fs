@@ -37,7 +37,7 @@ module Encode =
                 JValue(uint64 value)
         }
 
-    let toString (space: int) (value: Json) : string =
+    let toString (space: int) (value: IEncodable) : string =
         let format =
             if space = 0 then
                 Formatting.None
