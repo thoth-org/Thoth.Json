@@ -24,7 +24,8 @@ module Encode =
             member _.encodeList values = JS.Constructors.Array.from values
             member _.encodeSeq values = JS.Constructors.Array.from values
 
-            member _.encodeIntegralNumber value = box value
+            member _.encodeSignedIntegralNumber value = box value
+            member _.encodeUnsignedIntegralNumber value = box value
         }
 
     let toString (space: int) (value: IEncodable) : string =

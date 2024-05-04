@@ -30,7 +30,9 @@ module Encode =
             member _.encodeList values = JArray(values)
             member _.encodeSeq values = JArray(values)
 
-            member _.encodeIntegralNumber(value: uint32) =
+            member _.encodeSignedIntegralNumber(value: int32) = JValue(value)
+
+            member _.encodeUnsignedIntegralNumber(value: uint32) =
                 // We need to force the cast to uint64 here, otherwise
                 // Newtonsoft resolve the constructor to JValue(decimal)
                 // when we actually want to output a number without decimals

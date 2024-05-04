@@ -91,36 +91,37 @@ module Encode =
     let inline sbyte (value: sbyte) =
         { new IEncodable with
             member _.Encode(helpers) =
-                helpers.encodeIntegralNumber (uint32 value)
+                helpers.encodeSignedIntegralNumber (int32 value)
         }
 
     let inline byte (value: byte) =
         { new IEncodable with
             member _.Encode(helpers) =
-                helpers.encodeIntegralNumber (uint32 value)
+                helpers.encodeUnsignedIntegralNumber (uint32 value)
         }
 
     let inline int16 (value: int16) =
         { new IEncodable with
             member _.Encode(helpers) =
-                helpers.encodeIntegralNumber (uint32 value)
+                helpers.encodeSignedIntegralNumber (int32 value)
         }
 
     let inline uint16 (value: uint16) =
         { new IEncodable with
             member _.Encode(helpers) =
-                helpers.encodeIntegralNumber (uint32 value)
+                helpers.encodeUnsignedIntegralNumber (uint32 value)
         }
 
     let inline int (value: int) =
         { new IEncodable with
             member _.Encode(helpers) =
-                helpers.encodeIntegralNumber (uint32 value)
+                helpers.encodeSignedIntegralNumber value
         }
 
     let inline uint32 (value: uint32) =
         { new IEncodable with
-            member _.Encode(helpers) = helpers.encodeIntegralNumber (value)
+            member _.Encode(helpers) =
+                helpers.encodeUnsignedIntegralNumber value
         }
 
     let inline int64 (value: int64) =

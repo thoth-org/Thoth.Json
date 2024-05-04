@@ -28,7 +28,8 @@ module Encode =
             member this.encodeSeq values =
                 values |> Seq.toArray |> this.encodeArray
 
-            member _.encodeIntegralNumber value = box value
+            member _.encodeSignedIntegralNumber value = box value
+            member _.encodeUnsignedIntegralNumber value = box value
         }
 
     let toString (space: int) (value: IEncodable) : string =

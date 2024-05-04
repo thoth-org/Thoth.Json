@@ -30,8 +30,11 @@ type IEncoderHelpers<'JsonValue> =
     abstract encodeArray: 'JsonValue array -> 'JsonValue
     abstract encodeList: 'JsonValue list -> 'JsonValue
     abstract encodeSeq: 'JsonValue seq -> 'JsonValue
-    abstract encodeIntegralNumber: uint32 -> 'JsonValue
-
+    // See https://github.com/thoth-org/Thoth.Json/issues/187 for more information
+    // about why we make a distinction between signed and unsigned integral numbers
+    // when encoding them.
+    abstract encodeSignedIntegralNumber: int32 -> 'JsonValue
+    abstract encodeUnsignedIntegralNumber: uint32 -> 'JsonValue
 
 type ErrorReason<'JsonValue> =
     | BadPrimitive of string * 'JsonValue
@@ -75,7 +78,6 @@ type Json =
 
 type IEncodable =
     abstract member Encode<'JsonValue> :
-        helpers: IEncoderHelpers<'JsonValue> ->
-            'JsonValue
+        helpers: IEncoderHelpers<'JsonValue> -> 'JsonValue
 
 type Encoder<'T> = 'T -> IEncodable
