@@ -21,8 +21,12 @@ module Encode =
                 o?(key) <- value
 
             member _.encodeArray values = values
-            member _.encodeList values = JS.Constructors.Array.from values
-            member _.encodeSeq values = JS.Constructors.Array.from values
+
+            member this.encodeList values =
+                values |> List.toArray |> this.encodeArray
+
+            member this.encodeSeq values =
+                values |> Seq.toArray |> this.encodeArray
 
             member _.encodeIntegralNumber value = box value
         }
