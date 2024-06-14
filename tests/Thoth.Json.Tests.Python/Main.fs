@@ -29,7 +29,7 @@ type PythonTestRunner() =
     override _.testCase = testCase
     override _.ftestCase = ftestCase
 
-    override _.equal a b = Expect.equal b a ""
+    override _.equal expected actual = Expect.equal actual expected ""
 
     override _.Encode = PythonEncode()
 

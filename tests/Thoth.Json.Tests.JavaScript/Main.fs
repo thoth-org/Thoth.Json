@@ -27,7 +27,7 @@ type JavascriptTestRunner() =
     override _.testCase = testCase
     override _.ftestCase = ftestCase
 
-    override _.equal a b = Assert.AreEqual(b, a)
+    override _.equal expected actual = Assert.AreEqual(actual, expected)
 
     override _.Encode = JavaScriptEncode()
 
