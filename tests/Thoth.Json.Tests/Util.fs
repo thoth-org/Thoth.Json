@@ -27,7 +27,8 @@ open Thoth.Json.Core
 type IEncode =
     abstract toString: int -> IEncodable -> string
 
-type IDecode =
+type IDecode<'JsonValue> =
+    abstract fromValue<'T> : Decoder<'T> -> ('JsonValue -> Result<'T, string>)
     abstract fromString<'T> : Decoder<'T> -> string -> Result<'T, string>
     abstract unsafeFromString<'T> : Decoder<'T> -> string -> 'T
 
@@ -38,4 +39,6 @@ type TestRunner<'Test, 'JsonValue>() =
     abstract ftestCase: (string -> (unit -> unit) -> 'Test) with get
     abstract equal<'a when 'a: equality> : actual: 'a -> expected: 'a -> unit
     abstract Encode: IEncode with get
-    abstract Decode: IDecode with get
+    abstract Decode: IDecode<'JsonValue> with get
+    abstract EncoderHelpers: IEncoderHelpers<'JsonValue> with get
+    abstract DecoderHelpers: IDecoderHelpers<'JsonValue> with get

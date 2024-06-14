@@ -14,7 +14,9 @@ type PythonEncode() =
         override _.toString a b = Encode.toString a b
 
 type PythonDecode() =
-    interface IDecode with
+    interface IDecode<obj> with
+        override _.fromValue a = Decode.fromValue a
+
         override _.fromString a b = Decode.fromString a b
 
         override _.unsafeFromString decoder json =
@@ -33,10 +35,13 @@ type PythonTestRunner() =
 
     override _.Decode = PythonDecode()
 
+    override _.EncoderHelpers = Encode.helpers
+
+    override _.DecoderHelpers = Decode.helpers
+
 [<EntryPoint>]
 let main args =
     let runner = PythonTestRunner()
-
 
     testList
         "All"

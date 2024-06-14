@@ -73,6 +73,9 @@ module Decode =
                     stream.ToString()
         }
 
+    let fromValue (decoder: Decoder<'T>) =
+        Decode.Advanced.fromValue helpers decoder
+
     let fromString (decoder: Decoder<'T>) =
         fun value ->
             try

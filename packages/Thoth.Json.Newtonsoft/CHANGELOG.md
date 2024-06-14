@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * `Decode.unsafeFromString`
+* `Decode.fromValue`
 
 ## 0.1.0 - 2023-12-12
 

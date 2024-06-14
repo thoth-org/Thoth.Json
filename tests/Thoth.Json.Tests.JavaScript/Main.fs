@@ -12,7 +12,9 @@ type JavaScriptEncode() =
         override _.toString spaces json = Encode.toString spaces json
 
 type JavaScriptDecode() =
-    interface IDecode with
+    interface IDecode<obj> with
+        override _.fromValue decoder = Decode.fromValue decoder
+
         override _.fromString decoder json = Decode.fromString decoder json
 
         override _.unsafeFromString decoder json =
@@ -30,6 +32,10 @@ type JavascriptTestRunner() =
     override _.Encode = JavaScriptEncode()
 
     override _.Decode = JavaScriptDecode()
+
+    override _.EncoderHelpers = Encode.helpers
+
+    override _.DecoderHelpers = Decode.helpers
 
 [<EntryPoint>]
 let main args =
@@ -51,7 +57,7 @@ let main args =
                     Error
                         "Error at: ``\nExpecting a float but decoder failed. Couldn\'t report given value due to circular structure. "
 
-                let actual = Decode.fromValue Decode.helpers Decode.float b
+                let actual = Decode.fromValue Decode.float b
 
                 runner.equal expected actual
 

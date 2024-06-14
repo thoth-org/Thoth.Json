@@ -151,6 +151,46 @@ let tests (runner: TestRunner<_, _>) =
                 ]
 
             runner.testList
+                "Decode.fromValue"
+                [
+                    runner.testCase "works"
+                    <| fun _ ->
+
+                        let value =
+                            runner.EncoderHelpers.encodeObject
+                                [
+                                    "value",
+                                    runner.EncoderHelpers.encodeSignedIntegralNumber
+                                        42
+                                ]
+
+                        let expected: Result<int, string> = Ok 42
+
+                        let actual =
+                            runner.Decode.fromValue
+                                (Decode.field "value" Decode.int)
+                                value
+
+                        runner.equal expected actual
+
+                    runner.testCase "returns an error if the field is missing"
+                    <| fun _ ->
+
+                        let value = runner.EncoderHelpers.encodeObject []
+
+                        let expected: Result<int, string> =
+                            Error
+                                "Error at: ``\nExpecting an object with a field named `value` but instead got:\n{}"
+
+                        let actual =
+                            runner.Decode.fromValue
+                                (Decode.field "value" Decode.int)
+                                value
+
+                        runner.equal expected actual
+                ]
+
+            runner.testList
                 "Decode.unsafeString"
                 [
 
