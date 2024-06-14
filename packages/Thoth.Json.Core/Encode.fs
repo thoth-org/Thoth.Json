@@ -71,6 +71,14 @@ module Encode =
                 |> helpers.encodeSeq
         }
 
+    let resizeArray (values: IEncodable ResizeArray) =
+        { new IEncodable with
+            member _.Encode(helpers) =
+                values
+                |> Seq.map (fun v -> v.Encode(helpers))
+                |> helpers.encodeSeq
+        }
+
     let dict (values: Map<string, IEncodable>) : IEncodable =
         values |> Map.toSeq |> object
 

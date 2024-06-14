@@ -685,6 +685,42 @@ module Decode =
                     ("", BadPrimitive("a list", value)) |> Error
         }
 
+    let resizeArray (decoder: Decoder<'value>) : Decoder<'value ResizeArray> =
+        { new Decoder<'value ResizeArray> with
+            member _.Decode(helpers, value) =
+                if helpers.isArray value then
+                    let tokens = helpers.asArray value
+                    let mutable i = 0
+                    let result = ResizeArray tokens.Length
+                    let mutable error: DecoderError<_> option = None
+
+                    while i < tokens.Length && error.IsNone do
+                        let value = tokens.[i]
+
+                        match decoder.Decode(helpers, value) with
+                        | Ok value ->
+                            // Setting the value via the index fails with a runtime error
+                            // but because we iterate over the tokens in order, adding the value
+                            // should keep the order
+                            result.Add value
+                        | Error er ->
+                            error <-
+                                Some(
+                                    er
+                                    |> Helpers.prependPath (
+                                        ".[" + (i.ToString()) + "]"
+                                    )
+                                )
+
+                        i <- i + 1
+
+                    if error.IsNone then
+                        Ok(ResizeArray result)
+                    else
+                        Error error.Value
+                else
+                    ("", BadPrimitive("a ResizeArray", value)) |> Error
+        }
 
     let seq (decoder: Decoder<'value>) : Decoder<'value seq> =
         { new Decoder<'value seq> with

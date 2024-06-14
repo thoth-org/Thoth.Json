@@ -1696,6 +1696,63 @@ Expecting an array but instead got: 1
 
                         runner.equal expected actual
 
+                    runner.testCase "ResizeArray works"
+                    <| fun _ ->
+                        let expected =
+                            [
+                                1
+                                2
+                                3
+                            ]
+                            |> ResizeArray
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.resizeArray Decode.int)
+                                "[1, 2, 3]"
+
+                        // F# sequence are compared using reference equality
+                        // so we need to convert them to arrays first
+                        // See https://stackoverflow.com/questions/17101329/f-sequence-comparison
+                        match actual with
+                        | Ok actual ->
+                            runner.equal
+                                (expected |> Seq.toArray)
+                                (actual |> Seq.toArray)
+                        | Error error -> failwith error
+
+                    runner.testCase "ResizeArray keeps the order"
+                    <| fun _ ->
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.resizeArray Decode.int)
+                                "[1, 2, 3]"
+
+                        // F# sequence are compared using reference equality
+                        // so we need to convert them to arrays first
+                        // See https://stackoverflow.com/questions/17101329/f-sequence-comparison
+                        match actual with
+                        | Ok actual ->
+                            runner.equal 1 actual.[0]
+                            runner.equal 2 actual.[1]
+                            runner.equal 3 actual.[2]
+
+                        | Error error -> failwith error
+
+                    runner.testCase "an invalid ResizeArray output an error"
+                    <| fun _ ->
+                        let expected =
+                            Error(
+                                "Error at: `$`\nExpecting a ResizeArray but instead got: 1"
+                            )
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.resizeArray Decode.int)
+                                "1"
+
+                        runner.equal expected actual
+
                     runner.testCase "keys works"
                     <| fun _ ->
                         let expected =

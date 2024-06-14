@@ -138,6 +138,36 @@ let tests (runner: TestRunner<_, _>) =
 
                         runner.equal actual expected
 
+                    runner.testCase "a seq works"
+                    <| fun _ ->
+                        let expected = """["maxime",2]"""
+
+                        let actual =
+                            Encode.seq
+                                [
+                                    Encode.string "maxime"
+                                    Encode.int 2
+                                ]
+                            |> runner.Encode.toString 0
+
+                        runner.equal actual expected
+
+                    runner.testCase "a resizeArray works"
+                    <| fun _ ->
+                        let expected = """["maxime",2]"""
+
+                        let actual =
+                            Encode.resizeArray (
+                                ResizeArray
+                                    [
+                                        Encode.string "maxime"
+                                        Encode.int 2
+                                    ]
+                            )
+                            |> runner.Encode.toString 0
+
+                        runner.equal actual expected
+
                     runner.testCase "a bool works"
                     <| fun _ ->
                         let expected = "false"
