@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Add `resizeArray` support ([GH-182](https://github.com/thoth-org/Thoth.Json/issues/182))
 * Add `IEncoderHelpers.encodeResizeArray` ([GH-199](https://github.com/thoth-org/Thoth.Json/issues/199))
+* Add `Decode.losslessOption`, `Decode.lossyOption` ([GH-81](https://github.com/thoth-org/Thoth.Json/issues/81))
 
 ### Changed
 
@@ -21,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Encoding negative integers should keep their sign ([GH-187](https://github.com/thoth-org/Thoth.Json/issues/187))
+
+### Removed
+
+* Remove `Decode.option`, use `Decode.lossyOption` ([GH-81](https://github.com/thoth-org/Thoth.Json/issues/81))
 
 ## 0.2.1 - 2023-12-12
 

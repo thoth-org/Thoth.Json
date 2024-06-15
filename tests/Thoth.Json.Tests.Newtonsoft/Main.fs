@@ -28,6 +28,8 @@ type NewtonsoftTestRunner() =
 
     override _.equal expected actual = Expect.equal actual expected ""
 
+    override _.notEqual expected actual = Expect.notEqual actual expected ""
+
     override _.Encode = NewtonsoftEncode()
 
     override _.Decode = NewtonsoftDecode()
@@ -45,6 +47,7 @@ let main args =
         [
             Decoders.tests runner
             Encoders.tests runner
+            BackAndForth.tests runner
 
         ]
     |> runTestsWithArgs defaultConfig args

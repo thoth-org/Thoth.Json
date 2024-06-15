@@ -29,6 +29,8 @@ type JavascriptTestRunner() =
 
     override _.equal expected actual = Assert.AreEqual(actual, expected)
 
+    override _.notEqual expected actual = Assert.NotEqual(actual, expected)
+
     override _.Encode = JavaScriptEncode()
 
     override _.Decode = JavaScriptDecode()
@@ -63,6 +65,7 @@ let main args =
 
             Decoders.tests runner
             Encoders.tests runner
+            BackAndForth.tests runner
 
         ]
     |> Mocha.runTests

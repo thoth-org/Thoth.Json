@@ -31,6 +31,8 @@ type PythonTestRunner() =
 
     override _.equal expected actual = Expect.equal actual expected ""
 
+    override _.notEqual expected actual = Expect.notEqual actual expected ""
+
     override _.Encode = PythonEncode()
 
     override _.Decode = PythonDecode()
@@ -48,5 +50,6 @@ let main args =
         [
             Decoders.tests runner
             Encoders.tests runner
+            BackAndForth.tests runner
         ]
     |> Pyxpecto.runTests [||]
