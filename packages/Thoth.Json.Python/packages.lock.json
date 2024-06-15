@@ -20,6 +20,12 @@
         "resolved": "4.1.0",
         "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
       },
+      "Fable.Package.SDK": {
+        "type": "Direct",
+        "requested": "[0.1.0, )",
+        "resolved": "0.1.0",
+        "contentHash": "wrEcGovUimN0PRGgVHlX/gsqCm5d/p9eOG74iaHoteX2dsFZQ9P7d066LRAl5Gj7GUHy7azLyDE41KFvZx1v9A=="
+      },
       "Fable.Python": {
         "type": "Direct",
         "requested": "[4.3.0, )",
@@ -106,7 +112,8 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[5.0.0, )",
-          "Fable.Core": "[4.1.0, )"
+          "Fable.Core": "[4.1.0, )",
+          "Fable.Package.SDK": "[0.1.0, )"
         }
       }
     }

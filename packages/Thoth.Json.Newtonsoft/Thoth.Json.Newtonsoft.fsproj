@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
+        <Description>
+            Elm-inspired encoder and decoder for JSON, this package is for .NET runtime when you want to use Newtonsoft.Json.
+        </Description>
+        <FablePackageType>library</FablePackageType>
+        <PackageTags>fable-dotnet;fsharp;json</PackageTags>
+    </PropertyGroup>
+    <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="Decode.fs" />
@@ -14,6 +20,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Fable.Core" />
+        <PackageReference Include="Fable.Package.SDK" />
         <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="Ionide.KeepAChangelog.Tasks" PrivateAssets="all" />
     </ItemGroup>
