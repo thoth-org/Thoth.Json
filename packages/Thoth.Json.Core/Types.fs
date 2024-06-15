@@ -29,6 +29,7 @@ type IEncoderHelpers<'JsonValue> =
     abstract encodeArray: 'JsonValue array -> 'JsonValue
     abstract encodeList: 'JsonValue list -> 'JsonValue
     abstract encodeSeq: 'JsonValue seq -> 'JsonValue
+    abstract encodeResizeArray: ResizeArray<'JsonValue> -> 'JsonValue
     // See https://github.com/thoth-org/Thoth.Json/issues/187 for more information
     // about why we make a distinction between signed and unsigned integral numbers
     // when encoding them.

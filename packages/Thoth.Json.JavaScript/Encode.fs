@@ -28,6 +28,9 @@ module Encode =
             member _.encodeList values = JS.Constructors.Array.from values
             member _.encodeSeq values = JS.Constructors.Array.from values
 
+            member _.encodeResizeArray values =
+                JS.Constructors.Array.from values
+
             member _.encodeSignedIntegralNumber value = box value
             member _.encodeUnsignedIntegralNumber value = box value
         }

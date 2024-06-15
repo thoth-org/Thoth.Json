@@ -27,6 +27,7 @@ module Encode =
             member _.encodeArray values = JArray(values)
             member _.encodeList values = JArray(values)
             member _.encodeSeq values = JArray(values)
+            member _.encodeResizeArray values = JArray(values)
 
             member _.encodeSignedIntegralNumber(value: int32) = JValue(value)
 

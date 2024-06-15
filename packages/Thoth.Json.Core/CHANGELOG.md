@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Add `resizeArray` support ([GH-182](https://github.com/thoth-org/Thoth.Json/issues/182))
+* Add `IEncoderHelpers.encodeResizeArray` ([GH-199](https://github.com/thoth-org/Thoth.Json/issues/199))
 
 ### Changed
 
