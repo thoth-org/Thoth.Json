@@ -308,8 +308,24 @@ module Encode =
             =
             LanguagePrimitives.EnumToValue value |> uint32
 
-    let option (encoder: Encoder<'a>) =
+    let lossyOption (encoder: Encoder<'a>) =
         Option.map encoder >> Option.defaultWith (fun _ -> nil)
+
+    let losslessOption (encoder: Encoder<'a>) (value: 'a option) =
+        match value with
+        | Some v ->
+            object
+                [
+                    "$type", string "option"
+                    "$case", string "some"
+                    "$value", encoder v
+                ]
+        | None ->
+            object
+                [
+                    "$type", string "option"
+                    "$case", string "none"
+                ]
 
     let inline toJsonValue
         (helpers: IEncoderHelpers<'JsonValue>)

@@ -38,6 +38,7 @@ type TestRunner<'Test, 'JsonValue>() =
     abstract testCase: (string -> (unit -> unit) -> 'Test) with get
     abstract ftestCase: (string -> (unit -> unit) -> 'Test) with get
     abstract equal<'a when 'a: equality> : expected: 'a -> actual: 'a -> unit
+    abstract notEqual<'a when 'a: equality> : expected: 'a -> actual: 'a -> unit
     abstract Encode: IEncode with get
     abstract Decode: IDecode<'JsonValue> with get
     abstract EncoderHelpers: IEncoderHelpers<'JsonValue> with get

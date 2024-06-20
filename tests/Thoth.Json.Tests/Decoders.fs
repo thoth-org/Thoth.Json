@@ -1947,6 +1947,110 @@ Expecting an array but instead got: 1
                         """
 
                         runner.equal expected actual
+
+                ]
+
+            runner.testList
+                "option related decoders"
+                [
+                    runner.testCase "lossyOption works with a non null value"
+                    <| fun _ ->
+                        let expected = Ok(Some 1)
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.lossyOption Decode.int)
+                                "1"
+
+                        runner.equal expected actual
+
+                    runner.testCase "lossyOption works with a null value"
+                    <| fun _ ->
+                        let expected = Ok None
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.lossyOption Decode.int)
+                                "null"
+
+                        runner.equal expected actual
+
+                    runner.testCase
+                        "lossyOption can't handle nested None options"
+                    <| fun _ ->
+                        let expected = Ok(Some None)
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.lossyOption (
+                                    Decode.lossyOption Decode.int
+                                ))
+                                "null"
+
+                        runner.notEqual expected actual
+
+                    runner.testCase "losslessOption works with a non null value"
+                    <| fun _ ->
+                        let expected = Ok(Some 1)
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.losslessOption Decode.int)
+                                """
+{
+    "$type": "option",
+    "$case": "some",
+    "$value": 1
+}
+"""
+
+                        runner.equal expected actual
+
+                    runner.testCase "losslessOption works with a null value"
+                    <| fun _ ->
+                        let expected = Ok None
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.losslessOption Decode.int)
+                                """
+{
+    "$type": "option",
+    "$case": "none"
+}
+"""
+
+                        runner.equal expected actual
+
+                    runner.testCase
+                        "losslessOption can handle nested None options"
+                    <| fun _ ->
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.losslessOption (
+                                    Decode.losslessOption (
+                                        Decode.losslessOption Decode.int
+                                    )
+                                ))
+                                """
+{
+    "$type": "option",
+    "$case": "some",
+    "$value":
+    {
+        "$type": "option",
+        "$case": "some",
+        "$value":
+        {
+            "$type": "option",
+            "$case": "none"
+        }
+    }
+}
+"""
+
+                        runner.notEqual (Ok(Some None)) actual
+                        runner.equal (Ok(Some(Some None))) actual
                 ]
 
             runner.testList
@@ -2023,7 +2127,7 @@ Expecting an array but instead got: 1
                                     |> Decode.map Normal
                                     Decode.field
                                         "Reduced"
-                                        (Decode.option Decode.float)
+                                        (Decode.lossyOption Decode.float)
                                     |> Decode.map Reduced
                                     Decode.field "Zero" Decode.bool
                                     |> Decode.map (fun _ -> Zero)
@@ -2227,14 +2331,16 @@ Expecting a string but instead got: 12
                             runner.Decode.fromString
                                 (Decode.field
                                     "name"
-                                    (Decode.option Decode.string))
+                                    (Decode.lossyOption Decode.string))
                                 json
 
                         runner.equal expectedValid actualValid
 
                         match
                             runner.Decode.fromString
-                                (Decode.field "name" (Decode.option Decode.int))
+                                (Decode.field
+                                    "name"
+                                    (Decode.lossyOption Decode.int))
                                 json
                         with
                         | Error msg ->
@@ -2253,7 +2359,7 @@ Expecting an int but instead got: "maxime"
                             runner.Decode.fromString
                                 (Decode.field
                                     "this_field_do_not_exist"
-                                    (Decode.option Decode.int))
+                                    (Decode.lossyOption Decode.int))
                                 json
                         with
                         | Error msg ->
@@ -2277,7 +2383,7 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
                             runner.Decode.fromString
                                 (Decode.field
                                     "something_undefined"
-                                    (Decode.option Decode.int))
+                                    (Decode.lossyOption Decode.int))
                                 json
                         with
                         | Error _ ->
@@ -2291,7 +2397,7 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
 
                         let actualValid2 =
                             runner.Decode.fromString
-                                (Decode.option (
+                                (Decode.lossyOption (
                                     Decode.field "name" Decode.string
                                 ))
                                 json
@@ -2300,7 +2406,9 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
 
                         match
                             runner.Decode.fromString
-                                (Decode.option (Decode.field "name" Decode.int))
+                                (Decode.lossyOption (
+                                    Decode.field "name" Decode.int
+                                ))
                                 json
                         with
                         | Error msg ->
@@ -2317,7 +2425,7 @@ Expecting an int but instead got: "maxime"
 
                         match
                             runner.Decode.fromString
-                                (Decode.option (
+                                (Decode.lossyOption (
                                     Decode.field
                                         "this_field_do_not_exist"
                                         Decode.int
@@ -2343,7 +2451,7 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
 
                         match
                             runner.Decode.fromString
-                                (Decode.option (
+                                (Decode.lossyOption (
                                     Decode.field
                                         "something_undefined"
                                         Decode.int
@@ -2377,7 +2485,7 @@ Expecting an int but instead got: null
                             runner.Decode.fromString
                                 (Decode.field
                                     "height"
-                                    (Decode.option Decode.int))
+                                    (Decode.lossyOption Decode.int))
                                 json
                         with
                         | Error msg ->
@@ -2404,7 +2512,7 @@ Expecting an object with a field named `height` but instead got:
                             runner.Decode.fromString
                                 (Decode.field
                                     "something_undefined"
-                                    (Decode.option Decode.string))
+                                    (Decode.lossyOption Decode.string))
                                 json
 
                         runner.equal expectedUndefinedField actualUndefinedField
