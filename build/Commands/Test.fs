@@ -22,27 +22,6 @@ let cleanUp (dir: string) =
 
 let private outDir = "fableBuild"
 
-let private runTestForJavaScript isWatch cwd =
-    let fableArgs =
-        CmdLine.concat
-            [
-                CmdLine.empty
-                |> CmdLine.appendRaw "fable"
-                |> CmdLine.appendPrefix "--outDir" outDir
-                |> CmdLine.appendRaw "--noCache"
-                |> CmdLine.appendRaw "--test:MSBuildCracker"
-
-                if isWatch then
-                    CmdLine.empty
-                    |> CmdLine.appendRaw "--watch"
-                    |> CmdLine.appendRaw "--runScript"
-                else
-                    CmdLine.empty |> CmdLine.appendRaw "--runScript"
-            ]
-        |> CmdLine.toString
-
-    Command.Run("dotnet", fableArgs, workingDirectory = cwd)
-
 type TestJavaScriptCommand() =
     inherit Command<TestSettings>()
     interface ICommandLimiter<TestSettings>
@@ -52,9 +31,30 @@ type TestJavaScriptCommand() =
         cleanUp
             VirtualWorkspace.tests.``Thoth.Json.Tests.JavaScript``.fableBuild.``.``
 
-        runTestForJavaScript
-            settings.IsWatch
-            Workspace.tests.``Thoth.Json.Tests.JavaScript``.``.``
+        let fableArgs =
+            CmdLine.concat
+                [
+                    CmdLine.empty
+                    |> CmdLine.appendRaw "fable"
+                    |> CmdLine.appendPrefix "--outDir" outDir
+                    |> CmdLine.appendRaw "--noCache"
+                    |> CmdLine.appendRaw "--test:MSBuildCracker"
+
+                    if settings.IsWatch then
+                        CmdLine.empty
+                        |> CmdLine.appendRaw "--watch"
+                        |> CmdLine.appendRaw "--runScript"
+                    else
+                        CmdLine.empty |> CmdLine.appendRaw "--runScript"
+                ]
+            |> CmdLine.toString
+
+        Command.Run(
+            "dotnet",
+            fableArgs,
+            workingDirectory =
+                Workspace.tests.``Thoth.Json.Tests.JavaScript``.``.``
+        )
 
         0
 
@@ -112,9 +112,40 @@ type TestLegacyCommand() =
     interface ICommandLimiter<TestSettings>
 
     override _.Execute(context: CommandContext, settings: TestSettings) =
-        runTestForJavaScript
-            settings.IsWatch
-            Workspace.tests.``Thoth.Json.Tests.Legacy``.``.``
+        let mochaComand =
+            CmdLine.empty
+            |> CmdLine.appendRaw "npx"
+            |> CmdLine.appendRaw "mocha"
+            |> CmdLine.appendRaw outDir
+            |> CmdLine.appendPrefix "--reporter" "dot"
+            |> CmdLine.toString
+
+        let fableArgs =
+            CmdLine.concat
+                [
+                    CmdLine.empty
+                    |> CmdLine.appendRaw "fable"
+                    |> CmdLine.appendPrefix "--outDir" outDir
+                    |> CmdLine.appendRaw "--noCache"
+                    |> CmdLine.appendRaw "--test:MSBuildCracker"
+
+                    if settings.IsWatch then
+                        CmdLine.empty
+                        |> CmdLine.appendRaw "--watch"
+                        |> CmdLine.appendRaw "--runWatch"
+                        |> CmdLine.appendRaw mochaComand
+                    else
+                        CmdLine.empty
+                        |> CmdLine.appendRaw "--run"
+                        |> CmdLine.appendRaw mochaComand
+                ]
+            |> CmdLine.toString
+
+        Command.Run(
+            "dotnet",
+            fableArgs,
+            workingDirectory = Workspace.tests.``Thoth.Json.Tests.Legacy``.``.``
+        )
 
         0
 
