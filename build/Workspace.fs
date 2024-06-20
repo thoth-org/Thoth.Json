@@ -1,7 +1,5 @@
 module EasyBuild.Workspace
 
-open System.IO
-open Build.Utils.Path
 open EasyBuild.FileSystemProvider
 
 [<Literal>]
