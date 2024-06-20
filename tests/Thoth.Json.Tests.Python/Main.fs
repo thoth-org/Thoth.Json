@@ -2,12 +2,7 @@ module Thoth.Json.Tests.Python
 
 open Fable.Pyxpecto
 open Thoth.Json.Tests.Testing
-open Thoth.Json.Core
 open Thoth.Json.Python
-open System
-open Thoth.Json.Tests.Types
-open Fable.Core.Testing
-open Fable.Pyxpecto.Model
 
 type PythonEncode() =
     interface IEncode with
@@ -23,13 +18,7 @@ type PythonDecode() =
             Decode.unsafeFromString decoder json
 
 type PythonTestRunner() =
-    inherit TestRunner<TestCase, obj>()
-
-    override _.testList = testList
-    override _.testCase = testCase
-    override _.ftestCase = ftestCase
-
-    override _.equal expected actual = Expect.equal actual expected ""
+    inherit TestRunner<obj>()
 
     override _.Encode = PythonEncode()
 

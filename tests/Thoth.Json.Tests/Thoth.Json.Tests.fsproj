@@ -13,5 +13,6 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Fable.Core" />
+        <PackageReference Include="Fable.Pyxpecto" />
     </ItemGroup>
 </Project>

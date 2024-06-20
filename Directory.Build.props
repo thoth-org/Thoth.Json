@@ -18,8 +18,8 @@
         <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
 	</PropertyGroup>
-    <!-- Packages common to all the projects  -->
-    <ItemGroup>
+    <!-- Packages common to all the projects excepts build project -->
+    <ItemGroup Condition="'$(PackageId)'!='EasyBuild'">
         <!-- Reproducible builds + SourceLink supports -->
         <PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="All"/>
         <!-- Depends on the same version of FSharp.Core for all the projects -->

@@ -1,4 +1,4 @@
 #!/bin/sh -x
 
 dotnet tool restore
-dotnet run --project build/Build.fsproj -- $@
+dotnet run --project build/EasyBuild.fsproj -- $@

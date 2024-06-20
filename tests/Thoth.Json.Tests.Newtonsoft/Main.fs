@@ -1,10 +1,9 @@
 module Thoth.Json.Tests.Newtonsoft
 
-open Expecto
 open Thoth.Json.Tests.Testing
-open Thoth.Json.Core
 open Thoth.Json.Newtonsoft
 open Newtonsoft.Json.Linq
+open Fable.Pyxpecto
 
 type NewtonsoftEncode() =
     interface IEncode with
@@ -20,13 +19,7 @@ type NewtonsoftDecode() =
             Decode.unsafeFromString decoder json
 
 type NewtonsoftTestRunner() =
-    inherit TestRunner<Test, JToken>()
-
-    override _.testList = testList
-    override _.testCase = testCase
-    override _.ftestCase = ftestCase
-
-    override _.equal expected actual = Expect.equal actual expected ""
+    inherit TestRunner<JToken>()
 
     override _.Encode = NewtonsoftEncode()
 
@@ -47,4 +40,4 @@ let main args =
             Encoders.tests runner
 
         ]
-    |> runTestsWithArgs defaultConfig args
+    |> Pyxpecto.runTests [||]

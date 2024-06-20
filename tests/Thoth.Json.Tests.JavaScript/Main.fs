@@ -1,11 +1,10 @@
 module Thoth.Json.Tests.JavaScript
 
-open Fable.Mocha
 open Thoth.Json.Tests.Testing
-open Fable.Core.Testing
 open Thoth.Json.Core
 open Thoth.Json.JavaScript
 open Fable.Core.JsInterop
+open Fable.Pyxpecto
 
 type JavaScriptEncode() =
     interface IEncode with
@@ -13,21 +12,17 @@ type JavaScriptEncode() =
 
 type JavaScriptDecode() =
     interface IDecode<obj> with
-        override _.fromValue decoder = Decode.fromValue decoder
+        override _.fromValue<'T>(decoder: Decoder<'T>) =
+            Decode.fromValue decoder
 
-        override _.fromString decoder json = Decode.fromString decoder json
+        override _.fromString<'T> (decoder: Decoder<'T>) json =
+            Decode.fromString decoder json
 
-        override _.unsafeFromString decoder json =
+        override _.unsafeFromString<'T> (decoder: Decoder<'T>) json =
             Decode.unsafeFromString decoder json
 
 type JavascriptTestRunner() =
-    inherit TestRunner<TestCase, obj>()
-
-    override _.testList = testList
-    override _.testCase = testCase
-    override _.ftestCase = ftestCase
-
-    override _.equal expected actual = Assert.AreEqual(actual, expected)
+    inherit TestRunner<obj>()
 
     override _.Encode = JavaScriptEncode()
 
@@ -45,8 +40,7 @@ let main args =
         "All"
         [
 
-            runner.testCase
-                "circular structure are supported when reporting error"
+            testCase "circular structure are supported when reporting error"
             <| fun _ ->
                 let a = createObj []
                 let b = createObj []
@@ -59,10 +53,10 @@ let main args =
 
                 let actual = Decode.fromValue Decode.float b
 
-                runner.equal expected actual
+                equal expected actual
 
             Decoders.tests runner
             Encoders.tests runner
 
         ]
-    |> Mocha.runTests
+    |> Pyxpecto.runTests [||]

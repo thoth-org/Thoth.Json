@@ -27,7 +27,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Thoth.Json.Tests.Legacy", "
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Thoth.Json", "packages\Thoth.Json\Thoth.Json.fsproj", "{D03314F6-68F9-46BD-A0D1-75B2B18E76A0}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Build", "build\Build.fsproj", "{1A292FB0-2CCA-41C2-A9E6-EB69A31BAA5C}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Build", "build\EasyBuild.fsproj", "{1A292FB0-2CCA-41C2-A9E6-EB69A31BAA5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
