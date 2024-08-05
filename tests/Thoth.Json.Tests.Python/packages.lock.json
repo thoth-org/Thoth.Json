@@ -83,6 +83,13 @@
           "Microsoft.SourceLink.Common": "1.1.1"
         }
       },
+      "thoth.json.auto": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[5.0.0, )",
+          "Thoth.Json.Core": "[1.0.0, )"
+        }
+      },
       "thoth.json.core": {
         "type": "Project",
         "dependencies": {
@@ -104,6 +111,7 @@
         "dependencies": {
           "FSharp.Core": "[5.0.0, )",
           "Fable.Core": "[4.1.0, )",
+          "Thoth.Json.Auto": "[1.0.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
       },
