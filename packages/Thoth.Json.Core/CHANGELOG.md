@@ -16,6 +16,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Encoding negative integers should keep their sign ([GH-187](https://github.com/thoth-org/Thoth.Json/issues/187))
 
+## 0.3.0 - 2024-06-15
+
+### Added
+
+* Add `resizeArray` support ([GH-182](https://github.com/thoth-org/Thoth.Json/issues/182))
+* Add `IEncoderHelpers.encodeResizeArray` ([GH-199](https://github.com/thoth-org/Thoth.Json/issues/199))
+
+### Changed
+
+* Rework encoder API to not need a custom DU ([GH-188](https://github.com/thoth-org/Thoth.Json/pull/188/))
+* Rework object encoder helper to support JSON backends not allowing mutating a JSON object
+* Move `Decode.fromValue` to `Decode.Advanced.fromValue`
+
+### Fixed
+
+* Encoding negative integers should keep their sign ([GH-187](https://github.com/thoth-org/Thoth.Json/issues/187))
+
 ## 0.2.1 - 2023-12-12
 
 ### Fixed

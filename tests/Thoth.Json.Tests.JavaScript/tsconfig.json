@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "module": "ES2020",
+        "moduleResolution": "node",
+        "lib": ["es2020"],
+        "outDir": "build",
+        "strict": true,
+        "strictNullChecks": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "declaration": true,
+        "skipDefaultLibCheck": false
+    },
+    "ts-node": {
+        "esm": true // not working since node 20 https://stackoverflow.com/a/77458795/12858021
+    }
+}

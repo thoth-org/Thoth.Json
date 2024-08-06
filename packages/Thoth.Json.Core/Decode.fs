@@ -80,6 +80,37 @@ module Decode =
             reason
         | _ -> "Error at: `" + path + "`\n" + reason
 
+    // Low-level API
+    module Advanced =
+
+        /// <summary>
+        /// Runs the decoder against the given JSON value.
+        ///
+        /// If the decoder fails, it reports the error prefixed with the given path.
+        ///
+        /// </summary>
+        /// <example>
+        /// <code lang="fsharp">
+        /// module Decode =
+        ///     let fromRootValue (decoder : Decoder&lt;'T&gt;) =
+        ///         Decode.fromValue "$" decoder
+        /// </code>
+        /// </example>
+        /// <param name="path">Path used to report the error</param>
+        /// <param name="decoder">Decoder to apply</param>
+        /// <param name="value">JSON value to decoder</param>
+        /// <returns>
+        /// Returns <c>Ok</c> if the decoder succeeds, otherwise <c>Error</c> with the error message.
+        /// </returns>
+        let fromValue
+            (helpers: IDecoderHelpers<'JsonValue>)
+            (decoder: Decoder<'T>)
+            =
+            fun value ->
+                match decoder.Decode(helpers, value) with
+                | Ok success -> Ok success
+                | Error error -> Error(errorToString helpers error)
+
     /// <summary>
     /// Decode a JSON string into an F# string.
     /// </summary>
@@ -615,34 +646,6 @@ module Decode =
                     decoder.Decode(helpers, value) |> Result.map Some
         }
 
-    /// <summary>
-    /// Runs the decoder against the given JSON value.
-    ///
-    /// If the decoder fails, it reports the error prefixed with the given path.
-    ///
-    /// </summary>
-    /// <example>
-    /// <code lang="fsharp">
-    /// module Decode =
-    ///     let fromRootValue (decoder : Decoder&lt;'T&gt;) =
-    ///         Decode.fromValue "$" decoder
-    /// </code>
-    /// </example>
-    /// <param name="path">Path used to report the error</param>
-    /// <param name="decoder">Decoder to apply</param>
-    /// <param name="value">JSON value to decoder</param>
-    /// <returns>
-    /// Returns <c>Ok</c> if the decoder succeeds, otherwise <c>Error</c> with the error message.
-    /// </returns>
-    let fromValue
-        (helpers: IDecoderHelpers<'JsonValue>)
-        (decoder: Decoder<'T>)
-        =
-        fun value ->
-            match decoder.Decode(helpers, value) with
-            | Ok success -> Ok success
-            | Error error -> Error(errorToString helpers error)
-
     //////////////////////
     // Data structure ///
     ////////////////////
@@ -682,6 +685,42 @@ module Decode =
                     ("", BadPrimitive("a list", value)) |> Error
         }
 
+    let resizeArray (decoder: Decoder<'value>) : Decoder<'value ResizeArray> =
+        { new Decoder<'value ResizeArray> with
+            member _.Decode(helpers, value) =
+                if helpers.isArray value then
+                    let tokens = helpers.asArray value
+                    let mutable i = 0
+                    let result = ResizeArray tokens.Length
+                    let mutable error: DecoderError<_> option = None
+
+                    while i < tokens.Length && error.IsNone do
+                        let value = tokens.[i]
+
+                        match decoder.Decode(helpers, value) with
+                        | Ok value ->
+                            // Setting the value via the index fails with a runtime error
+                            // but because we iterate over the tokens in order, adding the value
+                            // should keep the order
+                            result.Add value
+                        | Error er ->
+                            error <-
+                                Some(
+                                    er
+                                    |> Helpers.prependPath (
+                                        ".[" + (i.ToString()) + "]"
+                                    )
+                                )
+
+                        i <- i + 1
+
+                    if error.IsNone then
+                        Ok(ResizeArray result)
+                    else
+                        Error error.Value
+                else
+                    ("", BadPrimitive("a ResizeArray", value)) |> Error
+        }
 
     let seq (decoder: Decoder<'value>) : Decoder<'value seq> =
         { new Decoder<'value seq> with

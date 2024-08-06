@@ -1,56 +1,60 @@
-module Build.Main
+module EasyBuild.Main
 
 open SimpleExec
-
-// This is a basic help message, as the CLI parser is not a "real" CLI parser
-// For now, it is enough as this is just a dev tool
-let printHelp () =
-    let helpText =
-        """
-Usage: dotnet run <command> [<args>]
-
-Available commands:
-    test                            Run the main tests suite
-        Subcommands:
-            legacy                  Run the tests for the legacy version
-            javascript              Run the tests for JavaScript
-            newtonsoft              Run the tests for Newtonsoft
-            python                  Run the tests for Python
-
-        Options for all except integration and standalone:
-            --watch                 Watch for changes and re-run the tests
-
-    publish                         Publish the different packages to NuGet and NPM
-                                    based on the CHANGELOG.md files
-                                    If the last version in the CHANGELOG.md is
-                                    different from the version in the packages,
-                                    the package will be published
-        """
-
-    printfn $"%s{helpText}"
+open Spectre.Console.Cli
+open EasyBuild.Commands.Test
+open EasyBuild.Commands.Publish
 
 [<EntryPoint>]
-let main argv =
-    let argv = argv |> Array.map (fun x -> x.ToLower()) |> Array.toList
-
+let main args =
     Command.Run("dotnet", "husky install")
 
-    match argv with
-    | "test" :: args ->
-        match args with
-        | "legacy" :: args -> Test.Legacy.handle args
-        | "javascript" :: args -> Test.JavaScript.handle args
-        | "newtonsoft" :: args -> Test.Newtonsoft.handle args
-        | "python" :: args -> Test.Python.handle args
-        | []
-        | "all" :: _ ->
-            Test.JavaScript.handle []
-            Test.Newtonsoft.handle []
-            Test.Python.handle []
-        | _ -> printHelp ()
-    | "publish" :: args -> Publish.handle args
-    | "help" :: _
-    | "--help" :: _
-    | _ -> printHelp ()
+    let app = CommandApp()
 
-    0
+    app.Configure(fun config ->
+        config.AddBranch<TestSettings>(
+            "test",
+            fun test ->
+                test.SetDescription("Run the main tests suite")
+
+                test.SetDefaultCommand<TestCommand>()
+
+                test
+                    .AddCommand<TestJavaScriptCommand>("javascript")
+                    .WithDescription("Run the tests for JavaScript")
+                |> ignore
+
+                test
+                    .AddCommand<TestNewtonsoftCommand>("newtonsoft")
+                    .WithDescription("Run the tests for Newtonsoft")
+                |> ignore
+
+                test
+                    .AddCommand<TestPythonCommand>("python")
+                    .WithDescription("Run the tests for Python")
+                |> ignore
+
+                test
+                    .AddCommand<TestTypeScriptCommand>("typescript")
+                    .WithDescription("Run the tests for TypeScript")
+                |> ignore
+
+                test
+                    .AddCommand<TestLegacyCommand>("legacy")
+                    .WithDescription("Run the tests for the legacy version")
+                |> ignore
+
+        )
+        |> ignore
+
+        config
+            .AddCommand<PublishCommand>("publish")
+            .WithDescription(
+                """Publish the different packages to NuGet and NPM based on the CHANGELOG.md files
+
+If the last version in the CHANGELOG.md is different from the version in the packages, the package will be published"""
+            )
+        |> ignore
+    )
+
+    app.Run(args)

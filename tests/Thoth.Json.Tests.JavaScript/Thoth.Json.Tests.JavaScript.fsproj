@@ -8,12 +8,11 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\packages\Thoth.Json.Core\Thoth.Json.Core.fsproj" />
-        <ProjectReference
-            Include="..\..\packages\Thoth.Json.JavaScript\Thoth.Json.JavaScript.fsproj" />
+        <ProjectReference Include="..\..\packages\Thoth.Json.JavaScript\Thoth.Json.JavaScript.fsproj" />
         <ProjectReference Include="..\Thoth.Json.Tests\Thoth.Json.Tests.fsproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Fable.Core" />
-        <PackageReference Include="Fable.Mocha" />
+        <PackageReference Include="Fable.Pyxpecto" />
     </ItemGroup>
 </Project>

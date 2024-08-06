@@ -20,14 +20,15 @@
         "resolved": "4.1.0",
         "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
       },
-      "Fable.Mocha": {
+      "Fable.Pyxpecto": {
         "type": "Direct",
-        "requested": "[2.17.0, )",
-        "resolved": "2.17.0",
-        "contentHash": "2N9rjqn6IrNdRbjGwq4DNC1u68Mrzk2Vw+rP5OGd3UOjjxle5pvsTS6bS/7hohQPoHTFqLWqiTSrDlotdbQtzQ==",
+        "requested": "[1.1.0, )",
+        "resolved": "1.1.0",
+        "contentHash": "bxZIaCe5kC+wf56iugyiRdiXk3cOG+jZEqoUUEIapl6OjMk2xhD6Px5i6fYPio/zah6secpu/odyL7WUutx0jg==",
         "dependencies": {
-          "FSharp.Core": "4.7.0",
-          "Fable.Core": "3.0.0"
+          "FSharp.Core": "5.0.0",
+          "Fable.Core": "4.1.0",
+          "Fable.Python": "4.3.0"
         }
       },
       "FSharp.Core": {
@@ -107,7 +108,8 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[5.0.0, )",
-          "Fable.Core": "[4.1.0, )"
+          "Fable.Core": "[4.1.0, )",
+          "Fable.Package.SDK": "[0.1.0, )"
         }
       },
       "thoth.json.javascript": {
@@ -115,6 +117,7 @@
         "dependencies": {
           "FSharp.Core": "[5.0.0, )",
           "Fable.Core": "[4.1.0, )",
+          "Fable.Package.SDK": "[0.1.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
       },
@@ -123,8 +126,25 @@
         "dependencies": {
           "FSharp.Core": "[5.0.0, )",
           "Fable.Core": "[4.1.0, )",
+          "Fable.Pyxpecto": "[1.1.0, )",
           "Thoth.Json.Auto": "[1.0.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
+        }
+      },
+      "Fable.Package.SDK": {
+        "type": "CentralTransitive",
+        "requested": "[0.1.0, )",
+        "resolved": "0.1.0",
+        "contentHash": "wrEcGovUimN0PRGgVHlX/gsqCm5d/p9eOG74iaHoteX2dsFZQ9P7d066LRAl5Gj7GUHy7azLyDE41KFvZx1v9A=="
+      },
+      "Fable.Python": {
+        "type": "CentralTransitive",
+        "requested": "[4.3.0, )",
+        "resolved": "4.3.0",
+        "contentHash": "KT5PI4NyMtVLDcmDkf5SeqwtFjVO17u27xr45qXfYWG12UePHxGjQJoI16OafIzlEQ6cHfAuRljhZGKIlvOJNQ==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fable.Core": "[4.1.0, 5.0.0)"
         }
       }
     }

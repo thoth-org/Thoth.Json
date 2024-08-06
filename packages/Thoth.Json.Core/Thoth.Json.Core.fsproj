@@ -2,15 +2,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Description>
-Elm-inspired encoder and decoder for JSON, this package is intended to be use on Fable side only.
+Elm-inspired encoder and decoder for JSON, this package is the core library which can be used on any F# project.
 
-If you are interested on using it against .NET Core or .NET Framework, please use Thoth.Json.Net.
+Pick the right additional package for your runtime:
+
+- Thoth.Json.JavaScript
+- Thoth.Json.Python
+- Thoth.Json.Newtonsoft
         </Description>
-        <PackageTags>fable;fsharp;json</PackageTags>
+        <FablePackageType>library</FablePackageType>
+        <PackageTags>fable-all;fsharp;json</PackageTags>
     </PropertyGroup>
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="Types.fs" />
@@ -19,9 +23,7 @@ If you are interested on using it against .NET Core or .NET Framework, please us
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Fable.Core" />
+        <PackageReference Include="Fable.Package.SDK" />
         <PackageReference Include="Ionide.KeepAChangelog.Tasks" PrivateAssets="all" />
-    </ItemGroup>
-    <ItemGroup>
-        <Content Include="*.fsproj; **\*.fs" PackagePath="fable" />
     </ItemGroup>
 </Project>

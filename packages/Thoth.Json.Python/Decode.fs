@@ -69,6 +69,9 @@ module Decode =
                 Python.Json.json.dumps (jsonValue, indent = 4)
         }
 
+    let fromValue (decoder: Decoder<'T>) =
+        Decode.Advanced.fromValue helpers decoder
+
     let fromString (decoder: Decoder<'T>) =
         fun value ->
             try

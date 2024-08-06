@@ -64,6 +64,9 @@ return JSON.stringify($0, null, 4) + ''
         [<Emit("$0 instanceof SyntaxError")>]
         let isSyntaxError (_: obj) : bool = jsNative
 
+    let fromValue (decoder: Decoder<'T>) =
+        Decode.Advanced.fromValue helpers decoder
+
     let fromString (decoder: Decoder<'T>) =
         fun value ->
             try

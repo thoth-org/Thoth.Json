@@ -1,35 +1,36 @@
 module Thoth.Json.Tests.JavaScript
 
-open Fable.Mocha
 open Thoth.Json.Tests.Testing
-open Fable.Core.Testing
 open Thoth.Json.Core
 open Thoth.Json.JavaScript
 open Fable.Core.JsInterop
+open Fable.Pyxpecto
 
 type JavaScriptEncode() =
     interface IEncode with
         override _.toString spaces json = Encode.toString spaces json
 
 type JavaScriptDecode() =
-    interface IDecode with
-        override _.fromString decoder json = Decode.fromString decoder json
+    interface IDecode<obj> with
+        override _.fromValue<'T>(decoder: Decoder<'T>) =
+            Decode.fromValue decoder
 
-        override _.unsafeFromString decoder json =
+        override _.fromString<'T> (decoder: Decoder<'T>) json =
+            Decode.fromString decoder json
+
+        override _.unsafeFromString<'T> (decoder: Decoder<'T>) json =
             Decode.unsafeFromString decoder json
 
 type JavascriptTestRunner() =
-    inherit TestRunner<TestCase, obj>()
-
-    override _.testList = testList
-    override _.testCase = testCase
-    override _.ftestCase = ftestCase
-
-    override _.equal actual expected = Assert.AreEqual(actual, expected)
+    inherit TestRunner<obj>()
 
     override _.Encode = JavaScriptEncode()
 
     override _.Decode = JavaScriptDecode()
+
+    override _.EncoderHelpers = Encode.helpers
+
+    override _.DecoderHelpers = Decode.helpers
 
 [<EntryPoint>]
 let main args =
@@ -39,8 +40,7 @@ let main args =
         "All"
         [
 
-            runner.testCase
-                "circular structure are supported when reporting error"
+            testCase "circular structure are supported when reporting error"
             <| fun _ ->
                 let a = createObj []
                 let b = createObj []
@@ -51,12 +51,12 @@ let main args =
                     Error
                         "Error at: ``\nExpecting a float but decoder failed. Couldn\'t report given value due to circular structure. "
 
-                let actual = Decode.fromValue Decode.helpers Decode.float b
+                let actual = Decode.fromValue Decode.float b
 
-                runner.equal expected actual
+                equal expected actual
 
             Decoders.tests runner
             Encoders.tests runner
 
         ]
-    |> Mocha.runTests
+    |> Pyxpecto.runTests [||]

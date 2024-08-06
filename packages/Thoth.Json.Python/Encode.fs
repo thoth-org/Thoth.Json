@@ -32,6 +32,9 @@ module Encode =
             member this.encodeSeq values =
                 values |> Seq.toArray |> this.encodeArray
 
+            member this.encodeResizeArray values =
+                values.ToArray() |> this.encodeArray
+
             member _.encodeSignedIntegralNumber value = box value
             member _.encodeUnsignedIntegralNumber value = box value
         }

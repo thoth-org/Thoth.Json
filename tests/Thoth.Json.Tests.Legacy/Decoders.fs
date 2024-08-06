@@ -78,7 +78,7 @@ let tests: Test =
 #if FABLE_COMPILER
                         let expected: Result<float, string> =
                             Error
-                                "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
+                                "Given an invalid JSON: Unexpected token m in JSON at position 0"
 #else
                         let expected: Result<float, string> =
                             Error
@@ -94,7 +94,7 @@ let tests: Test =
 #if FABLE_COMPILER
                         let expected: Result<MyUnion, string> =
                             Error
-                                "Given an invalid JSON: Unexpected non-whitespace character after JSON at position 5"
+                                "Given an invalid JSON: Unexpected token , in JSON at position 5"
 #else
                         let expected: Result<MyUnion, string> =
                             Error
@@ -111,7 +111,7 @@ let tests: Test =
 #if FABLE_COMPILER
                         let expected: Result<float, string> =
                             Error
-                                "Given an invalid JSON: Expected double-quoted property name in JSON at position 172"
+                                "Given an invalid JSON: Unexpected end of JSON input"
 #else
                         let expected: Result<float, string> =
                             Error
@@ -2196,7 +2196,7 @@ Expecting an object with a field named `height` but instead got:
 #if FABLE_COMPILER
                         let expected =
                             Error(
-                                "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
+                                "Given an invalid JSON: Unexpected token m in JSON at position 0"
                             )
 #else
                         let expected =
@@ -3967,9 +3967,8 @@ Expecting a boolean but instead got: "not_a_boolean"
                         let json = Encode.Auto.toString (4, value)
 
                         let res =
-                            Decode.Auto
-                                .unsafeFromString<DateTimeOffset>(json)
-                                // .ToLocalTime()
+                            Decode.Auto.unsafeFromString<DateTimeOffset> (json)
+                        // .ToLocalTime()
 
                         equal value.Date res.Date
                         equal value.Hour res.Hour

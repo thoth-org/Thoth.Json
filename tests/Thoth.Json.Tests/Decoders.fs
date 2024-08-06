@@ -4,9 +4,9 @@ module Thoth.Json.Tests.Decoders
 open Fable.Core
 #endif
 
-open Fable.Core.JsInterop
 open Thoth.Json.Tests.Testing
 open System
+open Fable.Pyxpecto
 
 open Thoth.Json.Core
 open Thoth.Json.Auto
@@ -47,21 +47,21 @@ type UnionWithPrivateConstructor =
 
 type UnionWithMultipleFields = | Multi of string * int * float
 
-let tests (runner: TestRunner<_, _>) =
-    runner.testList
+let tests (runner: TestRunner<_>) =
+    testList
         "Thoth.Json.Decode"
         [
 
-            runner.testList
+            testList
                 "Errors"
                 [
 
-                    runner.testCase "invalid json"
+                    testCase "invalid json"
                     <| fun _ ->
 #if FABLE_COMPILER_JAVASCRIPT
                         let expected: Result<float, string> =
                             Error
-                                "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
+                                "Given an invalid JSON: Unexpected token m in JSON at position 0"
 #endif
 
 #if FABLE_COMPILER_PYTHON
@@ -79,10 +79,9 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             runner.Decode.fromString Decode.float "maxime"
 
-                        runner.equal expected actual
+                        equal actual expected
 
-                    runner.testCase
-                        "invalid json #2 - Special case for Thoth.Json.Net"
+                    testCase "invalid json #2 - Special case for Thoth.Json.Net"
                     <| fun _ ->
                         // See: https://github.com/thoth-org/Thoth.Json.Net/issues/42
 #if FABLE_COMPILER_PYTHON
@@ -93,7 +92,7 @@ let tests (runner: TestRunner<_, _>) =
 #if FABLE_COMPILER
                         let expected: Result<MyUnion, string> =
                             Error
-                                "Given an invalid JSON: Unexpected non-whitespace character after JSON at position 5 (line 1 column 6)"
+                                "Given an invalid JSON: Unexpected token , in JSON at position 5"
 #else
                         let expected: Result<MyUnion, string> =
                             Error
@@ -106,16 +105,15 @@ let tests (runner: TestRunner<_, _>) =
                             """"Foo","42"]"""
                             |> runner.Decode.fromString<MyUnion> decoder
 
-                        runner.equal expected actual
+                        equal actual expected
 
-                    runner.testCase
-                        "invalid json #3 - Special case for Thoth.Json.Net"
+                    testCase "invalid json #3 - Special case for Thoth.Json.Net"
                     <| fun _ ->
                         // See: https://github.com/thoth-org/Thoth.Json.Net/pull/48
 #if FABLE_COMPILER_JAVASCRIPT
                         let expected: Result<float, string> =
                             Error
-                                "Given an invalid JSON: Expected double-quoted property name in JSON at position 172 (line 8 column 17)"
+                                "Given an invalid JSON: Unexpected end of JSON input"
 #endif
 
 #if FABLE_COMPILER_PYTHON
@@ -143,10 +141,9 @@ let tests (runner: TestRunner<_, _>) =
                         let actual =
                             runner.Decode.fromString Decode.float incorrectJson
 
-                        runner.equal expected actual
+                        equal actual expected
 
-                    runner.testCase
-                        "user exceptions are not captured by the decoders"
+                    testCase "user exceptions are not captured by the decoders"
                     <| fun _ ->
                         let expected = true
 
@@ -164,14 +161,54 @@ let tests (runner: TestRunner<_, _>) =
                             with CustomException ->
                                 true
 
-                        runner.equal expected actual
+                        equal expected actual
                 ]
 
-            runner.testList
+            testList
+                "Decode.fromValue"
+                [
+                    testCase "works"
+                    <| fun _ ->
+
+                        let value =
+                            runner.EncoderHelpers.encodeObject
+                                [
+                                    "value",
+                                    runner.EncoderHelpers.encodeSignedIntegralNumber
+                                        42
+                                ]
+
+                        let expected: Result<int, string> = Ok 42
+
+                        let actual =
+                            runner.Decode.fromValue
+                                (Decode.field "value" Decode.int)
+                                value
+
+                        equal expected actual
+
+                    testCase "returns an error if the field is missing"
+                    <| fun _ ->
+
+                        let value = runner.EncoderHelpers.encodeObject []
+
+                        let expected: Result<int, string> =
+                            Error
+                                "Error at: ``\nExpecting an object with a field named `value` but instead got:\n{}"
+
+                        let actual =
+                            runner.Decode.fromValue
+                                (Decode.field "value" Decode.int)
+                                value
+
+                        equal expected actual
+                ]
+
+            testList
                 "Decode.unsafeString"
                 [
 
-                    runner.testCase "works"
+                    testCase "works"
                     <| fun _ ->
                         let expected = "maxime"
 
@@ -180,13 +217,13 @@ let tests (runner: TestRunner<_, _>) =
                                 Decode.string
                                 "\"maxime\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "throw an exception if the json is invalid"
+                    testCase "throw an exception if the json is invalid"
                     <| fun _ ->
 #if FABLE_COMPILER_JAVASCRIPT
                         let expected =
-                            "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
+                            "Given an invalid JSON: Unexpected token m in JSON at position 0"
 #endif
 
 #if FABLE_COMPILER_PYTHON
@@ -206,75 +243,75 @@ let tests (runner: TestRunner<_, _>) =
                             |> ignore // Ignore the result as we only want to trigger the decoder and capture the exception
 
                         with ex ->
-                            runner.equal expected ex.Message
+                            equal ex.Message expected
                 ]
 
-            runner.testList
+            testList
                 "Primitives"
                 [
 
-                    runner.testCase "unit works"
+                    testCase "unit works"
                     <| fun _ ->
                         let expected = Ok()
                         let actual = runner.Decode.fromString Decode.unit "null"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a string works"
+                    testCase "a string works"
                     <| fun _ ->
                         let expected = Ok("maxime")
 
                         let actual =
                             runner.Decode.fromString Decode.string "\"maxime\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a string with new line works"
+                    testCase "a string with new line works"
                     <| fun _ ->
                         let expected = Ok("a\nb")
 
                         let actual =
                             runner.Decode.fromString Decode.string "\"a\\nb\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a string with new line character works"
+                    testCase "a string with new line character works"
                     <| fun _ ->
                         let expected = Ok("a\\nb")
 
                         let actual =
                             runner.Decode.fromString Decode.string "\"a\\\\nb\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a string with tab works"
+                    testCase "a string with tab works"
                     <| fun _ ->
                         let expected = Ok("a\tb")
 
                         let actual =
                             runner.Decode.fromString Decode.string "\"a\\tb\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a string with tab character works"
+                    testCase "a string with tab character works"
                     <| fun _ ->
                         let expected = Ok("a\\tb")
 
                         let actual =
                             runner.Decode.fromString Decode.string "\"a\\\\tb\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a char works"
+                    testCase "a char works"
                     <| fun _ ->
                         let expected = Ok('a')
 
                         let actual =
                             runner.Decode.fromString Decode.char "\"a\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "a char reports an error if there are more than 1 characters in the string"
                     <| fun _ ->
                         let expected =
@@ -289,30 +326,30 @@ Expecting a single character string but instead got: "ab"
                         let actual =
                             runner.Decode.fromString Decode.char "\"ab\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a float works"
+                    testCase "a float works"
                     <| fun _ ->
                         let expected = Ok(1.2)
                         let actual = runner.Decode.fromString Decode.float "1.2"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a float from int works"
+                    testCase "a float from int works"
                     <| fun _ ->
                         let expected = Ok(1.0)
                         let actual = runner.Decode.fromString Decode.float "1"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a bool works"
+                    testCase "a bool works"
                     <| fun _ ->
                         let expected = Ok(true)
                         let actual = runner.Decode.fromString Decode.bool "true"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an invalid bool output an error"
+                    testCase "an invalid bool output an error"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -321,16 +358,16 @@ Expecting a single character string but instead got: "ab"
 
                         let actual = runner.Decode.fromString Decode.bool "2"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an int works"
+                    testCase "an int works"
                     <| fun _ ->
                         let expected = Ok(25)
                         let actual = runner.Decode.fromString Decode.int "25"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "an invalid int [invalid range: too big] output an error"
                     <| fun _ ->
                         let expected =
@@ -341,10 +378,10 @@ Expecting a single character string but instead got: "ab"
                         let actual =
                             runner.Decode.fromString Decode.int "2147483648"
 
-                        runner.equal expected actual
+                        equal expected actual
 
 
-                    runner.testCase
+                    testCase
                         "an invalid int [invalid range: too small] output an error"
                     <| fun _ ->
                         let expected =
@@ -355,26 +392,25 @@ Expecting a single character string but instead got: "ab"
                         let actual =
                             runner.Decode.fromString Decode.int "-2147483649"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an int16 works from number"
+                    testCase "an int16 works from number"
                     <| fun _ ->
                         let expected = Ok(int16 25)
                         let actual = runner.Decode.fromString Decode.int16 "25"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an int16 works from string"
+                    testCase "an int16 works from string"
                     <| fun _ ->
                         let expected = Ok(int16 -25)
 
                         let actual =
                             runner.Decode.fromString Decode.int16 "\"-25\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "an int16 output an error if value is too big"
+                    testCase "an int16 output an error if value is too big"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -389,10 +425,9 @@ Reason: Value was either too large or too small for an int16
                         let actual =
                             runner.Decode.fromString Decode.int16 "32768"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "an int16 output an error if value is too small"
+                    testCase "an int16 output an error if value is too small"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -407,10 +442,9 @@ Reason: Value was either too large or too small for an int16
                         let actual =
                             runner.Decode.fromString Decode.int16 "-32769"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "an int16 output an error if incorrect string"
+                    testCase "an int16 output an error if incorrect string"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -424,26 +458,25 @@ Expecting an int16 but instead got: "maxime"
                         let actual =
                             runner.Decode.fromString Decode.int16 "\"maxime\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an uint16 works from number"
+                    testCase "an uint16 works from number"
                     <| fun _ ->
                         let expected = Ok(uint16 25)
                         let actual = runner.Decode.fromString Decode.uint16 "25"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an uint16 works from string"
+                    testCase "an uint16 works from string"
                     <| fun _ ->
                         let expected = Ok(uint16 25)
 
                         let actual =
                             runner.Decode.fromString Decode.uint16 "\"25\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "an uint16 output an error if value is too big"
+                    testCase "an uint16 output an error if value is too big"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -458,10 +491,9 @@ Reason: Value was either too large or too small for an uint16
                         let actual =
                             runner.Decode.fromString Decode.uint16 "65536"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "an uint16 output an error if value is too small"
+                    testCase "an uint16 output an error if value is too small"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -475,10 +507,9 @@ Reason: Value was either too large or too small for an uint16
 
                         let actual = runner.Decode.fromString Decode.uint16 "-1"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "an uint16 output an error if incorrect string"
+                    testCase "an uint16 output an error if incorrect string"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -492,27 +523,27 @@ Expecting an uint16 but instead got: "maxime"
                         let actual =
                             runner.Decode.fromString Decode.uint16 "\"maxime\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an int64 works from number"
+                    testCase "an int64 works from number"
                     <| fun _ ->
                         let expected = Ok 1000L
 
                         let actual =
                             runner.Decode.fromString Decode.int64 "1000"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an int64 works from string"
+                    testCase "an int64 works from string"
                     <| fun _ ->
                         let expected = Ok 99L
 
                         let actual =
                             runner.Decode.fromString Decode.int64 "\"99\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "an int64 works output an error if incorrect string"
                     <| fun _ ->
                         let expected =
@@ -527,28 +558,27 @@ Expecting an int64 but instead got: "maxime"
                         let actual =
                             runner.Decode.fromString Decode.int64 "\"maxime\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an uint32 works from number"
+                    testCase "an uint32 works from number"
                     <| fun _ ->
                         let expected = Ok 1000u
 
                         let actual =
                             runner.Decode.fromString Decode.uint32 "1000"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an uint32 works from string"
+                    testCase "an uint32 works from string"
                     <| fun _ ->
                         let expected = Ok 1000u
 
                         let actual =
                             runner.Decode.fromString Decode.uint32 "\"1000\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "an uint32 output an error if incorrect string"
+                    testCase "an uint32 output an error if incorrect string"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -562,28 +592,27 @@ Expecting an uint32 but instead got: "maxime"
                         let actual =
                             runner.Decode.fromString Decode.uint32 "\"maxime\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an uint64 works from number"
+                    testCase "an uint64 works from number"
                     <| fun _ ->
                         let expected = Ok 1000UL
 
                         let actual =
                             runner.Decode.fromString Decode.uint64 "1000"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an uint64 works from string"
+                    testCase "an uint64 works from string"
                     <| fun _ ->
                         let expected = Ok 1000UL
 
                         let actual =
                             runner.Decode.fromString Decode.uint64 "\"1000\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "an uint64 output an error if incorrect string"
+                    testCase "an uint64 output an error if incorrect string"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -597,25 +626,25 @@ Expecting an uint64 but instead got: "maxime"
                         let actual =
                             runner.Decode.fromString Decode.uint64 "\"maxime\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a byte works from number"
+                    testCase "a byte works from number"
                     <| fun _ ->
                         let expected = Ok 25uy
                         let actual = runner.Decode.fromString Decode.byte "25"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a byte works from string"
+                    testCase "a byte works from string"
                     <| fun _ ->
                         let expected = Ok 25uy
 
                         let actual =
                             runner.Decode.fromString Decode.byte "\"25\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a byte output an error if value is too big"
+                    testCase "a byte output an error if value is too big"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -629,10 +658,9 @@ Reason: Value was either too large or too small for a byte
 
                         let actual = runner.Decode.fromString Decode.byte "256"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "a byte output an error if value is too small"
+                    testCase "a byte output an error if value is too small"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -646,9 +674,9 @@ Reason: Value was either too large or too small for a byte
 
                         let actual = runner.Decode.fromString Decode.byte "-1"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a byte output an error if incorrect string"
+                    testCase "a byte output an error if incorrect string"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -662,27 +690,26 @@ Expecting a byte but instead got: "maxime"
                         let actual =
                             runner.Decode.fromString Decode.byte "\"maxime\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
 
-                    runner.testCase "a sbyte works from number"
+                    testCase "a sbyte works from number"
                     <| fun _ ->
                         let expected = Ok 25y
                         let actual = runner.Decode.fromString Decode.sbyte "25"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a sbyte works from string"
+                    testCase "a sbyte works from string"
                     <| fun _ ->
                         let expected = Ok -25y
 
                         let actual =
                             runner.Decode.fromString Decode.sbyte "\"-25\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "a sbyte output an error if value is too big"
+                    testCase "a sbyte output an error if value is too big"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -696,10 +723,9 @@ Reason: Value was either too large or too small for a sbyte
 
                         let actual = runner.Decode.fromString Decode.sbyte "128"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "a sbyte output an error if value is too small"
+                    testCase "a sbyte output an error if value is too small"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -714,10 +740,9 @@ Reason: Value was either too large or too small for a sbyte
                         let actual =
                             runner.Decode.fromString Decode.sbyte "-129"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "a sbyte output an error if incorrect string"
+                    testCase "a sbyte output an error if incorrect string"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -731,26 +756,25 @@ Expecting a sbyte but instead got: "maxime"
                         let actual =
                             runner.Decode.fromString Decode.sbyte "\"maxime\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an bigint works from number"
+                    testCase "an bigint works from number"
                     <| fun _ ->
                         let expected = Ok 12I
                         let actual = runner.Decode.fromString Decode.bigint "12"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an bigint works from string"
+                    testCase "an bigint works from string"
                     <| fun _ ->
                         let expected = Ok 12I
 
                         let actual =
                             runner.Decode.fromString Decode.bigint "\"12\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "an bigint output an error if invalid string"
+                    testCase "an bigint output an error if invalid string"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -764,10 +788,10 @@ Expecting a bigint but instead got: "maxime"
                         let actual =
                             runner.Decode.fromString Decode.bigint "\"maxime\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
 #if !FABLE_COMPILER_PYTHON
-                    runner.testCase
+                    testCase
                         "a string representing a DateTime should be accepted as a string"
                     <| fun _ ->
                         let expected = "2018-10-01T11:12:55.00Z"
@@ -777,11 +801,11 @@ Expecting a bigint but instead got: "maxime"
                                 Decode.string
                                 "\"2018-10-01T11:12:55.00Z\""
 
-                        runner.equal (Ok expected) actual
+                        equal (Ok expected) actual
 #endif
 
 #if !FABLE_COMPILER_PYTHON
-                    runner.testCase "a datetime works"
+                    testCase "a datetime works"
                     <| fun _ ->
                         let expected =
                             new DateTime(
@@ -799,11 +823,11 @@ Expecting a bigint but instead got: "maxime"
                                 Decode.datetimeUtc
                                 "\"2018-10-01T11:12:55.00Z\""
 
-                        runner.equal (Ok expected) actual
+                        equal (Ok expected) actual
 #endif
 
 #if !FABLE_COMPILER_PYTHON
-                    runner.testCase "a non-UTC datetime works"
+                    testCase "a non-UTC datetime works"
                     <| fun _ ->
                         let expected = new DateTime(2018, 10, 1, 11, 12, 55)
 
@@ -812,10 +836,9 @@ Expecting a bigint but instead got: "maxime"
                                 Decode.datetimeLocal
                                 "\"2018-10-01T11:12:55\""
 
-                        runner.equal (Ok expected) actual
+                        equal (Ok expected) actual
 
-                    runner.testCase
-                        "a datetime output an error if invalid string"
+                    testCase "a datetime output an error if invalid string"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -831,9 +854,9 @@ Expecting a datetime but instead got: "invalid_string"
                                 Decode.datetimeUtc
                                 "\"invalid_string\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a datetime works with TimeZone"
+                    testCase "a datetime works with TimeZone"
                     <| fun _ ->
                         let localDate =
                             DateTime(
@@ -852,11 +875,11 @@ Expecting a datetime but instead got: "invalid_string"
                         let actual =
                             runner.Decode.fromString Decode.datetimeUtc json
 
-                        runner.equal expected actual
+                        equal expected actual
 #endif
 
 #if !FABLE_COMPILER_PYTHON
-                    runner.testCase "a datetimeOffset works"
+                    testCase "a datetimeOffset works"
                     <| fun _ ->
                         let expected =
                             DateTimeOffset(
@@ -876,10 +899,9 @@ Expecting a datetime but instead got: "invalid_string"
                         let actual =
                             runner.Decode.fromString Decode.datetimeOffset json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "a datetimeOffset returns Error if invalid format"
+                    testCase "a datetimeOffset returns Error if invalid format"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -895,10 +917,10 @@ Expecting a datetimeoffset but instead got: "NOT A DATETIMEOFFSET"
                         let actual =
                             runner.Decode.fromString Decode.datetimeOffset json
 
-                        runner.equal expected actual
+                        equal expected actual
 #endif
 
-                    runner.testCase "a timespan works"
+                    testCase "a timespan works"
                     <| fun _ ->
                         let expected = TimeSpan(23, 45, 0) |> Ok
                         let json = "\"23:45:00\""
@@ -906,9 +928,9 @@ Expecting a datetimeoffset but instead got: "NOT A DATETIMEOFFSET"
                         let actual =
                             runner.Decode.fromString Decode.timespan json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "a timespan returns Error if invalid format"
+                    testCase "a timespan returns Error if invalid format"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -924,68 +946,68 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                         let actual =
                             runner.Decode.fromString Decode.timespan json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an enum<sbyte> works"
+                    testCase "an enum<sbyte> works"
                     <| fun _ ->
                         let expected = Ok Enum_Int8.NinetyNine
 
                         let actual =
                             runner.Decode.fromString Decode.Enum.sbyte "99"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an enum<byte> works"
+                    testCase "an enum<byte> works"
                     <| fun _ ->
                         let expected = Ok Enum_UInt8.NinetyNine
 
                         let actual =
                             runner.Decode.fromString Decode.Enum.byte "99"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an enum<int> works"
+                    testCase "an enum<int> works"
                     <| fun _ ->
                         let expected = Ok Enum_Int.One
 
                         let actual =
                             runner.Decode.fromString Decode.Enum.int "1"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an enum<uint32> works"
+                    testCase "an enum<uint32> works"
                     <| fun _ ->
                         let expected = Ok Enum_UInt32.NinetyNine
 
                         let actual =
                             runner.Decode.fromString Decode.Enum.uint32 "99"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an enum<int16> works"
+                    testCase "an enum<int16> works"
                     <| fun _ ->
                         let expected = Ok Enum_Int16.NinetyNine
 
                         let actual =
                             runner.Decode.fromString Decode.Enum.int16 "99"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an enum<uint16> works"
+                    testCase "an enum<uint16> works"
                     <| fun _ ->
                         let expected = Ok Enum_UInt16.NinetyNine
 
                         let actual =
                             runner.Decode.fromString Decode.Enum.uint16 "99"
 
-                        runner.equal expected actual
+                        equal expected actual
 
                 ]
 
-            runner.testList
+            testList
                 "Tuples"
                 [
-                    runner.testCase "tuple2 works"
+                    testCase "tuple2 works"
                     <| fun _ ->
                         let json = """[1, "maxime"]"""
                         let expected = Ok(1, "maxime")
@@ -995,9 +1017,9 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                                 (Decode.tuple2 Decode.int Decode.string)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "tuple3 works"
+                    testCase "tuple3 works"
                     <| fun _ ->
                         let json = """[1, "maxime", 2.5]"""
                         let expected = Ok(1, "maxime", 2.5)
@@ -1010,9 +1032,9 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                                     Decode.float)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "tuple4 works"
+                    testCase "tuple4 works"
                     <| fun _ ->
                         let json =
                             """[1, "maxime", 2.5, { "fieldA" : "test" }]"""
@@ -1036,9 +1058,9 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                                     SmallRecord.Decoder)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "tuple5 works"
+                    testCase "tuple5 works"
                     <| fun _ ->
                         let json =
                             """[1, "maxime", 2.5, { "fieldA" : "test" }, false]"""
@@ -1064,9 +1086,9 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                                     Decode.bool)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "tuple6 works"
+                    testCase "tuple6 works"
                     <| fun _ ->
                         let json =
                             """[1, "maxime", 2.5, { "fieldA" : "test" }, false, null]"""
@@ -1094,9 +1116,9 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                                     (Decode.nil null))
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "tuple7 works"
+                    testCase "tuple7 works"
                     <| fun _ ->
                         let json =
                             """[1, "maxime", 2.5, { "fieldA" : "test" }, false, null, 56]"""
@@ -1126,9 +1148,9 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                                     Decode.int)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "tuple8 works"
+                    testCase "tuple8 works"
                     <| fun _ ->
                         let json =
                             """[1, "maxime", 2.5, { "fieldA" : "test" }, false, null, true, 98]"""
@@ -1160,9 +1182,9 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                                     Decode.int)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "tuple2 returns an error if invalid json"
+                    testCase "tuple2 returns an error if invalid json"
                     <| fun _ ->
                         let json = """[1, false, "unused value"]"""
 
@@ -1180,9 +1202,9 @@ Expecting a string but instead got: false
                                 (Decode.tuple2 Decode.int Decode.string)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "tuple3 returns an error if invalid json"
+                    testCase "tuple3 returns an error if invalid json"
                     <| fun _ ->
                         let json = """[1, "maxime", false]"""
 
@@ -1203,9 +1225,9 @@ Expecting a float but instead got: false
                                     Decode.float)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "tuple4 returns an error if invalid json (missing index)"
                     <| fun _ ->
                         let json = """[1, "maxime", 2.5]"""
@@ -1233,9 +1255,9 @@ Expecting a longer array. Need index `3` but there are only `3` entries.
                                     SmallRecord.Decoder)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "tuple4 returns an error if invalid json (error in the nested object)"
                     <| fun _ ->
                         let json =
@@ -1259,10 +1281,10 @@ Expecting a string but instead got: false
                                     SmallRecord.Decoder)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
 #if !FABLE_COMPILER_PYTHON
-                    runner.testCase "tuple5 returns an error if invalid json"
+                    testCase "tuple5 returns an error if invalid json"
                     <| fun _ ->
                         let json =
                             """[1, "maxime", 2.5, { "fieldA" : "test" }, false]"""
@@ -1286,9 +1308,9 @@ Expecting a datetime but instead got: false
                                     Decode.datetimeUtc)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "tuple6 returns an error if invalid json"
+                    testCase "tuple6 returns an error if invalid json"
                     <| fun _ ->
                         let json =
                             """[1, "maxime", 2.5, { "fieldA" : "test" }, "2018-10-01T11:12:55.00Z", false]"""
@@ -1313,9 +1335,9 @@ Expecting null but instead got: false
                                     (Decode.nil null))
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "tuple7 returns an error if invalid json"
+                    testCase "tuple7 returns an error if invalid json"
                     <| fun _ ->
                         let json =
                             """[1, "maxime", 2.5, { "fieldA" : "test" }, "2018-10-01T11:12:55.00Z", null, false]"""
@@ -1341,9 +1363,9 @@ Expecting an int but instead got: false
                                     Decode.int)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "tuple8 returns an error if invalid json"
+                    testCase "tuple8 returns an error if invalid json"
                     <| fun _ ->
                         let json =
                             """[1, "maxime", 2.5, { "fieldA" : "test" }, "2018-10-01T11:12:55.00Z", null, 56, "maxime"]"""
@@ -1370,15 +1392,15 @@ Expecting an int but instead got: "maxime"
                                     Decode.int)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 #endif
                 ]
 
-            runner.testList
+            testList
                 "Object primitives"
                 [
 
-                    runner.testCase "field works"
+                    testCase "field works"
                     <| fun _ ->
                         let json = """{ "name": "maxime", "age": 25 }"""
                         let expected = Ok("maxime")
@@ -1388,9 +1410,9 @@ Expecting an int but instead got: "maxime"
                                 (Decode.field "name" Decode.string)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "field output an error explaining why the value is considered invalid"
                     <| fun _ ->
                         let json = """{ "name": null, "age": 25 }"""
@@ -1409,10 +1431,9 @@ Expecting an int but instead got: null
                                 (Decode.field "name" Decode.int)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "field output an error when field is missing"
+                    testCase "field output an error when field is missing"
                     <| fun _ ->
                         let json = """{ "name": "maxime", "age": 25 }"""
 
@@ -1434,9 +1455,9 @@ Expecting an object with a field named `height` but instead got:
                                 (Decode.field "height" Decode.float)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "at works"
+                    testCase "at works"
                     <| fun _ ->
 
                         let json =
@@ -1454,9 +1475,9 @@ Expecting an object with a field named `height` but instead got:
                                     Decode.string)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "at output an error if the path failed"
+                    testCase "at output an error if the path failed"
                     <| fun _ ->
                         let json =
                             """{ "user": { "name": "maxime", "age": 25 } }"""
@@ -1487,9 +1508,9 @@ Node `firstname` is unkown.
                                     Decode.string)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "at output an error explaining why the value is considered invalid"
                     <| fun _ ->
                         let json = """{ "name": null, "age": 25 }"""
@@ -1508,9 +1529,9 @@ Expecting an int but instead got: null
                                 (Decode.at [ "name" ] Decode.int)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "index works"
+                    testCase "index works"
                     <| fun _ ->
                         let json = """["maxime", "alfonso", "steffen"]"""
                         let expected = Ok("alfonso")
@@ -1520,9 +1541,9 @@ Expecting an int but instead got: null
                                 (Decode.index 1 Decode.string)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "index output an error if array is to small"
+                    testCase "index output an error if array is to small"
                     <| fun _ ->
                         let json = """["maxime", "alfonso", "steffen"]"""
 
@@ -1545,10 +1566,9 @@ Expecting a longer array. Need index `5` but there are only `3` entries.
                                 (Decode.index 5 Decode.string)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "index output an error if value isn't an array"
+                    testCase "index output an error if value isn't an array"
                     <| fun _ ->
                         let json = "1"
 
@@ -1566,16 +1586,16 @@ Expecting an array but instead got: 1
                                 (Decode.index 5 Decode.string)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
                 ]
 
 
-            runner.testList
+            testList
                 "Data structure"
                 [
 
-                    runner.testCase "list works"
+                    testCase "list works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -1591,9 +1611,9 @@ Expecting an array but instead got: 1
                                 (Decode.list Decode.int)
                                 "[1, 2, 3]"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "nested lists work"
+                    testCase "nested lists work"
                     <| fun _ ->
                         [ [ "maxime2" ] ]
                         |> List.map (fun d ->
@@ -1605,10 +1625,10 @@ Expecting an array but instead got: 1
                             Decode.list (Decode.list Decode.string)
                         )
                         |> function
-                            | Ok v -> runner.equal [ [ "maxime2" ] ] v
+                            | Ok v -> equal [ [ "maxime2" ] ] v
                             | Error er -> failwith er
 
-                    runner.testCase "an invalid list output an error"
+                    testCase "an invalid list output an error"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -1620,10 +1640,9 @@ Expecting an array but instead got: 1
                                 (Decode.list Decode.int)
                                 "1"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "a list with some invalid element output an error"
+                    testCase "a list with some invalid element output an error"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -1635,9 +1654,9 @@ Expecting an array but instead got: 1
                                 (Decode.list Decode.int)
                                 "[1, 2, \"maxime\"]"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "array works"
+                    testCase "array works"
                     <| fun _ ->
                         // Need to pass by a list otherwise Fable use:
                         // new Int32Array([1, 2, 3]) and the test fails
@@ -1659,9 +1678,9 @@ Expecting an array but instead got: 1
                                 (Decode.array Decode.int)
                                 "[1, 2, 3]"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an invalid array output an error"
+                    testCase "an invalid array output an error"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -1673,9 +1692,66 @@ Expecting an array but instead got: 1
                                 (Decode.array Decode.int)
                                 "1"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "keys works"
+                    testCase "ResizeArray works"
+                    <| fun _ ->
+                        let expected =
+                            [
+                                1
+                                2
+                                3
+                            ]
+                            |> ResizeArray
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.resizeArray Decode.int)
+                                "[1, 2, 3]"
+
+                        // F# sequence are compared using reference equality
+                        // so we need to convert them to arrays first
+                        // See https://stackoverflow.com/questions/17101329/f-sequence-comparison
+                        match actual with
+                        | Ok actual ->
+                            equal
+                                (expected |> Seq.toArray)
+                                (actual |> Seq.toArray)
+                        | Error error -> failwith error
+
+                    testCase "ResizeArray keeps the order"
+                    <| fun _ ->
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.resizeArray Decode.int)
+                                "[1, 2, 3]"
+
+                        // F# sequence are compared using reference equality
+                        // so we need to convert them to arrays first
+                        // See https://stackoverflow.com/questions/17101329/f-sequence-comparison
+                        match actual with
+                        | Ok actual ->
+                            equal 1 actual.[0]
+                            equal 2 actual.[1]
+                            equal 3 actual.[2]
+
+                        | Error error -> failwith error
+
+                    testCase "an invalid ResizeArray output an error"
+                    <| fun _ ->
+                        let expected =
+                            Error(
+                                "Error at: `$`\nExpecting a ResizeArray but instead got: 1"
+                            )
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.resizeArray Decode.int)
+                                "1"
+
+                        equal expected actual
+
+                    testCase "keys works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -1691,9 +1767,9 @@ Expecting an array but instead got: 1
                                 Decode.keys
                                 """{ "a": 1, "b": 2, "c": 3 }"""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "keys returns an error for invalid objects"
+                    testCase "keys returns an error for invalid objects"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -1702,9 +1778,9 @@ Expecting an array but instead got: 1
 
                         let actual = runner.Decode.fromString Decode.keys "1"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "keyValuePairs works"
+                    testCase "keyValuePairs works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -1720,9 +1796,9 @@ Expecting an array but instead got: 1
                                 (Decode.keyValuePairs Decode.int)
                                 """{ "a": 1, "b": 2, "c": 3 }"""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "dict works"
+                    testCase "dict works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -1740,9 +1816,9 @@ Expecting an array but instead got: 1
                                 (Decode.dict Decode.int)
                                 """{ "a": 1, "b": 2, "c": 3 }"""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "dict with custom decoder works"
+                    testCase "dict with custom decoder works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -1784,9 +1860,9 @@ Expecting an array but instead got: 1
 }
                         """
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "an invalid dict output an error"
+                    testCase "an invalid dict output an error"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -1798,9 +1874,9 @@ Expecting an array but instead got: 1
                                 (Decode.dict Decode.int)
                                 "1"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "map' works"
+                    testCase "map' works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -1818,9 +1894,9 @@ Expecting an array but instead got: 1
                                 (Decode.map' Decode.int Decode.string)
                                 """[ [ 1, "x" ], [ 2, "y" ], [ 3, "z" ] ]"""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "map' with custom key decoder works"
+                    testCase "map' with custom key decoder works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -1868,14 +1944,14 @@ Expecting an array but instead got: 1
 ]
                         """
 
-                        runner.equal expected actual
+                        equal expected actual
                 ]
 
-            runner.testList
+            testList
                 "Inconsistent structure"
                 [
 
-                    runner.testCase "oneOf works"
+                    testCase "oneOf works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -1899,10 +1975,9 @@ Expecting an array but instead got: 1
                                 (Decode.list badInt)
                                 "[1,2,null,4]"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "oneOf works in combination with object builders"
+                    testCase "oneOf works in combination with object builders"
                     <| fun _ ->
                         let json =
                             """{ "Bar": { "name": "maxime", "age": 25 } }"""
@@ -1934,9 +2009,9 @@ Expecting an array but instead got: 1
 
                         let actual = runner.Decode.fromString decoder2 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "oneOf works with optional"
+                    testCase "oneOf works with optional"
                     <| fun _ ->
                         let decoder =
                             Decode.oneOf
@@ -1953,21 +2028,21 @@ Expecting an array but instead got: 1
 
                         """{"Normal": 4.5}"""
                         |> runner.Decode.fromString decoder
-                        |> runner.equal (Ok(Normal 4.5))
+                        |> equal (Ok(Normal 4.5))
 
                         """{"Reduced": 4.5}"""
                         |> runner.Decode.fromString decoder
-                        |> runner.equal (Ok(Reduced(Some 4.5)))
+                        |> equal (Ok(Reduced(Some 4.5)))
 
                         """{"Reduced": null}"""
                         |> runner.Decode.fromString decoder
-                        |> runner.equal (Ok(Reduced None))
+                        |> equal (Ok(Reduced None))
 
                         """{"Zero": true}"""
                         |> runner.Decode.fromString decoder
-                        |> runner.equal (Ok Zero)
+                        |> equal (Ok Zero)
 
-                    runner.testCase "oneOf output errors if all case fails"
+                    testCase "oneOf output errors if all case fails"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -1996,9 +2071,9 @@ Expecting an object but instead got:
                                 (Decode.list badInt)
                                 "[1,2,null,4]"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "optional works"
+                    testCase "optional works"
                     <| fun _ ->
                         let json =
                             """{ "name": "maxime", "age": 25, "something_undefined": null }"""
@@ -2010,7 +2085,7 @@ Expecting an object but instead got:
                                 (Decode.optional "name" Decode.string)
                                 json
 
-                        runner.equal expectedValid actualValid
+                        equal expectedValid actualValid
 
                         match
                             runner.Decode.fromString
@@ -2028,7 +2103,7 @@ Expecting an object but instead got:
                                 (Decode.optional "height" Decode.int)
                                 json
 
-                        runner.equal expectedMissingField actualMissingField
+                        equal expectedMissingField actualMissingField
 
                         let expectedUndefinedField = Ok(None)
 
@@ -2039,10 +2114,9 @@ Expecting an object but instead got:
                                     Decode.string)
                                 json
 
-                        runner.equal expectedUndefinedField actualUndefinedField
+                        equal expectedUndefinedField actualUndefinedField
 
-                    runner.testCase
-                        "optional returns Error value if decoder fails"
+                    testCase "optional returns Error value if decoder fails"
                     <| fun _ ->
                         let json = """{ "name": 12, "age": 25 }"""
 
@@ -2060,9 +2134,9 @@ Expecting a string but instead got: 12
                                 (Decode.optional "name" Decode.string)
                                 json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "optionalAt works"
+                    testCase "optionalAt works"
                     <| fun _ ->
                         let json =
                             """{ "data" : { "name": "maxime", "age": 25, "something_undefined": null } }"""
@@ -2079,7 +2153,7 @@ Expecting a string but instead got: 12
                                     Decode.string)
                                 json
 
-                        runner.equal expectedValid actualValid
+                        equal expectedValid actualValid
 
                         match
                             runner.Decode.fromString
@@ -2107,7 +2181,7 @@ Expecting a string but instead got: 12
                                     Decode.int)
                                 json
 
-                        runner.equal expectedMissingField actualMissingField
+                        equal expectedMissingField actualMissingField
 
                         let expectedUndefinedField = Ok(None)
 
@@ -2121,7 +2195,7 @@ Expecting a string but instead got: 12
                                     Decode.string)
                                 json
 
-                        runner.equal expectedUndefinedField actualUndefinedField
+                        equal expectedUndefinedField actualUndefinedField
 
                         let expectedUndefinedField = Ok(None)
 
@@ -2136,9 +2210,9 @@ Expecting a string but instead got: 12
                                     Decode.string)
                                 json
 
-                        runner.equal expectedUndefinedField actualUndefinedField
+                        equal expectedUndefinedField actualUndefinedField
 
-                    runner.testCase "combining field and option decoders works"
+                    testCase "combining field and option decoders works"
                     <| fun _ ->
                         let json =
                             """{ "name": "maxime", "age": 25, "something_undefined": null }"""
@@ -2152,7 +2226,7 @@ Expecting a string but instead got: 12
                                     (Decode.option Decode.string))
                                 json
 
-                        runner.equal expectedValid actualValid
+                        equal expectedValid actualValid
 
                         match
                             runner.Decode.fromString
@@ -2167,7 +2241,7 @@ Expecting an int but instead got: "maxime"
                         """
                                     .Trim()
 
-                            runner.equal expected msg
+                            equal expected msg
                         | Ok _ ->
                             failwith "Expected type error for `name` field #1"
 
@@ -2191,7 +2265,7 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
                         """
                                     .Trim()
 
-                            runner.equal expected msg
+                            equal expected msg
                         | Ok _ ->
                             failwith "Expected type error for `name` field #2"
 
@@ -2205,7 +2279,7 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
                         | Error _ ->
                             failwith
                                 """`Decode.field "something_undefined" (Decode.option Decode.int)` test should pass"""
-                        | Ok result -> runner.equal None result
+                        | Ok result -> equal None result
 
                         // Same tests as before but we are calling `option` then `field`
 
@@ -2218,7 +2292,7 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
                                 ))
                                 json
 
-                        runner.equal expectedValid2 actualValid2
+                        equal expectedValid2 actualValid2
 
                         match
                             runner.Decode.fromString
@@ -2233,7 +2307,7 @@ Expecting an int but instead got: "maxime"
                         """
                                     .Trim()
 
-                            runner.equal expected msg
+                            equal expected msg
                         | Ok _ ->
                             failwith "Expected type error for `name` field #3"
 
@@ -2259,7 +2333,7 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
                         """
                                     .Trim()
 
-                            runner.equal expected msg
+                            equal expected msg
                         | Ok _ ->
                             failwith "Expected type error for `name` field #4"
 
@@ -2280,7 +2354,7 @@ Expecting an int but instead got: null
                         """
                                     .Trim()
 
-                            runner.equal expected msg
+                            equal expected msg
                         | Ok _ ->
                             failwith "Expected type error for `name` field"
 
@@ -2315,7 +2389,7 @@ Expecting an object with a field named `height` but instead got:
                         """
                                     .Trim()
 
-                            runner.equal expected msg
+                            equal expected msg
 
                         | Ok _ ->
                             failwith "Expected type error for `height` field"
@@ -2329,48 +2403,47 @@ Expecting an object with a field named `height` but instead got:
                                     (Decode.option Decode.string))
                                 json
 
-                        runner.equal expectedUndefinedField actualUndefinedField
+                        equal expectedUndefinedField actualUndefinedField
 
                 ]
 
-            runner.testList
+            testList
                 "Fancy decoding"
                 [
 
-                    runner.testCase "null works (test on an int)"
+                    testCase "null works (test on an int)"
                     <| fun _ ->
                         let expected = Ok(20)
 
                         let actual =
                             runner.Decode.fromString (Decode.nil 20) "null"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "null works (test on a boolean)"
+                    testCase "null works (test on a boolean)"
                     <| fun _ ->
                         let expected = Ok(false)
 
                         let actual =
                             runner.Decode.fromString (Decode.nil false) "null"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "succeed works"
+                    testCase "succeed works"
                     <| fun _ ->
                         let expected = Ok(7)
 
                         let actual =
                             runner.Decode.fromString (Decode.succeed 7) "true"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "succeed output an error if the JSON is invalid"
+                    testCase "succeed output an error if the JSON is invalid"
                     <| fun _ ->
 #if FABLE_COMPILER_JAVASCRIPT
                         let expected =
                             Error(
-                                "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
+                                "Given an invalid JSON: Unexpected token m in JSON at position 0"
                             )
 #endif
 
@@ -2391,9 +2464,9 @@ Expecting an object with a field named `height` but instead got:
                         let actual =
                             runner.Decode.fromString (Decode.succeed 7) "maxime"
 
-                        runner.equal expected actual
+                        equal actual expected
 
-                    runner.testCase "fail works"
+                    testCase "fail works"
                     <| fun _ ->
                         let msg = "Failing because it's fun"
 
@@ -2406,9 +2479,9 @@ Expecting an object with a field named `height` but instead got:
                         let actual =
                             runner.Decode.fromString (Decode.fail msg) "true"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "andMap works for any arity"
+                    testCase "andMap works for any arity"
                     <| fun _ ->
                         // In the past maximum arity in Fable was 8
                         let json =
@@ -2447,9 +2520,9 @@ Expecting an object with a field named `height` but instead got:
                                     k = 11
                                 }
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "andThen works"
+                    testCase "andThen works"
                     <| fun _ ->
                         let expected = Ok 1
 
@@ -2472,11 +2545,10 @@ Expecting an object with a field named `height` but instead got:
                                 info
                                 """{ "version": 3, "data": 2 }"""
 
-                        runner.equal expected actual
+                        equal expected actual
 
 
-                    runner.testCase
-                        "andThen generate an error if an error occuered"
+                    testCase "andThen generate an error if an error occuered"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -2510,10 +2582,10 @@ Expecting an object with a field named `version` but instead got:
                                 info
                                 """{ "info": 3, "data": 2 }"""
 
-                        runner.equal expected actual
+                        equal expected actual
 
 
-                    runner.testCase "all works"
+                    testCase "all works"
                     <| fun _ ->
                         let expected =
                             Ok
@@ -2533,9 +2605,9 @@ Expecting an object with a field named `version` but instead got:
 
                         let actual = runner.Decode.fromString decodeAll "{}"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "combining Decode.all and Decode.keys works"
+                    testCase "combining Decode.all and Decode.keys works"
                     <| fun _ ->
                         let expected =
                             Ok
@@ -2561,9 +2633,9 @@ Expecting an object with a field named `version` but instead got:
                                 decoder
                                 """{ "a": 1, "b": 2, "c": 3 }"""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "all succeeds on empty lists"
+                    testCase "all succeeds on empty lists"
                     <| fun _ ->
                         let expected = Ok []
 
@@ -2571,10 +2643,10 @@ Expecting an object with a field named `version` but instead got:
 
                         let actual = runner.Decode.fromString decodeNone "{}"
 
-                        runner.equal expected actual
+                        equal expected actual
 
 
-                    runner.testCase "all fails when one decoder fails"
+                    testCase "all fails when one decoder fails"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -2591,14 +2663,14 @@ Expecting an object with a field named `version` but instead got:
 
                         let actual = runner.Decode.fromString decodeAll "{}"
 
-                        runner.equal expected actual
+                        equal expected actual
                 ]
 
-            runner.testList
+            testList
                 "Mapping"
                 [
 
-                    runner.testCase "map works"
+                    testCase "map works"
                     <| fun _ ->
                         let expected = Ok(6)
 
@@ -2608,10 +2680,10 @@ Expecting an object with a field named `version` but instead got:
                         let actual =
                             runner.Decode.fromString stringLength "\"maxime\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
 
-                    runner.testCase "map2 works"
+                    testCase "map2 works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -2631,9 +2703,9 @@ Expecting an object with a field named `version` but instead got:
                         let actual =
                             runner.Decode.fromString decodePoint jsonRecord
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "map3 works"
+                    testCase "map3 works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -2655,9 +2727,9 @@ Expecting an object with a field named `version` but instead got:
                         let actual =
                             runner.Decode.fromString decodePoint jsonRecord
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "map4 works"
+                    testCase "map4 works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -2681,9 +2753,9 @@ Expecting an object with a field named `version` but instead got:
                         let actual =
                             runner.Decode.fromString decodePoint jsonRecord
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "map5 works"
+                    testCase "map5 works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -2709,9 +2781,9 @@ Expecting an object with a field named `version` but instead got:
                         let actual =
                             runner.Decode.fromString decodePoint jsonRecord
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "map6 works"
+                    testCase "map6 works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -2739,9 +2811,9 @@ Expecting an object with a field named `version` but instead got:
                         let actual =
                             runner.Decode.fromString decodePoint jsonRecord
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "map7 works"
+                    testCase "map7 works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -2771,9 +2843,9 @@ Expecting an object with a field named `version` but instead got:
                         let actual =
                             runner.Decode.fromString decodePoint jsonRecord
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "map8 works"
+                    testCase "map8 works"
                     <| fun _ ->
                         let expected =
                             Ok(
@@ -2805,9 +2877,9 @@ Expecting an object with a field named `version` but instead got:
                         let actual =
                             runner.Decode.fromString decodePoint jsonRecord
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "map2 generate an error if invalid"
+                    testCase "map2 generate an error if invalid"
                     <| fun _ ->
                         let expected =
                             Error(
@@ -2825,15 +2897,15 @@ Expecting an object with a field named `version` but instead got:
                                 decodePoint
                                 jsonRecordInvalid
 
-                        runner.equal expected actual
+                        equal expected actual
 
                 ]
 
-            runner.testList
+            testList
                 "object builder"
                 [
 
-                    runner.testCase "get.Required.Field works"
+                    testCase "get.Required.Field works"
                     <| fun _ ->
                         let json = """{ "name": "maxime", "age": 25 }"""
 
@@ -2854,9 +2926,9 @@ Expecting an object with a field named `version` but instead got:
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Required.Field returns Error if field is missing"
                     <| fun _ ->
                         let json = """{ "age": 25 }"""
@@ -2883,9 +2955,9 @@ Expecting an object with a field named `name` but instead got:
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Required.Field returns Error if type is incorrect"
                     <| fun _ ->
                         let json = """{ "name": 12, "age": 25 }"""
@@ -2909,9 +2981,9 @@ Expecting a string but instead got: 12
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "get.Optional.Field works"
+                    testCase "get.Optional.Field works"
                     <| fun _ ->
                         let json = """{ "name": "maxime", "age": 25 }"""
 
@@ -2932,9 +3004,9 @@ Expecting a string but instead got: 12
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Optional.Field returns None value if field is missing"
                     <| fun _ ->
                         let json = """{ "age": 25 }"""
@@ -2956,10 +3028,9 @@ Expecting a string but instead got: 12
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "get.Optional.Field returns None if field is null"
+                    testCase "get.Optional.Field returns None if field is null"
                     <| fun _ ->
                         let json = """{ "name": null, "age": 25 }"""
 
@@ -2980,9 +3051,9 @@ Expecting a string but instead got: 12
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Optional.Field returns Error value if decoder fails"
                     <| fun _ ->
                         let json = """{ "name": 12, "age": 25 }"""
@@ -3006,9 +3077,9 @@ Expecting a string but instead got: 12
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "nested get.Optional.Field > get.Required.Field returns None if field is null"
                     <| fun _ ->
                         let json = """{ "user": null, "field2": 25 }"""
@@ -3047,9 +3118,9 @@ Expecting a string but instead got: 12
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Optional.Field returns Error if type is incorrect"
                     <| fun _ ->
                         let json = """{ "name": 12, "age": 25 }"""
@@ -3073,10 +3144,10 @@ Expecting a string but instead got: 12
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
 
-                    runner.testCase "get.Required.At works"
+                    testCase "get.Required.At works"
                     <| fun _ ->
 
                         let json =
@@ -3104,9 +3175,9 @@ Expecting a string but instead got: 12
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Required.At returns Error if non-object in path"
                     <| fun _ ->
                         let json = """{ "user": "maxime" }"""
@@ -3136,10 +3207,9 @@ Expecting an object but instead got:
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "get.Required.At returns Error if field missing"
+                    testCase "get.Required.At returns Error if field missing"
                     <| fun _ ->
                         let json =
                             """{ "user": { "name": "maxime", "age": 25 } }"""
@@ -3175,9 +3245,9 @@ Node `firstname` is unkown.
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Required.At returns Error if type is incorrect"
                     <| fun _ ->
                         let json = """{ "user": { "name": 12, "age": 25 } }"""
@@ -3206,9 +3276,9 @@ Expecting a string but instead got: 12
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "get.Optional.At works"
+                    testCase "get.Optional.At works"
                     <| fun _ ->
 
                         let json =
@@ -3236,9 +3306,9 @@ Expecting a string but instead got: 12
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Optional.At returns 'type error' if non-object in path"
                     <| fun _ ->
                         let json = """{ "user": "maxime" }"""
@@ -3268,10 +3338,9 @@ Expecting an object but instead got:
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "get.Optional.At returns None if field missing"
+                    testCase "get.Optional.At returns None if field missing"
                     <| fun _ ->
                         let json =
                             """{ "user": { "name": "maxime", "age": 25 } }"""
@@ -3298,9 +3367,9 @@ Expecting an object but instead got:
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Optional.At returns Error if type is incorrect"
                     <| fun _ ->
                         let json = """{ "user": { "name": 12, "age": 25 } }"""
@@ -3329,9 +3398,9 @@ Expecting a string but instead got: 12
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "complex object builder works"
+                    testCase "complex object builder works"
                     <| fun _ ->
                         let expected = Ok(User.Create 67 "" "user@mail.com" 0)
 
@@ -3355,9 +3424,9 @@ Expecting a string but instead got: 12
                                 userDecoder
                                 """{ "id": 67, "email": "user@mail.com" }"""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "get.Field.Raw works"
+                    testCase "get.Field.Raw works"
                     <| fun _ ->
                         let json =
                             """{
@@ -3401,10 +3470,9 @@ Expecting a string but instead got: 12
                                 : MyObj
                             )
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
-                        "get.Field.Raw returns Error if a decoder fail"
+                    testCase "get.Field.Raw returns Error if a decoder fail"
                     <| fun _ ->
                         let json =
                             """{
@@ -3443,9 +3511,9 @@ Expecting a string but instead got: 12
                             Error
                                 "Error at: `$`\nThe following `failure` occurred with the decoder: Unknown shape type custom_shape"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Field.Raw returns Error if a field is missing in the 'raw decoder'"
                     <| fun _ ->
                         let json =
@@ -3492,9 +3560,9 @@ Expecting an object with a field named `radius` but instead got:
                                     .Trim()
                             )
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "get.Optional.Raw works"
+                    testCase "get.Optional.Raw works"
                     <| fun _ ->
                         let json =
                             """{
@@ -3535,9 +3603,9 @@ Expecting an object with a field named `radius` but instead got:
                                     Shape = Some(Circle 20)
                                 }
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Optional.Raw returns None if a field is missing"
                     <| fun _ ->
                         let json =
@@ -3578,9 +3646,9 @@ Expecting an object with a field named `radius` but instead got:
                                     Shape = None
                                 }
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Optional.Raw returns an Error if a decoder fail"
                     <| fun _ ->
                         let json =
@@ -3618,9 +3686,9 @@ Expecting an object with a field named `radius` but instead got:
                             Error
                                 "Error at: `$`\nThe following `failure` occurred with the decoder: Unknown shape type invalid_shape"
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Optional.Raw returns an Error if the type is invalid"
                     <| fun _ ->
                         let json =
@@ -3659,9 +3727,9 @@ Expecting an object with a field named `radius` but instead got:
                             Error
                                 "Error at: `$.radius`\nExpecting an int but instead got: \"maxime\""
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "get.Optional.Raw returns None if a decoder fails with null"
                     <| fun _ ->
                         let json =
@@ -3702,9 +3770,9 @@ Expecting an object with a field named `radius` but instead got:
                                     Shape = None
                                 }
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "Object builders returns all the Errors"
+                    testCase "Object builders returns all the Errors"
                     <| fun _ ->
                         let json =
                             """{ "age": 25, "fieldC": "not_a_number", "fieldD": { "sub_field": "not_a_boolean" } }"""
@@ -3774,9 +3842,9 @@ Expecting a boolean but instead got: "not_a_boolean"
 
                         let actual = runner.Decode.fromString decoder json
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase "Test"
+                    testCase "Test"
                     <| fun _ ->
                         let json =
                             """
@@ -3835,14 +3903,14 @@ Expecting a boolean but instead got: "not_a_boolean"
                                     Post = None
                                 }
 
-                        runner.equal expected actual
+                        equal expected actual
                 ]
 
-            runner.testList
+            testList
                 "Auto"
                 [
 #if !FABLE_COMPILER_PYTHON
-                    runner.testCase "Auto decoder works"
+                    testCase "Auto decoder works"
                     <| fun _ ->
                         let now = DateTime.Now
 
@@ -3928,10 +3996,10 @@ Expecting a boolean but instead got: "not_a_boolean"
                             json
                             |> runner.Decode.unsafeFromString<Record9> decoder
 
-                        runner.equal 5 r2.a
-                        runner.equal "bar" r2.b
+                        equal 5 r2.a
+                        equal "bar" r2.b
 
-                        runner.equal
+                        equal
                             [
                                 false, 3
                                 true, 5
@@ -3939,13 +4007,13 @@ Expecting a boolean but instead got: "not_a_boolean"
                             ]
                             r2.c
 
-                        runner.equal (Some(Foo 14)) r2.d.[0]
-                        runner.equal None r2.d.[1]
-                        runner.equal -1.5 (Map.find "ah" r2.e).a
-                        runner.equal 2. (Map.find "oh" r2.e).b
-                        runner.equal (now.ToString()) (value.f.ToString())
+                        equal (Some(Foo 14)) r2.d.[0]
+                        equal None r2.d.[1]
+                        equal -1.5 (Map.find "ah" r2.e).a
+                        equal 2. (Map.find "oh" r2.e).b
+                        equal (now.ToString()) (value.f.ToString())
 
-                        runner.equal
+                        equal
                             true
                             (Set.contains
                                 {
@@ -3954,7 +4022,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 }
                                 r2.g)
 
-                        runner.equal
+                        equal
                             false
                             (Set.contains
                                 {
@@ -3963,17 +4031,17 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 }
                                 r2.g)
 
-                        runner.equal 5000. value.h.TotalMilliseconds
-                        runner.equal 120y r2.i
-                        runner.equal 120uy r2.j
-                        runner.equal 250s r2.k
-                        runner.equal 250us r2.l
-                        runner.equal 99u r2.m
-                        runner.equal 99L r2.n
-                        runner.equal 999UL r2.o
-                        runner.equal () r2.p
+                        equal 5000. value.h.TotalMilliseconds
+                        equal 120y r2.i
+                        equal 120uy r2.j
+                        equal 250s r2.k
+                        equal 250us r2.l
+                        equal 99u r2.m
+                        equal 99L r2.n
+                        equal 999UL r2.o
+                        equal () r2.p
 
-                        runner.equal
+                        equal
                             (Map
                                 [
                                     ({
@@ -3989,11 +4057,11 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 ])
                             r2.r
 
-                        runner.equal 'y' r2.s
-                    // runner.equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.s |> Seq.toList)
+                        equal 'y' r2.s
+                    // equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.s |> Seq.toList)
 #endif
 
-                    // runner.testCase "Auto serialization works with recursive types" <| fun _ ->
+                    // testCase "Auto serialization works with recursive types" <| fun _ ->
                     //     let len xs =
                     //         let rec lenInner acc = function
                     //             | Cons(_,rest) -> lenInner (acc + 1) rest
@@ -4004,14 +4072,14 @@ Expecting a boolean but instead got: "not_a_boolean"
                     //     // printfn "AUTO ENCODED MYLIST %s" json
                     //     let decoder = Decode.Auto.generateDecoder<_>()
                     //     let li2 = json |> runner.Decode.unsafeFromString<MyList<int>> decoder
-                    //     len li2 |> runner.equal 3
+                    //     len li2 |> equal 3
                     //     match li with
                     //     | Cons(i1, Cons(i2, Cons(i3, Nil))) -> i1 + i2 + i3
                     //     | Cons(i,_) -> i
                     //     | Nil -> 0
-                    //     |> runner.equal 6
+                    //     |> equal 6
 
-                    runner.testCase "Auto decoders works for string"
+                    testCase "Auto decoders works for string"
                     <| fun _ ->
                         let value = "maxime"
 
@@ -4026,9 +4094,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for guid"
+                    testCase "Auto decoders works for guid"
                     <| fun _ ->
                         let value = Guid.NewGuid()
 
@@ -4043,9 +4111,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for int"
+                    testCase "Auto decoders works for int"
                     <| fun _ ->
                         let value = 12
 
@@ -4060,9 +4128,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for int64"
+                    testCase "Auto decoders works for int64"
                     <| fun _ ->
                         let extra = Extra.empty |> Extra.withInt64
                         let value = 9999999999L
@@ -4078,9 +4146,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder (extra = extra)
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for uint32"
+                    testCase "Auto decoders works for uint32"
                     <| fun _ ->
                         let value = 12u
 
@@ -4095,9 +4163,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for uint64"
+                    testCase "Auto decoders works for uint64"
                     <| fun _ ->
                         let extra = Extra.empty |> Extra.withUInt64
                         let value = 9999999999999999999UL
@@ -4113,9 +4181,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder (extra = extra)
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for bigint"
+                    testCase "Auto decoders works for bigint"
                     <| fun _ ->
                         let extra = Extra.empty |> Extra.withBigInt
                         let value = 99999999999999999999999I
@@ -4131,9 +4199,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder (extra = extra)
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for bool"
+                    testCase "Auto decoders works for bool"
                     <| fun _ ->
                         let value = false
 
@@ -4148,9 +4216,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for float"
+                    testCase "Auto decoders works for float"
                     <| fun _ ->
                         let value = 12.
 
@@ -4165,9 +4233,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for decimal"
+                    testCase "Auto decoders works for decimal"
                     <| fun _ ->
                         let extra = Extra.empty |> Extra.withDecimal
                         let value = 0.7833M
@@ -4183,10 +4251,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder (extra = extra)
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase
-                        "Auto extra decoders can override default decoders"
+                    testCase "Auto extra decoders can override default decoders"
                     <| fun _ ->
                         let extra =
                             Extra.empty
@@ -4208,19 +4275,19 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder<int> (extra = extra)
                             )
 
-                        runner.equal res 12
+                        equal res 12
 
-                    // runner.testCase "Auto decoders works for datetime" <| fun _ ->
+                    // testCase "Auto decoders works for datetime" <| fun _ ->
                     //     let value = DateTime.Now
                     //     let json = value |> Encode.Auto.generateEncoder() |> runner.Encode.toString 4
                     //     let res = json |> runner.Decode.unsafeFromString<DateTime> (Decode.Auto.generateDecoder())
-                    //     runner.equal value.Date res.Date
-                    //     runner.equal value.Hour res.Hour
-                    //     runner.equal value.Minute res.Minute
-                    //     runner.equal value.Second res.Second
+                    //     equal value.Date res.Date
+                    //     equal value.Hour res.Hour
+                    //     equal value.Minute res.Minute
+                    //     equal value.Second res.Second
 
 #if !FABLE_COMPILER_PYTHON
-                    runner.testCase "Auto decoders works for datetime UTC"
+                    testCase "Auto decoders works for datetime UTC"
                     <| fun _ ->
                         let value = DateTime.UtcNow
 
@@ -4235,14 +4302,14 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value.Date res.Date
-                        runner.equal value.Hour res.Hour
-                        runner.equal value.Minute res.Minute
-                        runner.equal value.Second res.Second
+                        equal value.Date res.Date
+                        equal value.Hour res.Hour
+                        equal value.Minute res.Minute
+                        equal value.Second res.Second
 #endif
 
 #if !FABLE_COMPILER_PYTHON
-                    runner.testCase "Auto decoders works for datetimeOffset"
+                    testCase "Auto decoders works for datetimeOffset"
                     <| fun _ ->
                         let value = DateTimeOffset.Now
 
@@ -4257,14 +4324,14 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value.Date res.Date
-                        runner.equal value.Hour res.Hour
-                        runner.equal value.Minute res.Minute
-                        runner.equal value.Second res.Second
+                        equal value.Date res.Date
+                        equal value.Hour res.Hour
+                        equal value.Minute res.Minute
+                        equal value.Second res.Second
 #endif
 
 #if !FABLE_COMPILER_PYTHON
-                    runner.testCase "Auto decoders works for datetimeOffset UTC"
+                    testCase "Auto decoders works for datetimeOffset UTC"
                     <| fun _ ->
                         let value = DateTimeOffset.UtcNow
 
@@ -4280,13 +4347,13 @@ Expecting a boolean but instead got: "not_a_boolean"
                             )
                             |> fun dto -> dto.ToUniversalTime()
 
-                        runner.equal value.Date res.Date
-                        runner.equal value.Hour res.Hour
-                        runner.equal value.Minute res.Minute
-                        runner.equal value.Second res.Second
+                        equal value.Date res.Date
+                        equal value.Hour res.Hour
+                        equal value.Minute res.Minute
+                        equal value.Second res.Second
 #endif
 
-                    runner.testCase "Auto decoders works for TimeSpan"
+                    testCase "Auto decoders works for TimeSpan"
                     <| fun _ ->
                         let value = TimeSpan(1, 2, 3, 4, 5)
 
@@ -4301,13 +4368,13 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value.Days res.Days
-                        runner.equal value.Hours res.Hours
-                        runner.equal value.Minutes res.Minutes
-                        runner.equal value.Seconds res.Seconds
-                        runner.equal value.Milliseconds res.Milliseconds
+                        equal value.Days res.Days
+                        equal value.Hours res.Hours
+                        equal value.Minutes res.Minutes
+                        equal value.Seconds res.Seconds
+                        equal value.Milliseconds res.Milliseconds
 
-                    runner.testCase "Auto decoders works for list"
+                    testCase "Auto decoders works for list"
                     <| fun _ ->
                         let value =
                             [
@@ -4328,9 +4395,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for array"
+                    testCase "Auto decoders works for array"
                     <| fun _ ->
                         let value =
                             [|
@@ -4351,10 +4418,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase
-                        "Auto decoders works for Map with string keys"
+                    testCase "Auto decoders works for Map with string keys"
                     <| fun _ ->
                         let value =
                             Map.ofSeq
@@ -4375,10 +4441,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase
-                        "Auto decoders works for Map with complex keys"
+                    testCase "Auto decoders works for Map with complex keys"
                     <| fun _ ->
                         let value =
                             Map.ofSeq
@@ -4399,9 +4464,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for option None"
+                    testCase "Auto decoders works for option None"
                     <| fun _ ->
                         let value = None
 
@@ -4416,9 +4481,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for option Some"
+                    testCase "Auto decoders works for option Some"
                     <| fun _ ->
                         let value = Some 5
 
@@ -4433,9 +4498,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for Unit"
+                    testCase "Auto decoders works for Unit"
                     <| fun _ ->
                         let value = ()
 
@@ -4450,9 +4515,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                                 Decode.Auto.generateDecoder ()
                             )
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for enum<int8>"
+                    testCase "Auto decoders works for enum<int8>"
                     <| fun _ ->
                         let decoder = Decode.Auto.generateDecoder<Enum_Int8> ()
 
@@ -4460,9 +4525,9 @@ Expecting a boolean but instead got: "not_a_boolean"
                             "99"
                             |> runner.Decode.unsafeFromString<Enum_Int8> decoder
 
-                        runner.equal res Enum_Int8.NinetyNine
+                        equal res Enum_Int8.NinetyNine
 
-                    runner.testCase
+                    testCase
                         "Auto decoders for enum<int8> returns an error if the Enum value is invalid"
                     <| fun _ ->
 #if FABLE_COMPILER
@@ -4492,18 +4557,18 @@ Reason: Unkown value provided for the enum
                         let res =
                             runner.Decode.fromString<Enum_Int8> decoder "2"
 
-                        runner.equal res value
+                        equal res value
 
-                    runner.testCase "Auto decoders works for enum<uint8>"
+                    testCase "Auto decoders works for enum<uint8>"
                     <| fun _ ->
                         let res =
                             runner.Decode.unsafeFromString
                                 (Decode.Auto.generateDecoder<Enum_UInt8> ())
                                 "99"
 
-                        runner.equal Enum_UInt8.NinetyNine res
+                        equal Enum_UInt8.NinetyNine res
 
-                    runner.testCase
+                    testCase
                         "Auto decoders for enum<uint8> returns an error if the Enum value is invalid"
                     <| fun _ ->
 #if FABLE_COMPILER
@@ -4533,18 +4598,18 @@ Reason: Unkown value provided for the enum
                                 (Decode.Auto.generateDecoder<Enum_UInt8> ())
                                 "2"
 
-                        runner.equal value res
+                        equal value res
 
-                    runner.testCase "Auto decoders works for enum<int16>"
+                    testCase "Auto decoders works for enum<int16>"
                     <| fun _ ->
                         let res =
                             runner.Decode.unsafeFromString
                                 (Decode.Auto.generateDecoder<Enum_Int16> ())
                                 "99"
 
-                        runner.equal Enum_Int16.NinetyNine res
+                        equal Enum_Int16.NinetyNine res
 
-                    runner.testCase
+                    testCase
                         "Auto decoders for enum<int16> returns an error if the Enum value is invalid"
                     <| fun _ ->
 #if FABLE_COMPILER
@@ -4574,18 +4639,18 @@ Reason: Unkown value provided for the enum
                         let res =
                             runner.Decode.fromString<Enum_Int16> decoder "2"
 
-                        runner.equal res value
+                        equal res value
 
-                    runner.testCase "Auto decoders works for enum<uint16>"
+                    testCase "Auto decoders works for enum<uint16>"
                     <| fun _ ->
                         let res =
                             runner.Decode.unsafeFromString
                                 (Decode.Auto.generateDecoder<Enum_UInt16> ())
                                 "99"
 
-                        runner.equal Enum_UInt16.NinetyNine res
+                        equal Enum_UInt16.NinetyNine res
 
-                    runner.testCase
+                    testCase
                         "Auto decoders for enum<Enum_UInt16> returns an error if the Enum value is invalid"
                     <| fun _ ->
 #if FABLE_COMPILER
@@ -4616,18 +4681,18 @@ Reason: Unkown value provided for the enum
                         let res =
                             runner.Decode.fromString<Enum_UInt16> decoder "2"
 
-                        runner.equal res value
+                        equal res value
 
-                    runner.testCase "Auto decoders works for enum<int>"
+                    testCase "Auto decoders works for enum<int>"
                     <| fun _ ->
                         let decoder = Decode.Auto.generateDecoder<Enum_Int> ()
 
                         let res =
                             runner.Decode.unsafeFromString<Enum_Int> decoder "1"
 
-                        runner.equal Enum_Int.One res
+                        equal Enum_Int.One res
 
-                    runner.testCase
+                    testCase
                         "Auto decoders for enum<int> returns an error if the Enum value is invalid"
                     <| fun _ ->
 #if FABLE_COMPILER
@@ -4654,9 +4719,9 @@ Reason: Unkown value provided for the enum
 
                         let decoder = Decode.Auto.generateDecoder<Enum_Int> ()
                         let res = runner.Decode.fromString<Enum_Int> decoder "4"
-                        runner.equal res value
+                        equal res value
 
-                    runner.testCase "Auto decoders works for enum<uint32>"
+                    testCase "Auto decoders works for enum<uint32>"
                     <| fun _ ->
                         let decoder =
                             Decode.Auto.generateDecoder<Enum_UInt32> ()
@@ -4666,9 +4731,9 @@ Reason: Unkown value provided for the enum
                                 decoder
                                 "99"
 
-                        runner.equal res Enum_UInt32.NinetyNine
+                        equal res Enum_UInt32.NinetyNine
 
-                    runner.testCase
+                    testCase
                         "Auto decoders for enum<uint32> returns an error if the Enum value is invalid"
                     <| fun _ ->
 #if FABLE_COMPILER
@@ -4698,25 +4763,25 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                         let res =
                             runner.Decode.fromString<Enum_UInt32> decoder "2"
 
-                        runner.equal res value
+                        equal res value
 
                     //     (*
                     //             #if NETFRAMEWORK
-                    //             runner.testCase "Auto decoders  works with char based Enums" <| fun _ ->
+                    //             testCase "Auto decoders  works with char based Enums" <| fun _ ->
                     //                 let value = CharEnum.A
                     //                 let json = Encode.Auto.toString(4, value)
                     //                 let res = Decode.Auto.unsafeFromString<CharEnum>(json)
-                    //                 runner.equal value res
+                    //                 equal value res
                     //             #endif
                     //     *)
 
-                    // runner.testCase "Auto decoders works for null" <| fun _ ->
+                    // testCase "Auto decoders works for null" <| fun _ ->
                     //     let value = null
                     //     let json = value |> Encode.Auto.generateEncoder() |> runner.Encode.toString 4
                     //     let res = json |> runner.Decode.unsafeFromString<obj> (Decode.Auto.generateDecoder())
-                    //     runner.equal value res
+                    //     equal value res
 
-                    runner.testCase "Auto decoders works for anonymous record"
+                    testCase "Auto decoders works for anonymous record"
                     <| fun _ ->
                         let value =
                             {|
@@ -4733,10 +4798,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                         let res =
                             json |> runner.Decode.unsafeFromString<_> decoder
 
-                        runner.equal res value
+                        equal res value
 
-                    runner.testCase
-                        "Auto decoders works for nested anonymous record"
+                    testCase "Auto decoders works for nested anonymous record"
                     <| fun _ ->
                         let value =
                             {|
@@ -4756,9 +4820,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                         let res =
                             json |> runner.Decode.unsafeFromString<_> decoder
 
-                        runner.equal res value
+                        equal res value
 
-                    runner.testCase
+                    testCase
                         "Auto decoders works even if type is determined by the compiler"
                     <| fun _ ->
                         let value =
@@ -4779,9 +4843,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                         let res =
                             json |> runner.Decode.unsafeFromString<_> decoder
 
-                        runner.equal res value
+                        equal res value
 
-                    runner.testCase "Auto.unsafeFromString works with camelCase"
+                    testCase "Auto.unsafeFromString works with camelCase"
                     <| fun _ ->
                         let json =
                             """{ "id" : 0, "name": "maxime", "email": "mail@domain.com", "followers": 0 }"""
@@ -4794,12 +4858,12 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                         let user =
                             json |> runner.Decode.unsafeFromString<User> decoder
 
-                        runner.equal "maxime" user.Name
-                        runner.equal 0 user.Id
-                        runner.equal 0 user.Followers
-                        runner.equal "mail@domain.com" user.Email
+                        equal "maxime" user.Name
+                        equal 0 user.Id
+                        equal 0 user.Followers
+                        equal "mail@domain.com" user.Email
 
-                    runner.testCase "Auto decoder works with snake_case"
+                    testCase "Auto decoder works with snake_case"
                     <| fun _ ->
                         let json =
                             """{ "one" : 1, "two_part": 2, "three_part_field": 3 }"""
@@ -4822,9 +4886,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                                     ThreePartField = 3
                                 }
 
-                        runner.equal decoded expected
+                        equal decoded expected
 
-                    runner.testCase "Auto decoder works with camelCase"
+                    testCase "Auto decoder works with camelCase"
                     <| fun _ ->
                         let json =
                             """{ "id" : 0, "name": "maxime", "email": "mail@domain.com", "followers": 0 }"""
@@ -4846,9 +4910,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                                     Followers = 0
                                 }
 
-                        runner.equal decoded expected
+                        equal decoded expected
 
-                    runner.testCase
+                    testCase
                         "Auto decoder works for records with an actual value for the optional field value"
                     <| fun _ ->
                         let json =
@@ -4873,9 +4937,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                                 : TestMaybeRecord
                             )
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    runner.testCase
+                    testCase
                         "Auto decoder works for records with `null` for the optional field value"
                     <| fun _ ->
                         let json = """{ "maybe" : null, "must": "must value"}"""
@@ -4899,9 +4963,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                                 : TestMaybeRecord
                             )
 
-                        runner.equal expected actual
+                        equal expected actual
 
-                    // runner.testCase "Auto decoder works for records with `null` for the optional field value on classes" <| fun _ ->
+                    // testCase "Auto decoder works for records with `null` for the optional field value on classes" <| fun _ ->
                     //     let json = """{ "maybeClass" : null, "must": "must value"}"""
                     //     let decoder = Decode.Auto.generateDecoder(caseStrategy=CamelCase)
                     //     let actual =
@@ -4910,17 +4974,17 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                     //     let expected =
                     //         Ok ({   MaybeClass = None
                     //                 Must = "must value" } : RecordWithOptionalClass)
-                    //     runner.equal expected actual
+                    //     equal expected actual
 
-                    //             runner.testCase "Auto.fromString works for records missing optional field value on classes" <| fun _ ->
+                    //             testCase "Auto.fromString works for records missing optional field value on classes" <| fun _ ->
                     //                 let json = """{ "must": "must value"}"""
                     //                 let actual = Decode.Auto.fromString<RecordWithOptionalClass>(json, caseStrategy=CamelCase)
                     //                 let expected =
                     //                     Ok ({ MaybeClass = None
                     //                           Must = "must value" } : RecordWithOptionalClass)
-                    //                 runner.equal expected actual
+                    //                 equal expected actual
 
-                    //             runner.testCase "Auto.generateDecoder throws for field using a non optional class" <| fun _ ->
+                    //             testCase "Auto.generateDecoder throws for field using a non optional class" <| fun _ ->
                     //                 let expected = """Cannot generate auto decoder for Tests.Types.BaseClass. Please pass an extra decoder.
 
                     // Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"""
@@ -4931,9 +4995,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                     //                         ""
                     //                     with ex ->
                     //                         ex.Message
-                    //                 errorMsg.Replace("+", ".") |> runner.equal expected
+                    //                 errorMsg.Replace("+", ".") |> equal expected
 
-                    // runner.testCase "Auto.fromString works for Class marked as optional" <| fun _ ->
+                    // testCase "Auto.fromString works for Class marked as optional" <| fun _ ->
                     //     let json = """null"""
 
                     //     let decoder = Decode.Auto.generateDecoder<_>(caseStrategy=CamelCase)
@@ -4941,9 +5005,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                     //         json
                     //         |> runner.Decode.fromString<BaseClass option> decoder
                     //     let expected = Ok None
-                    //     runner.equal expected actual
+                    //     equal expected actual
 
-                    //             runner.testCase "Auto.generateDecoder throws for Class" <| fun _ ->
+                    //             testCase "Auto.generateDecoder throws for Class" <| fun _ ->
                     //                 let expected = """Cannot generate auto decoder for Tests.Types.BaseClass. Please pass an extra decoder.
 
                     // Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"""
@@ -4954,9 +5018,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                     //                         ""
                     //                     with ex ->
                     //                         ex.Message
-                    //                 errorMsg.Replace("+", ".") |> runner.equal expected
+                    //                 errorMsg.Replace("+", ".") |> equal expected
 
-                    runner.testCase
+                    testCase
                         "Auto decoder works for records missing an optional field"
                     <| fun _ ->
                         let json = """{ "must": "must value"}"""
@@ -4979,10 +5043,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                                 : TestMaybeRecord
                             )
 
-                        runner.equal actual expected
+                        equal actual expected
 
-                    runner.testCase
-                        "Auto decoder works with maps encoded as objects"
+                    testCase "Auto decoder works with maps encoded as objects"
                     <| fun _ ->
                         let expected =
                             Map
@@ -5005,10 +5068,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                         let decoder = Decode.Auto.generateDecoder ()
                         let actual = json |> runner.Decode.fromString decoder
 
-                        runner.equal actual (Ok expected)
+                        equal actual (Ok expected)
 
-                    runner.testCase
-                        "Auto decoder works with maps encoded as arrays"
+                    testCase "Auto decoder works with maps encoded as arrays"
                     <| fun _ ->
                         let expected =
                             Map
@@ -5030,10 +5092,10 @@ The following `failure` occurred with the decoder: Unkown value provided for the
 
                         let decoder = Decode.Auto.generateDecoder ()
                         let actual = json |> runner.Decode.fromString decoder
-                        runner.equal (Ok expected) actual
+                        equal (Ok expected) actual
 
 #if !FABLE_COMPILER_PYTHON
-                    runner.testCase "Auto decoder works with bigint extra"
+                    testCase "Auto decoder works with bigint extra"
                     <| fun _ ->
                         let extra = Extra.empty |> Extra.withBigInt
 
@@ -5049,10 +5111,10 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                             """{"bigintField":"9999999999999999999999"}"""
                             |> runner.Decode.fromString decoder
 
-                        runner.equal actual (Ok expected)
+                        equal actual (Ok expected)
 #endif
 
-                    runner.testCase "Auto decoder works with custom extra"
+                    testCase "Auto decoder works with custom extra"
                     <| fun _ ->
                         let extra =
                             Extra.empty
@@ -5075,9 +5137,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                             """{"ParentField":"bumbabon"}"""
                             |> runner.Decode.fromString decoder
 
-                        runner.equal (Ok expected) actual
+                        equal (Ok expected) actual
 
-                    runner.testCase
+                    testCase
                         "Auto decoder works with records with private constructors"
                     <| fun _ ->
                         let json = """{ "foo1": 5, "foo2": 7.8 }"""
@@ -5089,7 +5151,7 @@ The following `failure` occurred with the decoder: Unkown value provided for the
 
                         let actual = json |> runner.Decode.fromString decoder
 
-                        runner.equal
+                        equal
                             actual
                             (Ok(
                                 {
@@ -5099,7 +5161,7 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                                 : RecordWithPrivateConstructor
                             ))
 
-                    runner.testCase
+                    testCase
                         "Auto decoder works with unions with private constructors"
                     <| fun _ ->
                         let json = """[ "Baz", ["Bar", "foo"]]"""
@@ -5114,7 +5176,7 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                                 decoder
                                 json
 
-                        runner.equal
+                        equal
                             actual
                             (Ok
                                 [
@@ -5122,7 +5184,7 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                                     Bar "foo"
                                 ])
 
-                    runner.testCase
+                    testCase
                         "Auto decoder works gives proper error for wrong union fields"
                     <| fun _ ->
                         let json = """["Multi", "bar", "foo", "zas"]"""
@@ -5137,18 +5199,18 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                                 decoder
                                 json
 
-                        runner.equal
+                        equal
                             actual
                             (Error
                                 "Error at: `$.[2]`\nExpecting an int but instead got: \"foo\"")
 
                     //             // TODO: Should we allow shorter arrays when last fields are options?
-                    //             runner.testCase "Auto.fromString works gives proper error for wrong array length" <| fun _ ->
+                    //             testCase "Auto.fromString works gives proper error for wrong array length" <| fun _ ->
                     //                 let json = """["Multi", "bar", 1]"""
                     //                 Decode.Auto.fromString<UnionWithMultipleFields>(json, caseStrategy=CamelCase)
-                    //                 |> runner.equal (Error "Error at: `$`\nThe following `failure` occurred with the decoder: Expected array of length 4 but got 3")
+                    //                 |> equal (Error "Error at: `$`\nThe following `failure` occurred with the decoder: Expected array of length 4 but got 3")
 
-                    runner.testCase
+                    testCase
                         "Auto decoder works gives proper error for wrong array length when no fields"
                     <| fun _ ->
                         let json = """["Multi"]"""
@@ -5163,12 +5225,12 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                                 decoder
                                 json
 
-                        runner.equal
+                        equal
                             actual
                             (Error
                                 "Error at: `$.[1]`\nExpecting a longer array. Need index `1` but there are only `1` entries.\n[\n    \"Multi\"\n]")
 
-                    runner.testCase
+                    testCase
                         "Auto decoder works gives proper error for wrong case name"
                     <| fun _ ->
                         let json = """[1]"""
@@ -5183,12 +5245,12 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                                 decoder
                                 json
 
-                        runner.equal
+                        equal
                             actual
                             (Error
                                 "Error at: `$.[0]`\nExpecting a string but instead got: 1")
 
-                    runner.testCase "Auto.generateDecoderCached works"
+                    testCase "Auto.generateDecoderCached works"
                     <| fun _ ->
                         let expected =
                             Ok
@@ -5214,16 +5276,16 @@ The following `failure` occurred with the decoder: Unkown value provided for the
 
                         let actual1 = runner.Decode.fromString decoder1 json
                         let actual2 = runner.Decode.fromString decoder2 json
-                        runner.equal expected actual1
-                        runner.equal expected actual2
-                        runner.equal actual1 actual2
+                        equal expected actual1
+                        equal expected actual2
+                        equal actual1 actual2
 
-                    //             runner.testCase "Auto.fromString works with strange types if they are None" <| fun _ ->
+                    //             testCase "Auto.fromString works with strange types if they are None" <| fun _ ->
                     //                 let json = """{"Id":0}"""
                     //                 Decode.Auto.fromString<RecordWithStrangeType>(json)
-                    //                 |> runner.equal (Ok { Id = 0; Thread = None })
+                    //                 |> equal (Ok { Id = 0; Thread = None })
 
-                    runner.testCase "Auto decoder works with recursive types"
+                    testCase "Auto decoder works with recursive types"
                     <| fun _ ->
                         let vater =
                             {
@@ -5249,9 +5311,9 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                         let actual =
                             runner.Decode.fromString<MyRecType> decoder json
 
-                        runner.equal actual (Ok vater)
+                        equal actual (Ok vater)
 
-                    runner.testCase "Auto decoder works for unit"
+                    testCase "Auto decoder works for unit"
                     <| fun _ ->
                         let json = Encode.unit () |> runner.Encode.toString 4
                         let decoder = Decode.Auto.generateDecoder ()
@@ -5259,11 +5321,10 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                         let actual =
                             runner.Decode.unsafeFromString<unit> decoder json
 
-                        runner.equal actual ()
+                        equal actual ()
 
 #if !FABLE_COMPILER_PYTHON
-                    runner.testCase
-                        "Auto decoder works for erased single-case DU"
+                    testCase "Auto decoder works for erased single-case DU"
                     <| fun _ ->
                         let expected = NoAllocAttributeId(Guid.NewGuid())
 
@@ -5279,10 +5340,10 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                             |> runner.Decode.unsafeFromString<NoAllocAttributeId>
                                 decoder
 
-                        runner.equal expected actual
+                        equal expected actual
 #endif
 
-                    runner.testCase
+                    testCase
                         "Auto.unsafeFromString works with HTML inside of a string"
                     <| fun _ ->
                         let expected =
@@ -5306,6 +5367,6 @@ The following `failure` occurred with the decoder: Unkown value provided for the
                             articleJson
                             |> runner.Decode.unsafeFromString decoder
 
-                        runner.equal expected actual
+                        equal expected actual
                 ]
         ]
