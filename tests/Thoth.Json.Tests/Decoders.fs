@@ -61,7 +61,7 @@ let tests (runner: TestRunner<_>) =
 #if FABLE_COMPILER_JAVASCRIPT
                         let expected: Result<float, string> =
                             Error
-                                "Given an invalid JSON: Unexpected token m in JSON at position 0"
+                                "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
 #endif
 
 #if FABLE_COMPILER_PYTHON
@@ -92,7 +92,7 @@ let tests (runner: TestRunner<_>) =
 #if FABLE_COMPILER
                         let expected: Result<MyUnion, string> =
                             Error
-                                "Given an invalid JSON: Unexpected token , in JSON at position 5"
+                                "Given an invalid JSON: Unexpected non-whitespace character after JSON at position 5"
 #else
                         let expected: Result<MyUnion, string> =
                             Error
@@ -113,7 +113,7 @@ let tests (runner: TestRunner<_>) =
 #if FABLE_COMPILER_JAVASCRIPT
                         let expected: Result<float, string> =
                             Error
-                                "Given an invalid JSON: Unexpected end of JSON input"
+                                "Given an invalid JSON: Expected double-quoted property name in JSON at position 172"
 #endif
 
 #if FABLE_COMPILER_PYTHON
@@ -223,7 +223,7 @@ let tests (runner: TestRunner<_>) =
                     <| fun _ ->
 #if FABLE_COMPILER_JAVASCRIPT
                         let expected =
-                            "Given an invalid JSON: Unexpected token m in JSON at position 0"
+                            "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
 #endif
 
 #if FABLE_COMPILER_PYTHON
@@ -2443,7 +2443,7 @@ Expecting an object with a field named `height` but instead got:
 #if FABLE_COMPILER_JAVASCRIPT
                         let expected =
                             Error(
-                                "Given an invalid JSON: Unexpected token m in JSON at position 0"
+                                "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
                             )
 #endif
 
