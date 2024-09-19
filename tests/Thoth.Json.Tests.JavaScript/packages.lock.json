@@ -102,7 +102,7 @@
         "dependencies": {
           "FSharp.Core": "[5.0.0, )",
           "Fable.Core": "[4.1.0, )",
-          "Fable.Package.SDK": "[0.1.0, )"
+          "Fable.Package.SDK": "[1.0.0, )"
         }
       },
       "thoth.json.javascript": {
@@ -110,7 +110,7 @@
         "dependencies": {
           "FSharp.Core": "[5.0.0, )",
           "Fable.Core": "[4.1.0, )",
-          "Fable.Package.SDK": "[0.1.0, )",
+          "Fable.Package.SDK": "[1.0.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
       },
@@ -125,9 +125,9 @@
       },
       "Fable.Package.SDK": {
         "type": "CentralTransitive",
-        "requested": "[0.1.0, )",
-        "resolved": "0.1.0",
-        "contentHash": "wrEcGovUimN0PRGgVHlX/gsqCm5d/p9eOG74iaHoteX2dsFZQ9P7d066LRAl5Gj7GUHy7azLyDE41KFvZx1v9A=="
+        "requested": "[1.0.0, )",
+        "resolved": "1.0.0",
+        "contentHash": "TIXktcGpeqE3QOr2coV+w5erpLtfijpfBilhb0MNV2OSao/Y5Zg3r7StF+wZ4jSm4Pkid4HpjshZB/V9fUc/Ew=="
       },
       "Fable.Python": {
         "type": "CentralTransitive",

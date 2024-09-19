@@ -19,8 +19,11 @@ If you are interested on using it against .NET Core or .NET Framework, please us
         <Compile Include="Extra.fs" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="EasyBuild.PackageReleaseNotes.Tasks">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
         <PackageReference Include="Fable.Core" />
         <PackageReference Include="Fable.Package.SDK" />
-        <PackageReference Include="Ionide.KeepAChangelog.Tasks" PrivateAssets="all" />
     </ItemGroup>
 </Project>

@@ -15,9 +15,12 @@
         <Compile Include="Encode.fs" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="EasyBuild.PackageReleaseNotes.Tasks">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
         <PackageReference Include="Fable.Core" />
         <PackageReference Include="Fable.Package.SDK" />
-        <PackageReference Include="Ionide.KeepAChangelog.Tasks" PrivateAssets="all" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Thoth.Json.Core\Thoth.Json.Core.fsproj" />

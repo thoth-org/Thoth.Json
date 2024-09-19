@@ -26,11 +26,14 @@ let private publish (projectDir: string) =
     let nupkgPath = Dotnet.pack projectDir
     Dotnet.Nuget.push (nupkgPath, nugetKey, skipDuplicate = true)
 
-type PublishCommand() =
-    inherit Command<CommandSettings>()
-    interface ICommandLimiter<CommandSettings>
+type PublishSettings() =
+    inherit CommandSettings()
 
-    override _.Execute(context: CommandContext, settings: CommandSettings) =
+type PublishCommand() =
+    inherit Command<PublishSettings>()
+    interface ICommandLimiter<PublishSettings>
+
+    override _.Execute(context: CommandContext, settings: PublishSettings) =
         TestCommand().Execute(context, TestSettings()) |> ignore
 
         publish Workspace.packages.``Thoth.Json``.``.``
