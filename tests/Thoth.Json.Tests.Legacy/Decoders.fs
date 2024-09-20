@@ -3967,9 +3967,8 @@ Expecting a boolean but instead got: "not_a_boolean"
                         let json = Encode.Auto.toString (4, value)
 
                         let res =
-                            Decode.Auto
-                                .unsafeFromString<DateTimeOffset>(json)
-                                // .ToLocalTime()
+                            Decode.Auto.unsafeFromString<DateTimeOffset> (json)
+                        // .ToLocalTime()
 
                         equal value.Date res.Date
                         equal value.Hour res.Hour

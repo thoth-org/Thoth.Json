@@ -16,3 +16,5 @@ This is to keep track of different blog post that I refer to sometimes when thin
 ### Tests
 
 For the tests, we use a shared project `Thoth.Json.Tests` that is referenced by the different runners. This is because we want each runner to only have the minimum amount of dependencies, and also if we include files from outside the `.fsproj` folder, then some generated files by Fable escape from the specify `outDir`.
+
+Some of the tests require specific versions of Node.js, Python, etc. You can enter a shell with pinned versions available using `nix develop`.
