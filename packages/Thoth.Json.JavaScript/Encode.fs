@@ -1,5 +1,7 @@
 namespace Thoth.Json.JavaScript
 
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_TYPESCRIPT || !FABLE_COMPILER
+
 open Fable.Core
 open Fable.Core.JsInterop
 open Thoth.Json.Core
@@ -38,3 +40,5 @@ module Encode =
     let toString (space: int) (value: IEncodable) : string =
         let json = Encode.toJsonValue helpers value
         JS.JSON.stringify (json, space = space)
+
+#endif

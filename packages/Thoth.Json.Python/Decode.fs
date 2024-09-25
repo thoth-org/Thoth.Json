@@ -1,5 +1,7 @@
 namespace Thoth.Json.Python
 
+#if FABLE_COMPILER_PYTHON || !FABLE_COMPILER
+
 open Fable.Core
 open Fable.Core.PyInterop
 open Thoth.Json.Core
@@ -91,3 +93,5 @@ module Decode =
             match fromString decoder value with
             | Ok x -> x
             | Error e -> failwith e
+
+#endif

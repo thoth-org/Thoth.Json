@@ -1,5 +1,7 @@
 module Python
 
+#if FABLE_COMPILER_PYTHON || !FABLE_COMPILER
+
 open Fable.Core
 open System
 
@@ -21,3 +23,5 @@ module Json =
     [<Import("JSONDecodeError", "json")>]
     type JSONDecodeError() =
         inherit Exception()
+
+#endif

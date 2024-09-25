@@ -1,5 +1,7 @@
 namespace Thoth.Json.Python
 
+#if FABLE_COMPILER_PYTHON || !FABLE_COMPILER
+
 open Fable.Core
 open Fable.Core.PyInterop
 open Thoth.Json.Core
@@ -62,3 +64,5 @@ module Encode =
             )
         else
             Python.Json.json.dumps (json, indent = space, ensure_ascii = false)
+
+#endif
