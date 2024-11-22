@@ -16,9 +16,9 @@
       },
       "EasyBuild.PackageReleaseNotes.Tasks": {
         "type": "Direct",
-        "requested": "[1.2.0, )",
-        "resolved": "1.2.0",
-        "contentHash": "Fy/NaewrJUaUBIr2KTI7lTZsV5KLNL1YTGPM9pvglf7dYAlSWcvsmVWD2xr+FohuG9oEDbnxeYQNBZqOi4Is6g=="
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "jebz09lxa6pEJzft9Tr/PSNt5r7AVt5xmX3g4Ra+nLU1qtSrOh+hFgsywGn7fVME3LpbzhlX+2J8F7G9y3PxUQ=="
       },
       "Fable.Core": {
         "type": "Direct",

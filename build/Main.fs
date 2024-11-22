@@ -29,6 +29,12 @@ let main args =
                     .WithDescription("Run the tests for Newtonsoft")
                 |> ignore
 
+
+                test
+                    .AddCommand<TestSystemTextJsonCommand>("system-text-json")
+                    .WithDescription("Run the tests for System.Text.Json")
+                |> ignore
+
                 test
                     .AddCommand<TestPythonCommand>("python")
                     .WithDescription("Run the tests for Python")

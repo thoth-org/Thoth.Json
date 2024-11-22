@@ -46,7 +46,7 @@ type UnionWithPrivateConstructor =
 
 type UnionWithMultipleFields = | Multi of string * int * float
 
-let tests (runner: TestRunner<_>) =
+let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
     testList
         "Thoth.Json.Decode"
         [
@@ -57,6 +57,11 @@ let tests (runner: TestRunner<_>) =
 
                     testCase "invalid json"
                     <| fun _ ->
+
+                        let expected =
+                            Error
+                                "Make the compiler happy in the editor, but you should shadow this variable using a compiler directive"
+
 #if FABLE_COMPILER_JAVASCRIPT
                         let expected: Result<float, string> =
                             Error
@@ -69,10 +74,16 @@ let tests (runner: TestRunner<_>) =
                                 "Given an invalid JSON: Expecting value: line 1 column 1 (char 0)"
 #endif
 
-#if !FABLE_COMPILER
+#if THOTH_JSON_NEWTONSOFT
                         let expected: Result<float, string> =
                             Error
                                 "Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0."
+#endif
+
+#if THOTH_JSON_SYSTEM_TEXT_JSON
+                        let expected: Result<float, string> =
+                            Error
+                                "Given an invalid JSON: 'm' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0."
 #endif
 
                         let actual =
@@ -93,6 +104,10 @@ let tests (runner: TestRunner<_>) =
 
                     testCase "invalid json #3 - Special case for Thoth.Json.Net"
                     <| fun _ ->
+                        let expected =
+                            Error
+                                "Make the compiler happy in the editor, but you should shadow this variable using a compiler directive"
+
                         // See: https://github.com/thoth-org/Thoth.Json.Net/pull/48
 #if FABLE_COMPILER_JAVASCRIPT
                         let expected: Result<float, string> =
@@ -106,10 +121,16 @@ let tests (runner: TestRunner<_>) =
                                 "Given an invalid JSON: Expecting property name enclosed in double quotes: line 8 column 17 (char 172)"
 #endif
 
-#if !FABLE_COMPILER
+#if THOTH_JSON_NEWTONSOFT
                         let expected: Result<float, string> =
                             Error
                                 "Given an invalid JSON: Unexpected end when reading token. Path 'Ab[1]'."
+#endif
+
+#if THOTH_JSON_SYSTEM_TEXT_JSON
+                        let expected: Result<float, string> =
+                            Error
+                                "Given an invalid JSON: Expected start of a property name or value, but instead reached end of data. LineNumber: 7 | BytePositionInLine: 16."
 #endif
 
                         let incorrectJson =
@@ -161,6 +182,7 @@ let tests (runner: TestRunner<_>) =
                                     runner.EncoderHelpers.encodeSignedIntegralNumber
                                         42
                                 ]
+                            |> runner.MapEncoderValueToDecoderValue
 
                         let expected: Result<int, string> = Ok 42
 
@@ -174,7 +196,9 @@ let tests (runner: TestRunner<_>) =
                     testCase "returns an error if the field is missing"
                     <| fun _ ->
 
-                        let value = runner.EncoderHelpers.encodeObject []
+                        let value =
+                            runner.EncoderHelpers.encodeObject []
+                            |> runner.MapEncoderValueToDecoderValue
 
                         let expected: Result<int, string> =
                             Error
@@ -205,6 +229,10 @@ let tests (runner: TestRunner<_>) =
 
                     testCase "throw an exception if the json is invalid"
                     <| fun _ ->
+
+                        let expected =
+                            "Make the compiler happy in the editor, but you should shadow this variable using a compiler directive"
+
 #if FABLE_COMPILER_JAVASCRIPT
                         let expected =
                             "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
@@ -215,9 +243,14 @@ let tests (runner: TestRunner<_>) =
                             "Given an invalid JSON: Expecting value: line 1 column 1 (char 0)"
 #endif
 
-#if !FABLE_COMPILER
+#if THOTH_JSON_NEWTONSOFT
                         let expected =
                             "Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0."
+#endif
+
+#if THOTH_JSON_SYSTEM_TEXT_JSON
+                        let expected =
+                            "Given an invalid JSON: 'm' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0."
 #endif
 
                         try
@@ -384,6 +417,41 @@ Expecting a single character string but instead got: "ab"
                         let actual = runner.Decode.fromString Decode.int16 "25"
 
                         equal expected actual
+
+#if !FABLE_COMPILER_JAVASCRIPT
+                    // I don't know how to differentiate between 1.0 and 1 in JS
+                    testCase
+                        "validate that Helpers.isIntegral is implemented correctly"
+                    // int16 is using Helpers.isIntegral under the hood
+                    <| fun _ ->
+                        let expected =
+                            Error
+                                """Error at: `$`
+Expecting an int16 but instead got: 25.0
+Reason: Value is not an integral value"""
+
+                        let actual =
+                            runner.Decode.fromString Decode.int16 "25.0"
+
+                        equal expected actual
+#endif
+
+#if !FABLE_COMPILER_JAVASCRIPT
+                    testCase
+                        "validate that Helpers.isIntegral is implemented correctly"
+                    // int16 is using Helpers.isIntegral under the hood
+                    <| fun _ ->
+                        let expected =
+                            Error
+                                """Error at: `$`
+Expecting an int16 but instead got: 25.001
+Reason: Value is not an integral value"""
+
+                        let actual =
+                            runner.Decode.fromString Decode.int16 "25.001"
+
+                        equal expected actual
+#endif
 
                     testCase "an int16 works from string"
                     <| fun _ ->
@@ -2422,6 +2490,10 @@ Expecting an object with a field named `height` but instead got:
 
                     testCase "succeed output an error if the JSON is invalid"
                     <| fun _ ->
+                        let expected =
+                            Error
+                                "Make the compiler happy in the editor, but you should shadow this variable using a compiler directive"
+
 #if FABLE_COMPILER_JAVASCRIPT
                         let expected =
                             Error(
@@ -2436,11 +2508,17 @@ Expecting an object with a field named `height` but instead got:
                             )
 #endif
 
-#if !FABLE_COMPILER
+#if THOTH_JSON_NEWTONSOFT
                         let expected =
                             Error(
                                 "Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0."
                             )
+#endif
+
+#if THOTH_JSON_SYSTEM_TEXT_JSON
+                        let expected =
+                            Error
+                                "Given an invalid JSON: 'm' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0."
 #endif
 
                         let actual =

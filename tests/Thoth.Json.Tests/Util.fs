@@ -12,10 +12,13 @@ type IDecode<'JsonValue> =
     abstract unsafeFromString<'T> : Decoder<'T> -> string -> 'T
 
 [<AbstractClass>]
-type TestRunner<'JsonValue>() =
+type TestRunner<'DecoderJsonValue, 'EncoderJsonValue>() =
     abstract Encode: IEncode with get
-    abstract Decode: IDecode<'JsonValue> with get
-    abstract EncoderHelpers: IEncoderHelpers<'JsonValue> with get
-    abstract DecoderHelpers: IDecoderHelpers<'JsonValue> with get
+    abstract Decode: IDecode<'DecoderJsonValue> with get
+    abstract EncoderHelpers: IEncoderHelpers<'EncoderJsonValue> with get
+    abstract DecoderHelpers: IDecoderHelpers<'DecoderJsonValue> with get
+
+    abstract MapEncoderValueToDecoderValue:
+        'EncoderJsonValue -> 'DecoderJsonValue
 
 let equal (actual: 'T) (expected: 'T) = Expect.equal actual expected ""

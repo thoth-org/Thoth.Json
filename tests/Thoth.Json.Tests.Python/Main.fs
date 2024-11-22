@@ -18,7 +18,7 @@ type PythonDecode() =
             Decode.unsafeFromString decoder json
 
 type PythonTestRunner() =
-    inherit TestRunner<obj>()
+    inherit TestRunner<obj, obj>()
 
     override _.Encode = PythonEncode()
 
@@ -27,6 +27,9 @@ type PythonTestRunner() =
     override _.EncoderHelpers = Encode.helpers
 
     override _.DecoderHelpers = Decode.helpers
+
+    override _.MapEncoderValueToDecoderValue(encoderValue: obj) : obj =
+        id encoderValue
 
 [<EntryPoint>]
 let main args =
