@@ -6,7 +6,6 @@
     <ManagePackageVersionsCentrally>fasle</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Utils/Nuget.fs" />
     <Compile Include="Workspace.fs" />
     <Compile Include="Commands/Test.fs" />
     <Compile Include="Commands/Publish.fs" />
@@ -15,8 +14,9 @@
   <ItemGroup>
     <PackageReference Include="BlackFox.CommandLine" Version="1.0.0" />
     <PackageReference Include="EasyBuild.FileSystemProvider" Version="0.3.0" />
+    <PackageReference Include="EasyBuild.Tools" Version="1.1.0" />
     <PackageReference Include="SimpleExec" Version="12.0.0" />
     <PackageReference Include="Spectre.Console.Cli" Version="0.49.1" />
-    <PackageReference Include="FSharp.Core" Version="5.0.0" />
+    <PackageReference Include="FSharp.Core" Version="5.0.2" />
   </ItemGroup>
 </Project>
