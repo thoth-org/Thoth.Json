@@ -18,7 +18,7 @@ type UnionWithPrivateConstructor =
     | Bar of string
     | Baz
 
-let tests (runner: TestRunner<_>) =
+let tests (runner: TestRunner<_, _>) =
     testList
         "Thoth.Json.Encode"
         [

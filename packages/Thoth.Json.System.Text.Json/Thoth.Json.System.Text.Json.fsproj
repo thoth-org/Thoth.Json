@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Description>
+            Elm-inspired encoder and decoder for JSON, this package is for .NET runtime when you want to use System.Text.Json.
+        </Description>
+        <FablePackageType>library</FablePackageType>
+        <PackageTags>fable-dotnet;fsharp;json</PackageTags>
+    </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Decode.fs" />
+        <Compile Include="Encode.fs" />
+        <!-- <Compile Include="Extra.fs" /> -->
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Thoth.Json.Core\Thoth.Json.Core.fsproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="EasyBuild.PackageReleaseNotes.Tasks">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Fable.Core" />
+        <PackageReference Include="Fable.Package.SDK" />
+        <PackageReference Include="System.Text.Json" />
+    </ItemGroup>
+</Project>
