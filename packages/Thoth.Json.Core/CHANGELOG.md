@@ -10,6 +10,8 @@ This changelog is generated using [EasyBuild.ChangelogGen](https://github.com/ea
 <!-- last_commit_released: 84b59b79244dc933c10ef91eaecd0ff561ab039e -->
 <!-- EasyBuild: END -->
 
+## 0.5.0 - 2024-11-23 [YANKED]
+
 ## 0.4.0 - 2024-09-19
 
 ### Fixed
