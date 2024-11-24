@@ -4,6 +4,7 @@ open SimpleExec
 open Spectre.Console.Cli
 open EasyBuild.Commands.Test
 open EasyBuild.Commands.Publish
+open EasyBuild.Commands.Benchmark
 
 [<EntryPoint>]
 let main args =
@@ -60,6 +61,20 @@ let main args =
 
 If the last version in the CHANGELOG.md is different from the version in the packages, the package will be published"""
             )
+        |> ignore
+
+        config.AddBranch<BenchmarkDotNetSettings>(
+            "benchmark",
+            fun benchmark ->
+                benchmark.SetDescription("Run the benchmarks suite")
+
+                benchmark.SetDefaultCommand<BenchmarkDotNetCommand>()
+
+                benchmark
+                    .AddCommand<BenchmarkDotNetCommand>("dotnet")
+                    .WithDescription("Run the benchmarks for .NET")
+                |> ignore
+        )
         |> ignore
     )
 
