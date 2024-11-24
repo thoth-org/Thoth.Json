@@ -30,9 +30,15 @@ module Decode =
                 jsonValue.ValueKind = JsonValueKind.Object
 
             member _.hasProperty fieldName jsonValue =
+                // Using TryGetProperty is faster than iterating over the properties
+                // and checking their names
+                // Result of a benchmark:
+                // Iteration: 5,661.0 ns
+                // TryGetProperty: 4,734.3 ns
+                let d = ref (JsonElement())
+
                 jsonValue.ValueKind = JsonValueKind.Object
-                && jsonValue.EnumerateObject()
-                   |> Seq.exists (fun prop -> prop.Name = fieldName)
+                && jsonValue.TryGetProperty(fieldName, d)
 
             member _.isIntegralValue jsonValue =
                 jsonValue.ValueKind = JsonValueKind.Number
@@ -43,7 +49,6 @@ module Decode =
 
             member _.asArray jsonValue =
                 jsonValue.EnumerateArray() |> Seq.toArray
-            // jsonValue.Value<JArray>().Values() |> Seq.toArray
 
             member _.asFloat jsonValue = jsonValue.GetDouble()
             member _.asFloat32 jsonValue = jsonValue.GetSingle()
