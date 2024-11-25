@@ -24,12 +24,12 @@ Apple M1 Max, 1 CPU, 10 logical and 10 physical cores
   DefaultJob : .NET 8.0.8 (8.0.824.36612), Arm64 RyuJIT AdvSIMD
 
 
-| Method                      | Mean       | Error     | StdDev   | Ratio | RatioSD |
-|---------------------------- |-----------:|----------:|---------:|------:|--------:|
-| Thoth.Json.Newtonsoft       | 6,359.6 ns | 102.35 ns | 95.74 ns | 10.40 |    0.19 |
-| Thoth.Json.System.Text.Json | 4,936.8 ns |  45.64 ns | 38.11 ns |  8.07 |    0.11 |
-| Newtonsoft                  | 1,497.8 ns |  24.72 ns | 23.13 ns |  2.45 |    0.05 |
-| System.Text.Json            |   611.7 ns |   8.62 ns |  7.20 ns |  1.00 |    0.02 |
+| Method                      | Mean       | Error    | StdDev   | Ratio | RatioSD |
+|---------------------------- |-----------:|---------:|---------:|------:|--------:|
+| System.Text.Json            |   499.1 ns |  1.03 ns |  0.96 ns |  1.00 |    0.00 |
+| Newtonsoft                  | 1,553.4 ns |  4.08 ns |  3.81 ns |  3.11 |    0.01 |
+| Thoth.Json.System.Text.Json | 4,330.8 ns | 20.67 ns | 19.33 ns |  8.68 |    0.04 |
+| Thoth.Json.Newtonsoft       | 5,783.3 ns | 57.05 ns | 50.57 ns | 11.59 |    0.10 |
 ```
 
 ## Blogs post
