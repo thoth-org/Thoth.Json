@@ -2,8 +2,6 @@ namespace Thoth.Json.System.Text.Json
 
 open Thoth.Json.Core
 open System.Text.Json
-open System.IO
-open System.Text
 
 [<RequireQualifiedAccess>]
 module Decode =
@@ -69,21 +67,6 @@ module Decode =
                     )
 
                 JsonSerializer.Serialize(jsonValue, options)
-        // if isNull jsonValue then
-        //     "null"
-        // else
-        //     use stream = new StringWriter(NewLine = "\n")
-
-        //     use jsonWriter =
-        //         new JsonTextWriter(
-        //             stream,
-        //             Formatting = Formatting.Indented,
-        //             Indentation = 4
-        //         )
-
-        //     jsonValue.WriteTo(jsonWriter)
-        //     stream.ToString()
-
         }
 
     let fromValue (decoder: Decoder<'T>) =
