@@ -3,6 +3,7 @@ module Thoth.Json.DotNet.Benchmark
 open System
 open BenchmarkDotNet.Attributes
 open BenchmarkDotNet.Running
+open BenchmarkDotNet.Order
 open Thoth.Json
 open Thoth.Json.Core
 
@@ -46,21 +47,22 @@ let userJson =
     "picture": "https://randomuser.me/api/portraits/men/95.jpg"
 }"""
 
+[<Orderer(SummaryOrderPolicy.FastestToSlowest)>]
 type Benchmarks() =
     [<Benchmark(Description = "Thoth.Json.Newtonsoft")>]
-    member this.ThothJsonNewtonsoft() =
+    member _.ThothJsonNewtonsoft() =
         Newtonsoft.Decode.fromString User.Decoder userJson
 
     [<Benchmark(Description = "Thoth.Json.System.Text.Json")>]
-    member this.ThothJsonSystemTextJson() =
+    member _.ThothJsonSystemTextJson() =
         System.Text.Json.Decode.fromString User.Decoder userJson
 
     [<Benchmark(Description = "Newtonsoft")>]
-    member this.Newtonsoft() =
+    member _.Newtonsoft() =
         Newtonsoft.Json.JsonConvert.DeserializeObject<User>(userJson)
 
     [<Benchmark(Baseline = true, Description = "System.Text.Json")>]
-    member this.SystemTextJson() =
+    member _.SystemTextJson() =
         System.Text.Json.JsonSerializer.Deserialize<User>(userJson)
 
 BenchmarkRunner.Run<Benchmarks>() |> ignore
