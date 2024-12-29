@@ -22,3 +22,4 @@ type TestRunner<'DecoderJsonValue, 'EncoderJsonValue>() =
         'EncoderJsonValue -> 'DecoderJsonValue
 
 let equal (actual: 'T) (expected: 'T) = Expect.equal actual expected ""
+let notEqual (actual: 'T) (expected: 'T) = Expect.notEqual actual expected ""
