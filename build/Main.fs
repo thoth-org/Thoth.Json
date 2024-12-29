@@ -9,6 +9,7 @@ open EasyBuild.Commands.Benchmark
 [<EntryPoint>]
 let main args =
     Command.Run("dotnet", "husky install")
+    Command.Run("pnpm", "install")
 
     let app = CommandApp()
 
