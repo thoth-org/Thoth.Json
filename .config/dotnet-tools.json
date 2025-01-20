@@ -31,7 +31,7 @@
       "rollForward": false
     },
     "easybuild.changeloggen": {
-      "version": "1.1.2",
+      "version": "4.0.0",
       "commands": [
         "changelog-gen"
       ],
