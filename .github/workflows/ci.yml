@@ -32,7 +32,7 @@ jobs:
           python-version: '3.12'
       - run: python --version
       - name: Test (Unix)
-        run: dotnet msbuild "tests/Thoth.Json.Tests.JavaScript" /restore /t:ResolveAssemblyReferencesDesignTime,ResolveProjectReferencesDesignTime,ResolvePackageDependenciesDesignTime,FindReferenceAssembliesForReferences,_GenerateCompileDependencyCache,_ComputeNonExistentFileProperty,BeforeBuild,BeforeCompile,CoreCompile /p:Fable=True /p:Configuration=Release /p:TargetFramework=net8.0 /p:DesignTimeBuild=True /p:SkipCompilerExecution=True /p:ProvideCommandLineArgs=True /p:RestoreUseStaticGraphEvaluation=False /p:RestoreLockedMode=false /p:RestorePackagesWithLockFile=false  /p:NuGetLockFilePath=Fable.lock /p:NonExistentFile="__NonExistentSubDir__/__NonExistentFile__" --getItem:FscCommandLineArgs --getItem:ProjectReference --getProperty:OutputType -warnAsMessage:NU1608
+        run: dotnet msbuild "tests/Thoth.Json.Tests.JavaScript" msbuild "/Users/mmangel/Workspaces/Github/fable-compiler/Fable/src/fable-library-ts/Fable.Library.TypeScript.fsproj" /p:Configuration=Release --getProperty:TargetFrameworks --getProperty:TargetFramework
       #   if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'macOS-latest'
       #   run: ./build.sh test
       # - name: Test (Windows)
