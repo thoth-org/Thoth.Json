@@ -32,9 +32,8 @@ jobs:
           python-version: '3.12'
       - run: python --version
       - name: Test (Unix)
-        run: dotnet msbuild "tests/Thoth.Json.Tests.JavaScript" /p:Configuration=Release --getProperty:TargetFrameworks --getProperty:TargetFramework
-      #   if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'macOS-latest'
-      #   run: ./build.sh test
-      # - name: Test (Windows)
-      #   if: matrix.platform == 'windows-latest'
-      #   run: .\build.bat test
+        if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'macOS-latest'
+        run: ./build.sh test
+      - name: Test (Windows)
+        if: matrix.platform == 'windows-latest'
+        run: .\build.bat test
