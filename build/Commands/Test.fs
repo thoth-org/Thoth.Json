@@ -38,7 +38,7 @@ type TestJavaScriptCommand() =
                     |> CmdLine.appendRaw "fable"
                     |> CmdLine.appendPrefix "--outDir" outDir
                     |> CmdLine.appendRaw "--noCache"
-                    |> CmdLine.appendRaw "--test:MSBuildCracker"
+                    // |> CmdLine.appendRaw "--test:MSBuildCracker"
 
                     if settings.IsWatch then
                         CmdLine.empty
@@ -117,7 +117,7 @@ type TestPythonCommand() =
             |> CmdLine.appendPrefix "--outDir" outDir
             |> CmdLine.appendPrefix "--lang" "python"
             |> CmdLine.appendRaw "--noCache"
-            |> CmdLine.appendRaw "--test:MSBuildCracker"
+            // |> CmdLine.appendRaw "--test:MSBuildCracker"
             |> CmdLine.appendIf settings.IsWatch "--watch"
             |> CmdLine.appendRaw runArg
             |> CmdLine.appendRaw "python"
@@ -149,7 +149,7 @@ type TestLegacyCommand() =
                     |> CmdLine.appendRaw "fable"
                     |> CmdLine.appendPrefix "--outDir" outDir
                     |> CmdLine.appendRaw "--noCache"
-                    |> CmdLine.appendRaw "--test:MSBuildCracker"
+                    // |> CmdLine.appendRaw "--test:MSBuildCracker"
 
                     if settings.IsWatch then
                         CmdLine.empty
@@ -187,7 +187,7 @@ type TestTypeScriptCommand() =
             |> CmdLine.appendPrefix "--outDir" outDir
             |> CmdLine.appendPrefix "--lang" "typescript"
             |> CmdLine.appendRaw "--noCache"
-            |> CmdLine.appendRaw "--test:MSBuildCracker"
+            // |> CmdLine.appendRaw "--test:MSBuildCracker"
             |> CmdLine.appendIf settings.IsWatch "--watch"
             |> CmdLine.appendRaw "--runWatch"
             |> CmdLine.appendRaw "npx tsc"
