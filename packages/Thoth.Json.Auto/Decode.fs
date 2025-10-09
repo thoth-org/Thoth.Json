@@ -3,7 +3,6 @@ namespace Thoth.Json.Auto
 open System
 open System.Reflection
 open FSharp.Reflection
-open Thoth.Json
 open Thoth.Json.Core
 
 [<RequireQualifiedAccess>]
@@ -20,7 +19,7 @@ module Decode =
                 Decode.lazily x
 
             static member Option<'t>(x: Decoder<'t>) : Decoder<'t option> =
-                Decode.losslessOption x
+                Decode.lossyOption x
 
             static member List<'t>(x: Decoder<'t>) : Decoder<'t list> =
                 Decode.list x
@@ -149,7 +148,7 @@ module Decode =
 
 #if FABLE_COMPILER
                 let option (innerType: Type) (decoder: obj) : obj =
-                    Decode.losslessOption (unbox decoder) |> box
+                    Decode.lossyOption (unbox decoder) |> box
 #else
                 let private optionGenericMethodDefinition =
                     getGenericMethodDefinition "Option"

@@ -20,7 +20,7 @@ module Encode =
                     (enc: Encoder<'t>)
                     : Encoder<'t option>
                     =
-                    Encode.losslessOption enc
+                    Encode.lossyOption enc
 
                 static member Lazily<'t>(enc: Lazy<Encoder<'t>>) : Encoder<'t> =
                     Encode.lazily enc
@@ -115,7 +115,7 @@ module Encode =
 
 #if FABLE_COMPILER
             let optionOf (innerType: Type) (enc: obj) : obj =
-                Encode.losslessOption (unbox enc)
+                Encode.lossyOption (unbox enc)
 #else
             let private getGenericMethodDefinition (name: string) =
                 typeof<EncodeHelpers>
