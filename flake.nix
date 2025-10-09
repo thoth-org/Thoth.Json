@@ -26,6 +26,7 @@
               pkgs.bashInteractive
               pkgs.dotnet-sdk_8
               pkgs.nodejs_20
+              pkgs.pnpm_9
               pkgs.python312
             ];
           };
