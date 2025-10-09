@@ -149,7 +149,7 @@ module Decode =
 
 #if FABLE_COMPILER
                 let option (innerType: Type) (decoder: obj) : obj =
-                    Decode.option (unbox decoder) |> box
+                    Decode.losslessOption (unbox decoder) |> box
 #else
                 let private optionGenericMethodDefinition =
                     getGenericMethodDefinition "Option"

@@ -115,7 +115,7 @@ module Encode =
 
 #if FABLE_COMPILER
             let optionOf (innerType: Type) (enc: obj) : obj =
-                Encode.option (unbox enc)
+                Encode.losslessOption (unbox enc)
 #else
             let private getGenericMethodDefinition (name: string) =
                 typeof<EncodeHelpers>
