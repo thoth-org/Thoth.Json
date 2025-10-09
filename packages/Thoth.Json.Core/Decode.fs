@@ -1,6 +1,6 @@
 namespace Thoth.Json.Core
 
-open Fable.Core
+open System
 open System.Globalization
 
 [<RequireQualifiedAccess>]
@@ -636,16 +636,6 @@ module Decode =
                     ("", BadPrimitive("an array", value)) |> Error
         }
 
-
-    let option (decoder: Decoder<'value>) : Decoder<'value option> =
-        { new Decoder<'value option> with
-            member _.Decode(helpers, value) =
-                if helpers.isNullValue value then
-                    Ok None
-                else
-                    decoder.Decode(helpers, value) |> Result.map Some
-        }
-
     //////////////////////
     // Data structure ///
     ////////////////////
@@ -891,10 +881,7 @@ module Decode =
 
         interface Decoder<'t> with
             member this.Decode<'json>
-                (
-                    helpers: IDecoderHelpers<'json>,
-                    json: 'json
-                )
+                (helpers: IDecoderHelpers<'json>, json: 'json)
                 =
                 let decoder = x.Force()
                 decoder.Decode(helpers, json)
@@ -1080,6 +1067,66 @@ module Decode =
                 | _, _, _, _, _, _, Error er, _ -> Error er
                 | _, _, _, _, _, _, _, Error er -> Error er
         }
+
+    ///////////////////////
+    //  Option decoders  //
+    ///////////////////////
+
+    /// <summary>
+    /// Decode a JSON null value into an F# option.
+    ///
+    /// Attention, this decoder is lossy, it will not be able to distinguish between `'T option` and `'T option option`.
+    ///
+    /// If you need to distinguish between `'T option` and `'T option option`, use `losslessOption`.
+    /// </summary>
+    /// <param name="decoder">
+    /// The decoder to apply to the value if it is not null.
+    /// </param>
+    /// <typeparam name="'value">The type of the value to decode.</typeparam>
+    /// <returns>
+    /// <c>None</c> if the value is null, otherwise <c>Some value</c> where <c>value</c> is the result of the decoder.
+    /// </returns>
+    let lossyOption (decoder: Decoder<'value>) : Decoder<'value option> =
+        { new Decoder<'value option> with
+            member _.Decode(helpers, value) =
+                if helpers.isNullValue value then
+                    Ok None
+                else
+                    decoder.Decode(helpers, value) |> Result.map Some
+        }
+
+    /// <summary>
+    /// Decode a JSON null value into an F# option.
+    ///
+    /// This decoder is lossless, it will be able to distinguish between `'T option` and `'T option option`.
+    ///
+    /// If you don't need to distinguish between `'T option` and `'T option option`, you can use `lossyOption` which is more efficient.
+    /// </summary>
+    /// <param name="decoder">
+    /// The decoder to apply to the value if it is not null.
+    /// </param>
+    /// <typeparam name="'value">The type of the value to decode.</typeparam>
+    /// <returns>
+    /// <c>None</c> if the value is null, otherwise <c>Some value</c> where <c>value</c> is the result of the decoder.
+    /// </returns>
+    let losslessOption (decoder: Decoder<'value>) : Decoder<'value option> =
+        field "$type" string
+        |> andThen (fun typeName ->
+            match typeName with
+            | "option" ->
+                field "$case" string
+                |> andThen (fun state ->
+                    match state with
+                    | "none" -> succeed None
+                    | "some" -> field "$value" decoder |> map Some
+                    | _ ->
+                        fail (
+                            "Expecting a state field with value 'none' or 'some' but got "
+                            + state
+                        )
+                )
+            | _ -> fail ("Expecting an Option type but got " + typeName)
+        )
 
     //////////////////////
     // Object builder ///

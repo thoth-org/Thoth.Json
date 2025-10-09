@@ -3,28 +3,39 @@
   "isRoot": true,
   "tools": {
     "fable": {
-      "version": "4.17.0",
+      "version": "4.24.0",
       "commands": [
         "fable"
-      ]
+      ],
+      "rollForward": false
     },
     "fantomas": {
-      "version": "6.2.3",
+      "version": "6.3.16",
       "commands": [
         "fantomas"
-      ]
+      ],
+      "rollForward": false
     },
     "husky": {
       "version": "0.6.3",
       "commands": [
         "husky"
-      ]
+      ],
+      "rollForward": false
     },
     "easybuild.commitlinter": {
-      "version": "0.1.0",
+      "version": "1.0.1",
       "commands": [
         "commit-linter"
-      ]
+      ],
+      "rollForward": false
+    },
+    "easybuild.changeloggen": {
+      "version": "4.0.0",
+      "commands": [
+        "changelog-gen"
+      ],
+      "rollForward": false
     }
   }
 }

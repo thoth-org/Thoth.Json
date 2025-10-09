@@ -311,8 +311,57 @@ module Encode =
             =
             LanguagePrimitives.EnumToValue value |> uint32
 
-    let option (encoder: Encoder<'a>) =
+    /// <summary>
+    /// Encodes an option value using the provided encoder.
+    ///
+    /// Attention, this encoder is lossy, it's result will not be able to distinguish between `'T option` and `'T option option`.
+    ///
+    /// If you need to distinguish between `'T option` and `'T option option`, use `losslessOption`.
+    /// </summary>
+    /// <param name="encoder">The encoder to apply if the value is Some</param>
+    /// <typeparam name="'a">The type of the value to encode</typeparam>
+    /// <returns>
+    /// The result of the encoder if the value is Some, otherwise nil
+    /// </returns>
+    let lossyOption (encoder: Encoder<'a>) =
         Option.map encoder >> Option.defaultWith (fun _ -> nil)
+
+    /// <summary>
+    /// Encodes an option value using the provided encoder.
+    ///
+    /// This encoder is lossless, it's result will be able to distinguish between `'T option` and `'T option option`.
+    ///
+    /// If you don't need to distinguish between `'T option` and `'T option option`, use `lossyOption`.
+    /// </summary>
+    /// <param name="encoder">The encoder to apply if the value is Some</param>
+    /// <typeparam name="'a">The type of the value to encode</typeparam>
+    /// <returns>
+    /// If the value is Some, the object will have the following fields:
+    ///
+    /// - `$type` field set to `option`
+    /// - `$case` field set to `some`
+    /// - `$value` field set to the result of the encoder.
+    ///
+    /// If the value is None, the object will have the following fields:
+    ///
+    /// - `$type` field set to `option`
+    /// - `$case` field set to `none`
+    /// </returns>
+    let losslessOption (encoder: Encoder<'a>) (value: 'a option) =
+        match value with
+        | Some v ->
+            object
+                [
+                    "$type", string "option"
+                    "$case", string "some"
+                    "$value", encoder v
+                ]
+        | None ->
+            object
+                [
+                    "$type", string "option"
+                    "$case", string "none"
+                ]
 
     let inline toJsonValue
         (helpers: IEncoderHelpers<'JsonValue>)

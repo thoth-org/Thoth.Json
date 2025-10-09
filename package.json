@@ -17,7 +17,7 @@
         "fable-font": "^1.0.1",
         "gh-pages": "^6.1.0",
         "mocha": "^10.4.0",
-        "prismjs": "^1.29.0",
+        "prismjs": "^1.30.0",
         "typescript": "^5.4.5"
     }
 }

@@ -22,8 +22,14 @@ Pick the right additional package for your runtime:
         <Compile Include="Encode.fs" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="EasyBuild.PackageReleaseNotes.Tasks">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
         <PackageReference Include="Fable.Core" />
-        <PackageReference Include="Fable.Package.SDK" />
-        <PackageReference Include="Ionide.KeepAChangelog.Tasks" PrivateAssets="all" />
+        <PackageReference Include="Fable.Package.SDK">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
     </ItemGroup>
 </Project>

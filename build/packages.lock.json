@@ -17,11 +17,22 @@
         "resolved": "0.3.0",
         "contentHash": "gdVJpqcMDJm4IfmITy3MtpEn/lo9pH8PirVlENtXGX9Sdw3rCgoo9ch1TAthUseh28RcUGWwza9BmEWlrQX/Aw=="
       },
+      "EasyBuild.Tools": {
+        "type": "Direct",
+        "requested": "[1.1.1, )",
+        "resolved": "1.1.1",
+        "contentHash": "YELY3CKRsnnL5aQosMqJM06bZWDYtT3wqpD1ndiebc3fjeamGs7TRqsS7tAkkFpbK8942/sNtR7TWm4yN2kIgg==",
+        "dependencies": {
+          "BlackFox.CommandLine": "1.0.0",
+          "FSharp.Core": "5.0.2",
+          "SimpleExec": "12.0.0"
+        }
+      },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[5.0.0, )",
-        "resolved": "5.0.0",
-        "contentHash": "iHoYXA0VaSQUONGENB1aVafjDDZDZpwu39MtaRCTrmwFW/cTcK0b2yKNVYneFHJMc3ChtsSoM9lNtJ1dYXkHfA=="
+        "requested": "[5.0.2, )",
+        "resolved": "5.0.2",
+        "contentHash": "DpcajqENgb3VXaHw1FKfVS+TWwEzck1PCajqLwBAVrtd1lfxd7T8JISVZBdV1mX9+2g48+tIgpNaVJWObdMrBw=="
       },
       "SimpleExec": {
         "type": "Direct",

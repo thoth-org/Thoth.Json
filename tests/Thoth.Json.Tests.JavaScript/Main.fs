@@ -22,7 +22,7 @@ type JavaScriptDecode() =
             Decode.unsafeFromString decoder json
 
 type JavascriptTestRunner() =
-    inherit TestRunner<obj>()
+    inherit TestRunner<obj, obj>()
 
     override _.Encode = JavaScriptEncode()
 
@@ -31,6 +31,9 @@ type JavascriptTestRunner() =
     override _.EncoderHelpers = Encode.helpers
 
     override _.DecoderHelpers = Decode.helpers
+
+    override _.MapEncoderValueToDecoderValue(encoderValue: obj) : obj =
+        id encoderValue
 
 [<EntryPoint>]
 let main args =
@@ -57,6 +60,7 @@ let main args =
 
             Decoders.tests runner
             Encoders.tests runner
+            BackAndForth.tests runner
 
         ]
     |> Pyxpecto.runTests [||]

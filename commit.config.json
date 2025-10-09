@@ -1,19 +1,23 @@
 {
     "types": [
-        { "name": "feat", "description": "A new feature", "skipTagLine": false },
-        { "name": "fix", "description": "A bug fix", "skipTagLine": false },
-        { "name": "docs", "description": "Documentation changes", "skipTagLine": false },
-        { "name": "test", "description": "Adding missing tests or correcting existing tests", "skipTagLine": false },
-        { "name": "style", "description": "Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)", "skipTagLine": false },
-        { "name": "refactor", "description": "A code change that neither fixes a bug nor adds a feature", "skipTagLine": false },
+        { "name": "feat", "description": "A new feature", "skipTagFooter": false },
+        { "name": "perf", "description": "A code change that improves performance", "skipTagFooter": false },
+        { "name": "fix", "description": "A bug fix", "skipTagFooter": false },
+        { "name": "docs", "description": "Documentation changes", "skipTagFooter": false },
+        { "name": "test", "description": "Adding missing tests or correcting existing tests", "skipTagFooter": false },
+        { "name": "style", "description": "Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)", "skipTagFooter": false },
+        { "name": "refactor", "description": "A code change that neither fixes a bug nor adds a feature", "skipTagFooter": false },
         { "name": "ci", "description": "Changes to CI/CD configuration" },
-        { "name": "chore", "description": "Changes to the build process or auxiliary tools and libraries such as documentation generation" }
+        { "name": "chore", "description": "Changes to the build process or auxiliary tools and libraries such as documentation generation" },
+        { "name": "revert", "description": "Reverts a previous commit" },
+        { "name": "build", "description": "Changes that affect the build system or external dependencies" }
     ],
     "tags": [
         "legacy",
         "core",
         "javascript",
         "python",
-        "newtonsoft"
+        "newtonsoft",
+        "system.text.json"
     ]
 }

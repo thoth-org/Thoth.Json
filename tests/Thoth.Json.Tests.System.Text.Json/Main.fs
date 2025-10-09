@@ -1,16 +1,18 @@
-module Thoth.Json.Tests.Newtonsoft
+module Thoth.Json.Tests.System.Text.Json
 
 open Thoth.Json.Tests.Testing
-open Thoth.Json.Newtonsoft
-open Newtonsoft.Json.Linq
+open Thoth.Json.System.Text.Json
+open System.Text.Json
+open System.Text.Json.Nodes
 open Fable.Pyxpecto
+open Thoth.Json.Tests
 
-type NewtonsoftEncode() =
+type SystemTextJsonEncode() =
     interface IEncode with
         override _.toString spaces json = Encode.toString spaces json
 
-type NewtonsoftDecode() =
-    interface IDecode<JToken> with
+type SystemTextJsonEncodeDecode() =
+    interface IDecode<JsonElement> with
         override _.fromValue decoder = Decode.fromValue decoder
 
         override _.fromString decoder json = Decode.fromString decoder json
@@ -18,30 +20,31 @@ type NewtonsoftDecode() =
         override _.unsafeFromString decoder json =
             Decode.unsafeFromString decoder json
 
-type NewtonsoftTestRunner() =
-    inherit TestRunner<JToken, JToken>()
+type SystemTextJsonTestRunner() =
+    inherit TestRunner<JsonElement, JsonNode>()
 
-    override _.Encode = NewtonsoftEncode()
+    override _.Encode = SystemTextJsonEncode()
 
-    override _.Decode = NewtonsoftDecode()
+    override _.Decode = SystemTextJsonEncodeDecode()
 
     override _.EncoderHelpers = Encode.helpers
 
     override _.DecoderHelpers = Decode.helpers
 
-    override _.MapEncoderValueToDecoderValue(encoderValue: JToken) : JToken =
-        id encoderValue
+    override _.MapEncoderValueToDecoderValue
+        (encoderValue: JsonNode)
+        : JsonElement
+        =
+        JsonSerializer.Deserialize<JsonElement>(encoderValue)
 
 [<EntryPoint>]
 let main args =
-    let runner = NewtonsoftTestRunner()
+    let runner = SystemTextJsonTestRunner()
 
     testList
         "All"
         [
             Decoders.tests runner
             Encoders.tests runner
-            BackAndForth.tests runner
-
         ]
     |> Pyxpecto.runTests [||]

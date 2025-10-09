@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Main.fs" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="BenchmarkDotNet" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\packages\Thoth.Json.Newtonsoft\Thoth.Json.Newtonsoft.fsproj" />
+      <ProjectReference Include="..\..\packages\Thoth.Json.System.Text.Json\Thoth.Json.System.Text.Json.fsproj" />
+    </ItemGroup>
+</Project>

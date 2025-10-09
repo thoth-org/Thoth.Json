@@ -4,10 +4,12 @@ open SimpleExec
 open Spectre.Console.Cli
 open EasyBuild.Commands.Test
 open EasyBuild.Commands.Publish
+open EasyBuild.Commands.Benchmark
 
 [<EntryPoint>]
 let main args =
     Command.Run("dotnet", "husky install")
+    Command.Run("pnpm", "install")
 
     let app = CommandApp()
 
@@ -27,6 +29,12 @@ let main args =
                 test
                     .AddCommand<TestNewtonsoftCommand>("newtonsoft")
                     .WithDescription("Run the tests for Newtonsoft")
+                |> ignore
+
+
+                test
+                    .AddCommand<TestSystemTextJsonCommand>("system-text-json")
+                    .WithDescription("Run the tests for System.Text.Json")
                 |> ignore
 
                 test
@@ -54,6 +62,20 @@ let main args =
 
 If the last version in the CHANGELOG.md is different from the version in the packages, the package will be published"""
             )
+        |> ignore
+
+        config.AddBranch<BenchmarkDotNetSettings>(
+            "benchmark",
+            fun benchmark ->
+                benchmark.SetDescription("Run the benchmarks suite")
+
+                benchmark.SetDefaultCommand<BenchmarkDotNetCommand>()
+
+                benchmark
+                    .AddCommand<BenchmarkDotNetCommand>("dotnet")
+                    .WithDescription("Run the benchmarks for .NET")
+                |> ignore
+        )
         |> ignore
     )
 

@@ -20,7 +20,7 @@ module Encode =
                     (enc: Encoder<'t>)
                     : Encoder<'t option>
                     =
-                    Encode.option enc
+                    Encode.losslessOption enc
 
                 static member Lazily<'t>(enc: Lazy<Encoder<'t>>) : Encoder<'t> =
                     Encode.lazily enc
@@ -32,10 +32,7 @@ module Encode =
                     fun xs -> xs |> List.map enc |> Encode.list
 
                 static member MapOf<'k, 'v when 'k: comparison>
-                    (
-                        stringifyKey: 'k -> string,
-                        enc: Encoder<'v>
-                    )
+                    (stringifyKey: 'k -> string, enc: Encoder<'v>)
                     : Encoder<Map<'k, 'v>>
                     =
                     fun m ->
@@ -46,10 +43,7 @@ module Encode =
                         |> Encode.object
 
                 static member MapAsArrayOf<'k, 'v when 'k: comparison>
-                    (
-                        keyEncoder: Encoder<'k>,
-                        valueEncoder: Encoder<'v>
-                    )
+                    (keyEncoder: Encoder<'k>, valueEncoder: Encoder<'v>)
                     : Encoder<Map<'k, 'v>>
                     =
                     fun m ->
@@ -1076,11 +1070,7 @@ module Encode =
 #else
         static member generateEncoder<'T>
 #endif
-            (
-                ?caseStrategy: CaseStyle,
-                ?extra: ExtraCoders,
-                ?skipNullField: bool
-            )
+            (?caseStrategy: CaseStyle, ?extra: ExtraCoders, ?skipNullField: bool)
             : Encoder<'T>
             =
             let extra = defaultArg extra Extra.empty
@@ -1093,11 +1083,7 @@ module Encode =
 #else
         static member generateEncoderCached<'T>
 #endif
-            (
-                ?caseStrategy: CaseStyle,
-                ?extra: ExtraCoders,
-                ?skipNullField: bool
-            )
+            (?caseStrategy: CaseStyle, ?extra: ExtraCoders, ?skipNullField: bool)
             : Encoder<'T>
             =
             let extra = defaultArg extra Extra.empty

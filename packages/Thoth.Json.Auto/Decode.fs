@@ -20,7 +20,7 @@ module Decode =
                 Decode.lazily x
 
             static member Option<'t>(x: Decoder<'t>) : Decoder<'t option> =
-                Decode.option x
+                Decode.losslessOption x
 
             static member List<'t>(x: Decoder<'t>) : Decoder<'t list> =
                 Decode.list x
@@ -41,28 +41,19 @@ module Decode =
                 Decode.dict x
 
             static member MapAsArray<'k, 'v when 'k: comparison>
-                (
-                    keyDecoder: Decoder<'k>,
-                    valueDecoder: Decoder<'v>
-                )
+                (keyDecoder: Decoder<'k>, valueDecoder: Decoder<'v>)
                 : Decoder<Map<'k, 'v>>
                 =
                 Decode.map' keyDecoder valueDecoder
 
             static member Field<'t>
-                (
-                    name: string,
-                    x: Decoder<'t>
-                )
+                (name: string, x: Decoder<'t>)
                 : Decoder<'t>
                 =
                 Decode.field name x
 
             static member Optional<'t>
-                (
-                    name: string,
-                    x: Decoder<'t>
-                )
+                (name: string, x: Decoder<'t>)
                 : Decoder<'t option>
                 =
                 Decode.optional name x
@@ -75,37 +66,25 @@ module Decode =
             static member Fail<'t>(x: string) : Decoder<'t> = Decode.fail x
 
             static member Bind<'t, 'u>
-                (
-                    f: 't -> Decoder<'u>,
-                    x: Decoder<'t>
-                )
+                (f: 't -> Decoder<'u>, x: Decoder<'t>)
                 : Decoder<'u>
                 =
                 Decode.andThen f x
 
             static member Map<'t, 'u>
-                (
-                    f: 't -> 'u,
-                    x: Decoder<'t>
-                )
+                (f: 't -> 'u, x: Decoder<'t>)
                 : Decoder<'u>
                 =
                 Decode.map f x
 
             static member Zip<'a, 'b>
-                (
-                    x: Decoder<'a>,
-                    y: Decoder<'b>
-                )
+                (x: Decoder<'a>, y: Decoder<'b>)
                 : Decoder<'a * 'b>
                 =
                 Decode.map2 (fun x y -> x, y) x y
 
             static member Either<'t>
-                (
-                    x: Decoder<'t>,
-                    y: Decoder<'t>
-                )
+                (x: Decoder<'t>, y: Decoder<'t>)
                 : Decoder<'t>
                 =
                 Decode.oneOf
@@ -553,10 +532,7 @@ module Decode =
                             else
                                 { new Decoder<_> with
                                     member _.Decode<'JsonValue>
-                                        (
-                                            _,
-                                            value: 'JsonValue
-                                        )
+                                        (_, value: 'JsonValue)
                                         =
                                         ("",
                                          BadPrimitiveExtra(
@@ -1474,17 +1450,11 @@ module Decode =
 
 #if FABLE_COMPILER
         static member inline generateDecoder
-            (
-                ?caseStrategy: CaseStyle,
-                ?extra: ExtraCoders
-            )
+            (?caseStrategy: CaseStyle, ?extra: ExtraCoders)
             =
 #else
         static member generateDecoder
-            (
-                ?caseStrategy: CaseStyle,
-                ?extra: ExtraCoders
-            )
+            (?caseStrategy: CaseStyle, ?extra: ExtraCoders)
             =
 #endif
             let extra = defaultArg extra Extra.empty
@@ -1495,10 +1465,7 @@ module Decode =
 #else
         static member generateDecoderCached<'T>
 #endif
-            (
-                ?caseStrategy: CaseStyle,
-                ?extra: ExtraCoders
-            )
+            (?caseStrategy: CaseStyle, ?extra: ExtraCoders)
             : Decoder<'T>
             =
             let extra = defaultArg extra Extra.empty

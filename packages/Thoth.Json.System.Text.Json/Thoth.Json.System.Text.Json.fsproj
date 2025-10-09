@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Description>
-            Elm-inspired encoder and decoder for JSON, this package is for .NET runtime when you want to use Newtonsoft.Json.
+            Elm-inspired encoder and decoder for JSON, this package is for .NET runtime when you want to use System.Text.Json.
         </Description>
         <FablePackageType>library</FablePackageType>
         <PackageTags>fable-dotnet;fsharp;json</PackageTags>
@@ -28,6 +28,6 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Newtonsoft.Json" />
+        <PackageReference Include="System.Text.Json" />
     </ItemGroup>
 </Project>

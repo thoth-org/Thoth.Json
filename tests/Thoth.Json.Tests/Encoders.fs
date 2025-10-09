@@ -19,7 +19,7 @@ type UnionWithPrivateConstructor =
     | Bar of string
     | Baz
 
-let tests (runner: TestRunner<_>) =
+let tests (runner: TestRunner<_, _>) =
     testList
         "Thoth.Json.Encode"
         [
@@ -678,7 +678,9 @@ let tests (runner: TestRunner<_>) =
                                 [
                                     ("id", Encode.int 1)
                                     ("operator",
-                                     Encode.option Encode.string (Some "maxime"))
+                                     Encode.lossyOption
+                                         Encode.string
+                                         (Some "maxime"))
                                 ]
                             |> runner.Encode.toString 0
 
@@ -693,7 +695,7 @@ let tests (runner: TestRunner<_>) =
                                 [
                                     ("id", Encode.int 1)
                                     ("operator",
-                                     Encode.option Encode.string None)
+                                     Encode.lossyOption Encode.string None)
                                 ]
                             |> runner.Encode.toString 0
 
@@ -1315,6 +1317,121 @@ let tests (runner: TestRunner<_>) =
 
                         equal actual expected
 #endif
+                ]
+
+
+            testList
+                "option related encoders"
+                [
+                    testCase "lossyOption can encode None"
+                    <| fun _ ->
+                        let expected = "null"
+
+                        let actual =
+                            Encode.lossyOption Encode.int None
+                            |> runner.Encode.toString 0
+
+                        equal actual expected
+
+                    testCase "lossyOption can encode Some"
+                    <| fun _ ->
+                        let expected = "1"
+
+                        let actual =
+                            Encode.lossyOption Encode.int (Some 1)
+                            |> runner.Encode.toString 0
+
+                        equal actual expected
+
+                    testCase
+                        "lossyOption doesn't make a difference between option and nested option"
+                    <| fun _ ->
+                        let expected = "null"
+
+                        let actual =
+                            Encode.lossyOption
+                                (Encode.lossyOption Encode.int)
+                                None
+                            |> runner.Encode.toString 0
+
+                        equal actual expected
+
+                        let expected = "1"
+
+                        let actual =
+                            Encode.lossyOption
+                                (Encode.lossyOption (
+                                    Encode.lossyOption Encode.int
+                                ))
+                                (Some(Some(Some 1)))
+                            |> runner.Encode.toString 0
+
+                        equal actual expected
+
+                    testCase "losslessOption can encode None"
+                    <| fun _ ->
+                        let expected =
+                            """{
+    "$type": "option",
+    "$case": "none"
+}"""
+
+                        let actual =
+                            Encode.losslessOption Encode.int None
+                            |> runner.Encode.toString 4
+
+                        equal actual expected
+
+                    testCase "losslessOption can encode Some"
+                    <| fun _ ->
+                        let expected =
+                            """{
+    "$type": "option",
+    "$case": "some",
+    "$value": 1
+}"""
+
+                        let actual =
+                            Encode.losslessOption Encode.int (Some 1)
+                            |> runner.Encode.toString 4
+
+                        equal actual expected
+
+                    testCase
+                        "losslessOption can distinguish between different nested options"
+                    <| fun _ ->
+                        let expected =
+                            """{
+    "$type": "option",
+    "$case": "none"
+}"""
+
+                        let actual =
+                            Encode.losslessOption
+                                (Encode.losslessOption Encode.int)
+                                None
+                            |> runner.Encode.toString 4
+
+                        equal expected actual
+
+                        let expected =
+                            """{
+    "$type": "option",
+    "$case": "some",
+    "$value": {
+        "$type": "option",
+        "$case": "none"
+    }
+}"""
+
+                        let actual =
+                            Encode.losslessOption
+                                (Encode.losslessOption Encode.int)
+                                (Some None)
+                            |> runner.Encode.toString 4
+
+                        equal expected actual
+
                 ]
 
         ]

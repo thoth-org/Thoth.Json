@@ -38,7 +38,7 @@ type TestJavaScriptCommand() =
                     |> CmdLine.appendRaw "fable"
                     |> CmdLine.appendPrefix "--outDir" outDir
                     |> CmdLine.appendRaw "--noCache"
-                    |> CmdLine.appendRaw "--test:MSBuildCracker"
+                    // |> CmdLine.appendRaw "--test:MSBuildCracker"
 
                     if settings.IsWatch then
                         CmdLine.empty
@@ -72,6 +72,28 @@ type TestNewtonsoftCommand() =
             |> CmdLine.appendPrefix
                 "--project"
                 Workspace.tests.``Thoth.Json.Tests.Newtonsoft``.``.``
+            |> CmdLine.appendRaw
+                "--property:DefineConstants=\"THOTH_JSON_NEWTONSOFT\""
+            |> CmdLine.toString
+        )
+
+        0
+
+type TestSystemTextJsonCommand() =
+    inherit Command<TestSettings>()
+    interface ICommandLimiter<TestSettings>
+
+    override _.Execute(context: CommandContext, settings: TestSettings) =
+        Command.Run(
+            "dotnet",
+            CmdLine.empty
+            |> CmdLine.appendIf settings.IsWatch "watch"
+            |> CmdLine.appendRaw "run"
+            |> CmdLine.appendPrefix
+                "--project"
+                Workspace.tests.``Thoth.Json.Tests.System.Text.Json``.``.``
+            |> CmdLine.appendRaw
+                "--property:DefineConstants=\"THOTH_JSON_SYSTEM_TEXT_JSON\""
             |> CmdLine.toString
         )
 
@@ -95,7 +117,7 @@ type TestPythonCommand() =
             |> CmdLine.appendPrefix "--outDir" outDir
             |> CmdLine.appendPrefix "--lang" "python"
             |> CmdLine.appendRaw "--noCache"
-            |> CmdLine.appendRaw "--test:MSBuildCracker"
+            // |> CmdLine.appendRaw "--test:MSBuildCracker"
             |> CmdLine.appendIf settings.IsWatch "--watch"
             |> CmdLine.appendRaw runArg
             |> CmdLine.appendRaw "python"
@@ -127,7 +149,7 @@ type TestLegacyCommand() =
                     |> CmdLine.appendRaw "fable"
                     |> CmdLine.appendPrefix "--outDir" outDir
                     |> CmdLine.appendRaw "--noCache"
-                    |> CmdLine.appendRaw "--test:MSBuildCracker"
+                    // |> CmdLine.appendRaw "--test:MSBuildCracker"
 
                     if settings.IsWatch then
                         CmdLine.empty
@@ -165,7 +187,7 @@ type TestTypeScriptCommand() =
             |> CmdLine.appendPrefix "--outDir" outDir
             |> CmdLine.appendPrefix "--lang" "typescript"
             |> CmdLine.appendRaw "--noCache"
-            |> CmdLine.appendRaw "--test:MSBuildCracker"
+            // |> CmdLine.appendRaw "--test:MSBuildCracker"
             |> CmdLine.appendIf settings.IsWatch "--watch"
             |> CmdLine.appendRaw "--runWatch"
             |> CmdLine.appendRaw "npx tsc"
@@ -185,6 +207,7 @@ type TestCommand() =
         // Not stable offically supported, yet as there are bugs that needs to be fixed in Fable
         // TestTypeScriptCommand().Execute(context, settings) |> ignore
         TestNewtonsoftCommand().Execute(context, settings) |> ignore
+        TestSystemTextJsonCommand().Execute(context, settings) |> ignore
         TestPythonCommand().Execute(context, settings) |> ignore
         TestLegacyCommand().Execute(context, settings) |> ignore
 

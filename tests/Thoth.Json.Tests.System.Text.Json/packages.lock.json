@@ -1,7 +1,7 @@
 {
   "version": 2,
   "dependencies": {
-    ".NETStandard,Version=v2.0": {
+    "net8.0": {
       "DotNet.ReproducibleBuilds": {
         "type": "Direct",
         "requested": "[1.1.1, )",
@@ -13,12 +13,6 @@
           "Microsoft.SourceLink.GitHub": "1.1.1",
           "Microsoft.SourceLink.GitLab": "1.1.1"
         }
-      },
-      "Fable.Core": {
-        "type": "Direct",
-        "requested": "[4.1.0, )",
-        "resolved": "4.1.0",
-        "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
       },
       "Fable.Pyxpecto": {
         "type": "Direct",
@@ -37,24 +31,10 @@
         "resolved": "5.0.2",
         "contentHash": "DpcajqENgb3VXaHw1FKfVS+TWwEzck1PCajqLwBAVrtd1lfxd7T8JISVZBdV1mX9+2g48+tIgpNaVJWObdMrBw=="
       },
-      "NETStandard.Library": {
-        "type": "Direct",
-        "requested": "[2.0.3, )",
-        "resolved": "2.0.3",
-        "contentHash": "st47PosZSHrjECdjeIzZQbzivYBJFv6P2nv4cj2ypdI204DO+vZ7l5raGMiX4eXMJ53RfOIg+/s4DHVZ54Nu2A==",
-        "dependencies": {
-          "Microsoft.NETCore.Platforms": "1.1.0"
-        }
-      },
       "Microsoft.Build.Tasks.Git": {
         "type": "Transitive",
         "resolved": "1.1.1",
         "contentHash": "AT3HlgTjsqHnWpBHSNeR0KxbLZD7bztlZVj7I8vgeYG9SYqbeFGh0TM/KVtC6fg53nrWHl3VfZFvb5BiQFcY6Q=="
-      },
-      "Microsoft.NETCore.Platforms": {
-        "type": "Transitive",
-        "resolved": "1.1.0",
-        "contentHash": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A=="
       },
       "Microsoft.SourceLink.AzureRepos.Git": {
         "type": "Transitive",
@@ -97,12 +77,15 @@
           "Microsoft.SourceLink.Common": "1.1.1"
         }
       },
-      "thoth.json.auto": {
-        "type": "Project",
-        "dependencies": {
-          "FSharp.Core": "[5.0.0, )",
-          "Thoth.Json.Core": "[1.0.0, )"
-        }
+      "System.IO.Pipelines": {
+        "type": "Transitive",
+        "resolved": "9.0.0",
+        "contentHash": "eA3cinogwaNB4jdjQHOP3Z3EuyiDII7MT35jgtnsA4vkn0LUrrSHsU0nzHTzFzmaFYeKV7MYyMxOocFzsBHpTw=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "9.0.0",
+        "contentHash": "e2hMgAErLbKyUUwt18qSBf9T5Y+SFAL3ZedM8fLupkVj8Rj2PZ9oxQ37XX2LF8fTO1wNIxvKpihD7Of7D/NxZw=="
       },
       "thoth.json.core": {
         "type": "Project",
@@ -111,11 +94,12 @@
           "Fable.Core": "[4.1.0, )"
         }
       },
-      "thoth.json.javascript": {
+      "thoth.json.system.text.json": {
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[5.0.2, )",
           "Fable.Core": "[4.1.0, )",
+          "System.Text.Json": "[9.0.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
       },
@@ -125,9 +109,14 @@
           "FSharp.Core": "[5.0.2, )",
           "Fable.Core": "[4.1.0, )",
           "Fable.Pyxpecto": "[1.1.0, )",
-          "Thoth.Json.Auto": "[1.0.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
+      },
+      "Fable.Core": {
+        "type": "CentralTransitive",
+        "requested": "[4.1.0, )",
+        "resolved": "4.1.0",
+        "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
       },
       "Fable.Python": {
         "type": "CentralTransitive",
@@ -137,6 +126,16 @@
         "dependencies": {
           "FSharp.Core": "4.7.2",
           "Fable.Core": "[4.1.0, 5.0.0)"
+        }
+      },
+      "System.Text.Json": {
+        "type": "CentralTransitive",
+        "requested": "[9.0.0, )",
+        "resolved": "9.0.0",
+        "contentHash": "js7+qAu/9mQvnhA4EfGMZNEzXtJCDxgkgj8ohuxq/Qxv+R56G+ljefhiJHOxTNiw54q8vmABCWUwkMulNdlZ4A==",
+        "dependencies": {
+          "System.IO.Pipelines": "9.0.0",
+          "System.Text.Encodings.Web": "9.0.0"
         }
       }
     }

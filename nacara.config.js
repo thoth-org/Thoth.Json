@@ -3,7 +3,7 @@ export default {
         title: "Thoth.Json",
         url: "https://thoth-org.github.io/",
         baseUrl: "/Thoth.Json/",
-        editUrl: "https://github.com/thoth-org/Thoth.Json/edit/master/docs"
+        editUrl: "https://github.com/thoth-org/Thoth.Json/edit/main/docs"
     },
     navbar: {
         start: [

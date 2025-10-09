@@ -2,9 +2,6 @@ name: CI
 on:
   pull_request:
     branches: [ main, develop ]
-  push:
-    branches:
-      - main
   workflow_dispatch:
 jobs:
   build:
@@ -26,7 +23,7 @@ jobs:
         if: matrix.platform == 'windows-latest'
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: '3.10' 
       - run: python --version
       - name: Test (Unix)
         if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'macOS-latest'

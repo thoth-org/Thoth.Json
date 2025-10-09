@@ -14,6 +14,12 @@
           "Microsoft.SourceLink.GitLab": "1.1.1"
         }
       },
+      "EasyBuild.PackageReleaseNotes.Tasks": {
+        "type": "Direct",
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "jebz09lxa6pEJzft9Tr/PSNt5r7AVt5xmX3g4Ra+nLU1qtSrOh+hFgsywGn7fVME3LpbzhlX+2J8F7G9y3PxUQ=="
+      },
       "Fable.Core": {
         "type": "Direct",
         "requested": "[4.1.0, )",
@@ -22,9 +28,9 @@
       },
       "Fable.Package.SDK": {
         "type": "Direct",
-        "requested": "[0.1.0, )",
-        "resolved": "0.1.0",
-        "contentHash": "wrEcGovUimN0PRGgVHlX/gsqCm5d/p9eOG74iaHoteX2dsFZQ9P7d066LRAl5Gj7GUHy7azLyDE41KFvZx1v9A=="
+        "requested": "[1.3.0, )",
+        "resolved": "1.3.0",
+        "contentHash": "7BntAnpWy7qsdCv+lYvBNx+OiC10SNMci6WUDsK8nILUwRXTSEWE947g0JYOZeXv7hcssgkfgL+o/eXAar9FWQ=="
       },
       "Fable.Python": {
         "type": "Direct",
@@ -38,15 +44,9 @@
       },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[5.0.0, )",
-        "resolved": "5.0.0",
-        "contentHash": "iHoYXA0VaSQUONGENB1aVafjDDZDZpwu39MtaRCTrmwFW/cTcK0b2yKNVYneFHJMc3ChtsSoM9lNtJ1dYXkHfA=="
-      },
-      "Ionide.KeepAChangelog.Tasks": {
-        "type": "Direct",
-        "requested": "[0.1.8, )",
-        "resolved": "0.1.8",
-        "contentHash": "hHUZIVz9BlF++B5w183c5HwbqSIXUtJU+lxhKz3ebQ5X8INBIWV7dS/FK8uSqSMUTYavuKkRRTZvJlbYXPUykg=="
+        "requested": "[5.0.2, )",
+        "resolved": "5.0.2",
+        "contentHash": "DpcajqENgb3VXaHw1FKfVS+TWwEzck1PCajqLwBAVrtd1lfxd7T8JISVZBdV1mX9+2g48+tIgpNaVJWObdMrBw=="
       },
       "NETStandard.Library": {
         "type": "Direct",
@@ -111,9 +111,8 @@
       "thoth.json.core": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[5.0.0, )",
-          "Fable.Core": "[4.1.0, )",
-          "Fable.Package.SDK": "[0.1.0, )"
+          "FSharp.Core": "[5.0.2, )",
+          "Fable.Core": "[4.1.0, )"
         }
       }
     }
