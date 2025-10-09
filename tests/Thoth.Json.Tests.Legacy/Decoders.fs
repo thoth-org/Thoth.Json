@@ -4516,7 +4516,9 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
                         let errorMsg =
                             try
                                 let decoder =
-                                    Decode.Auto.generateDecoder<RecordWithRequiredClass> (
+                                    Decode.Auto.generateDecoder<
+                                        RecordWithRequiredClass
+                                     > (
                                         caseStrategy = CamelCase
                                     )
 
