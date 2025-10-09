@@ -20,6 +20,7 @@ Pick the right additional package for your runtime:
         <Compile Include="Types.fs" />
         <Compile Include="Decode.fs" />
         <Compile Include="Encode.fs" />
+        <!-- <Compile Include="Extra.fs" /> -->
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="EasyBuild.PackageReleaseNotes.Tasks">
