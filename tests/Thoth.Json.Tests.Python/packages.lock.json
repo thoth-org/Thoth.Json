@@ -86,7 +86,7 @@
       "thoth.json.auto": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[5.0.0, )",
+          "FSharp.Core": "[5.0.2, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
       },
