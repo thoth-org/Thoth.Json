@@ -105,9 +105,15 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                             Error
                                 "Given an invalid JSON: Unexpected non-whitespace character after JSON at position 5"
 #else
+#if THOTH_JSON_NEWTONSOFT
                         let expected: Result<MyUnion, string> =
                             Error
                                 "Given an invalid JSON: Additional text encountered after finished reading JSON content: ,. Path '', line 1, position 5."
+#else
+                        let expected: Result<MyUnion, string> =
+                            Error
+                                "Given an invalid JSON: ',' is invalid after a single JSON value. Expected end of data. LineNumber: 0 | BytePositionInLine: 5."
+#endif
 #endif
 #endif
                         let decoder = Decode.Auto.generateDecoder ()
