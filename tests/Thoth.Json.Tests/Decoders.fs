@@ -112,7 +112,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 #if FABLE_COMPILER_JAVASCRIPT
                         let expected: Result<float, string> =
                             Error
-                                "Given an invalid JSON: Expected double-quoted property name in JSON at position 172"
+                                "Given an invalid JSON: Expected double-quoted property name in JSON at position 172 (line 8 column 17)"
 #endif
 
 #if FABLE_COMPILER_PYTHON

@@ -94,7 +94,7 @@ let tests: Test =
 #if FABLE_COMPILER
                         let expected: Result<MyUnion, string> =
                             Error
-                                "Given an invalid JSON: Unexpected non-whitespace character after JSON at position 5"
+                                "Given an invalid JSON: Unexpected non-whitespace character after JSON at position 5 (line 1 column 6)"
 #else
                         let expected: Result<MyUnion, string> =
                             Error
@@ -111,7 +111,7 @@ let tests: Test =
 #if FABLE_COMPILER
                         let expected: Result<float, string> =
                             Error
-                                "Given an invalid JSON: Expected double-quoted property name in JSON at position 172"
+                                "Given an invalid JSON: Expected double-quoted property name in JSON at position 172 (line 8 column 17)"
 #else
                         let expected: Result<float, string> =
                             Error
@@ -3967,9 +3967,8 @@ Expecting a boolean but instead got: "not_a_boolean"
                         let json = Encode.Auto.toString (4, value)
 
                         let res =
-                            Decode.Auto
-                                .unsafeFromString<DateTimeOffset>(json)
-                                // .ToLocalTime()
+                            Decode.Auto.unsafeFromString<DateTimeOffset> (json)
+                        // .ToLocalTime()
 
                         equal value.Date res.Date
                         equal value.Hour res.Hour
@@ -4517,7 +4516,9 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
                         let errorMsg =
                             try
                                 let decoder =
-                                    Decode.Auto.generateDecoder<RecordWithRequiredClass> (
+                                    Decode.Auto.generateDecoder<
+                                        RecordWithRequiredClass
+                                     > (
                                         caseStrategy = CamelCase
                                     )
 
