@@ -19,20 +19,21 @@
       },
       "EasyBuild.Tools": {
         "type": "Direct",
-        "requested": "[1.1.1, )",
-        "resolved": "1.1.1",
-        "contentHash": "YELY3CKRsnnL5aQosMqJM06bZWDYtT3wqpD1ndiebc3fjeamGs7TRqsS7tAkkFpbK8942/sNtR7TWm4yN2kIgg==",
+        "requested": "[5.0.1, )",
+        "resolved": "5.0.1",
+        "contentHash": "m3y6ni3a+Z39UWcRkdh5naRYuSNz1ZYj7ASeg3weJV3M/ofqIOCfJBb0a0J1YiAW7jfczo0YoDVzHRXz5JAAsw==",
         "dependencies": {
           "BlackFox.CommandLine": "1.0.0",
-          "FSharp.Core": "5.0.2",
-          "SimpleExec": "12.0.0"
+          "FSharp.Core": "6.0.0",
+          "SimpleExec": "12.0.0",
+          "System.Text.Json": "9.0.0"
         }
       },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[5.0.2, )",
-        "resolved": "5.0.2",
-        "contentHash": "DpcajqENgb3VXaHw1FKfVS+TWwEzck1PCajqLwBAVrtd1lfxd7T8JISVZBdV1mX9+2g48+tIgpNaVJWObdMrBw=="
+        "requested": "[6.0.0, )",
+        "resolved": "6.0.0",
+        "contentHash": "fbv1UwJ2LXVcFCt+GGDPu0sIYA5C6gdDvAupDj3iLQF3clRkua/6J33f+FiGQa8P1tEa+zmz3wrjoTnXZ1UiYg=="
       },
       "SimpleExec": {
         "type": "Direct",
@@ -53,6 +54,25 @@
         "type": "Transitive",
         "resolved": "0.49.1",
         "contentHash": "USV+pdu49OJ3nCjxNuw1K9Zw/c1HCBbwbjXZp0EOn6wM99tFdAtN34KEBZUMyRuJuXlUMDqhd8Yq9obW2MslYA=="
+      },
+      "System.IO.Pipelines": {
+        "type": "Transitive",
+        "resolved": "9.0.0",
+        "contentHash": "eA3cinogwaNB4jdjQHOP3Z3EuyiDII7MT35jgtnsA4vkn0LUrrSHsU0nzHTzFzmaFYeKV7MYyMxOocFzsBHpTw=="
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "9.0.0",
+        "contentHash": "e2hMgAErLbKyUUwt18qSBf9T5Y+SFAL3ZedM8fLupkVj8Rj2PZ9oxQ37XX2LF8fTO1wNIxvKpihD7Of7D/NxZw=="
+      },
+      "System.Text.Json": {
+        "type": "Transitive",
+        "resolved": "9.0.0",
+        "contentHash": "js7+qAu/9mQvnhA4EfGMZNEzXtJCDxgkgj8ohuxq/Qxv+R56G+ljefhiJHOxTNiw54q8vmABCWUwkMulNdlZ4A==",
+        "dependencies": {
+          "System.IO.Pipelines": "9.0.0",
+          "System.Text.Encodings.Web": "9.0.0"
+        }
       }
     }
   }

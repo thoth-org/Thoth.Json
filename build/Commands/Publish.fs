@@ -8,14 +8,15 @@ open EasyBuild.Commands.Test
 open EasyBuild.Workspace
 open SimpleExec
 open BlackFox.CommandLine
+open EasyBuild.Tools.ChangelogGen
 
 let private publish (projectDir: string) (tag: string) =
     printfn $"Publishing {projectDir}"
 
-    let changelogPath = Path.Combine(projectDir, "CHANGELOG.md")
+    let changelogPath = Path.Combine(projectDir, "CHANGELOG.md") |> FileInfo
 
-    let _ =
-        DotNet.changelogGen (
+    let changelogResult =
+        ChangelogGen.tryRun (
             changelogPath,
             tagFilter = [ tag ],
             config = Workspace.``commit.config.json``,
@@ -23,17 +24,23 @@ let private publish (projectDir: string) (tag: string) =
             allowDirty = true
         )
 
-    // Delete the bin folder, so dotnet pack will always create a new package
-    // Otherwise, if the package already exists, it will not be created
-    // and we can't get the package path
-    let binFolder = Path.Combine(projectDir, "bin")
+    match changelogResult with
+    | ChangelogGenResult.Error err -> failwith err
+    | ChangelogGenResult.NoVersionBump -> printfn "No changes to release."
+    | ChangelogGenResult.NewVersion newVersion ->
+        printfn $"Releasing version {newVersion}"
 
-    if Directory.Exists binFolder then
-        Directory.Delete(binFolder, true)
+        // Delete the bin folder, so dotnet pack will always create a new package
+        // Otherwise, if the package already exists, it will not be created
+        // and we can't get the package path
+        let binFolder = Path.Combine(projectDir, "bin")
 
-    let nupkgPath = DotNet.pack projectDir
+        if Directory.Exists binFolder then
+            Directory.Delete(binFolder, true)
 
-    DotNet.nugetPush (nupkgPath, skipDuplicate = true)
+        let nupkgPath = DotNet.pack projectDir
+
+        DotNet.nugetPush (nupkgPath, skipDuplicate = true)
 
 type PublishSettings() =
     inherit CommandSettings()
