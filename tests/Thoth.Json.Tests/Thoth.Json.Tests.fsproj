@@ -11,6 +11,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\packages\Thoth.Json.Core\Thoth.Json.Core.fsproj" />
+        <ProjectReference Include="..\..\packages\Thoth.Json.Auto\Thoth.Json.Auto.fsproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Fable.Core" />

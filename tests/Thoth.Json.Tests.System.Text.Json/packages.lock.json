@@ -87,6 +87,13 @@
         "resolved": "9.0.0",
         "contentHash": "e2hMgAErLbKyUUwt18qSBf9T5Y+SFAL3ZedM8fLupkVj8Rj2PZ9oxQ37XX2LF8fTO1wNIxvKpihD7Of7D/NxZw=="
       },
+      "thoth.json.auto": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[5.0.2, )",
+          "Thoth.Json.Core": "[1.0.0, )"
+        }
+      },
       "thoth.json.core": {
         "type": "Project",
         "dependencies": {
@@ -107,6 +114,7 @@
           "FSharp.Core": "[5.0.2, )",
           "Fable.Core": "[4.1.0, )",
           "Fable.Pyxpecto": "[1.1.0, )",
+          "Thoth.Json.Auto": "[1.0.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
       },

@@ -271,6 +271,9 @@ module Encode =
         |> List.map (tuple2 keyEncoder valueEncoder)
         |> list
 
+    let lazily<'t> (enc: Lazy<Encoder<'t>>) : Encoder<'t> =
+        fun (x: 't) -> enc.Value x
+
     ////////////
     /// Enum ///
     ///////////

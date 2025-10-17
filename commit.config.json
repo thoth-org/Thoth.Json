@@ -18,6 +18,7 @@
         "javascript",
         "python",
         "newtonsoft",
-        "system.text.json"
+        "system.text.json",
+        "auto"
     ]
 }
