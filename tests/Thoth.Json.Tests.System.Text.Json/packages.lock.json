@@ -90,15 +90,13 @@
       "thoth.json.core": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[5.0.2, )",
-          "Fable.Core": "[4.1.0, )"
+          "FSharp.Core": "[5.0.2, )"
         }
       },
       "thoth.json.system.text.json": {
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[5.0.2, )",
-          "Fable.Core": "[4.1.0, )",
           "System.Text.Json": "[9.0.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }

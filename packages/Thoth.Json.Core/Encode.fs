@@ -1,6 +1,5 @@
 namespace Thoth.Json.Core
 
-open Fable.Core
 open System.Globalization
 open System
 

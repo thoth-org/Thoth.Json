@@ -100,8 +100,7 @@
       "thoth.json.core": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[5.0.2, )",
-          "Fable.Core": "[4.1.0, )"
+          "FSharp.Core": "[5.0.2, )"
         }
       },
       "Fable.Python": {

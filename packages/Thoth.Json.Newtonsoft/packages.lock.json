@@ -20,12 +20,6 @@
         "resolved": "2.0.0",
         "contentHash": "jebz09lxa6pEJzft9Tr/PSNt5r7AVt5xmX3g4Ra+nLU1qtSrOh+hFgsywGn7fVME3LpbzhlX+2J8F7G9y3PxUQ=="
       },
-      "Fable.Core": {
-        "type": "Direct",
-        "requested": "[4.1.0, )",
-        "resolved": "4.1.0",
-        "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
-      },
       "Fable.Package.SDK": {
         "type": "Direct",
         "requested": "[1.3.0, )",
@@ -107,8 +101,7 @@
       "thoth.json.core": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[5.0.2, )",
-          "Fable.Core": "[4.1.0, )"
+          "FSharp.Core": "[5.0.2, )"
         }
       }
     }
