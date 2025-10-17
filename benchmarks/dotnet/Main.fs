@@ -43,6 +43,8 @@ let userJson =
     "lastname": "Stormblessed",
     "email": "coskun.sadiklar@example.com",
     "age": 77,
+    "cell": "(555)-555-5555",
+    "phone": "(555)-555-5555",
     "dob": "1947-07-30T14:54:27.372Z",
     "picture": "https://randomuser.me/api/portraits/men/95.jpg"
 }"""

@@ -327,15 +327,13 @@
       "thoth.json.core": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[5.0.2, )",
-          "Fable.Core": "[4.1.0, )"
+          "FSharp.Core": "[5.0.2, )"
         }
       },
       "thoth.json.newtonsoft": {
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[5.0.2, )",
-          "Fable.Core": "[4.1.0, )",
           "Newtonsoft.Json": "[13.0.1, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
@@ -344,16 +342,9 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[5.0.2, )",
-          "Fable.Core": "[4.1.0, )",
           "System.Text.Json": "[9.0.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
-      },
-      "Fable.Core": {
-        "type": "CentralTransitive",
-        "requested": "[4.1.0, )",
-        "resolved": "4.1.0",
-        "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
       },
       "Newtonsoft.Json": {
         "type": "CentralTransitive",
