@@ -8,6 +8,7 @@
         <Compile Include="Decoders.fs" />
         <Compile Include="Encoders.fs" />
         <Compile Include="BackAndForth.fs" />
+        <Compile Include="Syntax.fs" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\packages\Thoth.Json.Core\Thoth.Json.Core.fsproj" />
