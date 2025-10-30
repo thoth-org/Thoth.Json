@@ -101,4 +101,6 @@ module Syntax =
 
         member this.Return(x) = Decode.succeed x
 
+        member this.ReturnFrom(x: Decoder<'a>) = x
+
     let decoder = DecoderBuilder()
