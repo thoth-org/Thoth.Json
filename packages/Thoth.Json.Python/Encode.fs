@@ -3,7 +3,7 @@ namespace Thoth.Json.Python
 open Fable.Core
 open Fable.Core.PyInterop
 open Thoth.Json.Core
-open Fable.Python
+open Fable.Python.Json
 
 [<RequireQualifiedAccess>]
 module Encode =
@@ -51,14 +51,23 @@ module Encode =
 
         // Python.Json.json.dumps(json, ?indent = space)
         if space = 0 then
-            Python.Json.json.dumps (
+            Json.dumps (
                 json,
                 separators =
                     [|
                         ","
                         ":"
                     |],
-                ensure_ascii = false
+                ensureAscii = false
             )
         else
-            Python.Json.json.dumps (json, indent = space, ensure_ascii = false)
+            Json.dumps (
+                json,
+                indent = space,
+                separators =
+                    [|
+                        ","
+                        ": "
+                    |],
+                ensureAscii = false
+            )

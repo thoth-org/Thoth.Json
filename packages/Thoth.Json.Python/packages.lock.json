@@ -22,9 +22,12 @@
       },
       "Fable.Core": {
         "type": "Direct",
-        "requested": "[4.1.0, )",
-        "resolved": "4.1.0",
-        "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
+        "requested": "[5.0.0-beta.4, )",
+        "resolved": "5.0.0-beta.4",
+        "contentHash": "IECbOcWdDtToG9CHixOkDHiDiWHj982UvKvLys4LcJj3PXTZqSBPrZqdrJgKaSxuPlAiRGskHRo79oP/Q7zEAA==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2"
+        }
       },
       "Fable.Package.SDK": {
         "type": "Direct",
@@ -34,19 +37,19 @@
       },
       "Fable.Python": {
         "type": "Direct",
-        "requested": "[4.3.0, )",
-        "resolved": "4.3.0",
-        "contentHash": "KT5PI4NyMtVLDcmDkf5SeqwtFjVO17u27xr45qXfYWG12UePHxGjQJoI16OafIzlEQ6cHfAuRljhZGKIlvOJNQ==",
+        "requested": "[5.0.0-alpha.21.3, )",
+        "resolved": "5.0.0-alpha.21.3",
+        "contentHash": "iTBzOvJ4Fn0ULNhAk4vTx1myCwv6Mmet1bMYAKlY8fVE/Gt9CG8xdnstROePA+fIXG2wjT1mnV9EjJPHq3TaLw==",
         "dependencies": {
-          "FSharp.Core": "4.7.2",
-          "Fable.Core": "[4.1.0, 5.0.0)"
+          "FSharp.Core": "5.0.0",
+          "Fable.Core": "[5.0.0-beta.4]"
         }
       },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[5.0.2, )",
-        "resolved": "5.0.2",
-        "contentHash": "DpcajqENgb3VXaHw1FKfVS+TWwEzck1PCajqLwBAVrtd1lfxd7T8JISVZBdV1mX9+2g48+tIgpNaVJWObdMrBw=="
+        "requested": "[8.0.403, )",
+        "resolved": "8.0.403",
+        "contentHash": "t1Pvv2++3zMQKKNuiQc1Lz4TCdaBajgG4mLhOE8AoFzborHQ/JbjIaJr6Mrq8m2z15KLu4r6Qz7E3oeACpljTg=="
       },
       "NETStandard.Library": {
         "type": "Direct",
@@ -111,7 +114,7 @@
       "thoth.json.core": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[5.0.2, )"
+          "FSharp.Core": "[8.0.403, )"
         }
       }
     }

@@ -4,6 +4,7 @@ open Fable.Core
 open Fable.Core.PyInterop
 open Thoth.Json.Core
 open Fable.Python
+open Fable.Python.Fable.Types
 
 [<AutoOpen>]
 module Interop =
@@ -35,10 +36,11 @@ module Decode =
             member _.isString jsonValue = jsonValue :? string
 
             member _.isNumber jsonValue =
-                pyInstanceof jsonValue numbers.Number
-                // In Python, bool is a subclass of int so we need to check
-                // that the value is not a bool
-                && not (pyInstanceof jsonValue pyBool)
+                (pyInstanceof jsonValue numbers.Number
+                 // In Python, bool is a subclass of int so we need to check
+                 // that the value is not a bool
+                 && not (pyInstanceof jsonValue pyBool))
+                || isNumericType jsonValue
 
             member _.isBoolean jsonValue = jsonValue :? bool
             member _.isNullValue jsonValue = isNull jsonValue
@@ -50,7 +52,8 @@ module Decode =
             member _.hasProperty fieldName jsonValue =
                 emitPyStatement (jsonValue, fieldName) "return $1 in $0"
 
-            member _.isIntegralValue jsonValue = pyInstanceof jsonValue pyInt
+            member _.isIntegralValue jsonValue =
+                pyInstanceof jsonValue pyInt || isIntegralType jsonValue
 
             member _.asString jsonValue = unbox jsonValue
             member _.asBoolean jsonValue = unbox jsonValue
@@ -66,7 +69,7 @@ module Decode =
                 jsonValue?(fieldName)
 
             member _.anyToString jsonValue =
-                Python.Json.json.dumps (jsonValue, indent = 4)
+                Fable.Python.Json.Json.dumps (jsonValue, indent = 4)
         }
 
     let fromValue (decoder: Decoder<'T>) =
