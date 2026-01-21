@@ -1434,6 +1434,42 @@ module Decode =
         =
         map Map.ofSeq (array (tuple2 keyDecoder valueDecoder))
 
+    type private FixDecoder<'a>(make: Decoder<'a> -> Decoder<'a>) as this =
+        let self = make this
+
+        interface Decoder<'a> with
+            member this.Decode
+                (helpers: IDecoderHelpers<'JsonValue>, value: 'JsonValue)
+                =
+                self.Decode(helpers, value)
+
+    /// <summary>
+    /// Allow to build a decoder that can call itself
+    /// </summary>
+    /// <example>
+    /// <code lang="fsharp">
+    /// type Tree =
+    ///     | Empty
+    ///     | Branch of Tree * int * Tree
+    ///
+    /// module Tree =
+    ///
+    ///     let decode =
+    ///         Decode.fix
+    ///             (fun self ->
+    ///                 Decode.oneOf
+    ///                     [
+    ///                         Decode.unit
+    ///                             |> Decode.map (fun () -> Tree.Empty)
+    ///
+    ///                         Decode.tuple3 self Decode.int self
+    ///                             |> Decode.map Tree.Branch
+    ///                     ])
+    /// </code>
+    /// </example>
+    let fix (make: Decoder<'a> -> Decoder<'a>) : Decoder<'a> =
+        FixDecoder<'a>(make)
+
 ////////////
 // Enum ///
 /////////

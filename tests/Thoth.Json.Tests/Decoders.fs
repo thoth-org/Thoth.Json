@@ -46,6 +46,10 @@ type UnionWithPrivateConstructor =
 
 type UnionWithMultipleFields = | Multi of string * int * float
 
+type Tree<'a> =
+    | Empty
+    | Branch of Tree<'a> * 'a * Tree<'a>
+
 let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
     testList
         "Thoth.Json.Decode"
@@ -2827,6 +2831,41 @@ Expecting an object with a field named `version` but instead got:
                                 ]
 
                         let actual = runner.Decode.fromString decodeAll "{}"
+
+                        equal expected actual
+
+
+                    testCase "fix works"
+                    <| fun _ ->
+                        let expected =
+                            Ok(
+                                Tree.Branch(
+                                    Tree.Empty,
+                                    3,
+                                    Tree.Branch(
+                                        Tree.Branch(Tree.Empty, 5, Tree.Empty),
+                                        4,
+                                        Tree.Empty
+                                    )
+                                )
+                            )
+
+                        let decoder =
+                            Decode.fix (fun self ->
+                                Decode.oneOf
+                                    [
+                                        Decode.unit
+                                        |> Decode.map (fun () -> Tree.Empty)
+
+                                        Decode.tuple3 self Decode.int self
+                                        |> Decode.map Tree.Branch
+                                    ]
+                            )
+
+                        let actual =
+                            runner.Decode.fromString
+                                decoder
+                                "[ null, 3, [ [ null, 5, null ], 4, null ]]"
 
                         equal expected actual
                 ]
