@@ -1,5 +1,7 @@
 namespace Thoth.Json.Core
 
+open System.Numerics
+
 type IDecoderHelpers<'JsonValue> =
     abstract isString: 'JsonValue -> bool
     abstract isNumber: 'JsonValue -> bool
@@ -57,24 +59,16 @@ type Decoder<'T> =
 /// A JSON value
 /// </summary>
 /// <remarks>
-/// Some types don't have a direct representation in this DU,
-/// this to make sure we represent them in the same way between the different
-/// backends.
-///
-/// For example, <c>decimal</c> use <c>string</c> as the underlying type.
+/// Numbers are representated as `string` so that the consumer can decide on precision
 /// </remarks>
 [<RequireQualifiedAccess; NoComparison>]
 type Json =
     | String of string
-    | Char of char
-    | DecimalNumber of float
+    | Number of string
     | Null
     | Boolean of bool
-    | Object of (string * Json) seq
-    | Array of Json[]
-    // Thoth.Json as an abritrary limit to the size of numbers
-    | IntegralNumber of uint32
-    | Unit
+    | Object of (string * Json) list
+    | Array of Json list
 
 type IEncodable =
     abstract member Encode<'JsonValue> :

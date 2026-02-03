@@ -841,7 +841,75 @@ module Decode =
                     ("", BadPrimitive("null", value)) |> Error
         }
 
-    let value _ v = Ok v
+    type private ValueDecoder() =
+        interface Decoder<Json> with
+            member this.Decode
+                (helpers: IDecoderHelpers<'JsonValue>, value: 'JsonValue)
+                : Result<Json, DecoderError<'JsonValue>>
+                =
+                let decoder = this :> Decoder<_>
+
+                if helpers.isBoolean value then
+                    helpers.asBoolean value |> Json.Boolean |> Ok
+                elif helpers.isNullValue value then
+                    Json.Null |> Ok
+                elif helpers.isString value then
+                    helpers.asString value |> Json.String |> Ok
+                // elif helpers.isIntegralValue value then
+                //     helpers.asInt value |> Json.Number |> Ok
+                elif helpers.isNumber value then
+                    helpers.asString value |> Json.Number |> Ok
+                elif helpers.isArray value then
+                    let tokens = helpers.asArray value
+                    let result = Array.zeroCreate (Array.length tokens)
+
+                    let mutable i = 0
+                    let mutable error: DecoderError<_> option = None
+
+                    while i < tokens.Length && error.IsNone do
+                        let value = tokens.[i]
+
+                        match decoder.Decode(helpers, value) with
+                        | Ok value -> result[i] <- value
+                        | Error er ->
+                            let x = Some(er |> Helpers.prependPath $".[%i{i}]")
+
+                            error <- x
+
+                        i <- i + 1
+
+                    if error.IsNone then
+                        result |> Seq.toList |> Json.Array |> Ok
+                    else
+                        Error error.Value
+                elif helpers.isObject value then
+                    let props = helpers.getProperties value |> Seq.toArray
+                    let result = Array.zeroCreate (Array.length props)
+
+                    let mutable i = 0
+                    let mutable error: DecoderError<_> option = None
+
+                    while i < props.Length && error.IsNone do
+                        let key = props[i]
+                        let value = helpers.getProperty (key, value)
+
+                        match decoder.Decode(helpers, value) with
+                        | Ok value -> result[i] <- key, value
+                        | Error er ->
+                            let x = Some(er |> Helpers.prependPath ("." + key))
+
+                            error <- x
+
+                        i <- i + 1
+
+                    if error.IsNone then
+                        result |> Seq.toList |> Json.Object |> Ok
+                    else
+                        Error error.Value
+                else
+                    Error("", BadPrimitive("any", value))
+
+    let value: Decoder<Json> = ValueDecoder()
 
     let succeed (output: 'a) : Decoder<'a> =
         { new Decoder<'a> with
