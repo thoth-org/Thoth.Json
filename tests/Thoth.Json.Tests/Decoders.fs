@@ -2868,6 +2868,72 @@ Expecting an object with a field named `version` but instead got:
                                 "[ null, 3, [ [ null, 5, null ], 4, null ]]"
 
                         equal expected actual
+
+
+                    testCase "value works for a string"
+                    <| fun _ ->
+                        let expected = Ok(Json.String "abcdef")
+
+                        let actual =
+                            runner.Decode.fromString Decode.value "\"abcdef\""
+
+                        equal expected actual
+
+
+                    testCase "value works for a whole number"
+                    <| fun _ ->
+                        let expected = Ok(Json.Number 12345)
+
+                        let actual =
+                            runner.Decode.fromString Decode.value "12345"
+
+                        equal expected actual
+
+
+                    testCase "value works for null"
+                    <| fun _ ->
+                        let expected = Ok Json.Null
+
+                        let actual =
+                            runner.Decode.fromString Decode.value "null"
+
+                        equal expected actual
+
+
+                    testCase "value works for the kitchen sink"
+                    <| fun _ ->
+                        let expected =
+                            Json.Object
+                                [
+                                    "foo", Json.Boolean true
+                                    "bar",
+                                    Json.Object
+                                        [
+                                            "qux",
+                                            Json.Array
+                                                [
+                                                    Json.Number 1.23
+                                                    Json.String "abc"
+                                                ]
+                                            "baz", Json.Null
+                                        ]
+                                ]
+                            |> Ok
+
+                        let json =
+                            """
+                            {
+                                "foo": true,
+                                "bar": {
+                                  "qux": [ 1.23, "abc" ],
+                                  "baz": null
+                                }
+                            }
+                            """
+
+                        let actual = runner.Decode.fromString Decode.value json
+
+                        equal expected actual
                 ]
 
             testList
