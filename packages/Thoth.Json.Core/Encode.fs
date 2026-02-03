@@ -359,6 +359,17 @@ module Encode =
                     "$case", string "none"
                 ]
 
+    let rec value: Encoder<Json> =
+        fun json ->
+            match json with
+            | Json.Null -> nil
+            | Json.Boolean b -> bool b
+            | Json.String s -> string s
+            | Json.Number f -> float f
+            | Json.Array xs -> list (List.map value xs)
+            | Json.Object kvps ->
+                kvps |> Seq.map (fun (k, v) -> k, value v) |> object
+
     let inline toJsonValue
         (helpers: IEncoderHelpers<'JsonValue>)
         (json: IEncodable)

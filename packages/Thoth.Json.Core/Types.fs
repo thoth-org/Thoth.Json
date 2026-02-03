@@ -1,7 +1,5 @@
 namespace Thoth.Json.Core
 
-open System.Numerics
-
 type IDecoderHelpers<'JsonValue> =
     abstract isString: 'JsonValue -> bool
     abstract isNumber: 'JsonValue -> bool
@@ -59,12 +57,13 @@ type Decoder<'T> =
 /// A JSON value
 /// </summary>
 /// <remarks>
-/// Numbers are representated as `string` so that the consumer can decide on precision
+/// Although theoretically numbers are arbitrary prevision in JSON,
+/// here they are representated as `float`, which is in line with most implementations.
 /// </remarks>
 [<RequireQualifiedAccess; NoComparison>]
 type Json =
     | String of string
-    | Number of string
+    | Number of float
     | Null
     | Boolean of bool
     | Object of (string * Json) list

@@ -855,10 +855,8 @@ module Decode =
                     Json.Null |> Ok
                 elif helpers.isString value then
                     helpers.asString value |> Json.String |> Ok
-                // elif helpers.isIntegralValue value then
-                //     helpers.asInt value |> Json.Number |> Ok
                 elif helpers.isNumber value then
-                    helpers.asString value |> Json.Number |> Ok
+                    helpers.asFloat value |> Json.Number |> Ok
                 elif helpers.isArray value then
                     let tokens = helpers.asArray value
                     let result = Array.zeroCreate (Array.length tokens)
