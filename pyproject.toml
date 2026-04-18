@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 requires-python = ">=3.12"
 dependencies = [
-    "fable-library==5.0.0a21",
+    "fable-library>=5.0.0rc7",
 ]
 
 [tool.uv]
