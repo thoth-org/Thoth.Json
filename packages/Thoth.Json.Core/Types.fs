@@ -57,24 +57,17 @@ type Decoder<'T> =
 /// A JSON value
 /// </summary>
 /// <remarks>
-/// Some types don't have a direct representation in this DU,
-/// this to make sure we represent them in the same way between the different
-/// backends.
-///
-/// For example, <c>decimal</c> use <c>string</c> as the underlying type.
+/// Although theoretically numbers are arbitrary prevision in JSON,
+/// here they are representated as `float`, which is in line with most implementations.
 /// </remarks>
 [<RequireQualifiedAccess; NoComparison>]
 type Json =
     | String of string
-    | Char of char
-    | DecimalNumber of float
+    | Number of float
     | Null
     | Boolean of bool
-    | Object of (string * Json) seq
-    | Array of Json[]
-    // Thoth.Json as an abritrary limit to the size of numbers
-    | IntegralNumber of uint32
-    | Unit
+    | Object of (string * Json) list
+    | Array of Json list
 
 type IEncodable =
     abstract member Encode<'JsonValue> :

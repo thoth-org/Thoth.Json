@@ -2871,6 +2871,157 @@ Expecting an object with a field named `version` but instead got:
                 ]
 
             testList
+                "value"
+                [
+
+                    testCase "works for a string"
+                    <| fun _ ->
+                        let expected = Ok(Json.String "abcdef")
+
+                        let actual =
+                            runner.Decode.fromString Decode.value "\"abcdef\""
+
+                        equal expected actual
+
+                    testCase "works for a char"
+                    <| fun _ ->
+                        let expected = Ok(Json.String "a")
+
+                        let actual =
+                            runner.Decode.fromString Decode.value "\"a\""
+
+                        equal expected actual
+
+                    testCase "works for a number"
+                    <| fun _ ->
+                        let expected = Ok(Json.Number 1.23)
+
+                        let actual =
+                            runner.Decode.fromString Decode.value "1.23"
+
+                        equal expected actual
+
+                    testCase "works for zero"
+                    <| fun _ ->
+                        let expected = Ok(Json.Number 0.0)
+
+                        let actual = runner.Decode.fromString Decode.value "0"
+
+                        equal expected actual
+
+                    testCase "works for negative number"
+                    <| fun _ ->
+                        let expected = Ok(Json.Number -1.0)
+
+                        let actual = runner.Decode.fromString Decode.value "-1"
+
+                        equal expected actual
+
+                    testCase "works for a whole number"
+                    <| fun _ ->
+                        let expected = Ok(Json.Number 12345)
+
+                        let actual =
+                            runner.Decode.fromString Decode.value "12345"
+
+                        equal expected actual
+
+                    testCase "works for scientific notation"
+                    <| fun _ ->
+                        let expected = Ok(Json.Number 1.5e10)
+
+                        let actual =
+                            runner.Decode.fromString Decode.value "1.5e10"
+
+                        equal expected actual
+
+                    testCase "works for null"
+                    <| fun _ ->
+                        let expected = Ok Json.Null
+
+                        let actual =
+                            runner.Decode.fromString Decode.value "null"
+
+                        equal expected actual
+
+                    testCase "works for boolean"
+                    <| fun _ ->
+                        let expected = Ok(Json.Boolean true)
+
+                        let actual =
+                            runner.Decode.fromString Decode.value "true"
+
+                        equal expected actual
+
+
+                    testCase "works for null"
+                    <| fun _ ->
+                        let expected = Ok Json.Null
+
+                        let actual =
+                            runner.Decode.fromString Decode.value "null"
+
+                        equal expected actual
+
+                    testCase "works for arrays"
+                    <| fun _ ->
+                        let expected =
+                            Ok(
+                                Json.Array
+                                    [
+                                        Json.Number 1.23
+                                        Json.String "abc"
+                                        Json.Boolean true
+                                        Json.Null
+                                    ]
+                            )
+
+                        let json =
+                            """
+                            [ 1.23, "abc", true, null ]
+                            """
+
+                        let actual = runner.Decode.fromString Decode.value json
+
+                        equal expected actual
+
+                    testCase "works objects"
+                    <| fun _ ->
+                        let expected =
+                            Json.Object
+                                [
+                                    "foo", Json.Boolean true
+                                    "bar",
+                                    Json.Object
+                                        [
+                                            "qux",
+                                            Json.Array
+                                                [
+                                                    Json.Number 1.23
+                                                    Json.String "abc"
+                                                ]
+                                            "baz", Json.Null
+                                        ]
+                                ]
+                            |> Ok
+
+                        let json =
+                            """
+                            {
+                                "foo": true,
+                                "bar": {
+                                  "qux": [ 1.23, "abc" ],
+                                  "baz": null
+                                }
+                            }
+                            """
+
+                        let actual = runner.Decode.fromString Decode.value json
+
+                        equal expected actual
+                ]
+
+            testList
                 "Mapping"
                 [
 

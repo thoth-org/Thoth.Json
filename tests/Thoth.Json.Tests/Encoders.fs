@@ -1103,4 +1103,42 @@ let tests (runner: TestRunner<_, _>) =
 
                 ]
 
+            testList
+                "Fancy encoding"
+                [
+                    testCase "value works for the kitchen sink"
+                    <| fun _ ->
+                        let expected =
+                            """{
+    "foo": true,
+    "bar": {
+        "qux": [
+            1.23,
+            "abc"
+        ],
+        "baz": null
+    }
+}"""
+
+                        let actual =
+                            Json.Object
+                                [
+                                    "foo", Json.Boolean true
+                                    "bar",
+                                    Json.Object
+                                        [
+                                            "qux",
+                                            Json.Array
+                                                [
+                                                    Json.Number 1.23
+                                                    Json.String "abc"
+                                                ]
+                                            "baz", Json.Null
+                                        ]
+                                ]
+                            |> Encode.value
+                            |> runner.Encode.toString 4
+
+                        equal expected actual
+                ]
         ]
