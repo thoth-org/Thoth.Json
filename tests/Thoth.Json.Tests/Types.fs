@@ -248,9 +248,7 @@ type TestMaybeRecord =
         Must: string
     }
 
-type BaseClass =
-    class
-    end
+type BaseClass = class end
 
 [<NoComparison>]
 type RecordWithOptionalClass =
@@ -303,8 +301,9 @@ type ChildType =
     {
         ChildField: string
     }
-    // static member Encode(x: ChildType) =
-    //     Encode.string x.ChildField
+
+    static member Encode(x: ChildType) = Encode.string x.ChildField
+
     static member Decoder =
         Decode.string
         |> Decode.map (fun x ->
@@ -423,11 +422,11 @@ type RecordForCharacterCase =
 module IntAsRecord =
 
     let encode (value: int) =
-        // Encode.object [
-        //     "type", Encode.string "int"
-        //     "value", Encode.int value
-        // ]
-        null
+        Encode.object
+            [
+                "type", Encode.string "int"
+                "value", Encode.int value
+            ]
 
     let decode: Decoder<int> =
         Decode.field "type" Decode.string

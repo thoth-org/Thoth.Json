@@ -2,6 +2,7 @@ module Thoth.Json.Tests.JavaScript
 
 open Thoth.Json.Tests.Testing
 open Thoth.Json.Core
+open Thoth.Json.Core.Auto
 open Thoth.Json.JavaScript
 open Fable.Core.JsInterop
 open Fable.Pyxpecto
@@ -61,7 +62,8 @@ let main args =
             Decoders.tests runner
             Encoders.tests runner
             BackAndForth.tests runner
-            Syntax.tests runner
+            DecoderCE.tests runner
+            Auto.tests runner
 
         ]
     |> Pyxpecto.runTests [||]

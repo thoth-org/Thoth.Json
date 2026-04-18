@@ -941,6 +941,20 @@ module Decode =
                 runner decoders []
         }
 
+    [<NoComparison>]
+    type private LazyDecoder<'t>(x: Lazy<Decoder<'t>>) =
+        struct
+        end
+
+        interface Decoder<'t> with
+            member this.Decode<'json>
+                (helpers: IDecoderHelpers<'json>, json: 'json)
+                =
+                let decoder = x.Force()
+                decoder.Decode(helpers, json)
+
+    let lazily (x: Lazy<Decoder<'t>>) : Decoder<'t> = LazyDecoder(x) :> _
+
     /////////////////////
     // Map functions ///
     ///////////////////
@@ -1543,39 +1557,36 @@ module Decode =
 #if !FABLE_REPL_LIB
     module Enum =
 
+        let inline private enumOfValue value =
+            if Enum.IsDefined(typeof<'TEnum>, value) then
+                LanguagePrimitives.EnumOfValue<_, 'TEnum> value |> succeed
+            else
+                { new Decoder<_> with
+                    member _.Decode<'JsonValue>(_, value: 'JsonValue) =
+                        ("",
+                         BadPrimitiveExtra(
+                             typeof<'TEnum>.FullName,
+                             value,
+                             "Unkown value provided for the enum"
+                         ))
+                        |> Error
+                }
+
         let inline byte<'TEnum when 'TEnum: enum<byte>> : Decoder<'TEnum> =
-            byte
-            |> andThen (fun value ->
-                LanguagePrimitives.EnumOfValue<byte, 'TEnum> value |> succeed
-            )
+            byte |> andThen enumOfValue
 
         let inline sbyte<'TEnum when 'TEnum: enum<sbyte>> : Decoder<'TEnum> =
-            sbyte
-            |> andThen (fun value ->
-                LanguagePrimitives.EnumOfValue<sbyte, 'TEnum> value |> succeed
-            )
+            sbyte |> andThen enumOfValue
 
         let inline int16<'TEnum when 'TEnum: enum<int16>> : Decoder<'TEnum> =
-            int16
-            |> andThen (fun value ->
-                LanguagePrimitives.EnumOfValue<int16, 'TEnum> value |> succeed
-            )
+            int16 |> andThen enumOfValue
 
         let inline uint16<'TEnum when 'TEnum: enum<uint16>> : Decoder<'TEnum> =
-            uint16
-            |> andThen (fun value ->
-                LanguagePrimitives.EnumOfValue<uint16, 'TEnum> value |> succeed
-            )
+            uint16 |> andThen enumOfValue
 
         let inline int<'TEnum when 'TEnum: enum<int>> : Decoder<'TEnum> =
-            int
-            |> andThen (fun value ->
-                LanguagePrimitives.EnumOfValue<int, 'TEnum> value |> succeed
-            )
+            int |> andThen enumOfValue
 
         let inline uint32<'TEnum when 'TEnum: enum<uint32>> : Decoder<'TEnum> =
-            uint32
-            |> andThen (fun value ->
-                LanguagePrimitives.EnumOfValue<uint32, 'TEnum> value |> succeed
-            )
+            uint32 |> andThen enumOfValue
 #endif

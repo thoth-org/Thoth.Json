@@ -47,6 +47,7 @@ let main args =
             Decoders.tests runner
             Encoders.tests runner
             BackAndForth.tests runner
-            Syntax.tests runner
+            DecoderCE.tests runner
+            Auto.tests runner
         ]
     |> Pyxpecto.runTests [||]

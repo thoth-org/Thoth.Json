@@ -83,6 +83,14 @@
           "FSharp.Core": "[10.1.203, )"
         }
       },
+      "thoth.json.core.auto": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "[10.1.203, )",
+          "Fable.Core": "[5.0.0, )",
+          "Thoth.Json.Core": "[1.0.0, )"
+        }
+      },
       "thoth.json.newtonsoft": {
         "type": "Project",
         "dependencies": {
@@ -97,7 +105,8 @@
           "FSharp.Core": "[10.1.203, )",
           "Fable.Core": "[5.0.0, )",
           "Fable.Pyxpecto": "[2.0.0, )",
-          "Thoth.Json.Core": "[1.0.0, )"
+          "Thoth.Json.Core": "[1.0.0, )",
+          "Thoth.Json.Core.Auto": "[1.0.0, )"
         }
       },
       "Fable.Core": {

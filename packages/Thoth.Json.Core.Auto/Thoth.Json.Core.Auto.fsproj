@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Description>
+Provide automatic encoding and decoding of F# types to and from JSON using F# reflection
+
+This package rely on Thoth.Json.Core, meaning you will need to pick the right additional package for your runtime:
+
+- Thoth.Json.JavaScript
+- Thoth.Json.Python
+- Thoth.Json.Newtonsoft
+        </Description>
+        <FablePackageType>library</FablePackageType>
+        <PackageTags>fable-all;fsharp;json</PackageTags>
+    </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Prelude.fs" />
+        <Compile Include="Domain.fs" />
+        <Compile Include="Casing.fs" />
+        <Compile Include="Encode.fs" />
+        <Compile Include="Decode.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../Thoth.Json.Core/Thoth.Json.Core.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="EasyBuild.PackageReleaseNotes.Tasks">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Fable.Core" />
+        <PackageReference Include="Fable.Package.SDK">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+</Project>
