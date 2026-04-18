@@ -1,25 +1,25 @@
 namespace Thoth.Json.Core
 
 [<AutoOpen>]
-module Syntax =
+module DecoderCE =
 
     type DecoderBuilder internal () =
-        member inline this.Bind(m, f) = Decode.andThen f m
+        member inline _.Bind(m, f) = Decode.andThen f m
 
-        member this.BindReturn(m, f) = Decode.map f m
+        member _.BindReturn(m, f) = Decode.map f m
 
-        member this.Bind2Return(d1, d2, ctor: struct ('a * 'b) -> 't) =
+        member _.Bind2Return(d1, d2, ctor: struct ('a * 'b) -> 't) =
             Decode.map2 (fun a b -> ctor struct (a, b)) d1 d2
 
-        member this.Bind3Return(d1, d2, d3, ctor: struct ('a * 'b * 'c) -> 't) =
+        member _.Bind3Return(d1, d2, d3, ctor: struct ('a * 'b * 'c) -> 't) =
             Decode.map3 (fun a b c -> ctor struct (a, b, c)) d1 d2 d3
 
-        member this.Bind4Return
+        member _.Bind4Return
             (d1, d2, d3, d4, ctor: struct ('a * 'b * 'c * 'd) -> 't)
             =
             Decode.map4 (fun a b c d -> ctor struct (a, b, c, d)) d1 d2 d3 d4
 
-        member this.Bind5Return
+        member _.Bind5Return
             (d1, d2, d3, d4, d5, ctor: struct ('a * 'b * 'c * 'd * 'e) -> 't)
             =
             Decode.map5
@@ -30,7 +30,7 @@ module Syntax =
                 d4
                 d5
 
-        member this.Bind6Return
+        member _.Bind6Return
             (
                 d1,
                 d2,
@@ -50,7 +50,7 @@ module Syntax =
                 d5
                 d6
 
-        member this.Bind7Return
+        member _.Bind7Return
             (
                 d1,
                 d2,
@@ -72,7 +72,7 @@ module Syntax =
                 d6
                 d7
 
-        member this.Bind8Return
+        member _.Bind8Return
             (
                 d1,
                 d2,
@@ -96,11 +96,11 @@ module Syntax =
                 d7
                 d8
 
-        member this.MergeSources(d1, d2) =
+        member _.MergeSources(d1, d2) =
             Decode.map2 (fun a b -> struct (a, b)) d1 d2
 
-        member this.Return(x) = Decode.succeed x
+        member _.Return(x) = Decode.succeed x
 
-        member this.ReturnFrom(x: Decoder<'a>) = x
+        member _.ReturnFrom(x: Decoder<'a>) = x
 
     let decoder = DecoderBuilder()
