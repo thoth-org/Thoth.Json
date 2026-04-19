@@ -1613,4 +1613,266 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
 
                 // Should only contain the list [1,2,3], not the Source field
                 equal "[\n    1,\n    2,\n    3\n]" json
+
+            // =====================
+            // Override Built-in Generic Types Tests
+            // Issue #88: Check if user can override behaviour of generic type
+            // =====================
+
+            testCase "User can override Option<'T> encoding behavior"
+            <| fun _ ->
+                let value: int option = Some 42
+
+                // Custom encoder that wraps option in a custom object
+                let customOptionEncoder
+                    (encoder: Encoder<int>)
+                    : Encoder<int option>
+                    =
+                    fun (opt: int option) ->
+                        match opt with
+                        | Some v ->
+                            Encode.object
+                                [
+                                    "kind", Encode.string "customSome"
+                                    "data", encoder v
+                                ]
+                        | None ->
+                            Encode.object [ "kind", Encode.string "customNone" ]
+
+                let customOptionDecoder
+                    (decoder: Decoder<int>)
+                    : Decoder<int option>
+                    =
+                    Decode.fail "Not implemented"
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom
+                        (customOptionEncoder Encode.int)
+                        (customOptionDecoder Decode.int)
+
+                let encoder =
+                    Encode.Auto.generateEncoder<int option> (extra = extra)
+
+                let json = encoder value |> runner.Encode.toString 0
+
+                // Should use custom encoding format
+                equal json """{"kind":"customSome","data":42}"""
+
+            testCase "User can override Option<'T> decoding behavior"
+            <| fun _ ->
+                // Custom decoder that reads custom format
+                let customOptionDecoder
+                    (decoder: Decoder<int>)
+                    : Decoder<int option>
+                    =
+                    Decode.field "kind" Decode.string
+                    |> Decode.andThen (fun kind ->
+                        match kind with
+                        | "customSome" ->
+                            Decode.field "data" decoder |> Decode.map Some
+                        | "customNone" -> Decode.succeed None
+                        | _ -> Decode.fail "Unknown kind"
+                    )
+
+                let customOptionEncoder
+                    (encoder: Encoder<int>)
+                    : Encoder<int option>
+                    =
+                    fun _ -> Encode.nil
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom
+                        (customOptionEncoder Encode.int)
+                        (customOptionDecoder Decode.int)
+
+                let decoder =
+                    Decode.Auto.generateDecoder<int option> (extra = extra)
+
+                let json = """{"kind":"customSome","data":42}"""
+                let result = runner.Decode.fromString decoder json
+
+                equal result (Ok(Some 42))
+
+            testCase "User can override Map<string, 'V> encoding behavior"
+            <| fun _ ->
+                let value =
+                    Map.ofList
+                        [
+                            "a", 1
+                            "b", 2
+                        ]
+
+                // Custom encoder that converts map to array of key-value objects
+                let customMapEncoder
+                    (encoder: Encoder<int>)
+                    : Encoder<Map<string, int>>
+                    =
+                    fun (m: Map<string, int>) ->
+                        m
+                        |> Map.toList
+                        |> List.map (fun (k, v) ->
+                            Encode.object
+                                [
+                                    "key", Encode.string k
+                                    "value", encoder v
+                                ]
+                        )
+                        |> Encode.list
+
+                let customMapDecoder
+                    (decoder: Decoder<int>)
+                    : Decoder<Map<string, int>>
+                    =
+                    Decode.fail "Not implemented"
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom
+                        (customMapEncoder Encode.int)
+                        (customMapDecoder Decode.int)
+
+                let encoder =
+                    Encode.Auto.generateEncoder<Map<string, int>> (
+                        extra = extra
+                    )
+
+                let json = encoder value |> runner.Encode.toString 0
+
+                // Should use custom array format instead of default object format
+                // The order of keys in a Map is not guaranteed, so we check the format structure
+                // Custom format: [{"key":"a","value":1},{"key":"b","value":2}] or with keys reversed
+                let expected1 =
+                    """[{"key":"a","value":1},{"key":"b","value":2}]"""
+
+                let expected2 =
+                    """[{"key":"b","value":2},{"key":"a","value":1}]"""
+
+                if json = expected1 then
+                    equal json expected1
+                else
+                    equal json expected2
+
+            testCase "User can override Map<string, 'V> decoding behavior"
+            <| fun _ ->
+                // Custom decoder that reads array of key-value objects
+                let customMapDecoder
+                    (decoder: Decoder<int>)
+                    : Decoder<Map<string, int>>
+                    =
+                    Decode.list (
+                        Decode.object (fun get ->
+                            let key = get.Required.Field "key" Decode.string
+                            let value = get.Required.Field "value" decoder
+                            key, value
+                        )
+                    )
+                    |> Decode.map Map.ofList
+
+                let customMapEncoder
+                    (encoder: Encoder<int>)
+                    : Encoder<Map<string, int>>
+                    =
+                    fun _ -> Encode.nil
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom
+                        (customMapEncoder Encode.int)
+                        (customMapDecoder Decode.int)
+
+                let decoder =
+                    Decode.Auto.generateDecoder<Map<string, int>> (
+                        extra = extra
+                    )
+
+                let json = """[{"key":"x","value":10},{"key":"y","value":20}]"""
+                let result = runner.Decode.fromString decoder json
+
+                let expected =
+                    Map.ofList
+                        [
+                            "x", 10
+                            "y", 20
+                        ]
+
+                equal result (Ok expected)
+
+            testCase "User can override List<'T> encoding behavior"
+            <| fun _ ->
+                let value =
+                    [
+                        1
+                        2
+                        3
+                    ]
+
+                // Custom encoder that wraps list in metadata
+                let customListEncoder
+                    (encoder: Encoder<int>)
+                    : Encoder<int list>
+                    =
+                    fun (lst: int list) ->
+                        Encode.object
+                            [
+                                "count", Encode.int (List.length lst)
+                                "items", Encode.list (List.map encoder lst)
+                            ]
+
+                let customListDecoder
+                    (decoder: Decoder<int>)
+                    : Decoder<int list>
+                    =
+                    Decode.fail "Not implemented"
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom
+                        (customListEncoder Encode.int)
+                        (customListDecoder Decode.int)
+
+                let encoder =
+                    Encode.Auto.generateEncoder<int list> (extra = extra)
+
+                let json = encoder value |> runner.Encode.toString 0
+
+                // Should use custom object format with count and items
+                equal json """{"count":3,"items":[1,2,3]}"""
+
+            testCase "User can override List<'T> decoding behavior"
+            <| fun _ ->
+                // Custom decoder that unwraps metadata
+                let customListDecoder
+                    (decoder: Decoder<int>)
+                    : Decoder<int list>
+                    =
+                    Decode.field "items" (Decode.list decoder)
+
+                let customListEncoder
+                    (encoder: Encoder<int>)
+                    : Encoder<int list>
+                    =
+                    fun _ -> Encode.nil
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom
+                        (customListEncoder Encode.int)
+                        (customListDecoder Decode.int)
+
+                let decoder =
+                    Decode.Auto.generateDecoder<int list> (extra = extra)
+
+                let json = """{"count":3,"items":[1,2,3]}"""
+                let result = runner.Decode.fromString decoder json
+
+                equal
+                    result
+                    (Ok
+                        [
+                            1
+                            2
+                            3
+                        ])
         ]
