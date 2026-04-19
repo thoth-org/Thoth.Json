@@ -1875,4 +1875,164 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                             2
                             3
                         ])
+
+            // =====================
+            // Override Primitive Types Tests
+            // Verify users can override built-in primitive encoders/decoders
+            // =====================
+
+            testCase "User can override string encoding behavior"
+            <| fun _ ->
+                let value = "hello"
+
+                // Custom encoder that wraps strings
+                let customStringEncoder (s: string) =
+                    Encode.object
+                        [
+                            "type", Encode.string "string"
+                            "value", Encode.string s
+                        ]
+
+                let customStringDecoder: Decoder<string> =
+                    Decode.fail "Not implemented"
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom customStringEncoder customStringDecoder
+
+                let encoder =
+                    Encode.Auto.generateEncoder<string> (extra = extra)
+
+                let json = encoder value |> runner.Encode.toString 0
+
+                // Should use custom object format
+                equal json """{"type":"string","value":"hello"}"""
+
+            testCase "User can override string decoding behavior"
+            <| fun _ ->
+                // Custom decoder that unwraps string object
+                let customStringDecoder: Decoder<string> =
+                    Decode.field "value" Decode.string
+
+                let customStringEncoder (s: string) = Encode.nil
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom customStringEncoder customStringDecoder
+
+                let decoder =
+                    Decode.Auto.generateDecoder<string> (extra = extra)
+
+                let json = """{"type":"string","value":"world"}"""
+                let result = runner.Decode.fromString decoder json
+
+                equal result (Ok "world")
+
+            testCase "User can override int encoding behavior"
+            <| fun _ ->
+                let value = 42
+
+                // Custom encoder that wraps ints in hex format string
+                let customIntEncoder (i: int) =
+                    Encode.object
+                        [
+                            "type", Encode.string "int"
+                            "hex", Encode.string (sprintf "0x%X" i)
+                        ]
+
+                let customIntDecoder: Decoder<int> =
+                    Decode.fail "Not implemented"
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom customIntEncoder customIntDecoder
+
+                let encoder = Encode.Auto.generateEncoder<int> (extra = extra)
+
+                let json = encoder value |> runner.Encode.toString 0
+
+                // Should use custom object format
+                equal json """{"type":"int","hex":"0x2A"}"""
+
+            testCase "User can override int decoding behavior"
+            <| fun _ ->
+                // Custom decoder that reads hex string
+                let customIntDecoder: Decoder<int> =
+                    Decode.field "hex" Decode.string
+                    |> Decode.map (fun hexStr ->
+                        if hexStr.StartsWith("0x") then
+                            Convert.ToInt32(hexStr, 16)
+                        else
+                            int hexStr
+                    )
+
+                let customIntEncoder (i: int) = Encode.nil
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom customIntEncoder customIntDecoder
+
+                let decoder = Decode.Auto.generateDecoder<int> (extra = extra)
+
+                let json = """{"type":"int","hex":"0x2A"}"""
+                let result = runner.Decode.fromString decoder json
+
+                equal result (Ok 42)
+
+            testCase "User can override bool encoding behavior"
+            <| fun _ ->
+                let value = true
+
+                // Custom encoder that encodes bool as string
+                let customBoolEncoder (b: bool) =
+                    Encode.string (
+                        if b then
+                            "yes"
+                        else
+                            "no"
+                    )
+
+                let customBoolDecoder: Decoder<bool> =
+                    Decode.fail "Not implemented"
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom customBoolEncoder customBoolDecoder
+
+                let encoder = Encode.Auto.generateEncoder<bool> (extra = extra)
+
+                let json = encoder value |> runner.Encode.toString 0
+
+                // Should use custom string format (bool encoded as "yes" for true)
+                equal json "\"yes\""
+
+            testCase "User can override bool decoding behavior"
+            <| fun _ ->
+                // Custom decoder that reads bool from string
+                let customBoolDecoder: Decoder<bool> =
+                    Decode.string
+                    |> Decode.map (fun s ->
+                        match s.ToLower() with
+                        | "yes"
+                        | "true" -> true
+                        | "no"
+                        | "false" -> false
+                        | _ -> failwith "Invalid boolean string"
+                    )
+
+                let customBoolEncoder (b: bool) = Encode.nil
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom customBoolEncoder customBoolDecoder
+
+                let decoder = Decode.Auto.generateDecoder<bool> (extra = extra)
+
+                let json = "\"yes\""
+                let resultYes = runner.Decode.fromString decoder json
+                let json2 = "\"no\""
+                let resultNo = runner.Decode.fromString decoder json2
+
+                equal resultYes (Ok true)
+                equal resultNo (Ok false)
         ]
