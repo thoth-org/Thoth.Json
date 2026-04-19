@@ -2035,4 +2035,82 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
 
                 equal resultYes (Ok true)
                 equal resultNo (Ok false)
+
+            // =====================
+            // Single-Case DU with Multiple Arguments Tests
+            // Issue #86: DUs with a single Case but multiple arguments aren't encoded correctly
+            // =====================
+
+            testCase "Single-case DU with multiple arguments encodes correctly"
+            <| fun _ ->
+                let value = SeveralArgs(10, "hello", 42)
+
+                let encoder =
+                    Encode.Auto.generateEncoder<SingleCaseMultipleArgs> ()
+
+                let json = encoder value |> runner.Encode.toString 0
+
+                // Should encode as an array with all three arguments
+                // Expected: [10,"hello",42] or similar
+                let expected = "[\"SeveralArgs\",10,\"hello\",42]"
+                equal json expected
+
+            testCase
+                "Single-case DU with multiple arguments roundtrips correctly"
+            <| fun _ ->
+                let expected = SeveralArgs(10, "hello", 42)
+
+                let encoder =
+                    Encode.Auto.generateEncoder<SingleCaseMultipleArgs> ()
+
+                let decoder =
+                    Decode.Auto.generateDecoder<SingleCaseMultipleArgs> ()
+
+                let json = encoder expected |> runner.Encode.toString 0
+                let actual = runner.Decode.unsafeFromString decoder json
+
+                equal expected actual
+
+            testCase "Single-case DU with anonymous record encodes correctly"
+            <| fun _ ->
+                let value =
+                    SingleWithAnon(
+                        10,
+                        {|
+                            Name = "maxime"
+                            Age = 28
+                        |}
+                    )
+
+                let encoder =
+                    Encode.Auto.generateEncoder<SingleCaseWithAnonymousRecord> ()
+
+                let json = encoder value |> runner.Encode.toString 0
+
+                let expected =
+                    "[\"SingleWithAnon\",10,{\"Age\":28,\"Name\":\"maxime\"}]"
+
+                equal json expected
+
+            testCase "Single-case DU with anonymous record roundtrips correctly"
+            <| fun _ ->
+                let expected =
+                    SingleWithAnon(
+                        10,
+                        {|
+                            Name = "maxime"
+                            Age = 28
+                        |}
+                    )
+
+                let encoder =
+                    Encode.Auto.generateEncoder<SingleCaseWithAnonymousRecord> ()
+
+                let decoder =
+                    Decode.Auto.generateDecoder<SingleCaseWithAnonymousRecord> ()
+
+                let json = encoder expected |> runner.Encode.toString 0
+                let actual = runner.Decode.unsafeFromString decoder json
+
+                equal expected actual
         ]

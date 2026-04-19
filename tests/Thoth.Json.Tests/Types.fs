@@ -474,3 +474,15 @@ type GenericWrapper<'a> =
             Node = node
             Source = source
         }
+
+// Single-case DU with multiple arguments for testing Issue #86
+type SingleCaseMultipleArgs = | SeveralArgs of int * string * int
+
+// Single-case DU with anonymous record argument for testing Issue #86
+type SingleCaseWithAnonymousRecord =
+    | SingleWithAnon of
+        int *
+        {|
+            Name: string
+            Age: int
+        |}
