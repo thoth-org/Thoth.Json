@@ -16,7 +16,14 @@ type TypeKey =
     private
     | TypeKey of string
 
-    static member Create(t: Type) = TypeKey t.FullName
+    static member Create(t: Type) =
+        // For generic types, use the generic type definition name
+        // so that CstNode<'a> and CstNode<int> map to the same key
+        if t.IsGenericType then
+            let genericTypeDef = t.GetGenericTypeDefinition()
+            TypeKey genericTypeDef.FullName
+        else
+            TypeKey t.FullName
 
 [<RequireQualifiedAccess>]
 module TypeKey =

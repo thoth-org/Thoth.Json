@@ -1453,4 +1453,164 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                 equal
                     """{"$type":"option","$case":"some","$value":123}"""
                     losslessJson
+
+            // =====================
+            // Generic Type Extra Coder Tests
+            // Issue #169: Extra encoder doesn't get called for type with generic params
+            // =====================
+
+            testCase
+                "Extra coder for generic type gets called for concrete instantiation"
+            <| fun _ ->
+                // Define a generic type wrapper
+                let value: GenericWrapper<int> =
+                    {
+                        Node = 1234
+                        Source =
+                            [
+                                1
+                                2
+                                3
+                            ]
+                    }
+
+                // Create an extra encoder for the generic type (not a concrete instantiation)
+                // This encoder only encodes the Node field, ignoring Source
+                let cstNodeIntEncoder (cstNode: GenericWrapper<int>) =
+                    Encode.int cstNode.Node
+
+                let cstNodeIntDecoder: Decoder<GenericWrapper<int>> =
+                    Decode.fail "Not implemented"
+
+                // Register the generic coder
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom cstNodeIntEncoder cstNodeIntDecoder
+
+                // Generate encoder for the concrete type
+                let encoder =
+                    Encode.Auto.generateEncoder<GenericWrapper<int>> (
+                        extra = extra
+                    )
+
+                let json = encoder value |> runner.Encode.toString 4
+
+                // The JSON should only contain the node value (1234), not the source field
+                equal "1234" json
+
+            testCase
+                "Extra coder for generic type works with string instantiation"
+            <| fun _ ->
+                // Test with string instead of int
+                let value: GenericWrapper<string> =
+                    {
+                        Node = "hello"
+                        Source =
+                            [
+                                1
+                                2
+                                3
+                            ]
+                    }
+
+                // Create an extra encoder that only encodes the Node field
+                let cstNodeStringEncoder (cstNode: GenericWrapper<string>) =
+                    Encode.string cstNode.Node
+
+                let cstNodeStringDecoder: Decoder<GenericWrapper<string>> =
+                    Decode.fail "Not implemented"
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom
+                        cstNodeStringEncoder
+                        cstNodeStringDecoder
+
+                let encoder =
+                    Encode.Auto.generateEncoder<GenericWrapper<string>> (
+                        extra = extra
+                    )
+
+                let json = encoder value |> runner.Encode.toString 4
+
+                // The JSON should only contain the node value ("hello"), not the source field
+                equal "\"hello\"" json
+
+            testCase
+                "Extra decoder for generic type gets called for concrete instantiation"
+            <| fun _ ->
+                // Create an extra decoder that reconstructs the GenericWrapper from just the node value
+                let cstNodeIntDecoder: Decoder<GenericWrapper<int>> =
+                    Decode.int
+                    |> Decode.map (fun node ->
+                        {
+                            Node = node
+                            Source = [] // Default empty source
+                        }
+                    )
+
+                // Use the standard encoder
+                let cstNodeIntEncoder (cstNode: GenericWrapper<int>) =
+                    Encode.object
+                        [
+                            "node", Encode.int cstNode.Node
+                            "source",
+                            Encode.list (List.map Encode.int cstNode.Source)
+                        ]
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom cstNodeIntEncoder cstNodeIntDecoder
+
+                let decoder =
+                    Decode.Auto.generateDecoder<GenericWrapper<int>> (
+                        extra = extra
+                    )
+
+                // JSON just contains the node value, no source field
+                let json = "1234"
+                let result = runner.Decode.fromString decoder json
+
+                let expected: GenericWrapper<int> =
+                    {
+                        Node = 1234
+                        Source = []
+                    }
+
+                equal (Ok expected) result
+
+            testCase "Generic type coder works with list instantiation"
+            <| fun _ ->
+                let value: GenericWrapper<int list> =
+                    GenericWrapper<int list>.Create
+                        [
+                            1
+                            2
+                            3
+                        ]
+                        [
+                            4
+                            5
+                        ]
+
+                // Encoder that only encodes the Node field
+                let cstNodeListEncoder (cstNode: GenericWrapper<int list>) =
+                    Encode.list (List.map Encode.int cstNode.Node)
+
+                let cstNodeListDecoder: Decoder<GenericWrapper<int list>> =
+                    Decode.fail "Not implemented"
+
+                let extra =
+                    Extra.empty
+                    |> Extra.withCustom cstNodeListEncoder cstNodeListDecoder
+
+                let encoder =
+                    Encode.Auto.generateEncoder<GenericWrapper<int list>> (
+                        extra = extra
+                    )
+
+                let json = encoder value |> runner.Encode.toString 4
+
+                // Should only contain the list [1,2,3], not the Source field
+                equal "[\n    1,\n    2,\n    3\n]" json
         ]

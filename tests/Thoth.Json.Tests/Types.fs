@@ -452,3 +452,25 @@ type Data =
         Person: Person
         Post: Post option
     }
+
+// Generic wrapper type for testing Issue #169
+// Extra encoder doesn't get called for type with generic params
+type GenericWrapper<'a> =
+    {
+        Node: 'a
+        Source: int list
+    }
+
+    static member Encoder(encoder: Encoder<'a>) : Encoder<GenericWrapper<'a>> =
+        fun (x: GenericWrapper<'a>) ->
+            Encode.object
+                [
+                    "node", encoder x.Node
+                    "source", Encode.list (List.map Encode.int x.Source)
+                ]
+
+    static member Create (node: 'a) (source: int list) : GenericWrapper<'a> =
+        {
+            Node = node
+            Source = source
+        }
