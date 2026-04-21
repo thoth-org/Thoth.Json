@@ -15,14 +15,14 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.100'
-      - uses: actions/setup-node@v3
+          global-json-file: global.json
+      - uses: actions/setup-node@v4
         with:
           node-version: '22.20.0'
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
       - uses: astral-sh/setup-uv@v7
       - name: Test (Unix)
         if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'macOS-latest'
