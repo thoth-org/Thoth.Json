@@ -22,9 +22,12 @@
       },
       "Fable.Core": {
         "type": "Direct",
-        "requested": "[4.1.0, )",
-        "resolved": "4.1.0",
-        "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
+        "requested": "[5.0.0-beta.4, )",
+        "resolved": "5.0.0-beta.4",
+        "contentHash": "IECbOcWdDtToG9CHixOkDHiDiWHj982UvKvLys4LcJj3PXTZqSBPrZqdrJgKaSxuPlAiRGskHRo79oP/Q7zEAA==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2"
+        }
       },
       "Fable.Package.SDK": {
         "type": "Direct",
@@ -34,9 +37,9 @@
       },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[5.0.2, )",
-        "resolved": "5.0.2",
-        "contentHash": "DpcajqENgb3VXaHw1FKfVS+TWwEzck1PCajqLwBAVrtd1lfxd7T8JISVZBdV1mX9+2g48+tIgpNaVJWObdMrBw=="
+        "requested": "[8.0.403, )",
+        "resolved": "8.0.403",
+        "contentHash": "ldNIn4IksrJL/X3rF4R/y9pa3RmwkcGYQ3xFMdbJj8dJ9Q49J735m6sMy3MbCK9gj3YoCsxlyFeExCiNDy3gHQ=="
       },
       "NETStandard.Library": {
         "type": "Direct",

@@ -1,7 +1,7 @@
 {
   "version": 2,
   "dependencies": {
-    "net6.0": {
+    "net8.0": {
       "DotNet.ReproducibleBuilds": {
         "type": "Direct",
         "requested": "[1.1.1, )",
@@ -16,26 +16,29 @@
       },
       "Fable.Core": {
         "type": "Direct",
-        "requested": "[4.1.0, )",
-        "resolved": "4.1.0",
-        "contentHash": "NISAbAVGEcvH2s+vHLSOCzh98xMYx4aIadWacQdWPcQLploxpSQXLEe9SeszUBhbHa73KMiKREsH4/W3q4A4iA=="
+        "requested": "[5.0.0-beta.4, )",
+        "resolved": "5.0.0-beta.4",
+        "contentHash": "IECbOcWdDtToG9CHixOkDHiDiWHj982UvKvLys4LcJj3PXTZqSBPrZqdrJgKaSxuPlAiRGskHRo79oP/Q7zEAA==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2"
+        }
       },
       "Fable.Pyxpecto": {
         "type": "Direct",
-        "requested": "[1.1.0, )",
-        "resolved": "1.1.0",
-        "contentHash": "bxZIaCe5kC+wf56iugyiRdiXk3cOG+jZEqoUUEIapl6OjMk2xhD6Px5i6fYPio/zah6secpu/odyL7WUutx0jg==",
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "dQ65JuJdpqJd6rysWb3r2Ijt8dptzfT8UEr7VCyJ7cKKn7i1yCSH3jKZ2Omrzc02COrWa/4h0O2YNKcuSCvoVA==",
         "dependencies": {
-          "FSharp.Core": "5.0.0",
-          "Fable.Core": "4.1.0",
-          "Fable.Python": "4.3.0"
+          "FSharp.Core": "8.0.403",
+          "Fable.Core": "5.0.0-beta.4",
+          "Fable.Python": "5.0.0-alpha.20.1"
         }
       },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[5.0.2, )",
-        "resolved": "5.0.2",
-        "contentHash": "DpcajqENgb3VXaHw1FKfVS+TWwEzck1PCajqLwBAVrtd1lfxd7T8JISVZBdV1mX9+2g48+tIgpNaVJWObdMrBw=="
+        "requested": "[8.0.403, )",
+        "resolved": "8.0.403",
+        "contentHash": "ldNIn4IksrJL/X3rF4R/y9pa3RmwkcGYQ3xFMdbJj8dJ9Q49J735m6sMy3MbCK9gj3YoCsxlyFeExCiNDy3gHQ=="
       },
       "Microsoft.Build.Tasks.Git": {
         "type": "Transitive",
@@ -86,35 +89,35 @@
       "thoth.json.core": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[5.0.2, )"
+          "FSharp.Core": "[8.0.403, )"
         }
       },
       "thoth.json.python": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[5.0.2, )",
-          "Fable.Core": "[4.1.0, )",
-          "Fable.Python": "[4.3.0, )",
+          "FSharp.Core": "[8.0.403, )",
+          "Fable.Core": "[5.0.0-beta.4, )",
+          "Fable.Python": "[5.0.0-alpha.21.5, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
       },
       "thoth.json.tests": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[5.0.2, )",
-          "Fable.Core": "[4.1.0, )",
-          "Fable.Pyxpecto": "[1.1.0, )",
+          "FSharp.Core": "[8.0.403, )",
+          "Fable.Core": "[5.0.0-beta.4, )",
+          "Fable.Pyxpecto": "[2.0.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
       },
       "Fable.Python": {
         "type": "CentralTransitive",
-        "requested": "[4.3.0, )",
-        "resolved": "4.3.0",
-        "contentHash": "KT5PI4NyMtVLDcmDkf5SeqwtFjVO17u27xr45qXfYWG12UePHxGjQJoI16OafIzlEQ6cHfAuRljhZGKIlvOJNQ==",
+        "requested": "[5.0.0-alpha.21.5, )",
+        "resolved": "5.0.0-alpha.21.5",
+        "contentHash": "jIeikNm0LUBZLl5/pnbyx7TiiIt/HWfIs5CcrIfYLmZod/Rmj3QsBvC6g4nU7LOg7t22xxJNcYbPfshYNRN/SA==",
         "dependencies": {
-          "FSharp.Core": "4.7.2",
-          "Fable.Core": "[4.1.0, 5.0.0)"
+          "FSharp.Core": "5.0.0",
+          "Fable.Core": "[5.0.0-beta.4]"
         }
       }
     }
