@@ -13,9 +13,9 @@
       },
       "EasyBuild.FileSystemProvider": {
         "type": "Direct",
-        "requested": "[0.3.0, )",
-        "resolved": "0.3.0",
-        "contentHash": "gdVJpqcMDJm4IfmITy3MtpEn/lo9pH8PirVlENtXGX9Sdw3rCgoo9ch1TAthUseh28RcUGWwza9BmEWlrQX/Aw=="
+        "requested": "[1.1.0, )",
+        "resolved": "1.1.0",
+        "contentHash": "O+/pVoGDLO6zzwacz/Ayi5DkOaGLOVfPMAe3EGjOda8D0RRgc23gbbH9bYONIHB7hb07Rc4tg4F4Da6GmlKqHQ=="
       },
       "EasyBuild.Tools": {
         "type": "Direct",

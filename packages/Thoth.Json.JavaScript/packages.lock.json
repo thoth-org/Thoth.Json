@@ -16,30 +16,30 @@
       },
       "EasyBuild.PackageReleaseNotes.Tasks": {
         "type": "Direct",
-        "requested": "[2.0.0, )",
-        "resolved": "2.0.0",
-        "contentHash": "jebz09lxa6pEJzft9Tr/PSNt5r7AVt5xmX3g4Ra+nLU1qtSrOh+hFgsywGn7fVME3LpbzhlX+2J8F7G9y3PxUQ=="
+        "requested": "[2.1.0, )",
+        "resolved": "2.1.0",
+        "contentHash": "1hMVtdIKNfHZA2Zw7L33Y1ZL/3DTK4NSy5gDaNfy2Emp753QxZoqNAPGNxv9MViqfpM62HwEIFZkUW4dCToHVg=="
       },
       "Fable.Core": {
         "type": "Direct",
-        "requested": "[5.0.0-beta.4, )",
-        "resolved": "5.0.0-beta.4",
-        "contentHash": "IECbOcWdDtToG9CHixOkDHiDiWHj982UvKvLys4LcJj3PXTZqSBPrZqdrJgKaSxuPlAiRGskHRo79oP/Q7zEAA==",
+        "requested": "[5.0.0, )",
+        "resolved": "5.0.0",
+        "contentHash": "pJOXJjfhjvNa1cgtF+klgR3DxQI7x9D/fFzZbjUBZLBJyYIioPsTFsKUnIOqNdCq1Oby9lINUSwnL4TqspMQOA==",
         "dependencies": {
           "FSharp.Core": "4.7.2"
         }
       },
       "Fable.Package.SDK": {
         "type": "Direct",
-        "requested": "[1.3.0, )",
-        "resolved": "1.3.0",
-        "contentHash": "7BntAnpWy7qsdCv+lYvBNx+OiC10SNMci6WUDsK8nILUwRXTSEWE947g0JYOZeXv7hcssgkfgL+o/eXAar9FWQ=="
+        "requested": "[1.3.2, )",
+        "resolved": "1.3.2",
+        "contentHash": "vQB5IvCyy86LP9ilSpZGjLUT/7HI0Bp4Ht1Oyl+w68h734ySaq9xLjttErYoHx+nmnMjcv2EBjxrA24mZ/U/jQ=="
       },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[8.0.403, )",
-        "resolved": "8.0.403",
-        "contentHash": "ldNIn4IksrJL/X3rF4R/y9pa3RmwkcGYQ3xFMdbJj8dJ9Q49J735m6sMy3MbCK9gj3YoCsxlyFeExCiNDy3gHQ=="
+        "requested": "[10.1.203, )",
+        "resolved": "10.1.203",
+        "contentHash": "I2MFk72yHqfgI594gKFigq8PVIso0Mh1ZUgG9R4n8gyYQ4IwpBxmvecfjnKA7iMLdVHYULB70PsLwYW/K76gew=="
       },
       "NETStandard.Library": {
         "type": "Direct",
@@ -104,7 +104,7 @@
       "thoth.json.core": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[8.0.403, )"
+          "FSharp.Core": "[10.1.203, )"
         }
       }
     }

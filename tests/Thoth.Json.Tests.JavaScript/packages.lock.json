@@ -16,9 +16,9 @@
       },
       "Fable.Core": {
         "type": "Direct",
-        "requested": "[5.0.0-beta.4, )",
-        "resolved": "5.0.0-beta.4",
-        "contentHash": "IECbOcWdDtToG9CHixOkDHiDiWHj982UvKvLys4LcJj3PXTZqSBPrZqdrJgKaSxuPlAiRGskHRo79oP/Q7zEAA==",
+        "requested": "[5.0.0, )",
+        "resolved": "5.0.0",
+        "contentHash": "pJOXJjfhjvNa1cgtF+klgR3DxQI7x9D/fFzZbjUBZLBJyYIioPsTFsKUnIOqNdCq1Oby9lINUSwnL4TqspMQOA==",
         "dependencies": {
           "FSharp.Core": "4.7.2"
         }
@@ -36,9 +36,9 @@
       },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[8.0.403, )",
-        "resolved": "8.0.403",
-        "contentHash": "ldNIn4IksrJL/X3rF4R/y9pa3RmwkcGYQ3xFMdbJj8dJ9Q49J735m6sMy3MbCK9gj3YoCsxlyFeExCiNDy3gHQ=="
+        "requested": "[10.1.203, )",
+        "resolved": "10.1.203",
+        "contentHash": "I2MFk72yHqfgI594gKFigq8PVIso0Mh1ZUgG9R4n8gyYQ4IwpBxmvecfjnKA7iMLdVHYULB70PsLwYW/K76gew=="
       },
       "NETStandard.Library": {
         "type": "Direct",
@@ -103,29 +103,29 @@
       "thoth.json.core": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[8.0.403, )"
+          "FSharp.Core": "[10.1.203, )"
         }
       },
       "thoth.json.javascript": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[8.0.403, )",
-          "Fable.Core": "[5.0.0-beta.4, )",
+          "FSharp.Core": "[10.1.203, )",
+          "Fable.Core": "[5.0.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
       },
       "thoth.json.tests": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[8.0.403, )",
-          "Fable.Core": "[5.0.0-beta.4, )",
+          "FSharp.Core": "[10.1.203, )",
+          "Fable.Core": "[5.0.0, )",
           "Fable.Pyxpecto": "[2.0.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
       },
       "Fable.Python": {
         "type": "CentralTransitive",
-        "requested": "[5.0.0-alpha.21.5, )",
+        "requested": "[5.0.0-rc.4, )",
         "resolved": "5.0.0-alpha.20.1",
         "contentHash": "RQcKUC/2fqwIli+ZvMCj4r2xLGChZl1W9xyOwx8LAXkvk8HZ/H7myHybnsv2RTwISVYNAVY6Yi5wwykRAsMxdA==",
         "dependencies": {

@@ -36,6 +36,13 @@
         "changelog-gen"
       ],
       "rollForward": false
+    },
+    "dotnet-outdated-tool": {
+      "version": "4.7.1",
+      "commands": [
+        "dotnet-outdated"
+      ],
+      "rollForward": false
     }
   }
 }

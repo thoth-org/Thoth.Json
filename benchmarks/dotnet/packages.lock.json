@@ -34,9 +34,9 @@
       },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[8.0.403, )",
-        "resolved": "8.0.403",
-        "contentHash": "ldNIn4IksrJL/X3rF4R/y9pa3RmwkcGYQ3xFMdbJj8dJ9Q49J735m6sMy3MbCK9gj3YoCsxlyFeExCiNDy3gHQ=="
+        "requested": "[10.1.203, )",
+        "resolved": "10.1.203",
+        "contentHash": "I2MFk72yHqfgI594gKFigq8PVIso0Mh1ZUgG9R4n8gyYQ4IwpBxmvecfjnKA7iMLdVHYULB70PsLwYW/K76gew=="
       },
       "BenchmarkDotNet.Annotations": {
         "type": "Transitive",
@@ -243,13 +243,13 @@
       "thoth.json.core": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[8.0.403, )"
+          "FSharp.Core": "[10.1.203, )"
         }
       },
       "thoth.json.newtonsoft": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[8.0.403, )",
+          "FSharp.Core": "[10.1.203, )",
           "Newtonsoft.Json": "[13.0.1, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
@@ -257,7 +257,7 @@
       "thoth.json.system.text.json": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[8.0.403, )",
+          "FSharp.Core": "[10.1.203, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
       },
