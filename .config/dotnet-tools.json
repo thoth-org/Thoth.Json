@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "fable": {
-      "version": "4.24.0",
+      "version": "5.0.0",
       "commands": [
         "fable"
       ],
@@ -17,7 +17,7 @@
       "rollForward": false
     },
     "husky": {
-      "version": "0.6.3",
+      "version": "0.9.1",
       "commands": [
         "husky"
       ],
@@ -34,6 +34,13 @@
       "version": "5.1.0",
       "commands": [
         "changelog-gen"
+      ],
+      "rollForward": false
+    },
+    "dotnet-outdated-tool": {
+      "version": "4.7.1",
+      "commands": [
+        "dotnet-outdated"
       ],
       "rollForward": false
     }

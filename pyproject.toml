@@ -1,0 +1,11 @@
+[project]
+name = "thoth-json"
+version = "0.1.0"
+description = ""
+requires-python = ">=3.12"
+dependencies = [
+    "fable-library",
+]
+
+[tool.uv]
+package = false

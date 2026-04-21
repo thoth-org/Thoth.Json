@@ -120,7 +120,7 @@ type TestPythonCommand() =
             // |> CmdLine.appendRaw "--test:MSBuildCracker"
             |> CmdLine.appendIf settings.IsWatch "--watch"
             |> CmdLine.appendRaw runArg
-            |> CmdLine.appendRaw "python"
+            |> CmdLine.appendRaw "uv run python"
             |> CmdLine.appendRaw "fableBuild/main.py"
             |> CmdLine.appendRaw "--silent"
             |> CmdLine.toString,
