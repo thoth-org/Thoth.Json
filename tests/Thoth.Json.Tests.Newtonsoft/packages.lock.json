@@ -95,16 +95,16 @@
         "type": "Project",
         "dependencies": {
           "FSharp.Core": "[10.1.203, )",
-          "Fable.Core": "[5.0.0-beta.4, )",
+          "Fable.Core": "[5.0.0, )",
           "Fable.Pyxpecto": "[2.0.0, )",
           "Thoth.Json.Core": "[1.0.0, )"
         }
       },
       "Fable.Core": {
         "type": "CentralTransitive",
-        "requested": "[5.0.0-beta.4, )",
-        "resolved": "5.0.0-beta.4",
-        "contentHash": "IECbOcWdDtToG9CHixOkDHiDiWHj982UvKvLys4LcJj3PXTZqSBPrZqdrJgKaSxuPlAiRGskHRo79oP/Q7zEAA==",
+        "requested": "[5.0.0, )",
+        "resolved": "5.0.0",
+        "contentHash": "pJOXJjfhjvNa1cgtF+klgR3DxQI7x9D/fFzZbjUBZLBJyYIioPsTFsKUnIOqNdCq1Oby9lINUSwnL4TqspMQOA==",
         "dependencies": {
           "FSharp.Core": "4.7.2"
         }

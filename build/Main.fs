@@ -8,7 +8,11 @@ open EasyBuild.Commands.Benchmark
 
 [<EntryPoint>]
 let main args =
-    Command.Run("dotnet", "husky install")
+    if System.Environment.GetEnvironmentVariable("ACT") <> null then
+        printfn "Running in ACT, skipping husky install"
+    else
+        Command.Run("dotnet", "husky install")
+
     Command.Run("pnpm", "install")
 
     let app = CommandApp()
