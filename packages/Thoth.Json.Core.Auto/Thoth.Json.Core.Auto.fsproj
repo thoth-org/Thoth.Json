@@ -9,6 +9,7 @@ This package rely on Thoth.Json.Core, meaning you will need to pick the right ad
 - Thoth.Json.JavaScript
 - Thoth.Json.Python
 - Thoth.Json.Newtonsoft
+- Thoth.Json.System.Text.Json
         </Description>
         <FablePackageType>library</FablePackageType>
         <PackageTags>fable-all;fsharp;json</PackageTags>

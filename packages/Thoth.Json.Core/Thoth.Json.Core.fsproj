@@ -9,6 +9,7 @@ Pick the right additional package for your runtime:
 - Thoth.Json.JavaScript
 - Thoth.Json.Python
 - Thoth.Json.Newtonsoft
+- Thoth.Json.System.Text.Json
         </Description>
         <FablePackageType>library</FablePackageType>
         <PackageTags>fable-all;fsharp;json</PackageTags>
