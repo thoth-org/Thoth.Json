@@ -1,4 +1,4 @@
-module Thoth.Json.Tests.Syntax
+module Thoth.Json.Tests.DecoderCE
 
 open Thoth.Json.Tests.Testing
 open Thoth.Json.Core

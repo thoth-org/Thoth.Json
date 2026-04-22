@@ -19,26 +19,26 @@
       },
       "EasyBuild.Tools": {
         "type": "Direct",
-        "requested": "[5.0.1, )",
-        "resolved": "5.0.1",
-        "contentHash": "m3y6ni3a+Z39UWcRkdh5naRYuSNz1ZYj7ASeg3weJV3M/ofqIOCfJBb0a0J1YiAW7jfczo0YoDVzHRXz5JAAsw==",
+        "requested": "[7.0.0, )",
+        "resolved": "7.0.0",
+        "contentHash": "USTfPdMJskY4bjkZhKtH0Wt6zt6N6FUkSbbPtfeI6cGaFDoD+bGCKeFqfuBP9gYaHOfvrfa9zKwFSJdveGodAQ==",
         "dependencies": {
           "BlackFox.CommandLine": "1.0.0",
           "FSharp.Core": "6.0.0",
-          "SimpleExec": "12.0.0"
+          "SimpleExec": "13.0.0"
         }
       },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[6.0.0, )",
-        "resolved": "6.0.0",
-        "contentHash": "fbv1UwJ2LXVcFCt+GGDPu0sIYA5C6gdDvAupDj3iLQF3clRkua/6J33f+FiGQa8P1tEa+zmz3wrjoTnXZ1UiYg=="
+        "requested": "[10.1.203, )",
+        "resolved": "10.1.203",
+        "contentHash": "I2MFk72yHqfgI594gKFigq8PVIso0Mh1ZUgG9R4n8gyYQ4IwpBxmvecfjnKA7iMLdVHYULB70PsLwYW/K76gew=="
       },
       "SimpleExec": {
         "type": "Direct",
-        "requested": "[12.0.0, )",
-        "resolved": "12.0.0",
-        "contentHash": "ptxlWtxC8vM6Y6e3h9ZTxBBkOWnWrm/Sa1HT+2i1xcXY3Hx2hmKDZP5RShPf8Xr9D+ivlrXNy57ktzyH8kyt+Q=="
+        "requested": "[13.0.0, )",
+        "resolved": "13.0.0",
+        "contentHash": "zcCR1pupa1wI1VqBULRiQKeHKKZOuJhi/K+4V5oO+rHJZlaOD53ViFo1c3PavDoMAfSn/FAXGAWpPoF57rwhYg=="
       },
       "Spectre.Console.Cli": {
         "type": "Direct",

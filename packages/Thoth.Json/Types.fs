@@ -4,6 +4,7 @@ open System.Text.RegularExpressions
 
 type JsonValue = obj
 
+[<NoComparison>]
 type ErrorReason =
     | BadPrimitive of string * JsonValue
     | BadPrimitiveExtra of string * JsonValue * string

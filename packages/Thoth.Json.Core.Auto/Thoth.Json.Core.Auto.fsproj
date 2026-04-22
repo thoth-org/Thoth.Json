@@ -2,9 +2,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Description>
-Elm-inspired encoder and decoder for JSON, this package is the core library which can be used on any F# project.
+Provide automatic encoding and decoding of F# types to and from JSON using F# reflection
 
-Pick the right additional package for your runtime:
+This package rely on Thoth.Json.Core, meaning you will need to pick the right additional package for your runtime:
 
 - Thoth.Json.JavaScript
 - Thoth.Json.Python
@@ -18,17 +18,23 @@ Pick the right additional package for your runtime:
         <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="Types.fs" />
-        <Compile Include="Decode.fs" />
+        <Compile Include="Prelude.fs" />
+        <Compile Include="Domain.fs" />
+        <Compile Include="Casing.fs" />
         <Compile Include="Encode.fs" />
-        <!-- <Compile Include="Extra.fs" /> -->
-        <Compile Include="DecoderCE.fs" />
+        <Compile Include="Decode.fs" />
     </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../Thoth.Json.Core/Thoth.Json.Core.fsproj" />
+    </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="EasyBuild.PackageReleaseNotes.Tasks">
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
+        <PackageReference Include="Fable.Core" />
         <PackageReference Include="Fable.Package.SDK">
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
           <PrivateAssets>all</PrivateAssets>

@@ -248,9 +248,7 @@ type TestMaybeRecord =
         Must: string
     }
 
-type BaseClass =
-    class
-    end
+type BaseClass = class end
 
 [<NoComparison>]
 type RecordWithOptionalClass =
@@ -303,8 +301,9 @@ type ChildType =
     {
         ChildField: string
     }
-    // static member Encode(x: ChildType) =
-    //     Encode.string x.ChildField
+
+    static member Encode(x: ChildType) = Encode.string x.ChildField
+
     static member Decoder =
         Decode.string
         |> Decode.map (fun x ->
@@ -423,11 +422,11 @@ type RecordForCharacterCase =
 module IntAsRecord =
 
     let encode (value: int) =
-        // Encode.object [
-        //     "type", Encode.string "int"
-        //     "value", Encode.int value
-        // ]
-        null
+        Encode.object
+            [
+                "type", Encode.string "int"
+                "value", Encode.int value
+            ]
 
     let decode: Decoder<int> =
         Decode.field "type" Decode.string
@@ -453,3 +452,37 @@ type Data =
         Person: Person
         Post: Post option
     }
+
+// Generic wrapper type for testing Issue #169
+// Extra encoder doesn't get called for type with generic params
+type GenericWrapper<'a> =
+    {
+        Node: 'a
+        Source: int list
+    }
+
+    static member Encoder(encoder: Encoder<'a>) : Encoder<GenericWrapper<'a>> =
+        fun (x: GenericWrapper<'a>) ->
+            Encode.object
+                [
+                    "node", encoder x.Node
+                    "source", Encode.list (List.map Encode.int x.Source)
+                ]
+
+    static member Create (node: 'a) (source: int list) : GenericWrapper<'a> =
+        {
+            Node = node
+            Source = source
+        }
+
+// Single-case DU with multiple arguments for testing Issue #86
+type SingleCaseMultipleArgs = | SeveralArgs of int * string * int
+
+// Single-case DU with anonymous record argument for testing Issue #86
+type SingleCaseWithAnonymousRecord =
+    | SingleWithAnon of
+        int *
+        {|
+            Name: string
+            Age: int
+        |}
