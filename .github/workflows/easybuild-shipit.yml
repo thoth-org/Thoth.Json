@@ -35,10 +35,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  release:
-    name: Release
+  publish:
+    name: Publish
     runs-on: ubuntu-latest
-    if: "startsWith(github.event.head_commit.message, 'chore: release ')"
+    if: "startsWith(github.event.workflow_run.head_commit.message, 'chore: release ')"
     steps:
       - uses: actions/checkout@v6
       - name: Setup .NET
@@ -60,6 +60,6 @@ jobs:
           user: MangelMaxime
 
       - name: Build, Test and Release
-        run: ./build.sh release
+        run: ./build.sh publish
         env:
           NUGET_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}

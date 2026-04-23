@@ -20,13 +20,12 @@ type PublishCommand() =
     interface ICommandLimiter<PublishSettings>
 
     override _.Execute(context: CommandContext, settings: PublishSettings) =
-        TestCommand().Execute(context, TestSettings()) |> ignore
-
         publish Workspace.packages.``Thoth.Json``.``.``
         publish Workspace.packages.``Thoth.Json.Core``.``.``
         publish Workspace.packages.``Thoth.Json.JavaScript``.``.``
         publish Workspace.packages.``Thoth.Json.Newtonsoft``.``.``
         publish Workspace.packages.``Thoth.Json.Python``.``.``
         publish Workspace.packages.``Thoth.Json.System.Text.Json``.``.``
+        publish Workspace.packages.``Thoth.Json.Core.Auto``.``.``
 
         0
