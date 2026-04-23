@@ -24,7 +24,7 @@
       "rollForward": false
     },
     "easybuild.commitlinter": {
-      "version": "1.0.1",
+      "version": "2.0.0",
       "commands": [
         "commit-linter"
       ],
@@ -41,6 +41,13 @@
       "version": "4.7.1",
       "commands": [
         "dotnet-outdated"
+      ],
+      "rollForward": false
+    },
+    "easybuild.shipit": {
+      "version": "2.1.0",
+      "commands": [
+        "shipit"
       ],
       "rollForward": false
     }

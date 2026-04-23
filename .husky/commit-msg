@@ -19,4 +19,4 @@
 ## or put your custom commands -------------------
 #echo 'Husky.Net is awesome!'
 
-dotnet commit-linter -c commit.config.json "$1"
+dotnet commit-linter "$1"

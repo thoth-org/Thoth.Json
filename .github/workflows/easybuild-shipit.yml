@@ -1,0 +1,65 @@
+on:
+  workflow_run:
+    workflows: ["test"]
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+name: EasyBuild ShipIt
+
+jobs:
+  # Run tests and generate a Pull Request to prepare a release
+  shipit-pr:
+    name: ShipIt - Pull Request
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # We need to fetch more than the last commit to be able to generate the changelog based on the commit history.
+          # Adapt this value based on your needs.
+          fetch-depth: 50
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - name: ShipIt (Pull Request)
+        run: |
+          dotnet tool restore
+          dotnet shipit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: "startsWith(github.event.head_commit.message, 'chore: release ')"
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      # Needed for pnpm install which we always run at the top of the build script
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22.20.0'
+      - uses: pnpm/action-setup@v6
+
+      # Use the ambient GitHub token to login to NuGet and retrieve an API key
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: MangelMaxime
+
+      - name: Build, Test and Release
+        run: ./build.sh release
+        env:
+          NUGET_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
