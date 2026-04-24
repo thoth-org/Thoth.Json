@@ -1853,6 +1853,21 @@ Expecting an array but instead got: 1
 
                         equal expected actual
 
+                    testCase
+                        "keyValuePairs with an invalid value outputs an error"
+                    <| fun _ ->
+                        let expected =
+                            Error
+                                """Error at: `$.b`
+Expecting a boolean but instead got: 123"""
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.keyValuePairs Decode.bool)
+                                """{ "a": true, "b": 123, "c": false }"""
+
+                        equal actual expected
+
                     testCase "dict works"
                     <| fun _ ->
                         let expected =

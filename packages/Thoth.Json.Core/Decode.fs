@@ -799,7 +799,8 @@ module Decode =
                             let fieldValue = helpers.getProperty (prop, value)
 
                             match decoder.Decode(helpers, fieldValue) with
-                            | Error er -> Error er
+                            | Error er ->
+                                Error(Helpers.prependPath ("." + prop) er)
                             | Ok value -> (prop, value) :: acc |> Ok
                     )
                     |> Result.map List.rev
