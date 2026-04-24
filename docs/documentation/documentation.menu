@@ -37,7 +37,7 @@
             "label": "Advanced",
             "items": [
                 "./advanced/introduction.md",
-                "./advanced/unkown-fields.fsx"
+                "./advanced/unknown-fields.fsx"
             ]
         }
     ]
