@@ -90,7 +90,7 @@ module Decode =
             | BadField(msg, value) -> genericMsg msg value true
             | BadPath(msg, value, fieldName) ->
                 genericMsg msg value true
-                + ("\nNode `" + fieldName + "` is unkown.")
+                + ("\nNode `" + fieldName + "` is unknown.")
             | TooSmallArray(msg, value) ->
                 "Expecting " + msg + ".\n" + (Helpers.anyToString value)
             | BadOneOf messages ->
@@ -1315,7 +1315,7 @@ module Decode =
                          BadPrimitiveExtra(
                              t.FullName,
                              value,
-                             "Unkown value provided for the enum"
+                             "Unknown value provided for the enum"
                          ))
                         |> Error
             | Error msg -> Error msg
@@ -1671,11 +1671,7 @@ If you can't use one of these types, please pass an extra decoder.
 
     type Auto =
         static member generateBoxedDecoderCached
-            (
-                t: System.Type,
-                ?caseStrategy: CaseStrategy,
-                ?extra: ExtraCoders
-            )
+            (t: System.Type, ?caseStrategy: CaseStrategy, ?extra: ExtraCoders)
             : BoxedDecoder
             =
             let caseStrategy = defaultArg caseStrategy PascalCase
@@ -1695,10 +1691,7 @@ If you can't use one of these types, please pass an extra decoder.
             )
 
         static member inline generateDecoderCached<'T>
-            (
-                ?caseStrategy: CaseStrategy,
-                ?extra: ExtraCoders
-            )
+            (?caseStrategy: CaseStrategy, ?extra: ExtraCoders)
             : Decoder<'T>
             =
             Auto.generateBoxedDecoderCached (
@@ -1709,21 +1702,14 @@ If you can't use one of these types, please pass an extra decoder.
             |> unboxDecoder
 
         static member generateBoxedDecoder
-            (
-                t: System.Type,
-                ?caseStrategy: CaseStrategy,
-                ?extra: ExtraCoders
-            )
+            (t: System.Type, ?caseStrategy: CaseStrategy, ?extra: ExtraCoders)
             : BoxedDecoder
             =
             let caseStrategy = defaultArg caseStrategy PascalCase
             autoDecoder (makeExtra extra) caseStrategy false t
 
         static member inline generateDecoder<'T>
-            (
-                ?caseStrategy: CaseStrategy,
-                ?extra: ExtraCoders
-            )
+            (?caseStrategy: CaseStrategy, ?extra: ExtraCoders)
             : Decoder<'T>
             =
             Auto.generateBoxedDecoder (
@@ -1734,11 +1720,7 @@ If you can't use one of these types, please pass an extra decoder.
             |> unboxDecoder
 
         static member inline fromString<'T>
-            (
-                json: string,
-                ?caseStrategy: CaseStrategy,
-                ?extra: ExtraCoders
-            )
+            (json: string, ?caseStrategy: CaseStrategy, ?extra: ExtraCoders)
             : Result<'T, string>
             =
             let decoder =
@@ -1750,11 +1732,7 @@ If you can't use one of these types, please pass an extra decoder.
             fromString decoder json
 
         static member inline unsafeFromString<'T>
-            (
-                json: string,
-                ?caseStrategy: CaseStrategy,
-                ?extra: ExtraCoders
-            )
+            (json: string, ?caseStrategy: CaseStrategy, ?extra: ExtraCoders)
             : 'T
             =
             let decoder =

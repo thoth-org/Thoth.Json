@@ -506,7 +506,7 @@ module Decode =
                                          BadPrimitiveExtra(
                                              innerType.FullName,
                                              value,
-                                             "Unkown value provided for the enum"
+                                             "Unknown value provided for the enum"
                                          ))
                                         |> Error
                                 }
@@ -746,15 +746,15 @@ module Decode =
             | EnumType(UInt16Type _) -> Decode.Generic.Enum.uint16 ty
             | EnumType(IntType _) -> Decode.Generic.Enum.int ty
             | EnumType(UIntType _) -> Decode.Generic.Enum.uint32 ty
-            | unkown ->
+            | unknown ->
                 if isOptional then
                     // Return a runtime-error decoder instead of failing at generation time.
                     // This allows optional fields with unsupported types to work when the value is null,
                     // because decodeMaybeNull catches null values before the decoder runs.
-                    Decode.Generic.error unkown unkown.FullName
+                    Decode.Generic.error unknown unknown.FullName
                 else
                     failwith
-                        $"Cannot generate auto decoder for '{unkown.FullName}'. Please pass an extra decoder.\n\nDocumentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"
+                        $"Cannot generate auto decoder for '{unknown.FullName}'. Please pass an extra decoder.\n\nDocumentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"
 
     and private genericRecordDecoder
         (caseStyle: CaseStrategy option)
