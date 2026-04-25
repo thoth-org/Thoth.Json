@@ -72,11 +72,12 @@ module Decode =
     let fromValue (decoder: Decoder<'T>) =
         Decode.Advanced.fromValue helpers decoder
 
-    let fromString (decoder: Decoder<'T>) =
+    let fromStringWithOptions
+        (options: JsonDocumentOptions)
+        (decoder: Decoder<'T>)
+        =
         fun (value: string) ->
             try
-                let options = JsonDocumentOptions(AllowTrailingCommas = true)
-
                 let jsonDocument = JsonDocument.Parse(value, options)
 
                 match decoder.Decode(helpers, jsonDocument.RootElement) with
@@ -86,6 +87,11 @@ module Decode =
                     Error(Decode.errorToString helpers finalError)
             with :? JsonException as ex ->
                 Error("Given an invalid JSON: " + ex.Message)
+
+    let fromString (decoder: Decoder<'T>) =
+        let options = JsonDocumentOptions(AllowTrailingCommas = true)
+
+        fromStringWithOptions options decoder
 
     let unsafeFromString (decoder: Decoder<'T>) =
         fun value ->
