@@ -506,7 +506,7 @@ let tests (runner: TestRunner<_, _>) =
                         """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types.Enum_Int8[System.SByte] but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """
                             .Trim()
                     )
@@ -516,7 +516,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types+Enum_Int8 but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """
                             .Trim()
                     )
@@ -539,7 +539,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types.Enum_UInt8[System.Byte] but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """
                             .Trim()
                     )
@@ -549,7 +549,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types+Enum_UInt8 but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """
                             .Trim()
                     )
@@ -572,7 +572,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types.Enum_Int16[System.Int16] but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """
                             .Trim()
                     )
@@ -582,7 +582,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types+Enum_Int16 but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """
                             .Trim()
                     )
@@ -605,7 +605,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types.Enum_UInt16[System.UInt16] but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """
                             .Trim()
                     )
@@ -615,7 +615,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types+Enum_UInt16 but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """
                             .Trim()
                     )
@@ -638,7 +638,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types.Enum_Int[System.Int32] but instead got: 4
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """
                             .Trim()
                     )
@@ -648,7 +648,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types+Enum_Int but instead got: 4
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """
                             .Trim()
                     )
@@ -671,7 +671,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types.Enum_UInt32[System.UInt32] but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """
                             .Trim()
                     )
@@ -681,7 +681,7 @@ Reason: Unkown value provided for the enum
                         """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types+Enum_UInt32 but instead got: 2
-Reason: Unkown value provided for the enum
+Reason: Unknown value provided for the enum
                         """
                             .Trim()
                     )

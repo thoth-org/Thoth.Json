@@ -1,6 +1,6 @@
 (***
 layout: nacara/layouts/docs.njk
-title: Unkown fields
+title: Unknown fields
 ***)
 
 (*** hide ***)
@@ -28,7 +28,7 @@ Consider the following JSON:
 In this example, we know that:
 
 - The `ts` field required
-- There is an unkown number of `Rate` fields which consists of:
+- There is an unknown number of `Rate` fields which consists of:
     - The key property which has the format:
         1. `baseCurrency`
         2. `_`

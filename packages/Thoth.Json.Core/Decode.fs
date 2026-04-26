@@ -59,7 +59,7 @@ module Decode =
             | BadField(msg, value) -> genericMsg helpers msg value true
             | BadPath(msg, value, fieldName) ->
                 genericMsg helpers msg value true
-                + ("\nNode `" + fieldName + "` is unkown.")
+                + ("\nNode `" + fieldName + "` is unknown.")
             | TooSmallArray(msg, value) ->
                 "Expecting " + msg + ".\n" + (helpers.anyToString value)
             | BadOneOf(errors) ->
@@ -1568,7 +1568,7 @@ module Decode =
                          BadPrimitiveExtra(
                              typeof<'TEnum>.FullName,
                              value,
-                             "Unkown value provided for the enum"
+                             "Unknown value provided for the enum"
                          ))
                         |> Error
                 }

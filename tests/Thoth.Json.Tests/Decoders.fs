@@ -1548,7 +1548,7 @@ Expecting an object with path `user.firstname` but instead got:
         "age": 25
     }
 }
-Node `firstname` is unkown.
+Node `firstname` is unknown.
                         """
                                     .Trim()
                             )
@@ -3596,7 +3596,7 @@ Expecting an object with path `user.firstname` but instead got:
         "age": 25
     }
 }
-Node `firstname` is unkown.
+Node `firstname` is unknown.
                         """
                                     .Trim()
                             )
@@ -4172,7 +4172,7 @@ Expecting an object with path `missing_field_2.sub_field` but instead got:
         "sub_field": "not_a_boolean"
     }
 }
-Node `sub_field` is unkown.
+Node `sub_field` is unknown.
 
 Error at: `$.fieldC`
 Expecting an int but instead got: "not_a_number"
