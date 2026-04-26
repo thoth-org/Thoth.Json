@@ -36,8 +36,16 @@ module Encode =
                 JsonValue.Create(value)
         }
 
-    let toString (space: int) (value: IEncodable) : string =
+    let toStringWithOptions
+        (options: JsonSerializerOptions)
+        (value: IEncodable)
+        : string
+        =
         let json = Encode.toJsonValue helpers value
+
+        JsonSerializer.Serialize(json, options)
+
+    let toString (space: int) (value: IEncodable) : string =
         let writeIndented = space > 0
 
         let options =
@@ -49,4 +57,4 @@ module Encode =
                     System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             )
 
-        JsonSerializer.Serialize(json, options)
+        toStringWithOptions options value
