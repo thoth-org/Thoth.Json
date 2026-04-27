@@ -89,7 +89,7 @@ module Decode =
                 Error("Given an invalid JSON: " + ex.Message)
 
     let fromString (decoder: Decoder<'T>) =
-        let options = JsonDocumentOptions(AllowTrailingCommas = true)
+        let options = JsonDocumentOptions()
 
         fromStringWithOptions options decoder
 
