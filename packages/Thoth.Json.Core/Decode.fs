@@ -327,12 +327,16 @@ module Decode =
     let int64: Decoder<int64> =
         let name = "an int64"
 
-        let tryParse text =
+        let tryParse (text: string) =
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_PYTHON
+            System.Int64.TryParse(text)
+#else
             System.Int64.TryParse(
                 text,
                 NumberStyles.AllowLeadingSign,
                 CultureInfo.InvariantCulture
             )
+#endif
 
         { new Decoder<int64> with
             member _.Decode(helpers, value) =
@@ -353,12 +357,16 @@ module Decode =
     let uint64: Decoder<uint64> =
         let name = "an uint64"
 
-        let tryParse text =
+        let tryParse (text: string) =
+#if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_PYTHON
+            System.UInt64.TryParse(text)
+#else
             System.UInt64.TryParse(
                 text,
                 NumberStyles.AllowLeadingSign,
                 CultureInfo.InvariantCulture
             )
+#endif
 
         { new Decoder<uint64> with
             member _.Decode(helpers, value) =
