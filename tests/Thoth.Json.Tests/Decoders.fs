@@ -600,6 +600,8 @@ Expecting an uint16 but instead got: "maxime"
 
                         equal expected actual
 
+                    // This is beyond the range of `JSON.parse`
+#if !FABLE_COMPILER_JAVASCRIPT
                     testCase "an int64 works from large number"
                     <| fun _ ->
                         let expected = Ok 9223372036854775806L
@@ -610,6 +612,7 @@ Expecting an uint16 but instead got: "maxime"
                                 "9223372036854775806"
 
                         equal expected actual
+#endif
 
                     testCase "an int64 works from large string"
                     <| fun _ ->
@@ -691,6 +694,8 @@ Expecting an uint32 but instead got: "maxime"
 
                         equal expected actual
 
+                    // This is beyond the range of `JSON.parse`
+#if !FABLE_COMPILER_JAVASCRIPT
                     testCase "an uint64 works from large number"
                     <| fun _ ->
                         let expected = Ok 9223372036854775806UL
@@ -701,6 +706,7 @@ Expecting an uint32 but instead got: "maxime"
                                 "9223372036854775806"
 
                         equal expected actual
+#endif
 
                     testCase "an uint64 works from large string"
                     <| fun _ ->
