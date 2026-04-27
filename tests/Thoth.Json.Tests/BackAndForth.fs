@@ -86,4 +86,41 @@ let tests (runner: TestRunner<_, _>) =
 
                 equal (Ok expected) decoded
 
+            testCase "int64 is symmetric"
+            <| fun _ ->
+                let cases =
+                    [
+                        0L
+                        1L
+                        2L
+                        System.Int64.MaxValue
+                        System.Int64.MinValue
+                    ]
+
+                for expected in cases do
+                    let json =
+                        expected |> Encode.int64 |> runner.Encode.toString 0
+
+                    let decoded = runner.Decode.fromString Decode.int64 json
+
+                    equal (Ok expected) decoded
+
+            testCase "uint64 is symmetric"
+            <| fun _ ->
+                let cases =
+                    [
+                        0UL
+                        1UL
+                        2UL
+                        System.UInt64.MaxValue
+                        System.UInt64.MinValue
+                    ]
+
+                for expected in cases do
+                    let json =
+                        expected |> Encode.uint64 |> runner.Encode.toString 0
+
+                    let decoded = runner.Decode.fromString Decode.uint64 json
+
+                    equal (Ok expected) decoded
         ]

@@ -325,20 +325,56 @@ module Decode =
             uint32
 
     let int64: Decoder<int64> =
-        integral
-            "an int64"
-            System.Int64.TryParse
-            (fun () -> System.Int64.MinValue)
-            (fun () -> System.Int64.MaxValue)
-            int64
+        let name = "an int64"
+
+        let tryParse text =
+            System.Int64.TryParse(
+                text,
+                NumberStyles.AllowLeadingSign,
+                CultureInfo.InvariantCulture
+            )
+
+        { new Decoder<int64> with
+            member _.Decode(helpers, value) =
+                if helpers.isNumber value then
+                    let rawText = helpers.anyToString value
+
+                    match tryParse rawText with
+                    | true, x -> Ok x
+                    | _ -> ("", BadPrimitive(name, value)) |> Error
+                elif helpers.isString value then
+                    match tryParse (helpers.asString value) with
+                    | true, x -> Ok x
+                    | _ -> ("", BadPrimitive(name, value)) |> Error
+                else
+                    ("", BadPrimitive(name, value)) |> Error
+        }
 
     let uint64: Decoder<uint64> =
-        integral
-            "an uint64"
-            System.UInt64.TryParse
-            (fun () -> System.UInt64.MinValue)
-            (fun () -> System.UInt64.MaxValue)
-            uint64
+        let name = "an uint64"
+
+        let tryParse text =
+            System.UInt64.TryParse(
+                text,
+                NumberStyles.AllowLeadingSign,
+                CultureInfo.InvariantCulture
+            )
+
+        { new Decoder<uint64> with
+            member _.Decode(helpers, value) =
+                if helpers.isNumber value then
+                    let rawText = helpers.anyToString value
+
+                    match tryParse rawText with
+                    | true, x -> Ok x
+                    | _ -> ("", BadPrimitive(name, value)) |> Error
+                elif helpers.isString value then
+                    match tryParse (helpers.asString value) with
+                    | true, x -> Ok x
+                    | _ -> ("", BadPrimitive(name, value)) |> Error
+                else
+                    ("", BadPrimitive(name, value)) |> Error
+        }
 
     let bigint: Decoder<bigint> =
         { new Decoder<bigint> with

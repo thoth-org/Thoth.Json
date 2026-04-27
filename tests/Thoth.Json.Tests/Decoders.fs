@@ -600,6 +600,28 @@ Expecting an uint16 but instead got: "maxime"
 
                         equal expected actual
 
+                    testCase "an int64 works from large number"
+                    <| fun _ ->
+                        let expected = Ok 9223372036854775806L
+
+                        let actual =
+                            runner.Decode.fromString
+                                Decode.int64
+                                "9223372036854775806"
+
+                        equal expected actual
+
+                    testCase "an int64 works from large string"
+                    <| fun _ ->
+                        let expected = Ok 9223372036854775806L
+
+                        let actual =
+                            runner.Decode.fromString
+                                Decode.int64
+                                "\"9223372036854775806\""
+
+                        equal expected actual
+
                     testCase
                         "an int64 works output an error if incorrect string"
                     <| fun _ ->
@@ -666,6 +688,28 @@ Expecting an uint32 but instead got: "maxime"
 
                         let actual =
                             runner.Decode.fromString Decode.uint64 "\"1000\""
+
+                        equal expected actual
+
+                    testCase "an uint64 works from large number"
+                    <| fun _ ->
+                        let expected = Ok 9223372036854775806UL
+
+                        let actual =
+                            runner.Decode.fromString
+                                Decode.uint64
+                                "9223372036854775806"
+
+                        equal expected actual
+
+                    testCase "an uint64 works from large string"
+                    <| fun _ ->
+                        let expected = Ok 9223372036854775806UL
+
+                        let actual =
+                            runner.Decode.fromString
+                                Decode.uint64
+                                "\"9223372036854775806\""
 
                         equal expected actual
 
