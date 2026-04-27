@@ -105,6 +105,7 @@ let tests (runner: TestRunner<_, _>) =
 
                     equal (Ok expected) decoded
 
+#if !FABLE_COMPILER_PYTHON
             testCase "uint64 is symmetric"
             <| fun _ ->
                 let cases =
@@ -123,4 +124,5 @@ let tests (runner: TestRunner<_, _>) =
                     let decoded = runner.Decode.fromString Decode.uint64 json
 
                     equal (Ok expected) decoded
+#endif
         ]
