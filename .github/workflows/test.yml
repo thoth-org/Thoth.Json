@@ -11,7 +11,9 @@ jobs:
   build:
     strategy:
       matrix:
-        platform: [ ubuntu-latest ]
+        platform: [ ubuntu-latest, windows-latest ]
+        # Disable macOS testing for now because it keeps saying that the package content hash for
+        # FSHarp.Core is different from the one in the lock file, even though it isn't.
 
     runs-on: ${{ matrix.platform }}
 
