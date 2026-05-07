@@ -847,6 +847,39 @@ Expecting a bigint but instead got: "maxime"
 
                         equal expected actual
 
+#if !FABLE_COMPILER_JAVASCRIPT && !FABLE_COMPILER_PYTHON
+                    testCase "a decimal string uses invariant culture"
+                    <| fun _ ->
+                        let previousCulture =
+                            Globalization.CultureInfo.CurrentCulture
+
+                        let previousUiCulture =
+                            Globalization.CultureInfo.CurrentUICulture
+
+                        try
+                            let germanCulture =
+                                Globalization.CultureInfo("de-DE")
+
+                            Globalization.CultureInfo.CurrentCulture <-
+                                germanCulture
+
+                            Globalization.CultureInfo.CurrentUICulture <-
+                                germanCulture
+
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.decimal
+                                    "\"0.7833\""
+
+                            equal (Ok 0.7833M) actual
+                        finally
+                            Globalization.CultureInfo.CurrentCulture <-
+                                previousCulture
+
+                            Globalization.CultureInfo.CurrentUICulture <-
+                                previousUiCulture
+#endif
+
                     testCase
                         "a string representing a DateTime should be accepted as a string"
                     <| fun _ ->
