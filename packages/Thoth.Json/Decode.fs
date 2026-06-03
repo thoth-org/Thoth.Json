@@ -358,7 +358,13 @@ module Decode =
             if Helpers.isNumber value then
                 Helpers.asFloat value |> decimal |> Ok
             elif Helpers.isString value then
-                match System.Decimal.TryParse(Helpers.asString value) with
+                match
+                    System.Decimal.TryParse(
+                        Helpers.asString value,
+                        NumberStyles.Number,
+                        CultureInfo.InvariantCulture
+                    )
+                with
                 | true, x -> Ok x
                 | _ -> (path, BadPrimitive("a decimal", value)) |> Error
             else

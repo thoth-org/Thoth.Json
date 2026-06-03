@@ -847,6 +847,55 @@ Expecting a bigint but instead got: "maxime"
 
                         equal expected actual
 
+#if !FABLE_COMPILER_JAVASCRIPT && !FABLE_COMPILER_PYTHON
+                    testList
+                        "a decimal string uses invariant culture"
+                        ([
+                            "de-DE" // Decimal separator is comma in this culture.
+                            "fi-FI" // Uses U+2212 as negative sign in NumberFormat.
+                            "sv-SE" // Also uses U+2212 as negative sign.
+                            "fa-IR" // Uses right-to-left direction marks with negative sign.
+                            "fr-FR" // Uses non-breaking space as group separator and comma decimal separator.
+                            "ru-RU" // Uses comma decimal separator and non-dot parsing conventions.
+                         ]
+                         |> List.map (fun culture ->
+                             testCase (
+                                 sprintf
+                                     "a decimal string works in %s culture"
+                                     culture
+                             )
+                             <| fun _ ->
+                                 let previousCulture =
+                                     Globalization.CultureInfo.CurrentCulture
+
+                                 let previousUiCulture =
+                                     Globalization.CultureInfo.CurrentUICulture
+
+                                 try
+                                     let germanCulture =
+                                         Globalization.CultureInfo(culture)
+
+                                     Globalization.CultureInfo.CurrentCulture <-
+                                         germanCulture
+
+                                     Globalization.CultureInfo.CurrentUICulture <-
+                                         germanCulture
+
+                                     let actual =
+                                         runner.Decode.fromString
+                                             Decode.decimal
+                                             $"\"-1234.75\""
+
+                                     equal (Ok -1234.75M) actual
+                                 finally
+                                     Globalization.CultureInfo.CurrentCulture <-
+                                         previousCulture
+
+                                     Globalization.CultureInfo.CurrentUICulture <-
+                                         previousUiCulture
+                         ))
+#endif
+
                     testCase
                         "a string representing a DateTime should be accepted as a string"
                     <| fun _ ->
