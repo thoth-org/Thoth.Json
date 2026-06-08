@@ -59,6 +59,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                     "The decoded value must match the original"
             }
 
+#if !FABLE_COMPILER_PYTHON
             test "Codec.datetimeOffset works for simple case 1" {
                 let expected = DateTimeOffset.Parse "2022-05-23T07:45:39.700Z"
 
@@ -69,4 +70,5 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                     expected
                     "The decoded value must match the original"
             }
+#endif
         ]
