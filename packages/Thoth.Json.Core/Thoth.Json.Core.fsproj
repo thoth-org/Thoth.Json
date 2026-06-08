@@ -23,6 +23,9 @@ Pick the right additional package for your runtime:
         <Compile Include="Encode.fs" />
         <!-- <Compile Include="Extra.fs" /> -->
         <Compile Include="DecoderCE.fs" />
+        <Compile Include="Codec.fs" />
+        <Compile Include="Object.fs" />
+        <Compile Include="Variant.fs" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="EasyBuild.PackageReleaseNotes.Tasks">

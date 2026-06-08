@@ -1557,9 +1557,9 @@ module Decode =
     let fix (make: Decoder<'a> -> Decoder<'a>) : Decoder<'a> =
         FixDecoder<'a>(make)
 
-////////////
-// Enum ///
-/////////
+    ////////////
+    // Enum ///
+    /////////
 
 #if !FABLE_REPL_LIB
     module Enum =
@@ -1597,3 +1597,5 @@ module Decode =
         let inline uint32<'TEnum when 'TEnum: enum<uint32>> : Decoder<'TEnum> =
             uint32 |> andThen enumOfValue
 #endif
+
+    let codec (c: Codec<'t>) : Decoder<'t> = c.Decoder

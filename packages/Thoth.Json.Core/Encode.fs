@@ -378,3 +378,5 @@ module Encode =
         (json: IEncodable)
         =
         json.Encode(helpers)
+
+    let codec (c: Codec<'t>) : Encoder<'t> = c.Encoder
