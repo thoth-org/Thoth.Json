@@ -99,6 +99,28 @@ module Codec =
             (fun xs -> xs |> Array.map x.Encoder |> Encode.array)
             (Decode.array x.Decoder)
 
+    let seq (x: Codec<'t>) : Codec<'t seq> =
+        create (Seq.map x.Encoder >> Encode.seq) (Decode.seq x.Decoder)
+
+    let resizeArray (x: Codec<'t>) : Codec<ResizeArray<'t>> =
+        create
+            (Seq.map x.Encoder >> ResizeArray >> Encode.resizeArray)
+            (Decode.resizeArray x.Decoder)
+
+    let dict (x: Codec<'t>) : Codec<Map<string, 't>> =
+        create
+            (Map.map (fun _ v -> x.Encoder v) >> Encode.dict)
+            (Decode.dict x.Decoder)
+
+    let map'
+        (key: Codec<'key>)
+        (value: Codec<'value>)
+        : Codec<Map<'key, 'value>>
+        =
+        create
+            (Encode.map key.Encoder value.Encoder)
+            (Decode.map' key.Decoder value.Decoder)
+
     let tuple2 (a: Codec<'a>) (b: Codec<'b>) : Codec<'a * 'b> =
         create
             (Encode.tuple2 a.Encoder b.Encoder)
