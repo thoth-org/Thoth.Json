@@ -64,28 +64,19 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 
                 let actual = roundTrip runner Shape.codec expected
 
-                Expect.equal
-                    actual
-                    expected
-                    "The decoded value must match the original"
+                equal actual expected
 
                 let expected = Rectangle(7, 2)
 
                 let actual = roundTrip runner Shape.codec expected
 
-                Expect.equal
-                    actual
-                    expected
-                    "The decoded value must match the original"
+                equal actual expected
 
                 let expected = Circle 3
 
                 let actual = roundTrip runner Shape.codec expected
 
-                Expect.equal
-                    actual
-                    expected
-                    "The decoded value must match the original"
+                equal actual expected
             }
 
             test "variantCodec works for simple case 2" {
@@ -93,27 +84,18 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 
                 let actual = roundTrip runner Shape.codec' expected
 
-                Expect.equal
-                    actual
-                    expected
-                    "The decoded value must match the original"
+                equal actual expected
 
                 let expected = Rectangle(7, 2)
 
                 let actual = roundTrip runner Shape.codec' expected
 
-                Expect.equal
-                    actual
-                    expected
-                    "The decoded value must match the original"
+                equal actual expected
 
                 let expected = Circle 3
 
                 let actual = roundTrip runner Shape.codec' expected
 
-                Expect.equal
-                    actual
-                    expected
-                    "The decoded value must match the original"
+                equal actual expected
             }
         ]

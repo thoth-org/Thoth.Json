@@ -101,10 +101,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 
                 let actual = roundTrip runner Codec.fooBar expected
 
-                Expect.equal
-                    actual
-                    expected
-                    "The decoded value must match the original"
+                equal actual expected
             }
 
             test "objectCodec works for simple case 2" {
@@ -120,10 +117,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 
                 let actual = roundTrip runner Codec.qux expected
 
-                Expect.equal
-                    actual
-                    expected
-                    "The decoded value must match the original"
+                equal actual expected
             }
 
             test "objectCodec works for simple case 3" {
@@ -137,10 +131,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 
                 let actual = roundTrip runner Codec.large expected
 
-                Expect.equal
-                    actual
-                    expected
-                    "The decoded value must match the original"
+                equal actual expected
             }
 
             test "objectCodec optional field works" {
@@ -158,14 +149,8 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 
                 let actualWithoutValue = roundTrip runner Codec.baz withoutValue
 
-                Expect.equal
-                    actualWithValue
-                    withValue
-                    "The decoded Some value must match the original"
+                equal actualWithValue withValue
 
-                Expect.equal
-                    actualWithoutValue
-                    withoutValue
-                    "The decoded None value must match the original"
+                equal actualWithoutValue withoutValue
             }
         ]

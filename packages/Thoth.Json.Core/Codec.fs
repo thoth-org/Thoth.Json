@@ -89,6 +89,23 @@ module Codec =
             (Encode.losslessOption x.Encoder)
             (Decode.losslessOption x.Decoder)
 
+    /// <summary>
+    /// Build a codec that decodes any of the given representations, trying
+    /// them in order, and encodes using the <c>first</c> codec of the list.
+    ///
+    /// This is the building block for lenient decoding and versioning:
+    /// read several formats, always write the canonical (first) one.
+    /// </summary>
+    /// <remarks>
+    /// Unlike the other combinators this is not a strict isomorphism:
+    /// <c>decode (encode x)</c> still holds, but a value decoded from a
+    /// fallback representation will be re-encoded using the first codec.
+    /// </remarks>
+    let oneOf (codecs: Codec<'t> list) : Codec<'t> =
+        create
+            (List.head codecs).Encoder
+            (Decode.oneOf (codecs |> List.map _.Decoder))
+
     let list (x: Codec<'t>) : Codec<'t list> =
         create
             (fun xs -> xs |> List.map x.Encoder |> Encode.list)

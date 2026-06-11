@@ -49,9 +49,6 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 
                 let actual = roundTrip runner Foo.codec expected
 
-                Expect.equal
-                    actual
-                    expected
-                    "The decoded value must match the original"
+                equal actual expected
             }
         ]
