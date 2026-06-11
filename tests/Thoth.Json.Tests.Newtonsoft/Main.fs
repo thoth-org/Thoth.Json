@@ -44,5 +44,10 @@ let main args =
             BackAndForth.tests runner
             DecoderCE.tests runner
             Auto.tests runner
+            Codec.Primitives.tests runner
+            Codec.Combinators.tests runner
+            Codec.ObjectCodec.tests runner
+            Codec.VariantCodec.tests runner
+            Codec.AutoCodec.tests runner
         ]
     |> Pyxpecto.runTests [||]

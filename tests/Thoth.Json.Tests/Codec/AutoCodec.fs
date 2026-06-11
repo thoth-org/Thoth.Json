@@ -1,4 +1,4 @@
-module Thoth.Json.Tests.AutoCodec
+module Thoth.Json.Tests.Codec.AutoCodec
 
 #if !NETFRAMEWORK
 open Fable.Core

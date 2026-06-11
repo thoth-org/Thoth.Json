@@ -18,17 +18,11 @@ module Codec =
 
     let string: Codec<string> = create Encode.string Decode.string
 
-    let int: Codec<int> = create Encode.int Decode.int
-
-    let bool: Codec<bool> = create Encode.bool Decode.bool
+    let char: Codec<char> = create Encode.char Decode.char
 
     let guid: Codec<Guid> = create Encode.guid Decode.guid
 
-    let float: Codec<float> = create Encode.float Decode.float
-
-    let float32: Codec<float32> = create Encode.float32 Decode.float32
-
-    let decimal: Codec<decimal> = create Encode.decimal Decode.decimal
+    let unit: Codec<unit> = create Encode.unit Decode.unit
 
     let sbyte: Codec<sbyte> = create Encode.sbyte Decode.sbyte
 
@@ -38,18 +32,28 @@ module Codec =
 
     let uint16: Codec<uint16> = create Encode.uint16 Decode.uint16
 
+    let int: Codec<int> = create Encode.int Decode.int
+
     let uint32: Codec<uint32> = create Encode.uint32 Decode.uint32
 
     let int64: Codec<int64> = create Encode.int64 Decode.int64
 
-    let unit: Codec<unit> = create Encode.unit Decode.unit
+    let uint64: Codec<uint64> = create Encode.uint64 Decode.uint64
+
+    let bigint: Codec<bigint> = create Encode.bigint Decode.bigint
+
+    let bool: Codec<bool> = create Encode.bool Decode.bool
+
+    let float: Codec<float> = create Encode.float Decode.float
+
+    let float32: Codec<float32> = create Encode.float32 Decode.float32
+
+    let decimal: Codec<decimal> = create Encode.decimal Decode.decimal
 
 #if !FABLE_COMPILER_PYTHON
     let datetimeOffset: Codec<DateTimeOffset> =
         create Encode.datetimeOffset Decode.datetimeOffset
 #endif
-
-    let bigint: Codec<bigint> = create Encode.bigint Decode.bigint
 
     let timespan: Codec<TimeSpan> = create Encode.timespan Decode.timespan
 
@@ -76,9 +80,6 @@ module Codec =
 
     let map (f: 't -> 'u) (f': 'u -> 't) (codec: Codec<'t>) : Codec<'u> =
         create (f' >> codec.Encoder) (codec.Decoder |> Decode.map f)
-
-    let option (x: Codec<'t>) : Codec<'t option> =
-        create (Encode.lossyOption x.Encoder) (Decode.lossyOption x.Decoder)
 
     let lossyOption (x: Codec<'t>) : Codec<'t option> =
         create (Encode.lossyOption x.Encoder) (Decode.lossyOption x.Decoder)

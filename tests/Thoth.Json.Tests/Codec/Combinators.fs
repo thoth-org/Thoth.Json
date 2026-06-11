@@ -1,4 +1,4 @@
-module Thoth.Json.Tests.CodecCombinators
+module Thoth.Json.Tests.Codec.Combinators
 
 #if !NETFRAMEWORK
 open Fable.Core
@@ -13,8 +13,8 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
     testList
         "Combinators"
         [
-            test "Codec.option works for simple case 1" {
-                let codec = Codec.option Codec.string
+            test "Codec.lossyOption works for simple case 1" {
+                let codec = Codec.lossyOption Codec.string
 
                 let expected = Some "abc"
 
@@ -26,8 +26,8 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                     "The decoded value must match the original"
             }
 
-            test "Codec.option works for simple case 2" {
-                let codec = Codec.option Codec.string
+            test "Codec.lossyOption works for simple case 2" {
+                let codec = Codec.lossyOption Codec.string
 
                 let expected = None
 

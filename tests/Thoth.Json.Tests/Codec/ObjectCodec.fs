@@ -1,4 +1,4 @@
-module Thoth.Json.Tests.ObjectCodec
+module Thoth.Json.Tests.Codec.ObjectCodec
 
 open System
 
