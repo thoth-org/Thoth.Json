@@ -9,6 +9,49 @@ open Fable.Pyxpecto
 
 open Thoth.Json.Core
 
+type Tree = | Tree of value: int * children: Tree list
+
+module Tree =
+
+    let codec: Codec<Tree> =
+        Codec.fix (fun self ->
+            objectCodec {
+                let! value =
+                    Codec.field "value" (fun (Tree(v, _)) -> v) Codec.int
+
+                and! children =
+                    Codec.field
+                        "children"
+                        (fun (Tree(_, c)) -> c)
+                        (Codec.list self)
+
+                return Tree(value, children)
+            }
+        )
+
+/// A scalar mirroring a JSON primitive. Decoding dispatches on the raw JSON
+/// shape, which is why the codec is built on top of Codec.value.
+type Scalar =
+    | SString of string
+    | SNumber of float
+    | SBool of bool
+
+module Scalar =
+
+    let codec: Codec<Scalar> =
+        Codec.value
+        |> Codec.map
+            (function
+            | Json.String s -> SString s
+            | Json.Number n -> SNumber n
+            | Json.Boolean b -> SBool b
+            | json -> failwith $"Unsupported scalar: %A{json}")
+            (function
+            | SString s -> Json.String s
+            | SNumber n -> Json.Number n
+            | SBool b -> Json.Boolean b
+            )
+
 let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
     testList
         "Combinators"
@@ -285,5 +328,160 @@ Expecting a string but instead got: 2
                         """[ [ 1, 2 ] ]"""
 
                 equal actual expected
+            }
+
+            test "Codec.value round-trips raw JSON" {
+                let expected =
+                    Json.Object
+                        [
+                            "name", Json.String "Kaladin"
+                            "age", Json.Number 23.0
+                            "active", Json.Boolean true
+                            "tags",
+                            Json.Array
+                                [
+                                    Json.String "windrunner"
+                                    Json.Null
+                                ]
+                        ]
+
+                let actual = roundTrip runner Codec.value expected
+
+                equal actual expected
+            }
+
+            test "Codec.nil works" {
+                let codec = Codec.nil 42
+
+                let actual = roundTrip runner codec 42
+
+                equal actual 42
+            }
+
+            test "Codec.nil reports an error for a non-null value" {
+                let codec = Codec.nil 42
+
+                let expected =
+                    Error(
+                        """
+Error at: `$`
+Expecting null but instead got: 5
+                        """
+                            .Trim()
+                    )
+
+                let actual = runner.Decode.fromString (Decode.codec codec) "5"
+
+                equal actual expected
+            }
+
+            test "Codec.keyValuePairs works" {
+                let codec = Codec.keyValuePairs Codec.int
+
+                let expected =
+                    [
+                        "a", 1
+                        "b", 2
+                        "c", 3
+                    ]
+
+                let actual = roundTrip runner codec expected
+
+                equal actual expected
+            }
+
+            test "Codec.keyValuePairs reports an error for an invalid value" {
+                let codec = Codec.keyValuePairs Codec.int
+
+                let expected =
+                    Error(
+                        """
+Error at: `$.a`
+Expecting an int but instead got: "not an int"
+                        """
+                            .Trim()
+                    )
+
+                let actual =
+                    runner.Decode.fromString
+                        (Decode.codec codec)
+                        """{ "a": "not an int" }"""
+
+                equal actual expected
+            }
+
+            test "Codec.at works" {
+                let codec =
+                    Codec.at
+                        [
+                            "data"
+                            "user"
+                        ]
+                        Codec.string
+
+                let expected = "Shallan"
+
+                let actual = roundTrip runner codec expected
+
+                equal actual expected
+            }
+
+            test "Codec.at reports an error for a missing path" {
+                let codec =
+                    Codec.at
+                        [
+                            "data"
+                            "user"
+                        ]
+                        Codec.string
+
+                let expected =
+                    Error(
+                        """
+Error at: `$.data.user`
+Expecting an object with path `data.user` but instead got:
+{}
+Node `user` is unknown.
+                        """
+                            .Trim()
+                    )
+
+                let actual = runner.Decode.fromString (Decode.codec codec) "{}"
+
+                equal actual expected
+            }
+
+            test "Codec.lazily works" {
+                let codec = Codec.lazily (lazy Codec.int)
+
+                let actual = roundTrip runner codec 123
+
+                equal actual 123
+            }
+
+            test "Codec.fix works for a recursive type" {
+                let expected =
+                    Tree(
+                        1,
+                        [
+                            Tree(2, [])
+                            Tree(3, [ Tree(4, []) ])
+                        ]
+                    )
+
+                let actual = roundTrip runner Tree.codec expected
+
+                equal actual expected
+            }
+
+            test "Codec.value |> Codec.map builds a custom codec" {
+                let str = roundTrip runner Scalar.codec (SString "abc")
+                equal str (SString "abc")
+
+                let num = roundTrip runner Scalar.codec (SNumber 42.5)
+                equal num (SNumber 42.5)
+
+                let bln = roundTrip runner Scalar.codec (SBool true)
+                equal bln (SBool true)
             }
         ]

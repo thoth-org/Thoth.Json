@@ -57,6 +57,23 @@ module Codec =
 
     let timespan: Codec<TimeSpan> = create Encode.timespan Decode.timespan
 
+    /// <summary>
+    /// A codec for the raw JSON AST, passing values through untouched.
+    /// </summary>
+    let value: Codec<Json> = create Encode.value Decode.value
+
+    /// <summary>
+    /// Encode any value as <c>null</c> and decode <c>null</c> back to the
+    /// given constant. Useful as a branch of <see cref="oneOf"/> to represent
+    /// a nullable/absent value.
+    /// </summary>
+    /// <remarks>
+    /// This is a constant codec: every input encodes to the same <c>null</c>,
+    /// so it only round-trips the provided value.
+    /// </remarks>
+    let nil (output: 'a) : Codec<'a> =
+        create (fun _ -> Encode.nil) (Decode.nil output)
+
     [<RequireQualifiedAccess>]
     module Enum =
 
@@ -106,6 +123,45 @@ module Codec =
             (List.head codecs).Encoder
             (Decode.oneOf (codecs |> List.map _.Decoder))
 
+    /// <summary>
+    /// Defer the construction of a codec until it is first used. Combine with
+    /// <see cref="fix"/> (or a recursive binding) to describe recursive types.
+    /// </summary>
+    let lazily (codec: Lazy<Codec<'t>>) : Codec<'t> =
+        create
+            (Encode.lazily (lazy codec.Value.Encoder))
+            (Decode.lazily (lazy codec.Value.Decoder))
+
+    /// <summary>
+    /// Build a codec that can refer to itself, for recursive types such as
+    /// trees or linked lists.
+    /// </summary>
+    /// <example>
+    /// <code lang="fsharp">
+    /// type Tree = Tree of value: int * children: Tree list
+    ///
+    /// let codec : Codec&lt;Tree&gt; =
+    ///     Codec.fix (fun self ->
+    ///         objectCodec {
+    ///             let! value =
+    ///                 Codec.field "value" (fun (Tree(v, _)) -> v) Codec.int
+    ///
+    ///             and! children =
+    ///                 Codec.field
+    ///                     "children"
+    ///                     (fun (Tree(_, c)) -> c)
+    ///                     (Codec.list self)
+    ///
+    ///             return Tree(value, children)
+    ///         }
+    ///     )
+    /// </code>
+    /// </example>
+    let fix (make: Codec<'t> -> Codec<'t>) : Codec<'t> =
+        let mutable self = Unchecked.defaultof<Codec<'t>>
+        self <- make (lazily (lazy self))
+        self
+
     let list (x: Codec<'t>) : Codec<'t list> =
         create
             (fun xs -> xs |> List.map x.Encoder |> Encode.list)
@@ -137,6 +193,25 @@ module Codec =
         create
             (Encode.map key.Encoder value.Encoder)
             (Decode.map' key.Decoder value.Decoder)
+
+    let keyValuePairs (x: Codec<'t>) : Codec<(string * 't) list> =
+        create
+            (List.map (fun (k, v) -> k, x.Encoder v) >> Encode.object)
+            (Decode.keyValuePairs x.Decoder)
+
+    /// <summary>
+    /// Focus a codec on a nested path: decode reads the value at
+    /// <paramref name="fieldNames"/>, encode wraps it back in nested objects.
+    /// </summary>
+    let at (fieldNames: string list) (x: Codec<'t>) : Codec<'t> =
+        create
+            (fun v ->
+                List.foldBack
+                    (fun field child -> Encode.object [ field, child ])
+                    fieldNames
+                    (x.Encoder v)
+            )
+            (Decode.at fieldNames x.Decoder)
 
     let tuple2 (a: Codec<'a>) (b: Codec<'b>) : Codec<'a * 'b> =
         create
