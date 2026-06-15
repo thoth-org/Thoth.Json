@@ -872,14 +872,14 @@ Expecting a bigint but instead got: "maxime"
                                      Globalization.CultureInfo.CurrentUICulture
 
                                  try
-                                     let germanCulture =
+                                     let testCulture =
                                          Globalization.CultureInfo(culture)
 
                                      Globalization.CultureInfo.CurrentCulture <-
-                                         germanCulture
+                                         testCulture
 
                                      Globalization.CultureInfo.CurrentUICulture <-
-                                         germanCulture
+                                         testCulture
 
                                      let actual =
                                          runner.Decode.fromString
