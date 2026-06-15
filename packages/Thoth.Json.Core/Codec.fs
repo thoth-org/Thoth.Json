@@ -95,8 +95,13 @@ module Codec =
         let inline uint32<'t when 't: enum<uint32>> : Codec<'t> =
             create Encode.Enum.uint32 Decode.Enum.uint32
 
-    let map (f: 't -> 'u) (f': 'u -> 't) (codec: Codec<'t>) : Codec<'u> =
-        create (f' >> codec.Encoder) (codec.Decoder |> Decode.map f)
+    let map
+        (decoder: 't -> 'u)
+        (encoder: 'u -> 't)
+        (codec: Codec<'t>)
+        : Codec<'u>
+        =
+        create (encoder >> codec.Encoder) (codec.Decoder |> Decode.map decoder)
 
     let lossyOption (x: Codec<'t>) : Codec<'t option> =
         create (Encode.lossyOption x.Encoder) (Decode.lossyOption x.Decoder)
