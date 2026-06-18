@@ -140,6 +140,16 @@ Expecting an array but instead got: true
                 equal actual expected
             }
 
+            test "Codec.oneOf throws for an empty list" {
+                Expect.throwsC
+                    (fun () -> (Codec.oneOf []: Codec<int>) |> ignore)
+                    (fun exn ->
+                        equal
+                            exn.Message
+                            "Codec.oneOf requires at least one codec (Parameter 'codecs')"
+                    )
+            }
+
             test "Codec.list works" {
                 let codec = Codec.list Codec.int
 

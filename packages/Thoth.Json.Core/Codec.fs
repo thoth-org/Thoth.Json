@@ -124,9 +124,11 @@ module Codec =
     /// fallback representation will be re-encoded using the first codec.
     /// </remarks>
     let oneOf (codecs: Codec<'t> list) : Codec<'t> =
-        create
-            (List.head codecs).Encoder
-            (Decode.oneOf (codecs |> List.map _.Decoder))
+        match codecs with
+        | [] ->
+            invalidArg (nameof codecs) "Codec.oneOf requires at least one codec"
+        | first :: _ ->
+            create first.Encoder (Decode.oneOf (codecs |> List.map _.Decoder))
 
     /// <summary>
     /// Defer the construction of a codec until it is first used. Combine with

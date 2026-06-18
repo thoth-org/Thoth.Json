@@ -28,7 +28,7 @@ let roundTrip (testRunner: TestRunner<_, _>) (codec: Codec<'t>) v =
     let encoded = v |> Encode.codec codec |> testRunner.Encode.toString 2
 
     // Uncomment for debugging purpose
-    printfn $"---\n%s{encoded}\n---"
+    // printfn $"---\n%s{encoded}\n---"
 
     let decoded = encoded |> testRunner.Decode.fromString (Decode.codec codec)
 
