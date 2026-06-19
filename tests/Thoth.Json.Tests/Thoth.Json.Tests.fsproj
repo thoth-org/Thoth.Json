@@ -10,6 +10,11 @@
         <Compile Include="BackAndForth.fs" />
         <Compile Include="DecoderCE.fs" />
         <Compile Include="Auto.fs" />
+        <Compile Include="Codec/Primitives.fs" />
+        <Compile Include="Codec/Combinators.fs" />
+        <Compile Include="Codec/ObjectCodec.fs" />
+        <Compile Include="Codec/VariantCodec.fs" />
+        <Compile Include="Codec/AutoCodec.fs" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\packages\Thoth.Json.Core\Thoth.Json.Core.fsproj" />

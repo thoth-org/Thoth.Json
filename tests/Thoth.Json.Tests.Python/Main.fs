@@ -42,6 +42,11 @@ let main args =
             Encoders.tests runner
             BackAndForth.tests runner
             DecoderCE.tests runner
+            Codec.Primitives.tests runner
+            Codec.Combinators.tests runner
+            Codec.ObjectCodec.tests runner
+            Codec.VariantCodec.tests runner
         // Auto.tests runner // Python does not pass all the tests yet so we disable it
+        // Codec.AutoCodec.tests runner // Depends on the Auto API which is disabled above
         ]
     |> Pyxpecto.runTests [||]

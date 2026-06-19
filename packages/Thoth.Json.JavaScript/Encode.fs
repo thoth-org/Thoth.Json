@@ -38,3 +38,6 @@ module Encode =
     let toString (space: int) (value: IEncodable) : string =
         let json = Encode.toJsonValue helpers value
         JS.JSON.stringify (json, space = space)
+
+    let fromCodec (space: int) (codec: Codec<'T>) (value: 'T) : string =
+        value |> Encode.codec codec |> toString space

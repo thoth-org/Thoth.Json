@@ -23,3 +23,13 @@ type TestRunner<'DecoderJsonValue, 'EncoderJsonValue>() =
 
 let equal (actual: 'T) (expected: 'T) = Expect.equal actual expected ""
 let notEqual (actual: 'T) (expected: 'T) = Expect.notEqual actual expected ""
+
+let roundTrip (testRunner: TestRunner<_, _>) (codec: Codec<'t>) v =
+    let encoded = v |> Encode.codec codec |> testRunner.Encode.toString 2
+
+    // Uncomment for debugging purpose
+    // printfn $"---\n%s{encoded}\n---"
+
+    let decoded = encoded |> testRunner.Decode.fromString (Decode.codec codec)
+
+    Expect.wantOk decoded "Decoding must succeed"

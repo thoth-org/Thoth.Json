@@ -72,25 +72,36 @@ module Decode =
                 Fable.Python.Json.Json.dumps (jsonValue, indent = 4)
         }
 
-    let fromValue (decoder: Decoder<'T>) =
-        Decode.Advanced.fromValue helpers decoder
+type Decode =
 
-    let fromString (decoder: Decoder<'T>) =
+    static member fromValue(decoder: Decoder<'T>) =
+        Decode.Advanced.fromValue Decode.helpers decoder
+
+    static member fromValue(codec: Codec<'T>) =
+        codec |> Decode.codec |> Decode.fromValue
+
+    static member fromString(decoder: Decoder<'T>) =
         fun value ->
             try
                 let json = Fable.Python.Json.json.loads value
 
-                match decoder.Decode(helpers, json) with
+                match decoder.Decode(Decode.helpers, json) with
                 | Ok success -> Ok success
                 | Error error ->
                     let finalError = error |> Decode.Helpers.prependPath "$"
-                    Error(Decode.errorToString helpers finalError)
+                    Error(Decode.errorToString Decode.helpers finalError)
 
             with :? Python.Json.JSONDecodeError as ex ->
                 Error("Given an invalid JSON: " + ex.Message)
 
-    let unsafeFromString (decoder: Decoder<'T>) =
+    static member fromString(codec: Codec<'T>) =
+        codec |> Decode.codec |> Decode.fromString
+
+    static member unsafeFromString(decoder: Decoder<'T>) =
         fun value ->
-            match fromString decoder value with
+            match Decode.fromString decoder value with
             | Ok x -> x
             | Error e -> failwith e
+
+    static member unsafeFromString(codec: Codec<'T>) =
+        codec |> Decode.codec |> Decode.unsafeFromString

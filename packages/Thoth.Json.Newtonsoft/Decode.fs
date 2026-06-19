@@ -73,10 +73,15 @@ module Decode =
                     stream.ToString()
         }
 
-    let fromValue (decoder: Decoder<'T>) =
-        Decode.Advanced.fromValue helpers decoder
+type Decode =
 
-    let fromString (decoder: Decoder<'T>) =
+    static member fromValue(decoder: Decoder<'T>) =
+        Decode.Advanced.fromValue Decode.helpers decoder
+
+    static member fromValue(codec: Codec<'T>) =
+        codec |> Decode.codec |> Decode.fromValue
+
+    static member fromString(decoder: Decoder<'T>) =
         fun value ->
             try
                 let serializationSettings =
@@ -90,16 +95,23 @@ module Decode =
                 use reader = new JsonTextReader(new StringReader(value))
                 let res = serializer.Deserialize<JToken>(reader)
 
-                match decoder.Decode(helpers, res) with
+                match decoder.Decode(Decode.helpers, res) with
                 | Ok success -> Ok success
                 | Error error ->
                     let finalError = error |> Decode.Helpers.prependPath "$"
-                    Error(Decode.errorToString helpers finalError)
+
+                    Error(Decode.errorToString Decode.helpers finalError)
             with :? JsonException as ex ->
                 Error("Given an invalid JSON: " + ex.Message)
 
-    let unsafeFromString (decoder: Decoder<'T>) =
+    static member fromString(codec: Codec<'T>) =
+        codec |> Decode.codec |> Decode.fromString
+
+    static member unsafeFromString(decoder: Decoder<'T>) =
         fun value ->
-            match fromString decoder value with
+            match Decode.fromString decoder value with
             | Ok x -> x
             | Error e -> failwith e
+
+    static member unsafeFromString(codec: Codec<'T>) =
+        codec |> Decode.codec |> Decode.unsafeFromString

@@ -74,3 +74,11 @@ type IEncodable =
         helpers: IEncoderHelpers<'JsonValue> -> 'JsonValue
 
 type Encoder<'T> = 'T -> IEncodable
+
+[<NoComparison>]
+[<NoEquality>]
+type Codec<'t> =
+    {
+        Encoder: Encoder<'t>
+        Decoder: Decoder<'t>
+    }
