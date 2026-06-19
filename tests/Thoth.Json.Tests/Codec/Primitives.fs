@@ -55,6 +55,16 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                 equal actual expected
             }
 
+            test "Codec.uri works for simple case 1" {
+                let expected = Uri "http://example.com/path?q=1"
+
+                let actual = roundTrip runner Codec.uri expected
+
+                // Compare on OriginalString because Fable's Uri does not
+                // implement structural equality
+                equal actual.OriginalString expected.OriginalString
+            }
+
             test "Codec.unit works for simple case 1" {
                 let expected = ()
 

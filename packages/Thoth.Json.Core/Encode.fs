@@ -18,6 +18,8 @@ module Encode =
 
     let inline guid value = value.ToString() |> string
 
+    let inline uri (value: Uri) = value.OriginalString |> string
+
     let inline float value =
         { new IEncodable with
             member _.Encode(helpers) = helpers.encodeDecimalNumber value

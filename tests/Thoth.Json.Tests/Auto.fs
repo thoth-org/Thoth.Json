@@ -271,6 +271,15 @@ let tests (runner: TestRunner<_, _>) =
                 let res = autoDecodeUnsafe json
                 equal value res
 
+            testCase "Auto decoders works for uri"
+            <| fun _ ->
+                let value = Uri "http://example.com/path?q=1"
+                let json = autoEncode value
+                let res: Uri = autoDecodeUnsafe json
+                // Compare on OriginalString because Fable's Uri does not
+                // implement structural equality
+                equal value.OriginalString res.OriginalString
+
             testCase "Auto decoders works for int"
             <| fun _ ->
                 let value = 12

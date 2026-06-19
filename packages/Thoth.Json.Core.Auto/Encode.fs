@@ -547,6 +547,7 @@ module Encode =
             | DecimalType _ -> box Encode.decimal
             | GuidType _ -> box (fun (g: Guid) -> Encode.guid g)
             | TimeSpanType _ -> box (fun (ts: TimeSpan) -> Encode.timespan ts)
+            | UriType _ -> box (fun (u: Uri) -> Encode.uri u)
             | DateTimeType _ -> box Encode.datetime
             | DateTimeOffsetType _ -> box Encode.datetimeOffset
             | OptionType innerType ->

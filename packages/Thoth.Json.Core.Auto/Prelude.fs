@@ -188,6 +188,12 @@ module internal Prelude =
             else
                 None
 
+        let (|UriType|_|) (ty: Type) =
+            if ty.FullName = typeof<Uri>.FullName then
+                Some()
+            else
+                None
+
         let (|DateTimeType|_|) (ty: Type) =
             if ty.FullName = typeof<DateTime>.FullName then
                 Some()

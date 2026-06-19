@@ -1052,6 +1052,48 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
 
                         equal expected actual
 
+                    testCase "an absolute uri works"
+                    <| fun _ ->
+                        // Compare on OriginalString because Fable's Uri does not
+                        // implement structural equality
+                        let expected = Ok "http://example.com/path?q=1"
+
+                        let json = "\"http://example.com/path?q=1\""
+
+                        let actual =
+                            runner.Decode.fromString Decode.uri json
+                            |> Result.map _.OriginalString
+
+                        equal expected actual
+
+                    testCase "a relative uri works"
+                    <| fun _ ->
+                        let expected = Ok "/path?q=1"
+                        let json = "\"/path?q=1\""
+
+                        let actual =
+                            runner.Decode.fromString Decode.uri json
+                            |> Result.map _.OriginalString
+
+                        equal expected actual
+
+                    testCase "a uri returns Error if not a string"
+                    <| fun _ ->
+                        let expected =
+                            Error(
+                                """
+Error at: `$`
+Expecting a URI but instead got: 42
+                        """
+                                    .Trim()
+                            )
+
+                        let json = "42"
+
+                        let actual = runner.Decode.fromString Decode.uri json
+
+                        equal expected actual
+
                     testCase "an enum<sbyte> works"
                     <| fun _ ->
                         let expected = Ok Enum_Int8.NinetyNine

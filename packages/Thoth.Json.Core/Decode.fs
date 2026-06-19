@@ -181,6 +181,37 @@ module Decode =
         }
 
     /// <summary>
+    /// Decode a JSON string into a System.Uri.
+    /// </summary>
+    ///
+    /// <remarks>
+    /// The string is parsed with <c>UriKind.RelativeOrAbsolute</c>, so both
+    /// absolute (e.g. <c>https://example.com</c>) and relative (e.g.
+    /// <c>/path?query=1</c>) URIs are accepted.
+    /// </remarks>
+    ///
+    /// <example>
+    /// <code lang="fsharp">
+    /// Decode.fromString Decode.uri "\"https://example.com\"" == Ok (System.Uri "https://example.com")
+    /// </code>
+    /// </example>
+    let uri: Decoder<System.Uri> =
+        { new Decoder<System.Uri> with
+            member _.Decode(helpers, value) =
+                if helpers.isString value then
+                    match
+                        System.Uri.TryCreate(
+                            helpers.asString value,
+                            System.UriKind.RelativeOrAbsolute
+                        )
+                    with
+                    | true, uri -> Ok uri
+                    | _ -> ("", BadPrimitive("a URI", value)) |> Error
+                else
+                    ("", BadPrimitive("a URI", value)) |> Error
+        }
+
+    /// <summary>
     /// Decode a JSON null value into an F# unit.
     /// </summary>
     ///

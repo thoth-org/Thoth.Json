@@ -324,6 +324,28 @@ let tests (runner: TestRunner<_, _>) =
 
                         equal actual expected
 
+                    testCase "an absolute uri works"
+                    <| fun _ ->
+                        let expected = "\"http://example.com/path?q=1\""
+
+                        let actual =
+                            Uri("http://example.com/path?q=1")
+                            |> Encode.uri
+                            |> runner.Encode.toString 0
+
+                        equal actual expected
+
+                    testCase "a relative uri works"
+                    <| fun _ ->
+                        let expected = "\"/path?q=1\""
+
+                        let actual =
+                            Uri("/path?q=1", UriKind.Relative)
+                            |> Encode.uri
+                            |> runner.Encode.toString 0
+
+                        equal actual expected
+
                     testCase "an byte works"
                     <| fun _ ->
                         let expected = "99"

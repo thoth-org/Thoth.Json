@@ -22,6 +22,8 @@ module Codec =
 
     let guid: Codec<Guid> = create Encode.guid Decode.guid
 
+    let uri: Codec<Uri> = create Encode.uri Decode.uri
+
     let unit: Codec<unit> = create Encode.unit Decode.unit
 
     let sbyte: Codec<sbyte> = create Encode.sbyte Decode.sbyte

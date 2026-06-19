@@ -699,6 +699,7 @@ module Decode =
             | DoubleType -> box Decode.float
             | GuidType _ -> box Decode.guid
             | TimeSpanType _ -> box Decode.timespan
+            | UriType _ -> box Decode.uri
             | DateTimeType _ ->
 #if FABLE_COMPILER_PYTHON
                 box Decode.datetimeLocal
