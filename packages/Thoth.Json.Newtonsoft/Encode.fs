@@ -38,6 +38,39 @@ module Encode =
                 JValue(uint64 value)
         }
 
+    /// <summary>
+    /// Serialize a value to a JSON string using a caller-supplied
+    /// <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>, giving full
+    /// control over the underlying Newtonsoft serializer (for example to set
+    /// <c>Formatting</c>, date handling or string escaping).
+    /// </summary>
+    /// <remarks>
+    /// Indentation follows <c>settings.Formatting</c>; the indent <em>width</em>
+    /// is the Newtonsoft default of two spaces and is not configurable through
+    /// settings. Use <see cref="M:toString"/> when you need a specific indent
+    /// width.
+    /// </remarks>
+    /// <example>
+    /// <code lang="fsharp">
+    /// let settings = JsonSerializerSettings(Formatting = Formatting.Indented)
+    ///
+    /// value |> Encode.toStringWithOptions settings
+    /// </code>
+    /// </example>
+    let toStringWithOptions
+        (settings: JsonSerializerSettings)
+        (value: IEncodable)
+        : string
+        =
+        let serializer = JsonSerializer.Create(settings)
+
+        use stream = new StringWriter(NewLine = "\n")
+        use jsonWriter = new JsonTextWriter(stream)
+
+        let json = Encode.toJsonValue helpers value
+        serializer.Serialize(jsonWriter, json)
+        stream.ToString()
+
     let toString (space: int) (value: IEncodable) : string =
         let format =
             if space = 0 then

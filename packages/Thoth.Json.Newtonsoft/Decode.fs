@@ -81,16 +81,48 @@ type Decode =
     static member fromValue(codec: Codec<'T>) =
         codec |> Decode.codec |> Decode.fromValue
 
-    static member fromString(decoder: Decoder<'T>) =
-        fun value ->
+    /// <summary>
+    /// Decode a JSON string using a caller-supplied
+    /// <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>, giving full
+    /// control over the underlying Newtonsoft reader (for example to raise the
+    /// default <c>MaxDepth</c> of 64 for deeply nested documents).
+    /// </summary>
+    /// <remarks>
+    /// You are responsible for wiring the settings correctly: the settings you
+    /// pass <b>replace</b> the ones <see cref="M:fromString"/> uses, they are
+    /// not merged. In particular Thoth relies on two values to behave
+    /// correctly, so unless you have a reason not to, set both:
+    /// <list type="bullet">
+    /// <item><description>
+    /// <c>DateParseHandling = DateParseHandling.None</c> — otherwise Newtonsoft
+    /// eagerly turns date-like strings into <c>Date</c> tokens, and Thoth's
+    /// string-based date decoders (and <c>Decode.string</c>) will then fail on
+    /// those fields.
+    /// </description></item>
+    /// <item><description>
+    /// <c>CheckAdditionalContent = true</c> — so trailing content after the
+    /// JSON value is reported as invalid instead of being silently ignored.
+    /// </description></item>
+    /// </list>
+    /// </remarks>
+    /// <example>
+    /// <code lang="fsharp">
+    /// let settings =
+    ///     JsonSerializerSettings(
+    ///         DateParseHandling = DateParseHandling.None,
+    ///         CheckAdditionalContent = true,
+    ///         MaxDepth = 256
+    ///     )
+    ///
+    /// json |> Decode.fromStringWithOptions(settings, decoder)
+    /// </code>
+    /// </example>
+    static member fromStringWithOptions
+        (settings: JsonSerializerSettings, decoder: Decoder<'T>)
+        =
+        fun (value: string) ->
             try
-                let serializationSettings =
-                    JsonSerializerSettings(
-                        DateParseHandling = DateParseHandling.None,
-                        CheckAdditionalContent = true
-                    )
-
-                let serializer = JsonSerializer.Create(serializationSettings)
+                let serializer = JsonSerializer.Create(settings)
 
                 use reader = new JsonTextReader(new StringReader(value))
                 let res = serializer.Deserialize<JToken>(reader)
@@ -103,6 +135,57 @@ type Decode =
                     Error(Decode.errorToString Decode.helpers finalError)
             with :? JsonException as ex ->
                 Error("Given an invalid JSON: " + ex.Message)
+
+    /// <summary>
+    /// Decode a JSON string with a <see cref="T:Thoth.Json.Core.Codec`1"/>
+    /// using a caller-supplied
+    /// <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>, giving full
+    /// control over the underlying Newtonsoft reader (for example to raise the
+    /// default <c>MaxDepth</c> of 64 for deeply nested documents).
+    /// </summary>
+    /// <remarks>
+    /// You are responsible for wiring the settings correctly: the settings you
+    /// pass <b>replace</b> the ones <see cref="M:fromString"/> uses, they are
+    /// not merged. In particular Thoth relies on two values to behave
+    /// correctly, so unless you have a reason not to, set both:
+    /// <list type="bullet">
+    /// <item><description>
+    /// <c>DateParseHandling = DateParseHandling.None</c> — otherwise Newtonsoft
+    /// eagerly turns date-like strings into <c>Date</c> tokens, and Thoth's
+    /// string-based date decoders (and <c>Decode.string</c>) will then fail on
+    /// those fields.
+    /// </description></item>
+    /// <item><description>
+    /// <c>CheckAdditionalContent = true</c> — so trailing content after the
+    /// JSON value is reported as invalid instead of being silently ignored.
+    /// </description></item>
+    /// </list>
+    /// </remarks>
+    /// <example>
+    /// <code lang="fsharp">
+    /// let settings =
+    ///     JsonSerializerSettings(
+    ///         DateParseHandling = DateParseHandling.None,
+    ///         CheckAdditionalContent = true,
+    ///         MaxDepth = 256
+    ///     )
+    ///
+    /// json |> Decode.fromStringWithOptions(settings, codec)
+    /// </code>
+    /// </example>
+    static member fromStringWithOptions
+        (settings: JsonSerializerSettings, codec: Codec<'T>)
+        =
+        Decode.fromStringWithOptions (settings, Decode.codec codec)
+
+    static member fromString(decoder: Decoder<'T>) =
+        let settings =
+            JsonSerializerSettings(
+                DateParseHandling = DateParseHandling.None,
+                CheckAdditionalContent = true
+            )
+
+        Decode.fromStringWithOptions (settings, decoder)
 
     static member fromString(codec: Codec<'T>) =
         codec |> Decode.codec |> Decode.fromString
