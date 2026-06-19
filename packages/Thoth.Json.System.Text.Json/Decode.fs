@@ -77,9 +77,22 @@ type Decode =
     static member fromValue(codec: Codec<'T>) =
         codec |> Decode.codec |> Decode.fromValue
 
+    /// <summary>
+    /// Decode a JSON string using caller-supplied
+    /// <see cref="T:System.Text.Json.JsonDocumentOptions"/>, giving control over
+    /// how the document is parsed (for example raising <c>MaxDepth</c> beyond
+    /// the default of 64 for deeply nested documents, allowing trailing commas
+    /// or skipping comments).
+    /// </summary>
+    /// <example>
+    /// <code lang="fsharp">
+    /// let options = JsonDocumentOptions(MaxDepth = 256)
+    ///
+    /// json |> Decode.fromStringWithOptions(options, decoder)
+    /// </code>
+    /// </example>
     static member fromStringWithOptions
-        (options: JsonDocumentOptions)
-        (decoder: Decoder<'T>)
+        (options: JsonDocumentOptions, decoder: Decoder<'T>)
         =
         fun (value: string) ->
             try
@@ -96,10 +109,29 @@ type Decode =
             with :? JsonException as ex ->
                 Error("Given an invalid JSON: " + ex.Message)
 
+    /// <summary>
+    /// Decode a JSON string with a <see cref="T:Thoth.Json.Core.Codec`1"/> using
+    /// caller-supplied <see cref="T:System.Text.Json.JsonDocumentOptions"/>,
+    /// giving control over how the document is parsed (for example raising
+    /// <c>MaxDepth</c> beyond the default of 64 for deeply nested documents,
+    /// allowing trailing commas or skipping comments).
+    /// </summary>
+    /// <example>
+    /// <code lang="fsharp">
+    /// let options = JsonDocumentOptions(MaxDepth = 256)
+    ///
+    /// json |> Decode.fromStringWithOptions(options, codec)
+    /// </code>
+    /// </example>
+    static member fromStringWithOptions
+        (options: JsonDocumentOptions, codec: Codec<'T>)
+        =
+        Decode.fromStringWithOptions (options, Decode.codec codec)
+
     static member fromString(decoder: Decoder<'T>) =
         let options = JsonDocumentOptions()
 
-        Decode.fromStringWithOptions options decoder
+        Decode.fromStringWithOptions (options, decoder)
 
     static member fromString(codec: Codec<'T>) =
         codec |> Decode.codec |> Decode.fromString
