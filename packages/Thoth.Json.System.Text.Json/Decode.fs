@@ -97,7 +97,7 @@ type Decode =
                 Error("Given an invalid JSON: " + ex.Message)
 
     static member fromString(decoder: Decoder<'T>) =
-        let options = JsonDocumentOptions(AllowTrailingCommas = true)
+        let options = JsonDocumentOptions()
 
         Decode.fromStringWithOptions options decoder
 
