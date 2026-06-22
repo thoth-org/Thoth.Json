@@ -6,6 +6,9 @@ title: Codecs
 Codecs can be generated automatically.
 
 ```fsharp
+open Thoth.Json.Core
+open Thoth.Json.Core.Auto
+
 type FooBar =
     {
         Foo : int
