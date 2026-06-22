@@ -53,23 +53,23 @@ Object codecs, typically used for records, can be constructed using the `objectC
 ```fsharp
 type FooBar =
   {
-    Foo : int
-    Bar : string
+      Foo : int
+      Bar : string
   }
 
 module FooBar =
 
     let codec : Codec<FooBar> =
-      objectCodec {
-          let! foo = Codec.field "foo" (fun x -> x.Foo) Codec.int
-          and! bar = Codec.field "bar" (fun x -> x.Bar) Codec.string
+        objectCodec {
+            let! foo = Codec.field "foo" (fun x -> x.Foo) Codec.int
+            and! bar = Codec.field "bar" (fun x -> x.Bar) Codec.string
 
-          return
-              {
-                  Foo = foo
-                  Bar = bar
-              }
-      }
+            return
+                {
+                    Foo = foo
+                    Bar = bar
+                }
+        }
 ```
 
 The JSON looks like this:
@@ -95,15 +95,15 @@ type Shape =
 module Shape =
 
     let codec : Codec<Shape> =
-      variantCodec {
-          let! square = Codec.case "square" Square Codec.int
-          and! rectangle = Codec.case "rectangle" Rectangle (Codec.tuple2 Codec.int Codec.int)
+        variantCodec {
+            let! square = Codec.case "square" Square Codec.int
+            and! rectangle = Codec.case "rectangle" Rectangle (Codec.tuple2 Codec.int Codec.int)
 
-          return
-              function
-              | Square w -> square w
-              | Rectangle (w, h) -> rectangle (w, h)
-      }
+            return
+                function
+                | Square w -> square w
+                | Rectangle (w, h) -> rectangle (w, h)
+        }
 ```
 
 *Again, note the use of `and!`*
@@ -134,13 +134,13 @@ module Shape =
 
     let codec : Codec<Shape> =
         variantCodecWithTag "tag" "value" {
-          let! square = Codec.case "square" Square Codec.int
-          and! rectangle = Codec.case "rectangle" Rectangle (Codec.tuple2 Codec.int Codec.int)
+            let! square = Codec.case "square" Square Codec.int
+            and! rectangle = Codec.case "rectangle" Rectangle (Codec.tuple2 Codec.int Codec.int)
 
-          return
-              function
-              | Square w -> square w
-              | Rectangle (w, h) -> rectangle (w, h)
+            return
+                function
+                | Square w -> square w
+                | Rectangle (w, h) -> rectangle (w, h)
       }
 ```
 
