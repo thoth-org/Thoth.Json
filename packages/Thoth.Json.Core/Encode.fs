@@ -83,6 +83,22 @@ module Encode =
                 helpers.encodeResizeArray result
         }
 
+    let mapList (encoder: Encoder<'a>) (values: 'a list) : IEncodable =
+        values |> List.map encoder |> list
+
+    let mapArray (encoder: Encoder<'a>) (values: 'a array) : IEncodable =
+        values |> Array.map encoder |> array
+
+    let mapSeq (encoder: Encoder<'a>) (values: 'a seq) : IEncodable =
+        values |> Seq.map encoder |> seq
+
+    let mapResizeArray
+        (encoder: Encoder<'a>)
+        (values: 'a ResizeArray)
+        : IEncodable
+        =
+        values |> Seq.map encoder |> ResizeArray |> resizeArray
+
     let dict (values: Map<string, IEncodable>) : IEncodable =
         values |> Map.toSeq |> object
 

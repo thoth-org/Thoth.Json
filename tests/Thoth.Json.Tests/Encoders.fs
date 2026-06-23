@@ -169,6 +169,73 @@ let tests (runner: TestRunner<_, _>) =
 
                         equal actual expected
 
+                    testCase "mapList encodes a typed list using an encoder"
+                    <| fun _ ->
+                        let expected = """[1,2,3]"""
+
+                        let actual =
+                            Encode.mapList
+                                Encode.int
+                                [
+                                    1
+                                    2
+                                    3
+                                ]
+                            |> runner.Encode.toString 0
+
+                        equal actual expected
+
+                    testCase "mapArray encodes a typed array using an encoder"
+                    <| fun _ ->
+                        let expected = """[1,2,3]"""
+
+                        let actual =
+                            Encode.mapArray
+                                Encode.int
+                                [|
+                                    1
+                                    2
+                                    3
+                                |]
+                            |> runner.Encode.toString 0
+
+                        equal actual expected
+
+                    testCase "mapSeq encodes a typed seq using an encoder"
+                    <| fun _ ->
+                        let expected = """[1,2,3]"""
+
+                        let actual =
+                            Encode.mapSeq
+                                Encode.int
+                                (Seq.ofList
+                                    [
+                                        1
+                                        2
+                                        3
+                                    ])
+                            |> runner.Encode.toString 0
+
+                        equal actual expected
+
+                    testCase
+                        "mapResizeArray encodes a typed ResizeArray using an encoder"
+                    <| fun _ ->
+                        let expected = """[1,2,3]"""
+
+                        let actual =
+                            Encode.mapResizeArray
+                                Encode.int
+                                (ResizeArray
+                                    [
+                                        1
+                                        2
+                                        3
+                                    ])
+                            |> runner.Encode.toString 0
+
+                        equal actual expected
+
                     testCase "a bool works"
                     <| fun _ ->
                         let expected = "false"

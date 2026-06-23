@@ -172,22 +172,16 @@ module Codec =
         self
 
     let list (x: Codec<'t>) : Codec<'t list> =
-        create
-            (fun xs -> xs |> List.map x.Encoder |> Encode.list)
-            (Decode.list x.Decoder)
+        create (Encode.mapList x.Encoder) (Decode.list x.Decoder)
 
     let array (x: Codec<'t>) : Codec<'t array> =
-        create
-            (fun xs -> xs |> Array.map x.Encoder |> Encode.array)
-            (Decode.array x.Decoder)
+        create (Encode.mapArray x.Encoder) (Decode.array x.Decoder)
 
     let seq (x: Codec<'t>) : Codec<'t seq> =
-        create (Seq.map x.Encoder >> Encode.seq) (Decode.seq x.Decoder)
+        create (Encode.mapSeq x.Encoder) (Decode.seq x.Decoder)
 
     let resizeArray (x: Codec<'t>) : Codec<ResizeArray<'t>> =
-        create
-            (Seq.map x.Encoder >> ResizeArray >> Encode.resizeArray)
-            (Decode.resizeArray x.Decoder)
+        create (Encode.mapResizeArray x.Encoder) (Decode.resizeArray x.Decoder)
 
     let dict (x: Codec<'t>) : Codec<Map<string, 't>> =
         create
