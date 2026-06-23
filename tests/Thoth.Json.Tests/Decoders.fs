@@ -600,6 +600,24 @@ Expecting an uint16 but instead got: "maxime"
 
                         equal expected actual
 
+                    testCase "an int64 works from negative string"
+                    <| fun _ ->
+                        let expected = Ok -99L
+
+                        let actual =
+                            runner.Decode.fromString Decode.int64 "\"-99\""
+
+                        equal expected actual
+
+                    testCase "an int64 works from string with leading plus"
+                    <| fun _ ->
+                        let expected = Ok 99L
+
+                        let actual =
+                            runner.Decode.fromString Decode.int64 "\"+99\""
+
+                        equal expected actual
+
                     // This is beyond the range of `JSON.parse`
 #if !FABLE_COMPILER_JAVASCRIPT
                     testCase "an int64 works from large number"
@@ -691,6 +709,15 @@ Expecting an uint32 but instead got: "maxime"
 
                         let actual =
                             runner.Decode.fromString Decode.uint64 "\"1000\""
+
+                        equal expected actual
+
+                    testCase "an uint64 works from string with leading plus"
+                    <| fun _ ->
+                        let expected = Ok 99UL
+
+                        let actual =
+                            runner.Decode.fromString Decode.uint64 "\"+99\""
 
                         equal expected actual
 
