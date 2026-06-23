@@ -70,6 +70,12 @@ module Decode =
 
             member _.anyToString jsonValue =
                 Fable.Python.Json.Json.dumps (jsonValue, indent = 4)
+
+            member _.numberToString jsonValue =
+                if pyInstanceof jsonValue pyInt || isIntegralType jsonValue then
+                    emitPyStatement jsonValue "return str(int($0))"
+                else
+                    string (unbox<float> jsonValue)
         }
 
 type Decode =

@@ -93,6 +93,12 @@ let tests (runner: TestRunner<_, _>) =
                         0L
                         1L
                         2L
+                        -1L
+                        -2L
+                        9007199254740993L
+                        -9007199254740993L
+                        123456789012345L
+                        -123456789012345L
                         System.Int64.MaxValue
                         System.Int64.MinValue
                     ]
@@ -113,6 +119,10 @@ let tests (runner: TestRunner<_, _>) =
                         0UL
                         1UL
                         2UL
+                        9007199254740993UL
+                        9223372036854775808UL
+                        123456789012345UL
+                        999999999999UL
                         System.UInt64.MaxValue
                         System.UInt64.MinValue
                     ]

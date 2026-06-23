@@ -643,6 +643,28 @@ Expecting an uint16 but instead got: "maxime"
 
                         equal expected actual
 
+                    testCase "an int64 works from scientific notation"
+                    <| fun _ ->
+                        let expected = Ok 1000L
+
+                        let actual = runner.Decode.fromString Decode.int64 "1e3"
+
+                        equal expected actual
+
+                    testCase "the backend numberToString of 1e3"
+                    <| fun _ ->
+                        let reprDecoder =
+                            { new Decoder<string> with
+                                member _.Decode(helpers, value) =
+                                    Ok(helpers.numberToString value)
+                            }
+
+                        let expected = Ok "1000"
+
+                        let actual = runner.Decode.fromString reprDecoder "1e3"
+
+                        equal expected actual
+
                     testCase
                         "an int64 works output an error if incorrect string"
                     <| fun _ ->
@@ -743,6 +765,15 @@ Expecting an uint32 but instead got: "maxime"
                             runner.Decode.fromString
                                 Decode.uint64
                                 "\"9223372036854775806\""
+
+                        equal expected actual
+
+                    testCase "an uint64 works from scientific notation"
+                    <| fun _ ->
+                        let expected = Ok 1000UL
+
+                        let actual =
+                            runner.Decode.fromString Decode.uint64 "1e3"
 
                         equal expected actual
 

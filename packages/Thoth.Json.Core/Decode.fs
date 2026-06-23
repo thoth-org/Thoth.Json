@@ -283,7 +283,7 @@ module Decode =
         { new Decoder<'T> with
             member _.Decode(helpers, value) =
                 if helpers.isNumber value then
-                    let rawText = helpers.anyToString value
+                    let rawText = helpers.numberToString value
 
                     match tryParse rawText with
                     | true, x -> Ok x

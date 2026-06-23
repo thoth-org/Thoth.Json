@@ -18,6 +18,7 @@ type IDecoderHelpers<'JsonValue> =
     abstract getProperty: string * 'JsonValue -> 'JsonValue
     abstract getProperties: 'JsonValue -> string seq
     abstract anyToString: 'JsonValue -> string
+    abstract numberToString: 'JsonValue -> string
 
 type IEncoderHelpers<'JsonValue> =
     abstract encodeString: string -> 'JsonValue

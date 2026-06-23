@@ -67,6 +67,22 @@ module Decode =
                     )
 
                 JsonSerializer.Serialize(jsonValue, options)
+
+            member _.numberToString jsonValue =
+                let mutable int64Value = 0L
+
+                if jsonValue.TryGetInt64(&int64Value) then
+                    string int64Value
+                else
+                    let d = jsonValue.GetDouble()
+
+                    if System.Math.Floor(d) = d then
+                        string (int64 d)
+                    else
+                        d.ToString(
+                            "R",
+                            System.Globalization.CultureInfo.InvariantCulture
+                        )
         }
 
 type Decode =
