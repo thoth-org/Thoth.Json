@@ -275,6 +275,27 @@ module Decode =
                     ("", BadPrimitive(name, value)) |> Error
         }
 
+    let inline private bigIntegral
+        (name: string)
+        (tryParse: string -> bool * 'T)
+        : Decoder<'T>
+        =
+        { new Decoder<'T> with
+            member _.Decode(helpers, value) =
+                if helpers.isNumber value then
+                    let rawText = helpers.anyToString value
+
+                    match tryParse rawText with
+                    | true, x -> Ok x
+                    | _ -> ("", BadPrimitive(name, value)) |> Error
+                elif helpers.isString value then
+                    match tryParse (helpers.asString value) with
+                    | true, x -> Ok x
+                    | _ -> ("", BadPrimitive(name, value)) |> Error
+                else
+                    ("", BadPrimitive(name, value)) |> Error
+        }
+
     let sbyte: Decoder<sbyte> =
         integral
             "a sbyte"
@@ -325,64 +346,32 @@ module Decode =
             uint32
 
     let int64: Decoder<int64> =
-        let name = "an int64"
-
         let tryParse (text: string) =
 #if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_PYTHON
             System.Int64.TryParse(text)
 #else
             System.Int64.TryParse(
                 text,
-                NumberStyles.AllowLeadingSign,
+                NumberStyles.Integer ||| NumberStyles.AllowExponent,
                 CultureInfo.InvariantCulture
             )
 #endif
 
-        { new Decoder<int64> with
-            member _.Decode(helpers, value) =
-                if helpers.isNumber value then
-                    let rawText = helpers.anyToString value
-
-                    match tryParse rawText with
-                    | true, x -> Ok x
-                    | _ -> ("", BadPrimitive(name, value)) |> Error
-                elif helpers.isString value then
-                    match tryParse (helpers.asString value) with
-                    | true, x -> Ok x
-                    | _ -> ("", BadPrimitive(name, value)) |> Error
-                else
-                    ("", BadPrimitive(name, value)) |> Error
-        }
+        bigIntegral "an int64" tryParse
 
     let uint64: Decoder<uint64> =
-        let name = "an uint64"
-
         let tryParse (text: string) =
 #if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_PYTHON
             System.UInt64.TryParse(text)
 #else
             System.UInt64.TryParse(
                 text,
-                NumberStyles.AllowLeadingSign,
+                NumberStyles.Integer ||| NumberStyles.AllowExponent,
                 CultureInfo.InvariantCulture
             )
 #endif
 
-        { new Decoder<uint64> with
-            member _.Decode(helpers, value) =
-                if helpers.isNumber value then
-                    let rawText = helpers.anyToString value
-
-                    match tryParse rawText with
-                    | true, x -> Ok x
-                    | _ -> ("", BadPrimitive(name, value)) |> Error
-                elif helpers.isString value then
-                    match tryParse (helpers.asString value) with
-                    | true, x -> Ok x
-                    | _ -> ("", BadPrimitive(name, value)) |> Error
-                else
-                    ("", BadPrimitive(name, value)) |> Error
-        }
+        bigIntegral "an uint64" tryParse
 
     let bigint: Decoder<bigint> =
         { new Decoder<bigint> with
