@@ -57,6 +57,13 @@ return isFinite($0) && Math.floor($0) === $0
                     """
 return JSON.stringify($0, null, 4) + ''
                     """
+
+            member _.numberToString jsonValue =
+                emitJsStatement
+                    jsonValue
+                    """
+return String($0)
+                    """
         }
 
     module Interop =

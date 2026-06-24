@@ -600,6 +600,71 @@ Expecting an uint16 but instead got: "maxime"
 
                         equal expected actual
 
+                    testCase "an int64 works from negative string"
+                    <| fun _ ->
+                        let expected = Ok -99L
+
+                        let actual =
+                            runner.Decode.fromString Decode.int64 "\"-99\""
+
+                        equal expected actual
+
+                    testCase "an int64 works from string with leading plus"
+                    <| fun _ ->
+                        let expected = Ok 99L
+
+                        let actual =
+                            runner.Decode.fromString Decode.int64 "\"+99\""
+
+                        equal expected actual
+
+                    // This is beyond the range of `JSON.parse`
+#if !FABLE_COMPILER_JAVASCRIPT
+                    testCase "an int64 works from large number"
+                    <| fun _ ->
+                        let expected = Ok 9223372036854775806L
+
+                        let actual =
+                            runner.Decode.fromString
+                                Decode.int64
+                                "9223372036854775806"
+
+                        equal expected actual
+#endif
+
+                    testCase "an int64 works from large string"
+                    <| fun _ ->
+                        let expected = Ok 9223372036854775806L
+
+                        let actual =
+                            runner.Decode.fromString
+                                Decode.int64
+                                "\"9223372036854775806\""
+
+                        equal expected actual
+
+                    testCase "an int64 works from scientific notation"
+                    <| fun _ ->
+                        let expected = Ok 1000L
+
+                        let actual = runner.Decode.fromString Decode.int64 "1e3"
+
+                        equal expected actual
+
+                    testCase "the backend numberToString of 1e3"
+                    <| fun _ ->
+                        let reprDecoder =
+                            { new Decoder<string> with
+                                member _.Decode(helpers, value) =
+                                    Ok(helpers.numberToString value)
+                            }
+
+                        let expected = Ok "1000"
+
+                        let actual = runner.Decode.fromString reprDecoder "1e3"
+
+                        equal expected actual
+
                     testCase
                         "an int64 works output an error if incorrect string"
                     <| fun _ ->
@@ -666,6 +731,49 @@ Expecting an uint32 but instead got: "maxime"
 
                         let actual =
                             runner.Decode.fromString Decode.uint64 "\"1000\""
+
+                        equal expected actual
+
+                    testCase "an uint64 works from string with leading plus"
+                    <| fun _ ->
+                        let expected = Ok 99UL
+
+                        let actual =
+                            runner.Decode.fromString Decode.uint64 "\"+99\""
+
+                        equal expected actual
+
+                    // This is beyond the range of `JSON.parse`
+#if !FABLE_COMPILER_JAVASCRIPT
+                    testCase "an uint64 works from large number"
+                    <| fun _ ->
+                        let expected = Ok 9223372036854775806UL
+
+                        let actual =
+                            runner.Decode.fromString
+                                Decode.uint64
+                                "9223372036854775806"
+
+                        equal expected actual
+#endif
+
+                    testCase "an uint64 works from large string"
+                    <| fun _ ->
+                        let expected = Ok 9223372036854775806UL
+
+                        let actual =
+                            runner.Decode.fromString
+                                Decode.uint64
+                                "\"9223372036854775806\""
+
+                        equal expected actual
+
+                    testCase "an uint64 works from scientific notation"
+                    <| fun _ ->
+                        let expected = Ok 1000UL
+
+                        let actual =
+                            runner.Decode.fromString Decode.uint64 "1e3"
 
                         equal expected actual
 

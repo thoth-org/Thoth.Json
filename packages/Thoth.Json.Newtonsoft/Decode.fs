@@ -3,6 +3,7 @@ namespace Thoth.Json.Newtonsoft
 open Thoth.Json.Core
 open Newtonsoft.Json
 open Newtonsoft.Json.Linq
+open System.Globalization
 open System.IO
 
 [<RequireQualifiedAccess>]
@@ -71,6 +72,16 @@ module Decode =
 
                     jsonValue.WriteTo(jsonWriter)
                     stream.ToString()
+
+            member _.numberToString jsonValue =
+                if isNull jsonValue then
+                    "null"
+                elif jsonValue.Type = JTokenType.Float then
+                    jsonValue
+                        .Value<float>()
+                        .ToString("R", CultureInfo.InvariantCulture)
+                else
+                    jsonValue.ToString()
         }
 
 type Decode =
