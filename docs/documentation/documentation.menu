@@ -19,7 +19,8 @@
                 "./manual/convention.fsx",
                 "./manual/composition.fsx",
                 "./manual/override-defaults.fsx",
-                "./manual/json-representation.fsx"
+                "./manual/json-representation.fsx",
+                "./manual/codecs.md"
             ]
         },
         {
@@ -29,7 +30,8 @@
                 "./auto/introduction.fsx",
                 "./auto/extra-coders.fsx",
                 "./auto/caching.fsx",
-                "./auto/json-representation.fsx"
+                "./auto/json-representation.fsx",
+                "./auto/codecs.md"
             ]
         },
         {
