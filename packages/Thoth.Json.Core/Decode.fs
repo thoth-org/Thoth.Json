@@ -1621,6 +1621,30 @@ module Decode =
     let fix (make: Decoder<'a> -> Decoder<'a>) : Decoder<'a> =
         FixDecoder<'a>(make)
 
+    //////////////////
+    // requireSome ///
+    /////////////////
+
+    let requireSome
+        (errorMessage: string)
+        (decoder: Decoder<'a option>)
+        : Decoder<'a>
+        =
+        decoder
+        |> andThen (
+            function
+            | Some value -> succeed value
+            | None -> fail errorMessage
+        )
+
+    let notNone (decoder: Decoder<'a option>) : Decoder<'a> =
+        decoder
+        |> andThen (
+            function
+            | Some value -> succeed value
+            | None -> fail "Expecting a value but instead got: None"
+        )
+
     ////////////
     // Enum ///
     /////////
