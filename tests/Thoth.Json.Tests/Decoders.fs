@@ -3086,6 +3086,76 @@ Expecting an object with a field named `version` but instead got:
                 ]
 
             testList
+                "requireSome"
+                [
+
+                    testCase "returns the value when Some"
+                    <| fun _ ->
+                        let expected = Ok 42
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.int
+                                 |> Decode.map Some
+                                 |> Decode.requireSome "expected a value")
+                                "42"
+
+                        equal expected actual
+
+                    testCase "returns error when None"
+                    <| fun _ ->
+                        let expected =
+                            Error(
+                                "Error at: `$`\nThe following `failure` occurred with the decoder: invalid email"
+                            )
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.string
+                                 |> Decode.map (fun _ -> None)
+                                 |> Decode.requireSome "invalid email")
+                                "\"a\""
+
+                        equal expected actual
+
+                ]
+
+            testList
+                "notNone"
+                [
+
+                    testCase "returns the value when Some"
+                    <| fun _ ->
+                        let expected = Ok "hello"
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.string
+                                 |> Decode.map Some
+                                 |> Decode.notNone)
+                                "\"hello\""
+
+                        equal expected actual
+
+                    testCase "returns error when None"
+                    <| fun _ ->
+                        let expected =
+                            Error(
+                                "Error at: `$`\nThe following `failure` occurred with the decoder: Expecting a value but instead got: None"
+                            )
+
+                        let actual =
+                            runner.Decode.fromString
+                                (Decode.string
+                                 |> Decode.map (fun _ -> None)
+                                 |> Decode.notNone)
+                                "\"a\""
+
+                        equal expected actual
+
+                ]
+
+            testList
                 "value"
                 [
 
