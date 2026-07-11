@@ -21,32 +21,28 @@ type User =
 
     static member Decoder =
         Decode.object (fun get ->
-            let firstname = get.Required.Field "firstname" Decode.string
-            let lastname = get.Required.Field "lastname" Decode.string
-
             {
-                Gender = get.Required.Field "gender" Decode.string
-                FullName = firstname + " " + lastname
-                Email = get.Required.Field "email" Decode.string
-                CellPhone = get.Required.Field "cell" Decode.string
-                OfficePhone = get.Required.Field "phone" Decode.string
-                Age = get.Required.Field "age" Decode.int
-                Birthday = get.Required.Field "dob" Decode.datetimeUtc
-                Picture = get.Required.Field "picture" Decode.string
+                Gender = get.Required.Field "Gender" Decode.string
+                FullName = get.Required.Field "FullName" Decode.string
+                Email = get.Required.Field "Email" Decode.string
+                CellPhone = get.Required.Field "CellPhone" Decode.string
+                OfficePhone = get.Required.Field "OfficePhone" Decode.string
+                Age = get.Required.Field "Age" Decode.int
+                Birthday = get.Required.Field "Birthday" Decode.datetimeUtc
+                Picture = get.Required.Field "Picture" Decode.string
             }
         )
 
 let userJson =
     """{
-    "gender": "male",
-    "firstname": "Kaladin",
-    "lastname": "Stormblessed",
-    "email": "coskun.sadiklar@example.com",
-    "age": 77,
-    "cell": "(555)-555-5555",
-    "phone": "(555)-555-5555",
-    "dob": "1947-07-30T14:54:27.372Z",
-    "picture": "https://randomuser.me/api/portraits/men/95.jpg"
+    "Gender": "male",
+    "FullName": "Kaladin Stormblessed",
+    "Email": "coskun.sadiklar@example.com",
+    "Age": 77,
+    "CellPhone": "(555)-555-5555",
+    "OfficePhone": "(555)-555-5555",
+    "Birthday": "1947-07-30T14:54:27.372Z",
+    "Picture": "https://randomuser.me/api/portraits/men/95.jpg"
 }"""
 
 [<Orderer(SummaryOrderPolicy.FastestToSlowest)>]

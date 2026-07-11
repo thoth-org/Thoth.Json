@@ -17,19 +17,19 @@ It is also important to note that Thoth.Json solve a different problem than thes
 For most of the use cases, Thoth.Json should be fast enough, not everyone needs to parse JSON at the speed of light.
 
 ```text
-BenchmarkDotNet v0.14.0, Arch Linux
-Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
-.NET SDK 8.0.413
-  [Host]     : .NET 8.0.19 (8.0.1925.36514), X64 RyuJIT AVX2 DEBUG
-  DefaultJob : .NET 8.0.19 (8.0.1925.36514), X64 RyuJIT AVX2
+BenchmarkDotNet v0.15.8, Linux Arch Linux
+Intel Core i9-14900K 0.80GHz, 1 CPU, 32 logical and 24 physical cores
+.NET SDK 10.0.300
+  [Host]     : .NET 10.0.8 (10.0.8, 10.0.826.23019), X64 RyuJIT x86-64-v3 DEBUG
+  DefaultJob : .NET 10.0.8 (10.0.8, 10.0.826.23019), X64 RyuJIT x86-64-v3
 
 
 | Method                      | Mean       | Error    | StdDev   | Ratio | RatioSD |
 |---------------------------- |-----------:|---------:|---------:|------:|--------:|
-| System.Text.Json            |   524.5 ns |  2.25 ns |  2.11 ns |  1.00 |    0.01 |
-| Newtonsoft                  | 1,757.2 ns | 25.57 ns | 22.66 ns |  3.35 |    0.04 |
-| Thoth.Json.System.Text.Json | 3,173.4 ns | 14.25 ns | 12.63 ns |  6.05 |    0.03 |
-| Thoth.Json.Newtonsoft       | 5,094.4 ns | 32.62 ns | 28.92 ns |  9.71 |    0.07 |
+| System.Text.Json            |   423.4 ns |  1.68 ns |  1.57 ns |  1.00 |    0.01 |
+| Newtonsoft                  |   790.8 ns |  4.27 ns |  4.00 ns |  1.87 |    0.01 |
+| Thoth.Json.System.Text.Json | 1,524.5 ns | 12.77 ns | 11.95 ns |  3.60 |    0.03 |
+| Thoth.Json.Newtonsoft       | 2,059.9 ns |  8.62 ns |  7.64 ns |  4.87 |    0.02 |
 ```
 
 ## Blogs post
