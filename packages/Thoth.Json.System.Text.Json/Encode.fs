@@ -1,6 +1,7 @@
 namespace Thoth.Json.System.Text.Json
 
 open Thoth.Json.Core
+open System.Text
 open System.Text.Json
 open System.Text.Json.Nodes
 open System.IO
@@ -43,7 +44,28 @@ module Encode =
         =
         let json = Encode.toJsonValue helpers value
 
-        JsonSerializer.Serialize(json, options)
+        use stream = new MemoryStream()
+
+        use writer =
+            new Utf8JsonWriter(
+                stream,
+                JsonWriterOptions(
+                    Indented = options.WriteIndented,
+                    IndentCharacter = options.IndentCharacter,
+                    IndentSize = options.IndentSize,
+                    NewLine = options.NewLine,
+                    Encoder = options.Encoder,
+                    MaxDepth = options.MaxDepth
+                )
+            )
+
+        match json with
+        | null -> writer.WriteNullValue()
+        | node -> node.WriteTo(writer)
+
+        writer.Flush()
+
+        Encoding.UTF8.GetString(stream.ToArray())
 
     let toString (space: int) (value: IEncodable) : string =
         let writeIndented = space > 0

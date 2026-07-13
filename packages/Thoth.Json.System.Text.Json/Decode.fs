@@ -1,6 +1,8 @@
 namespace Thoth.Json.System.Text.Json
 
 open Thoth.Json.Core
+open System.IO
+open System.Text
 open System.Text.Json
 
 [<RequireQualifiedAccess>]
@@ -59,14 +61,22 @@ module Decode =
                 jsonValue.GetProperty(fieldName)
 
             member _.anyToString jsonValue =
-                let options =
-                    JsonSerializerOptions(
-                        WriteIndented = true,
-                        NewLine = "\n",
-                        IndentSize = 4
+                use stream = new MemoryStream()
+
+                use writer =
+                    new Utf8JsonWriter(
+                        stream,
+                        JsonWriterOptions(
+                            Indented = true,
+                            NewLine = "\n",
+                            IndentSize = 4
+                        )
                     )
 
-                JsonSerializer.Serialize(jsonValue, options)
+                jsonValue.WriteTo(writer)
+                writer.Flush()
+
+                Encoding.UTF8.GetString(stream.ToArray())
 
             member _.numberToString jsonValue =
                 let mutable int64Value = 0L
