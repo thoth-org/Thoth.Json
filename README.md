@@ -26,10 +26,10 @@ Intel Core i9-14900K 0.80GHz, 1 CPU, 32 logical and 24 physical cores
 
 | Method                      | Mean       | Error    | StdDev   | Ratio | RatioSD |
 |---------------------------- |-----------:|---------:|---------:|------:|--------:|
-| System.Text.Json            |   423.4 ns |  1.68 ns |  1.57 ns |  1.00 |    0.01 |
-| Newtonsoft                  |   790.8 ns |  4.27 ns |  4.00 ns |  1.87 |    0.01 |
-| Thoth.Json.System.Text.Json | 1,524.5 ns | 12.77 ns | 11.95 ns |  3.60 |    0.03 |
-| Thoth.Json.Newtonsoft       | 2,059.9 ns |  8.62 ns |  7.64 ns |  4.87 |    0.02 |
+| System.Text.Json            |   434.9 ns |  1.60 ns |  1.49 ns |  1.00 |    0.00 |
+| Newtonsoft                  |   806.6 ns |  1.96 ns |  1.53 ns |  1.85 |    0.01 |
+| Thoth.Json.System.Text.Json | 1,183.1 ns |  3.36 ns |  3.14 ns |  2.72 |    0.01 |
+| Thoth.Json.Newtonsoft       | 2,072.9 ns | 13.54 ns | 12.66 ns |  4.77 |    0.03 |
 ```
 
 ## Blogs post
