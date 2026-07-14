@@ -122,7 +122,7 @@ type Decode =
         =
         fun (value: string) ->
             try
-                let jsonDocument = JsonDocument.Parse(value, options)
+                use jsonDocument = JsonDocument.Parse(value, options)
 
                 match
                     decoder.Decode(Decode.helpers, jsonDocument.RootElement)
