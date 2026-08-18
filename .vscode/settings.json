@@ -3,10 +3,7 @@
     "[msbuild]": {
         "editor.defaultFormatter": "redhat.vscode-xml"
     },
-    "explorer.fileNesting.enabled": true,
-    "explorer.fileNesting.expand": false,
     "explorer.fileNesting.patterns": {
-        "*.d.ts": "${capture}.fsx",
-        "*.source.fsx": "${capture}.mdx"
+        "*.d.ts": "${capture}.fsx"
     }
 }

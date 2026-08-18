@@ -1,0 +1,82 @@
+---
+layout: 'starlight-fsharp-oracle/layouts/FSharpDocLayout.astro'
+title: "ErrorReason"
+headings:
+  - depth: 3
+    slug: "BadPrimitive"
+    text: "BadPrimitive"
+  - depth: 3
+    slug: "BadPrimitiveExtra"
+    text: "BadPrimitiveExtra"
+  - depth: 3
+    slug: "BadType"
+    text: "BadType"
+  - depth: 3
+    slug: "BadField"
+    text: "BadField"
+  - depth: 3
+    slug: "BadPath"
+    text: "BadPath"
+  - depth: 3
+    slug: "TooSmallArray"
+    text: "TooSmallArray"
+  - depth: 3
+    slug: "FailMessage"
+    text: "FailMessage"
+  - depth: 3
+    slug: "BadOneOf"
+    text: "BadOneOf"
+---
+
+import DocEntry from 'starlight-fsharp-oracle/components/DocEntry.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<p><strong>Namespace:</strong> <a href="/Thoth.Json/legacy/api/thoth-json">Thoth.Json</a></p>
+
+<div class="not-content">
+<div class="fsharp-doc-sig"><span class="fsharp-doc-attr">[&lt;NoComparison&gt;]</span><br/><span class="fsharp-doc-kw">type</span>&nbsp;&zwnj;<span class="fsharp-doc-type">ErrorReason</span>&nbsp;&zwnj;<span class="fsharp-doc-op">=</span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="#BadPrimitive">BadPrimitive</a></span><span class="fsharp-doc-kw"> of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item1</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item2</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-jsonvalue">JsonValue</a></span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="#BadPrimitiveExtra">BadPrimitiveExtra</a></span><span class="fsharp-doc-kw"> of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item1</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item2</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-jsonvalue">JsonValue</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item3</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="#BadType">BadType</a></span><span class="fsharp-doc-kw"> of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item1</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item2</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-jsonvalue">JsonValue</a></span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="#BadField">BadField</a></span><span class="fsharp-doc-kw"> of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item1</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item2</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-jsonvalue">JsonValue</a></span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="#BadPath">BadPath</a></span><span class="fsharp-doc-kw"> of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item1</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item2</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-jsonvalue">JsonValue</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item3</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="#TooSmallArray">TooSmallArray</a></span><span class="fsharp-doc-kw"> of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item1</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item2</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-jsonvalue">JsonValue</a></span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="#FailMessage">FailMessage</a></span><span class="fsharp-doc-kw"> of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="#BadOneOf">BadOneOf</a></span><span class="fsharp-doc-kw"> of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-type">list</span></div>
+</div>
+
+<div class="collapsible-group">
+<DocEntry name="BadPrimitive">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type">BadPrimitive</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item1</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item2</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-jsonvalue">JsonValue</a></span></div>
+
+</DocEntry>
+
+<DocEntry name="BadPrimitiveExtra">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type">BadPrimitiveExtra</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item1</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item2</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-jsonvalue">JsonValue</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item3</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span></div>
+
+</DocEntry>
+
+<DocEntry name="BadType">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type">BadType</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item1</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item2</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-jsonvalue">JsonValue</a></span></div>
+
+</DocEntry>
+
+<DocEntry name="BadField">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type">BadField</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item1</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item2</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-jsonvalue">JsonValue</a></span></div>
+
+</DocEntry>
+
+<DocEntry name="BadPath">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type">BadPath</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item1</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item2</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-jsonvalue">JsonValue</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item3</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span></div>
+
+</DocEntry>
+
+<DocEntry name="TooSmallArray">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type">TooSmallArray</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item1</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item2</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-jsonvalue">JsonValue</a></span></div>
+
+</DocEntry>
+
+<DocEntry name="FailMessage">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type">FailMessage</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span></div>
+
+</DocEntry>
+
+<DocEntry name="BadOneOf">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">|</span>&nbsp;&zwnj;<span class="fsharp-doc-type">BadOneOf</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">of</span>&nbsp;&zwnj;<span class="fsharp-doc-property">Item</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-type">list</span></div>
+
+</DocEntry>
+
+</div>
+

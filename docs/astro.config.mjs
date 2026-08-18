@@ -5,6 +5,7 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import starlightChangelogs, { makeChangelogsSidebarLinks } from "starlight-changelogs";
 import starlightFSharpOracle from "starlight-fsharp-oracle";
+import starlightVersions from "starlight-versions";
 import fsharpLiterate from "starlight-fsharp-literate";
 import { assemblyPath, packages } from "./packages.mjs";
 
@@ -16,10 +17,13 @@ export default defineConfig({
     base: "/Thoth.Json/",
     server: { host: true },
     integrations: [
-        // Turns the `*.source.fsx` files into MDX pages.
+        // Turns the F# literate files into MDX pages inside `src/content/docs`.
         //
         // Must run before Starlight so the generated pages are visible to the content layer.
-        fsharpLiterate(),
+        //
+        // The sources are kept outside of `src/content/docs` because `starlight-versions`
+        // archives every file found there, and it parses them as MDX.
+        fsharpLiterate({ mode: "mirror" }),
         starlight({
             title: "Thoth.Json",
             description: "JSON the simple and safe way",
@@ -63,6 +67,18 @@ export default defineConfig({
                     assemblies: packages.map(({ name }) => resolve(__dirname, assemblyPath(name))),
                     output: "api",
                     sidebar: { label: "API Reference" }
+                }),
+                // Comes last so the versioned sidebars include the groups added by
+                // the plugins above
+                starlightVersions({
+                    versions: [
+                        {
+                            // Documentation of the `Thoth.Json` package, kept around
+                            // while the current version is rewritten for `Thoth.Json.Core`
+                            slug: "legacy",
+                            label: "Legacy"
+                        }
+                    ]
                 })
             ],
             sidebar: [

@@ -1,0 +1,51 @@
+---
+layout: 'starlight-fsharp-oracle/layouts/FSharpDocLayout.astro'
+title: "Thoth.Json.Util"
+headings:
+  - depth: 2
+    slug: "declared-modules"
+    text: "Declared Modules"
+  - depth: 2
+    slug: "types"
+    text: "Types"
+  - depth: 2
+    slug: "values"
+    text: "Values"
+  - depth: 3
+    slug: "CachedEncoders"
+    text: "CachedEncoders"
+  - depth: 3
+    slug: "CachedDecoders"
+    text: "CachedDecoders"
+---
+
+import DocEntry from 'starlight-fsharp-oracle/components/DocEntry.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<h2 id="declared-modules">Declared Modules</h2>
+
+<dl>
+<dt><a href="/Thoth.Json/legacy/api/thoth-json-util-casing">Casing</a></dt>
+</dl>
+
+<h2 id="types">Types</h2>
+
+<dl>
+<dt><a href="/Thoth.Json/legacy/api/thoth-json-util-cache">Cache</a></dt>
+</dl>
+
+<h2 id="values">Values</h2>
+
+<div class="collapsible-group">
+<DocEntry name="CachedEncoders">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">val</span>&nbsp;&zwnj;<span class="fsharp-doc-fn">CachedEncoders</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-util-cache">Cache</a></span><span class="fsharp-doc-op">&lt;</span><span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-boxedencoder">BoxedEncoder</a></span><span class="fsharp-doc-op">&gt;</span></div>
+
+</DocEntry>
+
+<DocEntry name="CachedDecoders">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">val</span>&nbsp;&zwnj;<span class="fsharp-doc-fn">CachedDecoders</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-util-cache">Cache</a></span><span class="fsharp-doc-op">&lt;</span><span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-boxeddecoder">BoxedDecoder</a></span><span class="fsharp-doc-op">&gt;</span></div>
+
+</DocEntry>
+
+</div>
+

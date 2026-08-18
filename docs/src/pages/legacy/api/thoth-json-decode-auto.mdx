@@ -1,0 +1,141 @@
+---
+layout: 'starlight-fsharp-oracle/layouts/FSharpDocLayout.astro'
+title: "Auto"
+headings:
+  - depth: 2
+    slug: "methods"
+    text: "Methods"
+  - depth: 3
+    slug: "fromString"
+    text: "fromString"
+  - depth: 3
+    slug: "generateBoxedDecoder"
+    text: "generateBoxedDecoder"
+  - depth: 3
+    slug: "generateBoxedDecoderCached"
+    text: "generateBoxedDecoderCached"
+  - depth: 3
+    slug: "generateDecoder"
+    text: "generateDecoder"
+  - depth: 3
+    slug: "generateDecoderCached"
+    text: "generateDecoderCached"
+  - depth: 3
+    slug: "unsafeFromString"
+    text: "unsafeFromString"
+---
+
+import DocEntry from 'starlight-fsharp-oracle/components/DocEntry.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<p><strong>Namespace:</strong> <a href="/Thoth.Json/legacy/api/thoth-json">Thoth.Json</a>&nbsp;&nbsp;<strong>Parent:</strong> <a href="/Thoth.Json/legacy/api/thoth-json-decode">Thoth.Json.Decode</a></p>
+
+<div class="not-content">
+<div class="fsharp-doc-sig"><span class="fsharp-doc-kw">type</span>&nbsp;&zwnj;<span class="fsharp-doc-type">Auto</span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">static</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">inline</span>&nbsp;&zwnj;<span class="fsharp-doc-property"><a href="#fromString">fromString</a></span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-param">json</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-type">Result</span><span class="fsharp-doc-op">&lt;</span><span class="fsharp-doc-typevar">'T</span><span class="fsharp-doc-punct">,</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span><span class="fsharp-doc-op">&gt;</span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">static</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-property"><a href="#generateBoxedDecoder">generateBoxedDecoder</a></span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-param">t</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">Type</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-boxeddecoder">BoxedDecoder</a></span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">static</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-property"><a href="#generateBoxedDecoderCached">generateBoxedDecoderCached</a></span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-param">t</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">Type</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-boxeddecoder">BoxedDecoder</a></span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">static</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">inline</span>&nbsp;&zwnj;<span class="fsharp-doc-property"><a href="#generateDecoder">generateDecoder</a></span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-decoder">Decoder</a></span><span class="fsharp-doc-op">&lt;</span><span class="fsharp-doc-typevar">'T</span><span class="fsharp-doc-op">&gt;</span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">static</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">inline</span>&nbsp;&zwnj;<span class="fsharp-doc-property"><a href="#generateDecoderCached">generateDecoderCached</a></span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-decoder">Decoder</a></span><span class="fsharp-doc-op">&lt;</span><span class="fsharp-doc-typevar">'T</span><span class="fsharp-doc-op">&gt;</span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">static</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">inline</span>&nbsp;&zwnj;<span class="fsharp-doc-property"><a href="#unsafeFromString">unsafeFromString</a></span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-param">json</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-typevar">'T</span></div>
+</div>
+
+<h2 id="methods">Methods</h2>
+
+<div class="collapsible-group">
+<DocEntry name="fromString">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">static</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">inline</span>&nbsp;&zwnj;<span class="fsharp-doc-property">fromString</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-param">json</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-type">Result</span><span class="fsharp-doc-op">&lt;</span><span class="fsharp-doc-typevar">'T</span><span class="fsharp-doc-punct">,</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span><span class="fsharp-doc-op">&gt;</span></div>
+
+<strong>Parameters</strong>
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-param">json</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>
+</div>
+
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>
+</div>
+
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>
+</div>
+
+</DocEntry>
+
+<DocEntry name="generateBoxedDecoder">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">static</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-property">generateBoxedDecoder</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-param">t</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">Type</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-boxeddecoder">BoxedDecoder</a></span></div>
+
+<strong>Parameters</strong>
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-param">t</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">Type</span>
+</div>
+
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>
+</div>
+
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>
+</div>
+
+</DocEntry>
+
+<DocEntry name="generateBoxedDecoderCached">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">static</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-property">generateBoxedDecoderCached</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-param">t</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">Type</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-boxeddecoder">BoxedDecoder</a></span></div>
+
+<strong>Parameters</strong>
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-param">t</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">Type</span>
+</div>
+
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>
+</div>
+
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>
+</div>
+
+</DocEntry>
+
+<DocEntry name="generateDecoder">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">static</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">inline</span>&nbsp;&zwnj;<span class="fsharp-doc-property">generateDecoder</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-decoder">Decoder</a></span><span class="fsharp-doc-op">&lt;</span><span class="fsharp-doc-typevar">'T</span><span class="fsharp-doc-op">&gt;</span></div>
+
+<strong>Parameters</strong>
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>
+</div>
+
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>
+</div>
+
+</DocEntry>
+
+<DocEntry name="generateDecoderCached">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">static</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">inline</span>&nbsp;&zwnj;<span class="fsharp-doc-property">generateDecoderCached</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-decoder">Decoder</a></span><span class="fsharp-doc-op">&lt;</span><span class="fsharp-doc-typevar">'T</span><span class="fsharp-doc-op">&gt;</span></div>
+
+<strong>Parameters</strong>
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>
+</div>
+
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>
+</div>
+
+</DocEntry>
+
+<DocEntry name="unsafeFromString">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">static</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">inline</span>&nbsp;&zwnj;<span class="fsharp-doc-property">unsafeFromString</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-param">json</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-typevar">'T</span></div>
+
+<strong>Parameters</strong>
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-param">json</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>
+</div>
+
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">caseStrategy</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-casestrategy">CaseStrategy</a></span>
+</div>
+
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-op">?</span><span class="fsharp-doc-param">extra</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-extracoders">ExtraCoders</a></span>
+</div>
+
+</DocEntry>
+
+</div>
+

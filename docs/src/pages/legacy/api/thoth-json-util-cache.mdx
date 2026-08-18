@@ -1,0 +1,56 @@
+---
+layout: 'starlight-fsharp-oracle/layouts/FSharpDocLayout.astro'
+title: "Cache"
+headings:
+  - depth: 2
+    slug: "constructors"
+    text: "Constructors"
+  - depth: 3
+    slug: "new"
+    text: "new"
+  - depth: 2
+    slug: "methods"
+    text: "Methods"
+  - depth: 3
+    slug: "GetOrAdd"
+    text: "GetOrAdd"
+---
+
+import DocEntry from 'starlight-fsharp-oracle/components/DocEntry.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<p><strong>Namespace:</strong> <a href="/Thoth.Json/legacy/api/thoth-json">Thoth.Json</a>&nbsp;&nbsp;<strong>Parent:</strong> <a href="/Thoth.Json/legacy/api/thoth-json-util">Thoth.Json.Util</a></p>
+
+<div class="not-content">
+<div class="fsharp-doc-sig"><span class="fsharp-doc-kw">type</span>&nbsp;&zwnj;<span class="fsharp-doc-type">Cache</span><span class="fsharp-doc-op">&lt;</span><span class="fsharp-doc-typevar">'Value</span><span class="fsharp-doc-op">&gt;</span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw"><a href="#new">new</a></span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-util-cache">Cache</a></span><span class="fsharp-doc-op">&lt;</span><span class="fsharp-doc-typevar">'Value</span><span class="fsharp-doc-op">&gt;</span><br/>&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;<span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-property"><a href="#GetOrAdd">GetOrAdd</a></span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-param">key</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-param">factory</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-bracket">(</span><span class="fsharp-doc-type">unit</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-typevar">'Value</span><span class="fsharp-doc-bracket">)</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-typevar">'Value</span></div>
+</div>
+
+<h2 id="constructors">Constructors</h2>
+
+<div class="collapsible-group">
+<DocEntry name="new">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">new</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type"><a href="/Thoth.Json/legacy/api/thoth-json-util-cache">Cache</a></span><span class="fsharp-doc-op">&lt;</span><span class="fsharp-doc-typevar">'Value</span><span class="fsharp-doc-op">&gt;</span></div>
+
+</DocEntry>
+
+</div>
+
+<h2 id="methods">Methods</h2>
+
+<div class="collapsible-group">
+<DocEntry name="GetOrAdd">
+<div class="fsharp-doc-sig" slot="signature"><span class="fsharp-doc-kw">member</span>&nbsp;&zwnj;<span class="fsharp-doc-property">GetOrAdd</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-param">key</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>&nbsp;&zwnj;<span class="fsharp-doc-op">&#42;</span>&nbsp;&zwnj;<span class="fsharp-doc-param">factory</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-bracket">(</span><span class="fsharp-doc-type">unit</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-typevar">'Value</span><span class="fsharp-doc-bracket">)</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-typevar">'Value</span></div>
+
+<strong>Parameters</strong>
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-param">key</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-type">string</span>
+</div>
+
+<div class="fs-parameter__signature">
+<span class="fsharp-doc-param">factory</span>&nbsp;&zwnj;<span class="fsharp-doc-punct">:</span>&nbsp;&zwnj;<span class="fsharp-doc-bracket">(</span><span class="fsharp-doc-type">unit</span>&nbsp;&zwnj;<span class="fsharp-doc-kw">-></span>&nbsp;&zwnj;<span class="fsharp-doc-typevar">'Value</span><span class="fsharp-doc-bracket">)</span>
+</div>
+
+</DocEntry>
+
+</div>
+

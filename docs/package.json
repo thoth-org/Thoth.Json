@@ -17,6 +17,7 @@
         "sharp": "^0.35.3",
         "starlight-changelogs": "^0.5.1",
         "starlight-fsharp-literate": "^1.2.0",
-        "starlight-fsharp-oracle": "^0.4.0"
+        "starlight-fsharp-oracle": "^0.4.0",
+        "starlight-versions": "^0.9.1"
     }
 }

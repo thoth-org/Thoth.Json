@@ -179,7 +179,7 @@ Encode.Auto.toString (4, 86UL, extra = myExtra)
 
 By default, primitives are represented the same way as they are when using the Manual API.
 
-See [Manual API - JSON representation - Numbers](/Thoth.Json/documentation/manual/json-representation.html#numbers) for more information.
+See [Manual API - JSON representation - Numbers](/Thoth.Json/manual/json-representation/#numbers) for more information.
 
 If the default is not what you want, you can override them by using the `extra` argument.
 

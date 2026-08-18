@@ -2,6 +2,7 @@ import { defineCollection } from "astro:content";
 import { docsLoader } from "@astrojs/starlight/loaders";
 import { docsSchema } from "@astrojs/starlight/schema";
 import { changelogsLoader } from "starlight-changelogs/loader";
+import { docsVersionsLoader } from "starlight-versions/loader";
 import { changelogPath, packages } from "../packages.mjs";
 
 /**
@@ -16,6 +17,7 @@ const versionTitle = ({ title }: { title: string }) =>
 
 export const collections = {
     docs: defineCollection({ loader: docsLoader(), schema: docsSchema() }),
+    versions: defineCollection({ loader: docsVersionsLoader() }),
     changelogs: defineCollection({
         loader: changelogsLoader(
             packages.map(({ name, slug }) => ({

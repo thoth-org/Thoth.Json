@@ -1,0 +1,30 @@
+---
+title: Encoder
+slug: legacy/concept/encoder
+---
+
+{/* Generated from encoder.fsx. Do not edit — edit encoder.fsx instead. */}
+
+An encoder is a function that takes an F# value and transforms it into a JSON value.
+
+**Example of an encoder:**
+
+```fsharp
+type User =
+    {
+        Name: string
+        Age: int
+        KnownLangs: string list
+    }
+
+module User =
+
+    let encoder (user: User) =
+        Encode.object
+            [
+                "name", Encode.string user.Name
+                "age", Encode.int user.Age
+                "known-langs",
+                user.KnownLangs |> List.map Encode.string |> Encode.list
+            ]
+```

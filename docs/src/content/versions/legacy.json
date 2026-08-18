@@ -1,0 +1,856 @@
+{
+  "sidebar": [
+    {
+      "label": "Concept",
+      "items": [
+        "concept/introduction",
+        "concept/decoder",
+        "concept/encoder",
+        "concept/fable-and-dotnet-support"
+      ]
+    },
+    {
+      "label": "Manual API",
+      "items": [
+        "manual/introduction",
+        "manual/convention",
+        "manual/composition",
+        "manual/override-defaults",
+        "manual/json-representation"
+      ]
+    },
+    {
+      "label": "Auto API",
+      "items": [
+        "auto/introduction",
+        "auto/extra-coders",
+        "auto/caching",
+        "auto/json-representation"
+      ]
+    },
+    {
+      "label": "Advanced",
+      "items": [
+        "advanced/introduction",
+        "advanced/unknown-fields"
+      ]
+    },
+    {
+      "label": "API Reference",
+      "items": [
+        {
+          "label": "Overview",
+          "link": "/api"
+        },
+        {
+          "label": "Thoth",
+          "items": [
+            {
+              "label": "Json",
+              "items": [
+                {
+                  "label": "Extra",
+                  "items": [
+                    {
+                      "label": "Overview",
+                      "link": "/api/thoth-json-extra"
+                    },
+                    {
+                      "label": "withCustomAndKey",
+                      "link": "/api/thoth-json-extra#withCustomAndKey"
+                    },
+                    {
+                      "label": "withCustom",
+                      "link": "/api/thoth-json-extra#withCustom"
+                    },
+                    {
+                      "label": "withInt64",
+                      "link": "/api/thoth-json-extra#withInt64"
+                    },
+                    {
+                      "label": "withUInt64",
+                      "link": "/api/thoth-json-extra#withUInt64"
+                    },
+                    {
+                      "label": "withDecimal",
+                      "link": "/api/thoth-json-extra#withDecimal"
+                    },
+                    {
+                      "label": "withBigInt",
+                      "link": "/api/thoth-json-extra#withBigInt"
+                    },
+                    {
+                      "label": "empty",
+                      "link": "/api/thoth-json-extra#empty"
+                    }
+                  ],
+                  "collapsed": true
+                },
+                {
+                  "label": "Encode",
+                  "items": [
+                    {
+                      "label": "Overview",
+                      "link": "/api/thoth-json-encode"
+                    },
+                    {
+                      "label": "Auto",
+                      "link": "/api/thoth-json-encode-auto"
+                    },
+                    {
+                      "label": "string",
+                      "link": "/api/thoth-json-encode#string"
+                    },
+                    {
+                      "label": "char",
+                      "link": "/api/thoth-json-encode#char"
+                    },
+                    {
+                      "label": "guid",
+                      "link": "/api/thoth-json-encode#guid"
+                    },
+                    {
+                      "label": "float",
+                      "link": "/api/thoth-json-encode#float"
+                    },
+                    {
+                      "label": "float32",
+                      "link": "/api/thoth-json-encode#float32"
+                    },
+                    {
+                      "label": "decimal",
+                      "link": "/api/thoth-json-encode#decimal"
+                    },
+                    {
+                      "label": "bool",
+                      "link": "/api/thoth-json-encode#bool"
+                    },
+                    {
+                      "label": "object",
+                      "link": "/api/thoth-json-encode#object"
+                    },
+                    {
+                      "label": "array",
+                      "link": "/api/thoth-json-encode#array"
+                    },
+                    {
+                      "label": "list",
+                      "link": "/api/thoth-json-encode#list"
+                    },
+                    {
+                      "label": "seq",
+                      "link": "/api/thoth-json-encode#seq"
+                    },
+                    {
+                      "label": "dict",
+                      "link": "/api/thoth-json-encode#dict"
+                    },
+                    {
+                      "label": "bigint",
+                      "link": "/api/thoth-json-encode#bigint"
+                    },
+                    {
+                      "label": "datetimeOffset",
+                      "link": "/api/thoth-json-encode#datetimeOffset"
+                    },
+                    {
+                      "label": "timespan",
+                      "link": "/api/thoth-json-encode#timespan"
+                    },
+                    {
+                      "label": "sbyte",
+                      "link": "/api/thoth-json-encode#sbyte"
+                    },
+                    {
+                      "label": "byte",
+                      "link": "/api/thoth-json-encode#byte"
+                    },
+                    {
+                      "label": "int16",
+                      "link": "/api/thoth-json-encode#int16"
+                    },
+                    {
+                      "label": "uint16",
+                      "link": "/api/thoth-json-encode#uint16"
+                    },
+                    {
+                      "label": "int",
+                      "link": "/api/thoth-json-encode#int"
+                    },
+                    {
+                      "label": "uint32",
+                      "link": "/api/thoth-json-encode#uint32"
+                    },
+                    {
+                      "label": "int64",
+                      "link": "/api/thoth-json-encode#int64"
+                    },
+                    {
+                      "label": "uint64",
+                      "link": "/api/thoth-json-encode#uint64"
+                    },
+                    {
+                      "label": "unit",
+                      "link": "/api/thoth-json-encode#unit"
+                    },
+                    {
+                      "label": "tuple2",
+                      "link": "/api/thoth-json-encode#tuple2"
+                    },
+                    {
+                      "label": "tuple3",
+                      "link": "/api/thoth-json-encode#tuple3"
+                    },
+                    {
+                      "label": "tuple4",
+                      "link": "/api/thoth-json-encode#tuple4"
+                    },
+                    {
+                      "label": "tuple5",
+                      "link": "/api/thoth-json-encode#tuple5"
+                    },
+                    {
+                      "label": "tuple6",
+                      "link": "/api/thoth-json-encode#tuple6"
+                    },
+                    {
+                      "label": "tuple7",
+                      "link": "/api/thoth-json-encode#tuple7"
+                    },
+                    {
+                      "label": "tuple8",
+                      "link": "/api/thoth-json-encode#tuple8"
+                    },
+                    {
+                      "label": "map",
+                      "link": "/api/thoth-json-encode#map"
+                    },
+                    {
+                      "label": "datetime",
+                      "link": "/api/thoth-json-encode#datetime"
+                    },
+                    {
+                      "label": "toString",
+                      "link": "/api/thoth-json-encode#toString"
+                    },
+                    {
+                      "label": "option",
+                      "link": "/api/thoth-json-encode#option"
+                    },
+                    {
+                      "label": "boxEncoder",
+                      "link": "/api/thoth-json-encode#boxEncoder"
+                    },
+                    {
+                      "label": "unboxEncoder",
+                      "link": "/api/thoth-json-encode#unboxEncoder"
+                    },
+                    {
+                      "label": "autoEncodeRecordsAndUnions",
+                      "link": "/api/thoth-json-encode#autoEncodeRecordsAndUnions"
+                    },
+                    {
+                      "label": "autoEncoder",
+                      "link": "/api/thoth-json-encode#autoEncoder"
+                    },
+                    {
+                      "label": "makeExtra",
+                      "link": "/api/thoth-json-encode#makeExtra"
+                    },
+                    {
+                      "label": "encode",
+                      "link": "/api/thoth-json-encode#encode"
+                    },
+                    {
+                      "label": "nil",
+                      "link": "/api/thoth-json-encode#nil"
+                    },
+                    {
+                      "label": "Enum",
+                      "items": [
+                        {
+                          "label": "Overview",
+                          "link": "/api/thoth-json-encode-enum"
+                        },
+                        {
+                          "label": "byte",
+                          "link": "/api/thoth-json-encode-enum#byte"
+                        },
+                        {
+                          "label": "sbyte",
+                          "link": "/api/thoth-json-encode-enum#sbyte"
+                        },
+                        {
+                          "label": "int16",
+                          "link": "/api/thoth-json-encode-enum#int16"
+                        },
+                        {
+                          "label": "uint16",
+                          "link": "/api/thoth-json-encode-enum#uint16"
+                        },
+                        {
+                          "label": "int",
+                          "link": "/api/thoth-json-encode-enum#int"
+                        },
+                        {
+                          "label": "uint32",
+                          "link": "/api/thoth-json-encode-enum#uint32"
+                        }
+                      ],
+                      "collapsed": true
+                    }
+                  ],
+                  "collapsed": true
+                },
+                {
+                  "label": "Decode",
+                  "items": [
+                    {
+                      "label": "Overview",
+                      "link": "/api/thoth-json-decode"
+                    },
+                    {
+                      "label": "IRequiredGetter",
+                      "link": "/api/thoth-json-decode-irequiredgetter"
+                    },
+                    {
+                      "label": "IOptionalGetter",
+                      "link": "/api/thoth-json-decode-ioptionalgetter"
+                    },
+                    {
+                      "label": "IGetters",
+                      "link": "/api/thoth-json-decode-igetters"
+                    },
+                    {
+                      "label": "Getters",
+                      "link": "/api/thoth-json-decode-getters"
+                    },
+                    {
+                      "label": "Auto",
+                      "link": "/api/thoth-json-decode-auto"
+                    },
+                    {
+                      "label": "genericMsg",
+                      "link": "/api/thoth-json-decode#genericMsg"
+                    },
+                    {
+                      "label": "errorToString",
+                      "link": "/api/thoth-json-decode#errorToString"
+                    },
+                    {
+                      "label": "fromValue",
+                      "link": "/api/thoth-json-decode#fromValue"
+                    },
+                    {
+                      "label": "fromString",
+                      "link": "/api/thoth-json-decode#fromString"
+                    },
+                    {
+                      "label": "unsafeFromString",
+                      "link": "/api/thoth-json-decode#unsafeFromString"
+                    },
+                    {
+                      "label": "decodeValue",
+                      "link": "/api/thoth-json-decode#decodeValue"
+                    },
+                    {
+                      "label": "decodeString",
+                      "link": "/api/thoth-json-decode#decodeString"
+                    },
+                    {
+                      "label": "string",
+                      "link": "/api/thoth-json-decode#string"
+                    },
+                    {
+                      "label": "char",
+                      "link": "/api/thoth-json-decode#char"
+                    },
+                    {
+                      "label": "guid",
+                      "link": "/api/thoth-json-decode#guid"
+                    },
+                    {
+                      "label": "unit",
+                      "link": "/api/thoth-json-decode#unit"
+                    },
+                    {
+                      "label": "integral",
+                      "link": "/api/thoth-json-decode#integral"
+                    },
+                    {
+                      "label": "bigint",
+                      "link": "/api/thoth-json-decode#bigint"
+                    },
+                    {
+                      "label": "bool",
+                      "link": "/api/thoth-json-decode#bool"
+                    },
+                    {
+                      "label": "float",
+                      "link": "/api/thoth-json-decode#float"
+                    },
+                    {
+                      "label": "float32",
+                      "link": "/api/thoth-json-decode#float32"
+                    },
+                    {
+                      "label": "decimal",
+                      "link": "/api/thoth-json-decode#decimal"
+                    },
+                    {
+                      "label": "datetime",
+                      "link": "/api/thoth-json-decode#datetime"
+                    },
+                    {
+                      "label": "datetimeUtc",
+                      "link": "/api/thoth-json-decode#datetimeUtc"
+                    },
+                    {
+                      "label": "datetimeLocal",
+                      "link": "/api/thoth-json-decode#datetimeLocal"
+                    },
+                    {
+                      "label": "datetimeOffset",
+                      "link": "/api/thoth-json-decode#datetimeOffset"
+                    },
+                    {
+                      "label": "timespan",
+                      "link": "/api/thoth-json-decode#timespan"
+                    },
+                    {
+                      "label": "decodeMaybeNull",
+                      "link": "/api/thoth-json-decode#decodeMaybeNull"
+                    },
+                    {
+                      "label": "optional",
+                      "link": "/api/thoth-json-decode#optional"
+                    },
+                    {
+                      "label": "badPathError",
+                      "link": "/api/thoth-json-decode#badPathError"
+                    },
+                    {
+                      "label": "optionalAt",
+                      "link": "/api/thoth-json-decode#optionalAt"
+                    },
+                    {
+                      "label": "field",
+                      "link": "/api/thoth-json-decode#field"
+                    },
+                    {
+                      "label": "at",
+                      "link": "/api/thoth-json-decode#at"
+                    },
+                    {
+                      "label": "index",
+                      "link": "/api/thoth-json-decode#index"
+                    },
+                    {
+                      "label": "option",
+                      "link": "/api/thoth-json-decode#option"
+                    },
+                    {
+                      "label": "list",
+                      "link": "/api/thoth-json-decode#list"
+                    },
+                    {
+                      "label": "seq",
+                      "link": "/api/thoth-json-decode#seq"
+                    },
+                    {
+                      "label": "array",
+                      "link": "/api/thoth-json-decode#array"
+                    },
+                    {
+                      "label": "keys",
+                      "link": "/api/thoth-json-decode#keys"
+                    },
+                    {
+                      "label": "keyValuePairs",
+                      "link": "/api/thoth-json-decode#keyValuePairs"
+                    },
+                    {
+                      "label": "oneOf",
+                      "link": "/api/thoth-json-decode#oneOf"
+                    },
+                    {
+                      "label": "nil",
+                      "link": "/api/thoth-json-decode#nil"
+                    },
+                    {
+                      "label": "value",
+                      "link": "/api/thoth-json-decode#value"
+                    },
+                    {
+                      "label": "succeed",
+                      "link": "/api/thoth-json-decode#succeed"
+                    },
+                    {
+                      "label": "fail",
+                      "link": "/api/thoth-json-decode#fail"
+                    },
+                    {
+                      "label": "andThen",
+                      "link": "/api/thoth-json-decode#andThen"
+                    },
+                    {
+                      "label": "all",
+                      "link": "/api/thoth-json-decode#all"
+                    },
+                    {
+                      "label": "map",
+                      "link": "/api/thoth-json-decode#map"
+                    },
+                    {
+                      "label": "map2",
+                      "link": "/api/thoth-json-decode#map2"
+                    },
+                    {
+                      "label": "map3",
+                      "link": "/api/thoth-json-decode#map3"
+                    },
+                    {
+                      "label": "map4",
+                      "link": "/api/thoth-json-decode#map4"
+                    },
+                    {
+                      "label": "map5",
+                      "link": "/api/thoth-json-decode#map5"
+                    },
+                    {
+                      "label": "map6",
+                      "link": "/api/thoth-json-decode#map6"
+                    },
+                    {
+                      "label": "map7",
+                      "link": "/api/thoth-json-decode#map7"
+                    },
+                    {
+                      "label": "map8",
+                      "link": "/api/thoth-json-decode#map8"
+                    },
+                    {
+                      "label": "unwrapWith",
+                      "link": "/api/thoth-json-decode#unwrapWith"
+                    },
+                    {
+                      "label": "object",
+                      "link": "/api/thoth-json-decode#object"
+                    },
+                    {
+                      "label": "tuple2",
+                      "link": "/api/thoth-json-decode#tuple2"
+                    },
+                    {
+                      "label": "tuple3",
+                      "link": "/api/thoth-json-decode#tuple3"
+                    },
+                    {
+                      "label": "tuple4",
+                      "link": "/api/thoth-json-decode#tuple4"
+                    },
+                    {
+                      "label": "tuple5",
+                      "link": "/api/thoth-json-decode#tuple5"
+                    },
+                    {
+                      "label": "tuple6",
+                      "link": "/api/thoth-json-decode#tuple6"
+                    },
+                    {
+                      "label": "tuple7",
+                      "link": "/api/thoth-json-decode#tuple7"
+                    },
+                    {
+                      "label": "tuple8",
+                      "link": "/api/thoth-json-decode#tuple8"
+                    },
+                    {
+                      "label": "dict",
+                      "link": "/api/thoth-json-decode#dict"
+                    },
+                    {
+                      "label": "map'",
+                      "link": "/api/thoth-json-decode#map-1"
+                    },
+                    {
+                      "label": "boxDecoder",
+                      "link": "/api/thoth-json-decode#boxDecoder"
+                    },
+                    {
+                      "label": "unboxDecoder",
+                      "link": "/api/thoth-json-decode#unboxDecoder"
+                    },
+                    {
+                      "label": "toMap",
+                      "link": "/api/thoth-json-decode#toMap"
+                    },
+                    {
+                      "label": "toSet",
+                      "link": "/api/thoth-json-decode#toSet"
+                    },
+                    {
+                      "label": "autoObject",
+                      "link": "/api/thoth-json-decode#autoObject"
+                    },
+                    {
+                      "label": "enumDecoder",
+                      "link": "/api/thoth-json-decode#enumDecoder"
+                    },
+                    {
+                      "label": "autoObject2",
+                      "link": "/api/thoth-json-decode#autoObject2"
+                    },
+                    {
+                      "label": "mixedArray",
+                      "link": "/api/thoth-json-decode#mixedArray"
+                    },
+                    {
+                      "label": "makeUnion",
+                      "link": "/api/thoth-json-decode#makeUnion"
+                    },
+                    {
+                      "label": "autoDecodeRecordsAndUnions",
+                      "link": "/api/thoth-json-decode#autoDecodeRecordsAndUnions"
+                    },
+                    {
+                      "label": "autoDecoder",
+                      "link": "/api/thoth-json-decode#autoDecoder"
+                    },
+                    {
+                      "label": "makeExtra",
+                      "link": "/api/thoth-json-decode#makeExtra"
+                    },
+                    {
+                      "label": "sbyte",
+                      "link": "/api/thoth-json-decode#sbyte"
+                    },
+                    {
+                      "label": "byte",
+                      "link": "/api/thoth-json-decode#byte"
+                    },
+                    {
+                      "label": "int16",
+                      "link": "/api/thoth-json-decode#int16"
+                    },
+                    {
+                      "label": "uint16",
+                      "link": "/api/thoth-json-decode#uint16"
+                    },
+                    {
+                      "label": "int",
+                      "link": "/api/thoth-json-decode#int"
+                    },
+                    {
+                      "label": "uint32",
+                      "link": "/api/thoth-json-decode#uint32"
+                    },
+                    {
+                      "label": "int64",
+                      "link": "/api/thoth-json-decode#int64"
+                    },
+                    {
+                      "label": "uint64",
+                      "link": "/api/thoth-json-decode#uint64"
+                    },
+                    {
+                      "label": "andMap",
+                      "link": "/api/thoth-json-decode#andMap"
+                    },
+                    {
+                      "label": "Helpers",
+                      "items": [
+                        {
+                          "label": "Overview",
+                          "link": "/api/thoth-json-decode-helpers"
+                        },
+                        {
+                          "label": "getField",
+                          "link": "/api/thoth-json-decode-helpers#getField"
+                        },
+                        {
+                          "label": "isString",
+                          "link": "/api/thoth-json-decode-helpers#isString"
+                        },
+                        {
+                          "label": "isBoolean",
+                          "link": "/api/thoth-json-decode-helpers#isBoolean"
+                        },
+                        {
+                          "label": "isNumber",
+                          "link": "/api/thoth-json-decode-helpers#isNumber"
+                        },
+                        {
+                          "label": "isArray",
+                          "link": "/api/thoth-json-decode-helpers#isArray"
+                        },
+                        {
+                          "label": "isNaN",
+                          "link": "/api/thoth-json-decode-helpers#isNaN"
+                        },
+                        {
+                          "label": "isNullValue",
+                          "link": "/api/thoth-json-decode-helpers#isNullValue"
+                        },
+                        {
+                          "label": "isUndefined",
+                          "link": "/api/thoth-json-decode-helpers#isUndefined"
+                        },
+                        {
+                          "label": "isFunction",
+                          "link": "/api/thoth-json-decode-helpers#isFunction"
+                        },
+                        {
+                          "label": "objectKeys",
+                          "link": "/api/thoth-json-decode-helpers#objectKeys"
+                        },
+                        {
+                          "label": "asBool",
+                          "link": "/api/thoth-json-decode-helpers#asBool"
+                        },
+                        {
+                          "label": "asInt",
+                          "link": "/api/thoth-json-decode-helpers#asInt"
+                        },
+                        {
+                          "label": "asFloat",
+                          "link": "/api/thoth-json-decode-helpers#asFloat"
+                        },
+                        {
+                          "label": "asFloat32",
+                          "link": "/api/thoth-json-decode-helpers#asFloat32"
+                        },
+                        {
+                          "label": "asString",
+                          "link": "/api/thoth-json-decode-helpers#asString"
+                        },
+                        {
+                          "label": "asArray",
+                          "link": "/api/thoth-json-decode-helpers#asArray"
+                        }
+                      ],
+                      "collapsed": true
+                    },
+                    {
+                      "label": "Enum",
+                      "items": [
+                        {
+                          "label": "Overview",
+                          "link": "/api/thoth-json-decode-enum"
+                        },
+                        {
+                          "label": "byte",
+                          "link": "/api/thoth-json-decode-enum#byte"
+                        },
+                        {
+                          "label": "sbyte",
+                          "link": "/api/thoth-json-decode-enum#sbyte"
+                        },
+                        {
+                          "label": "int16",
+                          "link": "/api/thoth-json-decode-enum#int16"
+                        },
+                        {
+                          "label": "uint16",
+                          "link": "/api/thoth-json-decode-enum#uint16"
+                        },
+                        {
+                          "label": "int",
+                          "link": "/api/thoth-json-decode-enum#int"
+                        },
+                        {
+                          "label": "uint32",
+                          "link": "/api/thoth-json-decode-enum#uint32"
+                        }
+                      ],
+                      "collapsed": true
+                    }
+                  ],
+                  "collapsed": true
+                },
+                {
+                  "label": "Util",
+                  "items": [
+                    {
+                      "label": "Overview",
+                      "link": "/api/thoth-json-util"
+                    },
+                    {
+                      "label": "Cache",
+                      "link": "/api/thoth-json-util-cache"
+                    },
+                    {
+                      "label": "CachedEncoders",
+                      "link": "/api/thoth-json-util#CachedEncoders"
+                    },
+                    {
+                      "label": "CachedDecoders",
+                      "link": "/api/thoth-json-util#CachedDecoders"
+                    },
+                    {
+                      "label": "Casing",
+                      "items": [
+                        {
+                          "label": "Overview",
+                          "link": "/api/thoth-json-util-casing"
+                        },
+                        {
+                          "label": "lowerFirst",
+                          "link": "/api/thoth-json-util-casing#lowerFirst"
+                        },
+                        {
+                          "label": "convert",
+                          "link": "/api/thoth-json-util-casing#convert"
+                        }
+                      ],
+                      "collapsed": true
+                    }
+                  ],
+                  "collapsed": true
+                },
+                {
+                  "label": "JsonValue",
+                  "link": "/api/thoth-json-jsonvalue"
+                },
+                {
+                  "label": "ErrorReason",
+                  "link": "/api/thoth-json-errorreason"
+                },
+                {
+                  "label": "CaseStrategy",
+                  "link": "/api/thoth-json-casestrategy"
+                },
+                {
+                  "label": "DecoderError",
+                  "link": "/api/thoth-json-decodererror"
+                },
+                {
+                  "label": "Decoder",
+                  "link": "/api/thoth-json-decoder"
+                },
+                {
+                  "label": "Encoder",
+                  "link": "/api/thoth-json-encoder"
+                },
+                {
+                  "label": "BoxedDecoder",
+                  "link": "/api/thoth-json-boxeddecoder"
+                },
+                {
+                  "label": "BoxedEncoder",
+                  "link": "/api/thoth-json-boxedencoder"
+                },
+                {
+                  "label": "ExtraCoders",
+                  "link": "/api/thoth-json-extracoders"
+                }
+              ],
+              "collapsed": true
+            }
+          ],
+          "collapsed": true
+        }
+      ]
+    }
+  ]
+}

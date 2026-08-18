@@ -35,8 +35,8 @@ let private documentedProjects =
 let private typeCheckLiterateFiles () =
     let files =
         Directory.GetFiles(
-            Workspace.docs.src.content.docs.``.``,
-            "*.source.fsx",
+            Workspace.docs.src.content.``fsharp-literate``.``.``,
+            "*.fsx",
             SearchOption.AllDirectories
         )
         |> Array.sort
@@ -103,16 +103,26 @@ type DocsCommand() =
             1
         else
 
-            let astroCommand =
-                if settings.IsWatch then
-                    "astro dev"
-                else
-                    "astro build"
+            if settings.IsWatch then
+                // Astro keeps the dev server alive in the background and reuses it when it is
+                // already running. Stop it first, otherwise it keeps serving the routes it knew
+                // about before the API reference pages were regenerated.
+                Command.Run(
+                    "npx",
+                    "astro dev stop",
+                    workingDirectory = Workspace.docs.``.``
+                )
 
-            Command.Run(
-                "npx",
-                astroCommand,
-                workingDirectory = Workspace.docs.``.``
-            )
+                Command.Run(
+                    "npx",
+                    "astro dev",
+                    workingDirectory = Workspace.docs.``.``
+                )
+            else
+                Command.Run(
+                    "npx",
+                    "astro build",
+                    workingDirectory = Workspace.docs.``.``
+                )
 
             0
