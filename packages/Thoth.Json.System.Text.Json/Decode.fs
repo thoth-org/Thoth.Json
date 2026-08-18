@@ -35,10 +35,10 @@ module Decode =
                 // Result of a benchmark:
                 // Iteration: 5,661.0 ns
                 // TryGetProperty: 4,734.3 ns
-                let d = ref (JsonElement())
-
-                jsonValue.ValueKind = JsonValueKind.Object
-                && jsonValue.TryGetProperty(fieldName, d)
+                match jsonValue.ValueKind with
+                | JsonValueKind.Object ->
+                    jsonValue.TryGetProperty fieldName |> fst
+                | _ -> false
 
             member _.isIntegralValue jsonValue =
                 jsonValue.ValueKind = JsonValueKind.Number
