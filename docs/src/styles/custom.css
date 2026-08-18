@@ -1,0 +1,5 @@
+:root {
+    /* Starlight defaults to 45rem which is a bit cramped for the code samples
+       and the API reference signatures */
+    --sl-content-width: 60rem;
+}

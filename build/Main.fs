@@ -5,6 +5,7 @@ open Spectre.Console.Cli
 open EasyBuild.Commands.Test
 open EasyBuild.Commands.Publish
 open EasyBuild.Commands.Benchmark
+open EasyBuild.Commands.Docs
 
 [<EntryPoint>]
 let main args =
@@ -65,6 +66,13 @@ let main args =
                 """Publish the different packages to NuGet and NPM based on the CHANGELOG.md files
 
 If the last version in the CHANGELOG.md is different from the version in the packages, the package will be published"""
+            )
+        |> ignore
+
+        config
+            .AddCommand<DocsCommand>("docs")
+            .WithDescription(
+                "Build the documentation website, use --watch to start a local server"
             )
         |> ignore
 

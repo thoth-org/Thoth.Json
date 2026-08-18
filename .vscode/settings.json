@@ -3,11 +3,10 @@
     "[msbuild]": {
         "editor.defaultFormatter": "redhat.vscode-xml"
     },
-    "files.associations": {
-        "*.menu": "json",
-        "*.nacara": "json"
-    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
     "explorer.fileNesting.patterns": {
-        "*.d.ts": "${capture}.fsx"
+        "*.d.ts": "${capture}.fsx",
+        "*.source.fsx": "${capture}.mdx"
     }
 }

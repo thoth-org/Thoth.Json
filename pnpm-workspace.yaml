@@ -1,0 +1,11 @@
+packages:
+  - 'docs'
+
+# Allow these dependencies to run their install scripts.
+#
+# `starlight-fsharp-oracle` needs it to publish the F# extractor (oracle-bin)
+# which is invoked when generating the API reference.
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - starlight-fsharp-oracle

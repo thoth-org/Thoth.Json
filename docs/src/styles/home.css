@@ -1,0 +1,64 @@
+/* Home page selling points.
+   Each selling point is a two columns row (text and code sample), except the
+   "fullwidth" ones which stack the code sample under the text. */
+
+.selling-points {
+    margin-top: 3rem;
+}
+
+.selling-point {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 64rem;
+    margin-inline: auto;
+}
+
+.selling-point:not(:last-child) {
+    margin-bottom: 5rem;
+}
+
+.selling-point > * {
+    /* Without this, the code samples widen their column instead of scrolling */
+    min-width: 0;
+    width: 45%;
+    margin-block: auto;
+    padding: 1rem;
+}
+
+.selling-point:not(.is-fullwidth) > .selling-point-header {
+    margin-right: 5%;
+}
+
+.selling-point:not(.is-fullwidth) > .selling-point-showcase {
+    margin-left: 5%;
+}
+
+.selling-point.is-fullwidth > * {
+    width: 80%;
+}
+
+/* The columns are too narrow to be readable, stack them instead */
+@media (max-width: 66rem) {
+    .selling-point > * {
+        width: 100%;
+        margin-inline: 0;
+    }
+
+    .selling-point.is-fullwidth > * {
+        width: 100%;
+    }
+}
+
+/* Starlight wraps the headings, hence the descendant selector. The extra class
+   is needed to beat the `.sl-markdown-content h2` rule from Starlight */
+.selling-points .selling-point-header h2 {
+    margin-bottom: 1rem;
+    font-size: var(--sl-text-2xl);
+}
+
+/* Starlight adds a margin between siblings, the padding above is enough here */
+.selling-point-header > :first-child,
+.selling-point-showcase > :first-child {
+    margin-top: 0;
+}

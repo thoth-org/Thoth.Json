@@ -39,6 +39,34 @@ This is to keep track of different blog post that I refer to sometimes when thin
 - [Introduction about Thoth.Json.Net](https://jordanmarr.github.io/fsharp/thoth-json-net-intro/)
 - [Our journey to F#: JSON serialization with a mix of C# and F#](https://www.planetgeek.ch/2021/04/19/our-journey-to-f-json-serialization-with-a-mix-of-c-and-f/)
 
+## Documentation
+
+The website is available at [thoth-org.github.io/Thoth.Json](https://thoth-org.github.io/Thoth.Json/).
+
+It is built with [Starlight](https://starlight.astro.build/) and lives in the `docs` folder:
+
+```bash
+# Build the website into docs/dist
+./build.sh docs
+# Start a local server and watch for changes
+./build.sh docs --watch
+# Build the website without type checking the F# literate files
+./build.sh docs --skip-typecheck
+```
+
+The pages are written in Markdown, except for the pages ending with `.source.fsx`.
+Those are F# scripts converted to Markdown by [starlight-fsharp-literate](https://github.com/MangelMaxime/starlight-fsharp-literate),
+allowing the code snippets to be written with editor support.
+
+Because the plugin only transforms them, a full build also type checks them so a snippet which
+doesn't compile can't be published. This is skipped in watch mode, and can be turned off with
+`--skip-typecheck`.
+
+The API reference is generated from the compiled assemblies by
+[starlight-fsharp-oracle](https://github.com/MangelMaxime/starlight-fsharp-oracle), and the changelog
+pages from the `CHANGELOG.md` files by [starlight-changelogs](https://github.com/HiDeoo/starlight-changelogs).
+Both are generated at build time and are not commited to the repository.
+
 ## Project structure
 
 ### Tests
