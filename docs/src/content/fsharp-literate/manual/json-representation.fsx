@@ -30,7 +30,7 @@ F# types but remember that you can choose your own representation.
 
 Thoth.Json follows the [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754) standard for representing numbers.
 
-Others libraries like [Google API](https://developers.google.com/discovery/v1/type-format) follow the same standard.
+Other libraries like [Google API](https://developers.google.com/discovery/v1/type-format) follow the same standard.
 
 Meaning that big numbers are represented as strings.
 
@@ -40,7 +40,7 @@ Represented using **numbers**:
 - `int16`
 - `uint16`
 - `int`
-- `int32`
+- `uint32`
 - `float`
 - `float32`
 
@@ -51,13 +51,12 @@ Represented using **string**:
 - `uint64`
 
 :::note
-The decoders accept both string and numeric JSON values.
+The decoders accept both string and numeric JSON values, except `Decode.float` and
+`Decode.float32` which only accept numbers.
 :::
 
 :::caution[Important]
-Before Thoth.Json 7.0.0 and Thoth.Json.Net 8.0.0, the following were using string and not numbers:
-
-This was an error.
+Before Thoth.Json 7.0.0 and Thoth.Json.Net 8.0.0, the following were using string and not numbers, which was an error:
 
 - `sbyte`
 - `byte`

@@ -13,7 +13,7 @@ open Thoth.Json
 
 (**
 
-When writting coders, the convention is to placed them under a module of the
+When writing coders, the convention is to place them under a module of the
 same name as the type they correspond to.
 
 *)
@@ -43,8 +43,8 @@ module User =
 
 (**
 
-The reason for this convention is that it works for all the F# types even enums
-who can't have `static` methods.
+The reason for this convention is that it works for all the F# types, even enums
+which can't have `static` methods.
 
 *)
 

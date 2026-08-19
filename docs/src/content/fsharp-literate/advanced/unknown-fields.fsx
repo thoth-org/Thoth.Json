@@ -13,7 +13,7 @@ open Thoth.Json
 
 (**
 
-It can happens that you receive a JSON but you don't know which fields are going to be present.
+It can happen that you receive a JSON but don't know which fields are going to be present.
 
 Consider the following JSON:
 
@@ -28,7 +28,7 @@ Consider the following JSON:
 
 In this example, we know that:
 
-- The `ts` field required
+- The `ts` field is required
 - There is an unknown number of `Rate` fields which consists of:
     - The key property which has the format:
         1. `baseCurrency`
@@ -48,7 +48,7 @@ module Decode =
 
     (**
 
-1. We need a decoder which ignore failed decoder
+1. We need a decoder which ignores failed decoders
 
 *)
 
@@ -60,7 +60,7 @@ module Decode =
 
     (**
 
-2. We need a decoder which decodes all the object fields and only keep the valid ones
+2. We need a decoder which decodes all the object fields and only keeps the valid ones
 
 *)
 
@@ -123,11 +123,11 @@ type Rate =
 
 (**
 
-We don't have a `Decoder<Rate>` because the informations required to build a `Rate` are not stored in a standard object.
+We don't have a `Decoder<Rate>` because the information required to build a `Rate` is not stored in a standard object.
 
 Indeed, they are coming from both the field name and the associated value.
 
-In order, to work with this JSON we are going to directly works on all the field of the JSON.
+In order to work with this JSON, we are going to work directly on all the fields of the JSON.
 
 *)
 
@@ -170,7 +170,7 @@ module Rates =
 
 Now, we have everything we need to build our final type.
 
-It consist in an object with the time and the list of rates retrieved from the JSON.
+It consists of an object with the time and the list of rates retrieved from the JSON.
 
 *)
 

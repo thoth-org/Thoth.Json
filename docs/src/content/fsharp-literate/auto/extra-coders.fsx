@@ -19,7 +19,7 @@ open Fable.Core
 
 Extra coders is a mechanism allowing you to extend the default set of coders provided by Thoth.Json.
 
-If an auto coders doesn't know how to handle a type, you will see an error like this:
+If an auto coder doesn't know how to handle a type, you will see an error like this:
 
 ```
 Cannot generate auto decoder for Tests.Types.BaseClass. Please pass an extra decoder.
@@ -29,7 +29,7 @@ This is because the auto coder doesn't know how to handle the type `Tests.Types.
 
 ## Ready to use extra coders
 
-Thoth.Json have the following extra coders ready to use:
+Thoth.Json has the following extra coders ready to use:
 
 - `withInt64`
 - `withUInt64`
@@ -51,11 +51,11 @@ Decode.Auto.fromString<uint64> ("123", extra = myExtra)
 // Result: Ok 123UL
 
 (**
-There types are not supported by default because they have a important impact on
+These types are not supported by default because they have an important impact on
 the bundle size of your application.
 
 So we decided to let you choose if you want to use them or not, to not penalize
-the application that don't need them.
+the applications that don't need them.
 
 ## Support for custom types
 

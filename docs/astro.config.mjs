@@ -88,7 +88,7 @@ export default defineConfig({
                         "concept/introduction",
                         "concept/decoder",
                         "concept/encoder",
-                        "concept/fable-and-dotnet-support"
+                        "concept/cross-target-support"
                     ]
                 },
                 {

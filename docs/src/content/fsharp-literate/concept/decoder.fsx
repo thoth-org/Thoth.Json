@@ -30,7 +30,7 @@ Ok 1
 
 **Example of a failed decoder:**
 
-In case of an error, a decoder returns an helpful errors explaining:
+In case of an error, a decoder returns a helpful error explaining:
 
 1. Where the error happened in the JSON using the JSONPath syntax.
 

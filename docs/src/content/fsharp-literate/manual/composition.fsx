@@ -19,12 +19,12 @@ In order to build more complex types, it offers several ways to compose decoders
 
 ## Object builder style
 
-When working with objects, it is recommanded to use the object builder helper.
+When working with objects, it is recommended to use the object builder helper.
 
 It has the benefit of putting the fields decoder and association at the same level. Indeed, when using
 [map functions](#map-functions) it is easy to mess up the arguments order.
 
-It also supports an record with any number of properties.
+It also supports records with any number of properties.
 
 When using the object builder API, you first choose if the
 property is required or optional.
@@ -176,7 +176,7 @@ Decode.fromString (Decode.field "data" Data.decoder) json
 The `map2`, `map3`, ..., `map8` functions take a function to build a concrete type from the result of the provided decoders.
 
 Thoth.Json only provides `map` function up to 8 arguments, if you need more
-consider using [Object builder](#object-builder) or implementing your own `mapX` function.
+consider using [Object builder](#object-builder-style) or implementing your own `mapX` function.
 
 *)
 
@@ -276,7 +276,7 @@ Decode.fromString (Decode.list nullableIntDecoder) jsonList
 (**
 
 :::note
-`Decode.oneOf` tests the decoders in order, so it stop after finding a successful one.
+`Decode.oneOf` tests the decoders in order, so it stops after finding a successful one.
 :::
 
 *)

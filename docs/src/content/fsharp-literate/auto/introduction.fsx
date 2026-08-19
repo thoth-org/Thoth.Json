@@ -16,7 +16,7 @@ open Fable.Core
 
 (**
 
-Auto decoders are generated at runtime for you and will still garantee
+Auto decoders are generated at runtime for you and will still guarantee
 that the JSON structure is correct.
 
 They are handy when using F# on both server and client or

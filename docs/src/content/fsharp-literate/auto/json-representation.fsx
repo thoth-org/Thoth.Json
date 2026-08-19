@@ -183,7 +183,7 @@ See [Manual API - JSON representation - Numbers](/Thoth.Json/manual/json-represe
 
 If the default is not what you want, you can override them by using the `extra` argument.
 
-**)
+*)
 
 let customIntEncoder (value: int) =
     Encode.object
@@ -241,12 +241,12 @@ Encode.Auto.toString (
 
 (**
 
-## Tuple with no arguments
+## Discriminated union without arguments
 
-Tuple without arguments are represented as a string containing the case name:
+Union cases without arguments are represented as a string containing the case name:
 
 :::note
-The case name respect the `CompiledName` attributes if provided.
+The case name respects the `CompiledName` attribute if provided.
 :::
 
 *)
@@ -266,10 +266,10 @@ Encode.Auto.toString (4, Language.CSharp)
 
 (**
 
-## Tuple with arguments
+## Discriminated union with arguments
 
-Tuples are represented using JSON arrays where the first elements is the name
-of the case followed by as much elements as the tuple arguments.
+Union cases with arguments are represented using JSON arrays where the first
+element is the name of the case followed by one element per argument.
 
 *)
 
@@ -298,7 +298,7 @@ Encode.Auto.toString (4, ExternalLink(label = "Fable", url = "http://fable.io"))
 
 ## Option type
 
-In current version of Thoth.Json the option type are erased.
+In the current version of Thoth.Json, option types are erased.
 
 This means that:
 
@@ -312,14 +312,14 @@ If you have a nested option like `(int option) option`.
 
 Then you can't differentiate if `42` is for `Some 42` and `Some (Some 42)`.
 
-The same goes for `null` and `Some None` or `None `.
+The same goes for `null` and `Some None` or `None`.
 :::
 
 ## Class
 
-Classes support need to be added case by case via the `extra` argument.
+Class support needs to be added case by case via the `extra` argument.
 
-This is because Fable offer a limited reflection API and classes are not supported.
+This is because Fable offers a limited reflection API and classes are not supported.
 
 *)
 

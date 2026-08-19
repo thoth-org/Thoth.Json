@@ -18,7 +18,7 @@ open Fable.Core
 
 Auto decoders use reflection to generate the decoders at runtime.
 
-To avoid having to regenerate the decoders every time you run you need them,
+To avoid regenerating the decoders every time you need them,
 you can use the helpers with the `Cached` suffix instead.
 
 The cache is dependent on the `caseStrategy` and `extra` parameters. If you need
