@@ -1,6 +1,11 @@
 name: docs
 
 on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'packages/*/CHANGELOG.md'
+      - '.github/workflows/docs.yml'
   push:
     branches:
       - main
@@ -9,17 +14,17 @@ on:
       - 'packages/*/CHANGELOG.md'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
+    inputs:
+      version:
+        description: Version prefix to build. Empty builds the current version, served at the root.
+        type: string
+        default: ""
 
-# The deploy commits to the branch GitHub Pages serves.
 permissions:
-  contents: write
-
-# Two deploys writing the branch at once would lose one of them.
-concurrency:
-  group: gh-pages
+  contents: read
 
 jobs:
-  publish:
+  check:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,12 +32,50 @@ jobs:
       - uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
-      # The tree-sitter grammars are fetched once and shared by every build on a machine.
+
+      # Nacara downloads the tree-sitter grammars here, once per machine.
       - uses: actions/cache@v4
         with:
           path: ~/.cache/nacara
           key: nacara-${{ runner.os }}
-      - name: Build
-        run: dotnet run --project docs -- build --strict
-      - name: Deploy
-        run: dotnet run --project docs -- gh-pages
+
+      - name: Check the site
+        run: ./build.sh docs check --strict
+
+  publish:
+    if: github.event_name != 'pull_request'
+    needs: check
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    # Two deploys writing the branch at once lose one of them.
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      # Nacara downloads the tree-sitter grammars here, once per machine.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/nacara
+          key: nacara-${{ runner.os }}
+
+      - name: Build the site
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if [ -n "$VERSION" ]; then
+            ./build.sh docs build --version "$VERSION"
+          else
+            ./build.sh docs build
+          fi
+
+      - name: Publish it
+        run: ./build.sh docs deploy

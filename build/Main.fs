@@ -14,8 +14,6 @@ let main args =
     else
         Command.Run("dotnet", "husky install")
 
-    Command.Run("pnpm", "install")
-
     let app = CommandApp()
 
     app.Configure(fun config ->
