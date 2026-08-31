@@ -1,0 +1,60 @@
+.nacara-content:has(.landing) > h1 {
+    display: none;
+}
+
+.nacara-layout--bare:has(.landing) {
+    max-width: 68rem;
+}
+
+.landing {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--nacara-space-8) * 2);
+    padding-block: var(--nacara-space-8);
+}
+
+.selling-point {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--nacara-space-8);
+    align-items: center;
+}
+
+.selling-point.is-fullwidth {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+}
+
+.selling-point.is-fullwidth .selling-point-showcase {
+    width: 100%;
+    text-align: left;
+}
+
+.selling-point-header h3 {
+    margin: 0 0 var(--nacara-space-3);
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+    color: var(--thoth-heading);
+}
+
+.selling-point-header p {
+    margin: 0;
+    max-width: 60ch;
+    color: var(--nacara-text-muted);
+    line-height: 1.6;
+}
+
+.selling-point-showcase > *:first-child {
+    margin-top: 0;
+}
+
+.selling-point-showcase > *:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 60rem) {
+    .selling-point {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,88 @@
+:root {
+    --thoth-chrome: #2d3947;
+    --thoth-chrome-raised: #354353;
+    --thoth-chrome-border: #46566a;
+    --thoth-chrome-text: #ffffff;
+    --thoth-chrome-text-muted: rgb(255 255 255 / 78%);
+
+    --thoth-heading: #2d3947;
+    --thoth-code-inline: #f14668;
+
+    --nacara-primary: #485fc7;
+    --nacara-primary-contrast: #ffffff;
+    --nacara-primary-subtle: #eceffb;
+    --nacara-note: #485fc7;
+    --nacara-danger: #c43636;
+    --nacara-text: #2b2b2b;
+    --nacara-bg-subtle: #f2f4f7;
+    --nacara-radius-sm: 6px;
+}
+
+:root[data-theme="dark"] {
+    --thoth-heading: var(--nacara-text);
+    --thoth-code-inline: #ff8b9a;
+
+    --nacara-primary: #9aa8ec;
+    --nacara-primary-contrast: #0f1419;
+    --nacara-primary-subtle: #262c52;
+    --nacara-note: #9aa8ec;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+}
+
+.nacara-layout {
+    flex: 1 0 auto;
+    /* The theme's own 'margin: 0 auto' here suppresses flex stretching. */
+    width: 100%;
+}
+
+/* The theme exposes no navbar or footer surface tokens. */
+.nacara-navbar,
+.nacara-footer {
+    --nacara-bg: var(--thoth-chrome);
+    --nacara-bg-subtle: var(--thoth-chrome-raised);
+    --nacara-bg-raised: var(--thoth-chrome-raised);
+    --nacara-border: var(--thoth-chrome-border);
+    --nacara-text: var(--thoth-chrome-text);
+    --nacara-text-muted: var(--thoth-chrome-text-muted);
+
+    background: var(--thoth-chrome);
+    color: var(--nacara-text-muted);
+}
+
+.nacara-navbar {
+    border-bottom-color: var(--thoth-chrome);
+}
+
+.nacara-footer {
+    border-top-color: var(--thoth-chrome);
+}
+
+.nacara-navbar__link[aria-current="page"],
+.nacara-navbar__link[data-active="true"] {
+    background: var(--thoth-chrome-raised);
+    color: var(--thoth-chrome-text);
+}
+
+.nacara-footer a {
+    color: var(--thoth-chrome-text);
+}
+
+.nacara-navbar :focus-visible,
+.nacara-footer :focus-visible {
+    outline-color: var(--thoth-chrome-text);
+}
+
+.nacara-sidebar__link[aria-current="page"],
+.nacara-sidebar__group-link[aria-current="page"] {
+    background: var(--thoth-chrome);
+    color: var(--thoth-chrome-text);
+}
+
+.nacara-content :not(pre) > code {
+    color: var(--thoth-code-inline);
+}

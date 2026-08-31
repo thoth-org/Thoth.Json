@@ -1,0 +1,180 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "DotNet.ReproducibleBuilds": {
+        "type": "Direct",
+        "requested": "[2.0.2, )",
+        "resolved": "2.0.2",
+        "contentHash": "VaHoEN6YHp0jXucxm67vfuRy8zo9ufiKSuaZ4ZudRi8xmWcEFMKxfCsg2nvYNvdISFTURDu+IHqADGh53+Bamw=="
+      },
+      "FSharp.Core": {
+        "type": "Direct",
+        "requested": "[10.1.300, )",
+        "resolved": "10.1.300",
+        "contentHash": "BACHDBo/KL615GifW2wGB8vw3HLraCJb77VN/XVmQZPceNw+Oc+J+McehOo2yHtcr7hABmW4EqZZzVYiR1Z1EQ=="
+      },
+      "Nacara.Core": {
+        "type": "Direct",
+        "requested": "[2.0.0-beta.2, )",
+        "resolved": "2.0.0-beta.2",
+        "contentHash": "tETssKWWzhMWzSBg06RgG1477TKVksqqWzPhbHXh+NtkAMuphvidf9Cr5AxjOzMRmGzLH2jQ/JTCVpat57J1Fw==",
+        "dependencies": {
+          "FSharp.Core": "10.1.300",
+          "Feliz.ViewEngine": "1.0.3",
+          "Microsoft.Extensions.FileSystemGlobbing": "10.0.11",
+          "YamlDotNet": "18.1.0"
+        }
+      },
+      "Nacara.Plugin.Assets.LightningCss": {
+        "type": "Direct",
+        "requested": "[1.0.0-beta.1, )",
+        "resolved": "1.0.0-beta.1",
+        "contentHash": "Rr4Mfm53d6WkKB5h0Cc3JBKoFpEaio5NZZ9OPlnnhEL5EDTch5gWC4dbjuLD9ytOeCKB1LReAk9hew/MkJ4AkA==",
+        "dependencies": {
+          "FSharp.Core": "10.1.300",
+          "Nacara.Core": "2.0.0-beta.1"
+        }
+      },
+      "Nacara.Plugin.Assets.Nuglify": {
+        "type": "Direct",
+        "requested": "[1.0.0-beta.1, )",
+        "resolved": "1.0.0-beta.1",
+        "contentHash": "BrGwf9m/bYrYrfjVDhdRQ63xIugm9aYuzevO7h0XPMjAqZb4wmxmRjW5I7S7RwpconkbX0mzIeN2wUsWFaDFqg==",
+        "dependencies": {
+          "FSharp.Core": "10.1.300",
+          "NUglify": "1.21.15",
+          "Nacara.Core": "2.0.0-beta.1"
+        }
+      },
+      "Nacara.Plugin.Changelog": {
+        "type": "Direct",
+        "requested": "[1.0.0-beta.1, )",
+        "resolved": "1.0.0-beta.1",
+        "contentHash": "UXTJyhg30VKpRJQ9rG840OnLyVnWOkioD8RiqBwxuW+0byG7gxLySsMejZeEQRGJDoVSz//Y+Jp8dJPbeEhqFw==",
+        "dependencies": {
+          "FSharp.Core": "10.1.300",
+          "Nacara.Core": "2.0.0-beta.1"
+        }
+      },
+      "Nacara.Plugin.Deploy.GitHubPages": {
+        "type": "Direct",
+        "requested": "[1.0.0-beta.2, )",
+        "resolved": "1.0.0-beta.2",
+        "contentHash": "DNi2Z8bpMsC46BydTZbH1YZRWlNmj1fkhf+McUGtSbjd19rCc5pIroQWKUrcpyeiE+XPP/ZGLMrx9UynASqsew==",
+        "dependencies": {
+          "FSharp.Core": "10.1.300",
+          "FsToolkit.ErrorHandling": "5.2.0",
+          "Nacara.Core": "2.0.0-beta.2"
+        }
+      },
+      "Nacara.Plugin.Highlight.TreeSitter": {
+        "type": "Direct",
+        "requested": "[1.0.0-beta.1, )",
+        "resolved": "1.0.0-beta.1",
+        "contentHash": "K6M1orsk/LJBsRw7LVWMHYFBQ8aQJZsa6KhZ78jSNwJ9iWKhBAsB17Ou93EGW1mcotz+E02Pt8JZZW9rZHvjmA==",
+        "dependencies": {
+          "FSharp.Core": "10.1.300",
+          "Nacara.Core": "2.0.0-beta.1"
+        }
+      },
+      "Nacara.Plugin.LinkValidator": {
+        "type": "Direct",
+        "requested": "[1.0.0-beta.1, )",
+        "resolved": "1.0.0-beta.1",
+        "contentHash": "4f4y27opVlzdOdaUlcCmQ7Y/n4d1ZbzjL92aRgekn6yFwNClpjLvgzj/cZFOZAwISWZ6aJdsYH6FRPqzEgTyyA==",
+        "dependencies": {
+          "FSharp.Core": "10.1.300",
+          "Nacara.Core": "2.0.0-beta.1"
+        }
+      },
+      "Nacara.Plugin.Literate": {
+        "type": "Direct",
+        "requested": "[1.0.0-beta.1, )",
+        "resolved": "1.0.0-beta.1",
+        "contentHash": "c/kNGCrhTfRXswt5WQp5VdtgGxIe/NEbhywiZlPUBZuGcoZiqBwc4fjiAdXJ1Fzo4abP0adKnHLG/64YYoPzig==",
+        "dependencies": {
+          "FSharp.Core": "10.1.300",
+          "Nacara.Core": "2.0.0-beta.1"
+        }
+      },
+      "Nacara.Plugin.Markdown": {
+        "type": "Direct",
+        "requested": "[1.0.0-beta.1, )",
+        "resolved": "1.0.0-beta.1",
+        "contentHash": "re59LzZyJk6HuTHwveODOHqIMYSGnUmVEF5IeHAHJoXIrEMnmgL/2RDAx/hY1y6pBKmsUDixWUCJMS97x8KABQ==",
+        "dependencies": {
+          "FSharp.Core": "10.1.300",
+          "Markdig": "1.3.2",
+          "Nacara.Core": "2.0.0-beta.1"
+        }
+      },
+      "Nacara.Plugin.Search": {
+        "type": "Direct",
+        "requested": "[1.0.0-beta.1, )",
+        "resolved": "1.0.0-beta.1",
+        "contentHash": "ZC8zPVWjr7L9cCXtlIMq/jgZVOFKZBHfcx+jEt8sHK5jNncA4X7icu6/Mgu/y6fF5ncgCmdyf5Oq12Sukss6sg==",
+        "dependencies": {
+          "FSharp.Core": "10.1.300",
+          "Nacara.Core": "2.0.0-beta.1"
+        }
+      },
+      "Nacara.Plugin.Sitemap": {
+        "type": "Direct",
+        "requested": "[1.0.0-beta.1, )",
+        "resolved": "1.0.0-beta.1",
+        "contentHash": "NiQiaJId/nswpl6LV8ab9GutGwJo5c2UfPy2ddKliRgaGf8MwNFsQy5ssuv2xrXDkkQGl/p3PB/XO2amfnnFYQ==",
+        "dependencies": {
+          "FSharp.Core": "10.1.300",
+          "Nacara.Core": "2.0.0-beta.1"
+        }
+      },
+      "Nacara.Theme.Default": {
+        "type": "Direct",
+        "requested": "[1.0.0-beta.2, )",
+        "resolved": "1.0.0-beta.2",
+        "contentHash": "gWe8m+oUZlqfD5f0Y6EjecobgDUstutq6o2dOoFWR3Iq20qkE1zCnpUAS6TabFaTf+9jc6IwFE4c1F+CUFAM6Q==",
+        "dependencies": {
+          "FSharp.Core": "10.1.300",
+          "Nacara.Core": "2.0.0-beta.1"
+        }
+      },
+      "Feliz.ViewEngine": {
+        "type": "Transitive",
+        "resolved": "1.0.3",
+        "contentHash": "962ikmdW9oKmB4p6BJLM75D5SQJHFB+DmIUeKmHwoP1uZaXbvsXbQKQFi5slzGGUvOP8L3TYhRex6QVJri0Zjw==",
+        "dependencies": {
+          "Fsharp.Core": "4.7.0"
+        }
+      },
+      "FsToolkit.ErrorHandling": {
+        "type": "Transitive",
+        "resolved": "5.2.0",
+        "contentHash": "Y7NfN1gDJ5eOANmi8/aEjGHTWrJOYyqwmgtdA3BIZggd0Ph0IIsbewtgNaLkDYFGgkKw6mGlk0iw4RZ2ZRKZhA==",
+        "dependencies": {
+          "FSharp.Core": "9.0.300"
+        }
+      },
+      "Markdig": {
+        "type": "Transitive",
+        "resolved": "1.3.2",
+        "contentHash": "fZgOC/3CswUrndjDTac70aQpYdtxbW5+5bRumR7vzvI2HJbkmgKisB1c9oT+GA6v0jB/JDR9BLa9FiPzQmaK6A=="
+      },
+      "Microsoft.Extensions.FileSystemGlobbing": {
+        "type": "Transitive",
+        "resolved": "10.0.11",
+        "contentHash": "2i6rtW/B5rCnWCnhdmWWEmaM9O0HD0zsPY9eRqa++y4tclI3Uw8zvGbBvhY/LjAdtf8gUHhUPcAWj3DRlWMXmQ=="
+      },
+      "NUglify": {
+        "type": "Transitive",
+        "resolved": "1.21.15",
+        "contentHash": "Vxwg0EjbM/gmILPtzfmzlf0MDu9a17OQb8b57oTgoHoRsZNHWIFQFa00Izcvuam3Hbw2eH272TfczDRHSXgSlA=="
+      },
+      "YamlDotNet": {
+        "type": "Transitive",
+        "resolved": "18.1.0",
+        "contentHash": "5K+9KFg2TdTl7VXv88Qzi/0lqK6JFoNP3lRuImPYGRV7K/QYklDyTrj4+A+KAki1JsQi6qKY+hDyY7d6WRqjrw=="
+      }
+    }
+  }
+}

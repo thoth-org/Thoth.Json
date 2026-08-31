@@ -10,6 +10,7 @@
     <Compile Include="Commands/Test.fs" />
     <Compile Include="Commands/Publish.fs" />
     <Compile Include="Commands/Benchmark.fs" />
+    <Compile Include="Commands/Docs.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>
