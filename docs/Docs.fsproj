@@ -22,6 +22,7 @@
         <PackageReference Include="Nacara.Plugin.Assets.LightningCss" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Plugin.Assets.Nuglify" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Plugin.Deploy.GitHubPages" Version="1.0.0-beta.2" />
+        <PackageReference Include="Nacara.Plugin.Versions" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Theme.Default" Version="1.0.0-beta.2" />
     </ItemGroup>
     <!-- Added by Directory.Build.props, which expects central versions -->

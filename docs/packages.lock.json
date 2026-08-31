@@ -129,6 +129,18 @@
           "Nacara.Core": "2.0.0-beta.1"
         }
       },
+      "Nacara.Plugin.Versions": {
+        "type": "Direct",
+        "requested": "[1.0.0-beta.1, )",
+        "resolved": "1.0.0-beta.1",
+        "contentHash": "kxCbB38LcJL8KYOuCNh0uK4j7QmDdWoDE8fkruDBZFm9V6XlOkWM5XoFzXeaEslR9wASSGBz4FwoG1JJpENn/g==",
+        "dependencies": {
+          "FSharp.Core": "10.1.300",
+          "Nacara.Core": "2.0.0-beta.1",
+          "Thoth.Json.Core": "0.9.1",
+          "Thoth.Json.System.Text.Json": "0.4.0"
+        }
+      },
       "Nacara.Theme.Default": {
         "type": "Direct",
         "requested": "[1.0.0-beta.2, )",
@@ -169,6 +181,23 @@
         "type": "Transitive",
         "resolved": "1.21.15",
         "contentHash": "Vxwg0EjbM/gmILPtzfmzlf0MDu9a17OQb8b57oTgoHoRsZNHWIFQFa00Izcvuam3Hbw2eH272TfczDRHSXgSlA=="
+      },
+      "Thoth.Json.Core": {
+        "type": "Transitive",
+        "resolved": "0.9.1",
+        "contentHash": "SutN30fiRfeKyGv9TEaze9L5/4ikkiqz37tlM8DyS3qhyB/7UgXeKV6D1boMKNh4phSvL031mQipSU+C27Vx0A==",
+        "dependencies": {
+          "FSharp.Core": "10.1.203"
+        }
+      },
+      "Thoth.Json.System.Text.Json": {
+        "type": "Transitive",
+        "resolved": "0.4.0",
+        "contentHash": "HTnGXeo2Q9E4lBO5yeEZMrL86lfqe6Nk6kezKc9Nw//bfPc612qnrxPAwDM6ZAdTBR0/xsuP/P0mB1isi66kEA==",
+        "dependencies": {
+          "FSharp.Core": "10.1.203",
+          "Thoth.Json.Core": "0.9.1"
+        }
       },
       "YamlDotNet": {
         "type": "Transitive",
