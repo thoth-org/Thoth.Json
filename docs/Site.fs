@@ -5,6 +5,14 @@ open Nacara.Core
 open Nacara.Plugins
 open Nacara.Theme
 
+let baseUrl = "/Thoth.Json/"
+
+let versions =
+    [
+        SiteVersion.root "main"
+        SiteVersion.create "Legacy" "legacy"
+    ]
+
 let changelogs =
     [
         ChangelogSource.create
@@ -83,7 +91,7 @@ let private footer =
                                             footerLink
                                                 "Changelog"
                                                 FooterIcons.list
-                                                "/Thoth.Json/changelogs/thoth-json/"
+                                                "changelogs/thoth-json/"
                                             footerLink
                                                 "License"
                                                 FooterIcons.idCard
@@ -145,19 +153,18 @@ let theme =
             NavbarSection(
                 "Docs",
                 "documentation",
-                "/Thoth.Json/documentation/concept/introduction/"
+                "documentation/concept/introduction/"
             )
-            NavbarSection(
-                "Changelogs",
-                "changelogs",
-                "/Thoth.Json/changelogs/thoth-json/"
-            )
+            NavbarSection("Changelogs", "changelogs", "changelogs/thoth-json/")
             NavbarLink("Support", "https://gitter.im/fable-compiler/Fable")
             NavbarLink("Donate", "https://www.patreon.com/MangelMaxime")
         ]
     |> Theme.navbarEnd
         [
             NavbarDynamicWidget Search.trigger
+            NavbarDynamicWidget(
+                Versions.switcher (Versions.versions versions Versions.defaults)
+            )
             NavbarIcon(
                 "GitHub",
                 "https://github.com/thoth-org/Thoth.Json",
@@ -212,21 +219,17 @@ let changelog =
 let site =
     Site.create "Thoth.Json"
     |> Site.description "JSON the simple and safe way"
-    |> Site.baseUrl "/Thoth.Json/"
+    |> Site.baseUrl baseUrl
     |> Site.origin "https://thoth-org.github.io"
     |> Site.noStaticFiles
     |> Site.stylesheet "assets/custom.css"
     |> Markdown.register
     |> TreeSitter.register
-    // The snippets predate the current packages, so they no longer compile as they stand.
-    |> Literate.registerWith (fun options ->
-        { options with
-            TypeCheck = false
-        }
-    )
+    |> Literate.register
     |> Changelog.registerWith "changelogs" changelogs
     |> Search.register
     |> Sitemap.register
+    |> Versions.register versions
     |> LinkValidator.registerWith (
         LinkValidator.checkExternal (
             System.Environment.GetEnvironmentVariable "NACARA_CHECK_LINKS" = "1"
