@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://thoth-org.github.io/Thoth.Json/legacy/sitemap.xml
