@@ -8,17 +8,12 @@ on:
       - '.github/workflows/docs.yml'
   push:
     branches:
-      - main
+      - docs/legacy
     paths:
       - 'docs/**'
       - 'packages/*/CHANGELOG.md'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
-    inputs:
-      version:
-        description: Version prefix to build. Empty builds the current version, served at the root.
-        type: string
-        default: ""
 
 permissions:
   contents: read
@@ -40,7 +35,7 @@ jobs:
           key: nacara-${{ runner.os }}
 
       - name: Check the site
-        run: ./build.sh docs check --strict
+        run: ./build.sh docs check --strict --version legacy
 
   publish:
     if: github.event_name != 'pull_request'
@@ -68,14 +63,7 @@ jobs:
           key: nacara-${{ runner.os }}
 
       - name: Build the site
-        env:
-          VERSION: ${{ inputs.version }}
-        run: |
-          if [ -n "$VERSION" ]; then
-            ./build.sh docs build --version "$VERSION"
-          else
-            ./build.sh docs build
-          fi
+        run: ./build.sh docs build --version legacy
 
       - name: Publish it
         run: ./build.sh docs deploy
