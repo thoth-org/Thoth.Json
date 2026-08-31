@@ -1,0 +1,38 @@
+name: docs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'packages/*/CHANGELOG.md'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+# The deploy commits to the branch GitHub Pages serves.
+permissions:
+  contents: write
+
+# Two deploys writing the branch at once would lose one of them.
+concurrency:
+  group: gh-pages
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      # The tree-sitter grammars are fetched once and shared by every build on a machine.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/nacara
+          key: nacara-${{ runner.os }}
+      - name: Build
+        run: dotnet run --project docs -- build --strict
+      - name: Deploy
+        run: dotnet run --project docs -- gh-pages

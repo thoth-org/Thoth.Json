@@ -4,6 +4,7 @@ open SimpleExec
 open Spectre.Console.Cli
 open EasyBuild.Commands.Test
 open EasyBuild.Commands.Publish
+open EasyBuild.Commands.Docs
 open EasyBuild.Commands.Benchmark
 
 [<EntryPoint>]
@@ -58,6 +59,52 @@ let main args =
 
         )
         |> ignore
+
+
+        config.AddBranch(
+            "docs",
+            fun (docs: IConfigurator<CommandSettings>) ->
+                docs.SetDescription
+                    "Write and build this repository's documentation"
+
+                docs
+                    .AddCommand<WatchCommand>("watch")
+                    .WithDescription("Serve it, rebuilding as you write")
+                    .WithExample("docs watch")
+                    .WithExample("docs watch --host")
+                |> ignore
+
+                docs
+                    .AddCommand<BuildCommand>("build")
+                    .WithDescription("Build it into docs/output")
+                    .WithExample("docs build")
+                |> ignore
+
+                docs
+                    .AddCommand<CheckCommand>("check")
+                    .WithDescription(
+                        "Build it all, write none of it, fail on anything wrong"
+                    )
+                    .WithExample("docs check")
+                |> ignore
+
+                docs
+                    .AddCommand<CleanCommand>("clean")
+                    .WithDescription("Remove what a build wrote")
+                    .WithExample("docs clean")
+                |> ignore
+
+                docs
+                    .AddCommand<DeployCommand>("deploy")
+                    .WithDescription(
+                        "Publish the last build to the gh-pages branch"
+                    )
+                    .WithExample("docs deploy --dry-run")
+                    .WithExample("docs deploy")
+                |> ignore
+        )
+        |> ignore
+
 
         config
             .AddCommand<PublishCommand>("publish")
