@@ -119,7 +119,7 @@ let private footer =
                                             footerLink
                                                 "Changelog"
                                                 FooterIcons.list
-                                                "changelogs/thoth-json/"
+                                                "https://thoth-org.github.io/Thoth.Json/changelogs/thoth-json/"
                                             footerLink
                                                 "License"
                                                 FooterIcons.idCard
@@ -181,14 +181,10 @@ let theme =
             NavbarSection(
                 "Docs",
                 "documentation",
-                "/Thoth.Json/documentation/introduction/"
+                "/documentation/introduction/"
             )
-            NavbarSection("Reference", "reference", "/Thoth.Json/reference/")
-            NavbarSection(
-                "Changelogs",
-                "changelogs",
-                "/Thoth.Json/changelogs/thoth-json/"
-            )
+            NavbarSection("Reference", "reference", "/reference/")
+            NavbarSection("Changelogs", "changelogs", "/changelogs/thoth-json/")
             NavbarLink("Support", "https://gitter.im/fable-compiler/Fable")
             NavbarLink("Donate", "https://www.patreon.com/MangelMaxime")
         ]
