@@ -70,8 +70,8 @@ module Post =
 ```fs
 type User =
     {
-        Email : string
-        Firstname : string
+        Email: string
+        Firstname: string
     }
 
 let user =
@@ -82,11 +82,14 @@ let user =
 
 // Transform your F# types to JSON
 let userJson =
-    Encode.Auto.toString(4, user)
+    user
+    |> Encode.Auto.generateEncoder<User> ()
+    |> Encode.toString 4
 
 // Transform your JSON to F# types
 let userFromJson =
-    Decode.Auto.fromString<User> userJson
+    userJson
+    |> Decode.fromString (Decode.Auto.generateDecoder<User> ())
 ```
 
 </div>
@@ -102,30 +105,29 @@ let userFromJson =
 ```fs
 module Encode =
 
-    let timestamp (date : DateTime) =
-        DateTimeOffset(date).ToUnixTimeSeconds()
-        |> box
+    let timestamp (date: DateTime) =
+        DateTimeOffset(date).ToUnixTimeSeconds() |> float |> Encode.float
 
 module Decode =
 
-    let timestamp : Decoder<DateTime> =
-        fun path value ->
-            if Decode.Helpers.isNumber value then
-                let value : int64 = unbox value
-                let datetime =
-                    DateTimeOffset
-                        .FromUnixTimeSeconds(value)
-                        .DateTime
-                Ok datetime
-
-            else
-                (path, BadPrimitive("a timestamp", value)) |> Error
+    let timestamp: Decoder<DateTime> =
+        { new Decoder<DateTime> with
+            member _.Decode(helpers, value) =
+                if helpers.isNumber value then
+                    helpers.asFloat value
+                    |> int64
+                    |> DateTimeOffset.FromUnixTimeSeconds
+                    |> _.DateTime
+                    |> Ok
+                else
+                    Error("", BadPrimitive("a timestamp", value))
+        }
 
 // Example: decode an invalid JSON
 Decode.fromString Decode.timestamp "\"2022-01-01\""
 
 // Error at: `$`
-// Expecting a number but instead got:
+// Expecting a timestamp but instead got:
 // "2022-01-01"
 ```
 

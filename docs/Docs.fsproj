@@ -10,12 +10,23 @@
         <Compile Include="FooterIcons.fs" />
         <Compile Include="Site.fs" />
     </ItemGroup>
+    <!-- Documented by the API reference: referenced so the assemblies and their XML
+         documentation sit beside this one. -->
+    <ItemGroup>
+        <ProjectReference Include="../packages/Thoth.Json.Core/Thoth.Json.Core.fsproj" />
+        <ProjectReference Include="../packages/Thoth.Json.Core.Auto/Thoth.Json.Core.Auto.fsproj" />
+        <ProjectReference Include="../packages/Thoth.Json.JavaScript/Thoth.Json.JavaScript.fsproj" />
+        <ProjectReference Include="../packages/Thoth.Json.Newtonsoft/Thoth.Json.Newtonsoft.fsproj" />
+        <ProjectReference Include="../packages/Thoth.Json.Python/Thoth.Json.Python.fsproj" />
+        <ProjectReference Include="../packages/Thoth.Json.System.Text.Json/Thoth.Json.System.Text.Json.fsproj" />
+    </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Nacara.Core" Version="2.0.0-beta.2" />
         <PackageReference Include="Nacara.Plugin.Markdown" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Plugin.Highlight.TreeSitter" Version="1.0.0-beta.1" />
-        <PackageReference Include="Nacara.Plugin.Literate" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Plugin.Changelog" Version="1.0.0-beta.1" />
+        <PackageReference Include="Nacara.Plugin.FSharpApi" Version="1.0.0-beta.1" />
+        <PackageReference Include="Nacara.Plugin.LiveExample" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Plugin.Search" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Plugin.Sitemap" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Plugin.LinkValidator" Version="1.0.0-beta.1" />
@@ -27,8 +38,9 @@
     </ItemGroup>
     <!-- Added by Directory.Build.props, which expects central versions -->
     <ItemGroup>
-        <!-- Nacara.Core needs a newer FSharp.Core than the packages build against -->
-        <PackageReference Update="FSharp.Core" Version="10.1.300" />
+        <!-- Nacara.Plugin.FSharpApi reads assemblies with the F# compiler, which pins FSharp.Core
+             to an exact version newer than the one the packages build against -->
+        <PackageReference Update="FSharp.Core" Version="10.1.400" />
         <PackageReference Update="DotNet.ReproducibleBuilds" Version="2.0.2" />
     </ItemGroup>
 </Project>

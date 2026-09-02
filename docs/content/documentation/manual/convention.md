@@ -1,22 +1,13 @@
-(**
 ---
 title: Convention
 ---
-*)
 
-(*** hide ***)
+When writing coders, the convention is to place them under a module of the same name as the type
+they correspond to.
 
-#I "../../../src/bin/Debug/netstandard2.0"
-#r "Thoth.Json.dll"
-
-open Thoth.Json
-
-(**
-
-When writting coders, the convention is to placed them under a module of the
-same name as the type they correspond to.
-
-*)
+```fsharp live
+open Thoth.Json.Core
+open Thoth.Json.JavaScript
 
 type User =
     {
@@ -34,19 +25,28 @@ module User =
             }
         )
 
-    let encode (user: User) : JsonValue =
+    let encoder (user: User) =
         Encode.object
             [
                 "name", Encode.string user.Name
                 "age", Encode.int user.Age
             ]
 
-(**
+{
+    Name = "Geralt de Riv"
+    Age = 92
+}
+|> User.encoder
+|> Encode.toString 4
+|> printfn "%s"
+```
 
-The reason for this convention is that it works for all the F# types even enums
-who can't have `static` methods.
+The reason for this convention is that it works for all the F# types, including enums which can't
+have `static` methods.
 
-*)
+```fsharp live
+open Thoth.Json.Core
+open Thoth.Json.JavaScript
 
 type Rating =
     | One = 1
@@ -67,4 +67,12 @@ module Rating =
                     $"%i{invalid} is not a valid rating value. Expecting an integer between 1 and 3"
         )
 
-    let encoder (rating: Rating) : JsonValue = Encode.int (int rating)
+    let encoder (rating: Rating) = Encode.int (int rating)
+
+Decode.fromString Rating.decoder "2" |> Docs.print
+
+Decode.fromString Rating.decoder "7" |> Docs.print
+```
+
+Name a [codec](../codec/introduction.md) `codec` in the same module. A module can hold a codec and
+the two coders at once, when part of your code needs one half on its own.

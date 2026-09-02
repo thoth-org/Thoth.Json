@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <!-- What the live examples on this site can call. Everything referenced here, and everything
+         declared below, reaches a snippet. -->
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Docs.fs" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../packages/Thoth.Json.Core/Thoth.Json.Core.fsproj" />
+        <ProjectReference Include="../../packages/Thoth.Json.Core.Auto/Thoth.Json.Core.Auto.fsproj" />
+        <ProjectReference Include="../../packages/Thoth.Json.JavaScript/Thoth.Json.JavaScript.fsproj" />
+    </ItemGroup>
+</Project>
