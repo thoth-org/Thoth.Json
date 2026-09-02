@@ -12,6 +12,7 @@ module Codec =
         /// <summary>
         /// The codec for <c>'t</c>, generated from the type.
         /// </summary>
+#if FABLE_COMPILER
         static member inline generateCodec
             (
                 ?caseStrategy: CaseStrategy,
@@ -19,6 +20,15 @@ module Codec =
                 ?skipNullField: bool,
                 ?losslessOption: bool
             )
+#else
+        static member generateCodec
+            (
+                ?caseStrategy: CaseStrategy,
+                ?extra: ExtraCoders,
+                ?skipNullField: bool,
+                ?losslessOption: bool
+            )
+#endif
             : Codec<'t>
             =
             Codec.create
