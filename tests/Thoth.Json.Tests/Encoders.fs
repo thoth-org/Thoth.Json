@@ -1024,7 +1024,7 @@ let tests (runner: TestRunner<_, _>) =
                 //             testCase "Encode.Auto.generateEncoder throws for field using a non optional class" <| fun _ ->
                 //                 let expected = """Cannot generate auto encoder for Tests.Types.BaseClass. Please pass an extra encoder.
 
-                // Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"""
+                // Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders/#ready-to-use-extra-coders"""
 
                 //                 let errorMsg =
                 //                     try

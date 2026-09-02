@@ -498,7 +498,7 @@ module Encode =
                 sprintf
                     """Cannot generate auto encoder for %s. Please pass an extra encoder.
 
-Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"""
+Documentation available at: https://thoth-org.github.io/Thoth.Json/legacy/documentation/auto/extra-coders/#ready-to-use-extra-coders"""
                     t.FullName
                 |> failwith
 
@@ -551,7 +551,7 @@ Thoth.Json.Net only support the following enum types:
 
 If you can't use one of these types, please pass an extra encoder.
 
-Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders
+Documentation available at: https://thoth-org.github.io/Thoth.Json/legacy/documentation/auto/extra-coders/#ready-to-use-extra-coders
                     """
                         t.FullName
             elif t.IsGenericType then

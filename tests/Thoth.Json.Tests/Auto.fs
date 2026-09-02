@@ -857,7 +857,7 @@ Reason: Unknown value provided for the enum
                 let expected =
                     """Cannot generate auto decoder for 'Thoth.Json.Tests.Types.BaseClass'. Please pass an extra decoder.
 
-Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"""
+Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders/#ready-to-use-extra-coders"""
 
                 let errorMsg =
                     try
@@ -886,7 +886,7 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
                 let expected =
                     """Cannot generate auto decoder for 'Thoth.Json.Tests.Types.BaseClass'. Please pass an extra decoder.
 
-Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"""
+Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders/#ready-to-use-extra-coders"""
 
                 let errorMsg =
                     try

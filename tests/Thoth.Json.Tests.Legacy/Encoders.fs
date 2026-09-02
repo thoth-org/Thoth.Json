@@ -1090,12 +1090,14 @@ let tests: Test =
                         let expected =
                             """Cannot generate auto encoder for Tests.Types.BaseClass. Please pass an extra encoder.
 
-Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"""
+Documentation available at: https://thoth-org.github.io/Thoth.Json/legacy/documentation/auto/extra-coders/#ready-to-use-extra-coders"""
 
                         let errorMsg =
                             try
                                 let encoder =
-                                    Encode.Auto.generateEncoder<RecordWithRequiredClass> (
+                                    Encode.Auto.generateEncoder<
+                                        RecordWithRequiredClass
+                                     > (
                                         caseStrategy = CamelCase
                                     )
 
