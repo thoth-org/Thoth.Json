@@ -1,22 +1,11 @@
-.nacara-content:has(.landing) > h1 {
-    display: none;
-}
-
-.nacara-layout--bare:has(.landing) {
-    max-width: 68rem;
-}
-
-/* The theme caps the content column at a comfortable measure for prose. The landing lays out its
-   own columns, so it takes the width the layout gives it. */
-.nacara-content:has(.landing) {
-    max-width: none;
-}
-
+/* A canvas layout gives the page the full width and no padding of its own. */
 .landing {
     display: flex;
     flex-direction: column;
     gap: calc(var(--nacara-space-8) * 2);
-    padding-block: var(--nacara-space-8);
+    max-width: 68rem;
+    margin-inline: auto;
+    padding: var(--nacara-space-8) var(--nacara-space-4);
 }
 
 .selling-point {

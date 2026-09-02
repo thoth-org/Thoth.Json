@@ -40,11 +40,12 @@ body {
     width: 100%;
 }
 
-/* The theme's responsive rules restate grid-template-columns for every layout, which puts back the
-   sidebar column a bare page does not have. */
+/* The theme's responsive rules restate grid-template-columns and padding for every layout, which
+   puts back the sidebar column and the padding a canvas page does not have. */
 @media (max-width: 1200px) {
-    .nacara-layout--bare {
+    .nacara-layout--canvas {
         grid-template-columns: minmax(0, 1fr);
+        padding: 0;
     }
 }
 
