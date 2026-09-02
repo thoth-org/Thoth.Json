@@ -74,7 +74,7 @@ jobs:
           if [ -n "$VERSION" ]; then
             ./build.sh docs build --version "$VERSION"
           else
-            ./build.sh docs build --verbose
+            ./build.sh docs build
           fi
 
       - name: Publish it
