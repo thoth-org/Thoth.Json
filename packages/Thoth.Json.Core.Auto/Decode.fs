@@ -656,6 +656,9 @@ module Decode =
 
         nextType, nextDecoder
 
+    /// <summary>
+    /// The decoder for a type, built by walking it with reflection.
+    /// </summary>
     let rec generateDecoder
         (caseStyle: CaseStrategy option)
         (existingDecoders: Map<TypeKey, obj>)
@@ -1061,6 +1064,9 @@ module Decode =
 
         Decode.Generic.map tupleType ty nestedTuplesToTuple decoder
 
+    /// <summary>
+    /// The decoder for <c>'t</c>, built with the given options.
+    /// </summary>
     let inline autoWithOptions<'t>
         (caseStrategy: CaseStrategy option)
         (extra: ExtraCoders)
@@ -1089,6 +1095,9 @@ module Decode =
             BoxedDecoder
          >
 
+    /// <summary>
+    /// Decoders generated from F# types.
+    /// </summary>
     type Auto =
 #if FABLE_COMPILER
         static let instance = AutoCache()
@@ -1096,6 +1105,13 @@ module Decode =
         static let instance = new ThreadLocal<_>(fun () -> AutoCache())
 #endif
 
+        /// <summary>
+        /// The decoder for <c>'T</c>, generated from the type.
+        /// </summary>
+        /// <remarks>
+        /// The type is walked on every call. Reuse the result, or use
+        /// <see cref="generateDecoderCached"/>.
+        /// </remarks>
 #if FABLE_COMPILER
         static member inline generateDecoder
             (
@@ -1117,6 +1133,13 @@ module Decode =
             let losslessOption = defaultArg losslessOption false
             autoWithOptions caseStrategy extra losslessOption
 
+        /// <summary>
+        /// The decoder for <c>'T</c>, generated once and kept.
+        /// </summary>
+        /// <remarks>
+        /// The cache is keyed on the type and on the arguments, so the same combination is only
+        /// generated once. Build the <c>extra</c> once and share it, or every call misses the cache.
+        /// </remarks>
 #if FABLE_COMPILER
         static member inline generateDecoderCached<'T>
 #else

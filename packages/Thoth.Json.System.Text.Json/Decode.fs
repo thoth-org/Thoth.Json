@@ -8,6 +8,9 @@ open System.Text.Json
 [<RequireQualifiedAccess>]
 module Decode =
 
+    /// <summary>
+    /// Reads a <c>JsonElement</c>, so a decoder written against Thoth.Json.Core runs on System.Text.Json.
+    /// </summary>
     let helpers =
         { new IDecoderHelpers<JsonElement> with
             member _.isString jsonValue =
@@ -95,21 +98,31 @@ module Decode =
                         )
         }
 
+/// <summary>
+/// Runs a decoder against System.Text.Json.
+/// </summary>
 type Decode =
 
+    /// <summary>
+    /// Run a decoder against a <c>JsonElement</c> which is already parsed.
+    /// </summary>
     static member fromValue(decoder: Decoder<'T>) =
         Decode.Advanced.fromValue Decode.helpers decoder
 
+    /// <summary>
+    /// Run the decoder half of a codec against a <c>JsonElement</c> which is already parsed.
+    /// </summary>
     static member fromValue(codec: Codec<'T>) =
         codec |> Decode.codec |> Decode.fromValue
 
     /// <summary>
-    /// Decode a JSON string using caller-supplied
-    /// <see cref="T:System.Text.Json.JsonDocumentOptions"/>, giving control over
-    /// how the document is parsed (for example raising <c>MaxDepth</c> beyond
-    /// the default of 64 for deeply nested documents, allowing trailing commas
-    /// or skipping comments).
+    /// Parse a JSON string with caller-supplied
+    /// <see cref="T:System.Text.Json.JsonDocumentOptions"/> and run the decoder against it.
     /// </summary>
+    /// <remarks>
+    /// Use it to raise <c>MaxDepth</c> beyond its default of 64, to allow trailing commas, or to
+    /// skip comments.
+    /// </remarks>
     /// <example>
     /// <code lang="fsharp">
     /// let options = JsonDocumentOptions(MaxDepth = 256)
@@ -136,11 +149,9 @@ type Decode =
                 Error("Given an invalid JSON: " + ex.Message)
 
     /// <summary>
-    /// Decode a JSON string with a <see cref="T:Thoth.Json.Core.Codec`1"/> using
-    /// caller-supplied <see cref="T:System.Text.Json.JsonDocumentOptions"/>,
-    /// giving control over how the document is parsed (for example raising
-    /// <c>MaxDepth</c> beyond the default of 64 for deeply nested documents,
-    /// allowing trailing commas or skipping comments).
+    /// Parse a JSON string with caller-supplied
+    /// <see cref="T:System.Text.Json.JsonDocumentOptions"/> and run the decoder half of a codec
+    /// against it.
     /// </summary>
     /// <example>
     /// <code lang="fsharp">
@@ -154,19 +165,36 @@ type Decode =
         =
         Decode.fromStringWithOptions (options, Decode.codec codec)
 
+    /// <summary>
+    /// Parse a JSON string and run the decoder against it.
+    /// </summary>
+    /// <returns>
+    /// <c>Ok</c> with the decoded value, or <c>Error</c> with the formatted message.
+    /// </returns>
     static member fromString(decoder: Decoder<'T>) =
         let options = JsonDocumentOptions()
 
         Decode.fromStringWithOptions (options, decoder)
 
+    /// <summary>
+    /// Parse a JSON string and run the decoder half of a codec against it.
+    /// </summary>
     static member fromString(codec: Codec<'T>) =
         codec |> Decode.codec |> Decode.fromString
 
+    /// <summary>
+    /// Parse a JSON string and run the decoder, raising an exception carrying the message on
+    /// failure.
+    /// </summary>
     static member unsafeFromString(decoder: Decoder<'T>) =
         fun value ->
             match Decode.fromString decoder value with
             | Ok x -> x
             | Error e -> failwith e
 
+    /// <summary>
+    /// Parse a JSON string and run the decoder half of a codec, raising an exception carrying the
+    /// message on failure.
+    /// </summary>
     static member unsafeFromString(codec: Codec<'T>) =
         codec |> Decode.codec |> Decode.unsafeFromString

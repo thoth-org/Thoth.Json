@@ -8,6 +8,7 @@ module Decode =
 
     module Helpers =
 
+        /// <summary>Put a path segment in front of a failure's own path.</summary>
         let prependPath
             (path: string)
             (err: DecoderError<'JsonValue>)
@@ -16,6 +17,7 @@ module Decode =
             let (oldPath, reason) = err
             (path + oldPath, reason)
 
+        /// <summary>Put a path segment in front of a failed result's path.</summary>
         let inline prependPathToResult<'T, 'JsonValue>
             (path: string)
             (res: Result<'T, DecoderError<'JsonValue>>)
@@ -46,6 +48,7 @@ module Decode =
                else
                    " ")
 
+    /// <summary>Format a decoding failure as the message the entry points return.</summary>
     let rec errorToString
         (helpers: IDecoderHelpers<'JsonValue>)
         (path: string, error)
@@ -84,24 +87,12 @@ module Decode =
     module Advanced =
 
         /// <summary>
-        /// Runs the decoder against the given JSON value.
-        ///
-        /// If the decoder fails, it reports the error prefixed with the given path.
-        ///
+        /// Run a decoder against a JSON value of the runtime's own type, giving the formatted
+        /// message on failure.
         /// </summary>
-        /// <example>
-        /// <code lang="fsharp">
-        /// module Decode =
-        ///     let fromRootValue (decoder : Decoder&lt;'T&gt;) =
-        ///         Decode.fromValue "$" decoder
-        /// </code>
-        /// </example>
-        /// <param name="path">Path used to report the error</param>
-        /// <param name="decoder">Decoder to apply</param>
-        /// <param name="value">JSON value to decoder</param>
-        /// <returns>
-        /// Returns <c>Ok</c> if the decoder succeeds, otherwise <c>Error</c> with the error message.
-        /// </returns>
+        /// <remarks>
+        /// This is what a runtime package builds its <c>Decode.fromValue</c> on.
+        /// </remarks>
         let fromValue
             (helpers: IDecoderHelpers<'JsonValue>)
             (decoder: Decoder<'T>)
@@ -296,6 +287,7 @@ module Decode =
                     ("", BadPrimitive(name, value)) |> Error
         }
 
+    /// <summary>Decode a JSON number or string into an sbyte.</summary>
     let sbyte: Decoder<sbyte> =
         integral
             "a sbyte"
@@ -313,6 +305,7 @@ module Decode =
             (fun () -> System.Byte.MaxValue)
             byte
 
+    /// <summary>Decode a JSON number or string into an int16.</summary>
     let int16: Decoder<int16> =
         integral
             "an int16"
@@ -321,6 +314,7 @@ module Decode =
             (fun () -> System.Int16.MaxValue)
             int16
 
+    /// <summary>Decode a JSON number or string into a uint16.</summary>
     let uint16: Decoder<uint16> =
         integral
             "an uint16"
@@ -329,6 +323,7 @@ module Decode =
             (fun () -> System.UInt16.MaxValue)
             uint16
 
+    /// <summary>Decode a JSON number or string into an int.</summary>
     let int: Decoder<int> =
         integral
             "an int"
@@ -337,6 +332,7 @@ module Decode =
             (fun () -> System.Int32.MaxValue)
             int
 
+    /// <summary>Decode a JSON number or string into a uint32.</summary>
     let uint32: Decoder<uint32> =
         integral
             "an uint32"
@@ -345,6 +341,7 @@ module Decode =
             (fun () -> System.UInt32.MaxValue)
             uint32
 
+    /// <summary>Decode a JSON string or number into an int64.</summary>
     let int64: Decoder<int64> =
         let tryParse (text: string) =
 #if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_PYTHON
@@ -359,6 +356,7 @@ module Decode =
 
         bigIntegral "an int64" tryParse
 
+    /// <summary>Decode a JSON string or number into a uint64.</summary>
     let uint64: Decoder<uint64> =
         let tryParse (text: string) =
 #if FABLE_COMPILER_JAVASCRIPT || FABLE_COMPILER_PYTHON
@@ -373,6 +371,7 @@ module Decode =
 
         bigIntegral "an uint64" tryParse
 
+    /// <summary>Decode a JSON string or number into a bigint.</summary>
     let bigint: Decoder<bigint> =
         { new Decoder<bigint> with
             member _.Decode(helpers, value) =
@@ -397,6 +396,7 @@ module Decode =
                     ("", BadPrimitive("a bigint", value)) |> Error
         }
 
+    /// <summary>Decode a JSON boolean.</summary>
     let bool: Decoder<bool> =
         { new Decoder<bool> with
             member _.Decode(helpers, value) =
@@ -406,6 +406,7 @@ module Decode =
                     ("", BadPrimitive("a boolean", value)) |> Error
         }
 
+    /// <summary>Decode a JSON number into a float.</summary>
     let float: Decoder<float> =
         { new Decoder<float> with
             member _.Decode(helpers, value) =
@@ -416,6 +417,7 @@ module Decode =
         }
 
 
+    /// <summary>Decode a JSON number into a float32.</summary>
     let float32: Decoder<float32> =
         { new Decoder<float32> with
             member _.Decode(helpers, value) =
@@ -425,6 +427,7 @@ module Decode =
                     ("", BadPrimitive("a float32", value)) |> Error
         }
 
+    /// <summary>Decode a JSON string or number into a decimal.</summary>
     let decimal: Decoder<decimal> =
         { new Decoder<decimal> with
             member _.Decode(helpers, value) =
@@ -471,6 +474,7 @@ module Decode =
         }
 
 #if !FABLE_COMPILER_PYTHON
+    /// <summary>Decode a JSON string into a DateTimeOffset.</summary>
     let datetimeOffset: Decoder<System.DateTimeOffset> =
         { new Decoder<System.DateTimeOffset> with
             member _.Decode(helpers, value) =
@@ -486,6 +490,7 @@ module Decode =
         }
 #endif
 
+    /// <summary>Decode a JSON string into a TimeSpan.</summary>
     let timespan: Decoder<System.TimeSpan> =
         { new Decoder<System.TimeSpan> with
             member _.Decode(helpers, value) =
@@ -519,6 +524,13 @@ module Decode =
             | Ok v -> Ok(Some v)
             | Error er -> er |> Helpers.prependPath path |> Error
 
+    /// <summary>
+    /// Decode the value under a property, giving <c>None</c> when the property is missing or
+    /// <c>null</c>.
+    /// </summary>
+    /// <remarks>
+    /// Fails when the property is there but the decoder rejects its value.
+    /// </remarks>
     let optional
         (fieldName: string)
         (decoder: Decoder<'value>)
@@ -557,6 +569,7 @@ module Decode =
             )
         )
 
+    /// <summary>Decode with two decoders and combine their results.</summary>
     let map2
         (ctor: 'a -> 'b -> 'Output)
         (d1: Decoder<'a>)
@@ -574,6 +587,10 @@ module Decode =
     // let custom =
     //     map2 (|>)
 
+    /// <summary>
+    /// Decode the value at a path of property names, giving <c>None</c> when the path is missing or
+    /// holds <c>null</c>.
+    /// </summary>
     let optionalAt
         (fieldNames: string list)
         (decoder: Decoder<'value>)
@@ -611,6 +628,7 @@ module Decode =
                             decodeMaybeNull helpers lastPath decoder lastValue
         }
 
+    /// <summary>Decode the value under a property.</summary>
     let field (fieldName: string) (decoder: Decoder<'value>) : Decoder<'value> =
         { new Decoder<'value> with
             member _.Decode(helpers, value) =
@@ -634,6 +652,7 @@ module Decode =
                     Error("", BadType("an object", value))
         }
 
+    /// <summary>Decode the value at a path of property names.</summary>
     let at
         (fieldNames: string list)
         (decoder: Decoder<'value>)
@@ -678,6 +697,7 @@ module Decode =
                         |> Helpers.prependPathToResult lastPath
         }
 
+    /// <summary>Decode the element of an array at the given position.</summary>
     let index
         (requestedIndex: int)
         (decoder: Decoder<'value>)
@@ -710,6 +730,7 @@ module Decode =
     // Data structure ///
     ////////////////////
 
+    /// <summary>Decode a JSON array into a list.</summary>
     let list (decoder: Decoder<'value>) : Decoder<'value list> =
         { new Decoder<'value list> with
             member _.Decode(helpers, value) =
@@ -745,6 +766,7 @@ module Decode =
                     ("", BadPrimitive("a list", value)) |> Error
         }
 
+    /// <summary>Decode a JSON array into a ResizeArray.</summary>
     let resizeArray (decoder: Decoder<'value>) : Decoder<'value ResizeArray> =
         { new Decoder<'value ResizeArray> with
             member _.Decode(helpers, value) =
@@ -782,6 +804,7 @@ module Decode =
                     ("", BadPrimitive("a ResizeArray", value)) |> Error
         }
 
+    /// <summary>Decode a JSON array into a sequence.</summary>
     let seq (decoder: Decoder<'value>) : Decoder<'value seq> =
         { new Decoder<'value seq> with
             member _.Decode(helpers, value) =
@@ -811,6 +834,7 @@ module Decode =
                     ("", BadPrimitive("a seq", value)) |> Error
         }
 
+    /// <summary>Decode a JSON array into an array.</summary>
     let array (decoder: Decoder<'value>) : Decoder<'value array> =
         { new Decoder<'value array> with
             member _.Decode(helpers, value) =
@@ -843,6 +867,7 @@ module Decode =
         }
 
 
+    /// <summary>The property names of an object.</summary>
     let keys: Decoder<string list> =
         { new Decoder<string list> with
             member _.Decode(helpers, value) =
@@ -853,6 +878,7 @@ module Decode =
         }
 
 
+    /// <summary>Decode every property of an object, giving its name paired with its decoded value.</summary>
     let keyValuePairs
         (decoder: Decoder<'value>)
         : Decoder<(string * 'value) list>
@@ -881,6 +907,12 @@ module Decode =
     // Inconsistent Structure ///
     ////////////////////////////
 
+    /// <summary>
+    /// Decode with the first decoder of the list that succeeds.
+    /// </summary>
+    /// <remarks>
+    /// The decoders are tried in order. If all of them fail, the failure reports every one.
+    /// </remarks>
     let oneOf (decoders: Decoder<'value> list) : Decoder<'value> =
         { new Decoder<'value> with
             member _.Decode(helpers, value) =
@@ -903,6 +935,7 @@ module Decode =
     // Fancy decoding ///
     ////////////////////
 
+    /// <summary>Decode <c>null</c> into the given value, and fail on anything else.</summary>
     let nil (output: 'a) : Decoder<'a> =
         { new Decoder<'a> with
             member _.Decode(helpers, value) =
@@ -978,18 +1011,22 @@ module Decode =
                 else
                     Error("", BadPrimitive("any", value))
 
+    /// <summary>Decode any JSON into a <see cref="T:Thoth.Json.Core.Json"/> tree.</summary>
     let value: Decoder<Json> = ValueDecoder()
 
+    /// <summary>Always succeed with the given value, whatever the JSON.</summary>
     let succeed (output: 'a) : Decoder<'a> =
         { new Decoder<'a> with
             member _.Decode(_, _) = Ok output
         }
 
+    /// <summary>Always fail with the given message.</summary>
     let fail (msg: string) : Decoder<'a> =
         { new Decoder<'a> with
             member _.Decode(_, _) = Error("", FailMessage msg)
         }
 
+    /// <summary>Use the result of a decoder to choose the next one.</summary>
     let andThen (cb: 'a -> Decoder<'b>) (decoder: Decoder<'a>) : Decoder<'b> =
         { new Decoder<'b> with
             member _.Decode(helpers, value) =
@@ -998,6 +1035,7 @@ module Decode =
                 | Ok result -> (cb result).Decode(helpers, value)
         }
 
+    /// <summary>Run every decoder against the same value, and collect their results.</summary>
     let all (decoders: Decoder<'a> list) : Decoder<'a list> =
         { new Decoder<'a list> with
             member _.Decode(helpers, value) =
@@ -1024,12 +1062,14 @@ module Decode =
                 let decoder = x.Force()
                 decoder.Decode(helpers, json)
 
+    /// <summary>Defer the construction of a decoder until it is first used, for mutually recursive types.</summary>
     let lazily (x: Lazy<Decoder<'t>>) : Decoder<'t> = LazyDecoder(x) :> _
 
     /////////////////////
     // Map functions ///
     ///////////////////
 
+    /// <summary>Transform the result of a decoder.</summary>
     let map (ctor: 'a -> 'Output) (d1: Decoder<'a>) : Decoder<'Output> =
         { new Decoder<'Output> with
             member _.Decode(helpers, value) =
@@ -1038,6 +1078,7 @@ module Decode =
                 | Error er -> Error er
         }
 
+    /// <summary>Decode with three decoders and combine their results.</summary>
     let map3
         (ctor: 'a -> 'b -> 'c -> 'Output)
         (d1: Decoder<'a>)
@@ -1058,6 +1099,7 @@ module Decode =
                 | _, _, Error er -> Error er
         }
 
+    /// <summary>Decode with four decoders and combine their results.</summary>
     let map4
         (ctor: 'a -> 'b -> 'c -> 'd -> 'Output)
         (d1: Decoder<'a>)
@@ -1081,6 +1123,7 @@ module Decode =
                 | _, _, _, Error er -> Error er
         }
 
+    /// <summary>Decode with five decoders and combine their results.</summary>
     let map5
         (ctor: 'a -> 'b -> 'c -> 'd -> 'e -> 'Output)
         (d1: Decoder<'a>)
@@ -1107,6 +1150,7 @@ module Decode =
                 | _, _, _, _, Error er -> Error er
         }
 
+    /// <summary>Decode with six decoders and combine their results.</summary>
     let map6
         (ctor: 'a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'Output)
         (d1: Decoder<'a>)
@@ -1137,6 +1181,7 @@ module Decode =
                 | _, _, _, _, _, Error er -> Error er
         }
 
+    /// <summary>Decode with seven decoders and combine their results.</summary>
     let map7
         (ctor: 'a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'g -> 'Output)
         (d1: Decoder<'a>)
@@ -1170,6 +1215,7 @@ module Decode =
                 | _, _, _, _, _, _, Error er -> Error er
         }
 
+    /// <summary>Decode with eight decoders and combine their results.</summary>
     let map8
         (ctor: 'a -> 'b -> 'c -> 'd -> 'e -> 'f -> 'g -> 'h -> 'Output)
         (d1: Decoder<'a>)
@@ -1211,19 +1257,12 @@ module Decode =
     ///////////////////////
 
     /// <summary>
-    /// Decode a JSON null value into an F# option.
-    ///
-    /// Attention, this decoder is lossy, it will not be able to distinguish between `'T option` and `'T option option`.
-    ///
-    /// If you need to distinguish between `'T option` and `'T option option`, use `losslessOption`.
+    /// Decode <c>null</c> into <c>None</c>, and anything else with the given decoder.
     /// </summary>
-    /// <param name="decoder">
-    /// The decoder to apply to the value if it is not null.
-    /// </param>
-    /// <typeparam name="'value">The type of the value to decode.</typeparam>
-    /// <returns>
-    /// <c>None</c> if the value is null, otherwise <c>Some value</c> where <c>value</c> is the result of the decoder.
-    /// </returns>
+    /// <remarks>
+    /// Lossy: a nested option does not round-trip. Use <see cref="losslessOption"/> when you need
+    /// the distinction.
+    /// </remarks>
     let lossyOption (decoder: Decoder<'value>) : Decoder<'value option> =
         { new Decoder<'value option> with
             member _.Decode(helpers, value) =
@@ -1234,19 +1273,12 @@ module Decode =
         }
 
     /// <summary>
-    /// Decode a JSON null value into an F# option.
-    ///
-    /// This decoder is lossless, it will be able to distinguish between `'T option` and `'T option option`.
-    ///
-    /// If you don't need to distinguish between `'T option` and `'T option option`, you can use `lossyOption` which is more efficient.
+    /// Decode the object written by <see cref="M:Thoth.Json.Core.Encode.losslessOption"/> into an
+    /// option.
     /// </summary>
-    /// <param name="decoder">
-    /// The decoder to apply to the value if it is not null.
-    /// </param>
-    /// <typeparam name="'value">The type of the value to decode.</typeparam>
-    /// <returns>
-    /// <c>None</c> if the value is null, otherwise <c>Some value</c> where <c>value</c> is the result of the decoder.
-    /// </returns>
+    /// <remarks>
+    /// Round-trips at any nesting depth, at the cost of a heavier representation.
+    /// </remarks>
     let losslessOption (decoder: Decoder<'value>) : Decoder<'value option> =
         field "$type" string
         |> andThen (fun typeName ->
@@ -1271,7 +1303,7 @@ module Decode =
     ////////////////////
 
     /// <summary>
-    /// Allow to incrementally apply a decoder, for building large objects.
+    /// Apply one decoded value to a decoded function, for building a value field by field.
     /// </summary>
     /// <example>
     /// <code lang="fsharp">
@@ -1378,6 +1410,20 @@ module Decode =
             member __.Required = required
             member __.Optional = optional
 
+    /// <summary>
+    /// Decode an object, reading each property through <c>get.Required</c> or <c>get.Optional</c>.
+    /// </summary>
+    /// <example>
+    /// <code lang="fsharp">
+    /// let pointDecoder =
+    ///     Decode.object (fun get ->
+    ///         {
+    ///             X = get.Required.Field "x" Decode.int
+    ///             Y = get.Required.Field "y" Decode.int
+    ///         }
+    ///     )
+    /// </code>
+    /// </example>
     let object (builder: IGetters -> 'value) : Decoder<'value> =
         { new Decoder<'value> with
             member _.Decode(helpers, value) =
@@ -1397,6 +1443,7 @@ module Decode =
     // Tuples decoders ///
     ////////////////////
 
+    /// <summary>Decode a JSON array of 2 elements into a tuple.</summary>
     let tuple2
         (decoder1: Decoder<'T1>)
         (decoder2: Decoder<'T2>)
@@ -1407,6 +1454,7 @@ module Decode =
             index 1 decoder2 |> andThen (fun v2 -> succeed (v1, v2))
         )
 
+    /// <summary>Decode a JSON array of 3 elements into a tuple.</summary>
     let tuple3
         (decoder1: Decoder<'T1>)
         (decoder2: Decoder<'T2>)
@@ -1421,6 +1469,7 @@ module Decode =
             )
         )
 
+    /// <summary>Decode a JSON array of 4 elements into a tuple.</summary>
     let tuple4
         (decoder1: Decoder<'T1>)
         (decoder2: Decoder<'T2>)
@@ -1440,6 +1489,7 @@ module Decode =
             )
         )
 
+    /// <summary>Decode a JSON array of 5 elements into a tuple.</summary>
     let tuple5
         (decoder1: Decoder<'T1>)
         (decoder2: Decoder<'T2>)
@@ -1463,6 +1513,7 @@ module Decode =
             )
         )
 
+    /// <summary>Decode a JSON array of 6 elements into a tuple.</summary>
     let tuple6
         (decoder1: Decoder<'T1>)
         (decoder2: Decoder<'T2>)
@@ -1492,6 +1543,7 @@ module Decode =
             )
         )
 
+    /// <summary>Decode a JSON array of 7 elements into a tuple.</summary>
     let tuple7
         (decoder1: Decoder<'T1>)
         (decoder2: Decoder<'T2>)
@@ -1525,6 +1577,7 @@ module Decode =
             )
         )
 
+    /// <summary>Decode a JSON array of 8 elements into a tuple.</summary>
     let tuple8
         (decoder1: Decoder<'T1>)
         (decoder2: Decoder<'T2>)
@@ -1575,9 +1628,11 @@ module Decode =
     // Map ///
     /////////
 
+    /// <summary>Decode an object into a map keyed by the property names.</summary>
     let dict (decoder: Decoder<'value>) : Decoder<Map<string, 'value>> =
         map Map.ofList (keyValuePairs decoder)
 
+    /// <summary>Decode an array of <c>[ key, value ]</c> pairs into a map. Use it when the key is not a string.</summary>
     let map'
         (keyDecoder: Decoder<'key>)
         (valueDecoder: Decoder<'value>)
@@ -1625,6 +1680,7 @@ module Decode =
     // requireSome ///
     /////////////////
 
+    /// <summary>Turn <c>None</c> into a failure carrying the given message.</summary>
     let requireSome
         (errorMessage: string)
         (decoder: Decoder<'a option>)
@@ -1637,6 +1693,7 @@ module Decode =
             | None -> fail errorMessage
         )
 
+    /// <summary>Turn a decoder of an option into one which fails on <c>None</c>.</summary>
     let notNone (decoder: Decoder<'a option>) : Decoder<'a> =
         decoder
         |> andThen (
@@ -1667,23 +1724,30 @@ module Decode =
                         |> Error
                 }
 
+        /// <summary>Decode a JSON number into an enum with an underlying byte.</summary>
         let inline byte<'TEnum when 'TEnum: enum<byte>> : Decoder<'TEnum> =
             byte |> andThen enumOfValue
 
+        /// <summary>Decode a JSON number into an enum with an underlying sbyte.</summary>
         let inline sbyte<'TEnum when 'TEnum: enum<sbyte>> : Decoder<'TEnum> =
             sbyte |> andThen enumOfValue
 
+        /// <summary>Decode a JSON number into an enum with an underlying int16.</summary>
         let inline int16<'TEnum when 'TEnum: enum<int16>> : Decoder<'TEnum> =
             int16 |> andThen enumOfValue
 
+        /// <summary>Decode a JSON number into an enum with an underlying uint16.</summary>
         let inline uint16<'TEnum when 'TEnum: enum<uint16>> : Decoder<'TEnum> =
             uint16 |> andThen enumOfValue
 
+        /// <summary>Decode a JSON number into an enum with an underlying int.</summary>
         let inline int<'TEnum when 'TEnum: enum<int>> : Decoder<'TEnum> =
             int |> andThen enumOfValue
 
+        /// <summary>Decode a JSON number into an enum with an underlying uint32.</summary>
         let inline uint32<'TEnum when 'TEnum: enum<uint32>> : Decoder<'TEnum> =
             uint32 |> andThen enumOfValue
 #endif
 
+    /// <summary>The decoder half of a codec.</summary>
     let codec (c: Codec<'t>) : Decoder<'t> = c.Decoder

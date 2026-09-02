@@ -510,6 +510,9 @@ module Encode =
         | None -> name
 #endif
 
+    /// <summary>
+    /// The encoder for a type, built by walking it with reflection.
+    /// </summary>
     let rec generateEncoder
         (caseStyle: CaseStrategy option)
         (existingEncoders: Map<TypeKey, BoxedEncoder>)
@@ -792,6 +795,9 @@ module Encode =
 
         wrapFinalEncoder ty funcImpl
 
+    /// <summary>
+    /// The encoder for <c>'t</c>, built with the given options.
+    /// </summary>
     let inline autoWithOptions<'t>
         (caseStrategy: CaseStrategy option)
         (extra: ExtraCoders)
@@ -821,6 +827,9 @@ module Encode =
             BoxedEncoder
          >
 
+    /// <summary>
+    /// Encoders generated from F# types.
+    /// </summary>
     type Auto =
 #if FABLE_COMPILER
         static let instance = AutoCache()
@@ -828,6 +837,13 @@ module Encode =
         static let instance = new ThreadLocal<_>(fun () -> AutoCache())
 #endif
 
+        /// <summary>
+        /// The encoder for <c>'T</c>, generated from the type.
+        /// </summary>
+        /// <remarks>
+        /// The type is walked on every call. Reuse the result, or use
+        /// <see cref="generateEncoderCached"/>.
+        /// </remarks>
 #if FABLE_COMPILER
         static member inline generateEncoder<'T>
 #else
@@ -847,6 +863,13 @@ module Encode =
 
             autoWithOptions caseStrategy extra skipNullField losslessOption
 
+        /// <summary>
+        /// The encoder for <c>'T</c>, generated once and kept.
+        /// </summary>
+        /// <remarks>
+        /// The cache is keyed on the type and on the arguments, so the same combination is only
+        /// generated once. Build the <c>extra</c> once and share it, or every call misses the cache.
+        /// </remarks>
 #if FABLE_COMPILER
         static member inline generateEncoderCached<'T>
 #else

@@ -3,6 +3,9 @@ namespace Thoth.Json.Core
 [<AutoOpen>]
 module DecoderCE =
 
+    /// <summary>
+    /// The builder behind <c>decoder</c>.
+    /// </summary>
     type DecoderBuilder internal () =
         member inline _.Bind(m, f) = Decode.andThen f m
 
@@ -103,4 +106,19 @@ module DecoderCE =
 
         member _.ReturnFrom(x: Decoder<'a>) = x
 
+    /// <summary>
+    /// Compose decoders. <c>let!</c> runs them one after the other, <c>and!</c> runs them
+    /// independently.
+    /// </summary>
+    /// <example>
+    /// <code lang="fsharp">
+    /// let pointDecoder =
+    ///     decoder {
+    ///         let! x = Decode.field "x" Decode.int
+    ///         and! y = Decode.field "y" Decode.int
+    ///
+    ///         return { X = x; Y = y }
+    ///     }
+    /// </code>
+    /// </example>
     let decoder = DecoderBuilder()

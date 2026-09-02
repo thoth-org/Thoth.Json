@@ -3,11 +3,17 @@ namespace Thoth.Json.Core
 [<AutoOpen>]
 module VariantCodecBuilder =
 
+    /// <summary>
+    /// How a <c>variantCodec</c> writes the case a value belongs to.
+    /// </summary>
     type VariantEncoding =
         internal
         | TagAndValue of tagName: string * valueName: string
         | OnTag
 
+    /// <summary>
+    /// The cases declared so far by a <c>variantCodec</c> block.
+    /// </summary>
     [<NoComparison>]
     [<NoEquality>]
     type VariantCase<'t, 'v> =
@@ -72,6 +78,9 @@ module VariantCodecBuilder =
                                  $"Expected exactly one object key but found: {found}"
                      ))
 
+    /// <summary>
+    /// The builder behind <c>variantCodec</c> and <c>variantCodecWithTag</c>.
+    /// </summary>
     type VariantCodecBuilder internal (variantEncoding: VariantEncoding) =
         member this.MergeSources(a, b) = VariantCase.zip a b
 
@@ -79,14 +88,56 @@ module VariantCodecBuilder =
             VariantCase.complete variantEncoding f x
 
 
+    /// <summary>
+    /// Build a codec for a union, writing the tag and the value under the given property names.
+    /// </summary>
+    /// <example>
+    /// <code lang="fsharp">
+    /// // { "type": "square", "value": 4 }
+    /// let codec : Codec&lt;Shape&gt; =
+    ///     variantCodecWithTag "type" "value" {
+    ///         let! square = Codec.case "square" Square Codec.int
+    ///         and! circle = Codec.case "circle" Circle Codec.int
+    ///
+    ///         return function
+    ///             | Square width -> square width
+    ///             | Circle radius -> circle radius
+    ///     }
+    /// </code>
+    /// </example>
     let variantCodecWithTag tagName valueName =
         VariantCodecBuilder(VariantEncoding.TagAndValue(tagName, valueName))
 
+    /// <summary>
+    /// Build a codec for a union, writing an object with a single property named after the case.
+    /// </summary>
+    /// <example>
+    /// <code lang="fsharp">
+    /// // { "square": 4 }
+    /// let codec : Codec&lt;Shape&gt; =
+    ///     variantCodec {
+    ///         let! square = Codec.case "square" Square Codec.int
+    ///         and! circle = Codec.case "circle" Circle Codec.int
+    ///
+    ///         return function
+    ///             | Square width -> square width
+    ///             | Circle radius -> circle radius
+    ///     }
+    /// </code>
+    /// </example>
     let variantCodec = VariantCodecBuilder(OnTag)
 
     [<RequireQualifiedAccess>]
     module Codec =
 
+        /// <summary>
+        /// A case of a <c>variantCodec</c> block: the tag it is written under, its constructor, and
+        /// the codec for its fields.
+        /// </summary>
+        /// <remarks>
+        /// A case with several fields takes a tuple codec, in the order the fields are declared. A
+        /// case with none takes <c>Codec.unit</c>.
+        /// </remarks>
         let case
             (tag: string)
             (caseConstructor: 't -> 'v)
