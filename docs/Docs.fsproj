@@ -21,12 +21,12 @@
         <ProjectReference Include="../packages/Thoth.Json.System.Text.Json/Thoth.Json.System.Text.Json.fsproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Nacara.Core" Version="2.0.0-beta.2" />
+        <PackageReference Include="Nacara.Core" Version="2.0.0-beta.3" />
         <PackageReference Include="Nacara.Plugin.Markdown" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Plugin.Highlight.TreeSitter" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Plugin.Changelog" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Plugin.FSharpApi" Version="1.0.0-beta.1" />
-        <PackageReference Include="Nacara.Plugin.LiveExample" Version="1.0.0-beta.1" />
+        <PackageReference Include="Nacara.Plugin.LiveExample" Version="1.0.0-beta.2" />
         <PackageReference Include="Nacara.Plugin.Search" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Plugin.Sitemap" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Plugin.LinkValidator" Version="1.0.0-beta.1" />
@@ -34,7 +34,7 @@
         <PackageReference Include="Nacara.Plugin.Assets.Nuglify" Version="1.0.0-beta.1" />
         <PackageReference Include="Nacara.Plugin.Deploy.GitHubPages" Version="1.0.0-beta.2" />
         <PackageReference Include="Nacara.Plugin.Versions" Version="1.0.0-beta.1" />
-        <PackageReference Include="Nacara.Theme.Default" Version="1.0.0-beta.2" />
+        <PackageReference Include="Nacara.Theme.Default" Version="1.0.0-beta.3" />
     </ItemGroup>
     <!-- Added by Directory.Build.props, which expects central versions -->
     <ItemGroup>
