@@ -181,10 +181,14 @@ let theme =
             NavbarSection(
                 "Docs",
                 "documentation",
-                "/documentation/introduction/"
+                "/Thoth.Json/documentation/introduction/"
             )
-            NavbarSection("Reference", "reference", "/reference/")
-            NavbarSection("Changelogs", "changelogs", "/changelogs/thoth-json/")
+            NavbarSection("Reference", "reference", "/Thoth.Json/reference/")
+            NavbarSection(
+                "Changelogs",
+                "changelogs",
+                "/Thoth.Json/changelogs/thoth-json/"
+            )
             NavbarLink("Support", "https://gitter.im/fable-compiler/Fable")
             NavbarLink("Donate", "https://www.patreon.com/MangelMaxime")
         ]
