@@ -17,7 +17,7 @@ module VariantCodecBuilder =
         }
 
     [<RequireQualifiedAccess>]
-    module VariantCase =
+    module internal VariantCase =
 
         let zip
             (a: VariantCase<'a, 'v>)

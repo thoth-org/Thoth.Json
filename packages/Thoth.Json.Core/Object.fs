@@ -13,7 +13,7 @@ module ObjectCodecComputationExpression =
         }
 
     [<RequireQualifiedAccess>]
-    module ObjectCodecFieldSet =
+    module internal ObjectCodecFieldSet =
 
         let zip
             (a: ObjectCodecFieldSet<'a, 'u>)
