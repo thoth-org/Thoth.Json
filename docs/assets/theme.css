@@ -40,6 +40,14 @@ body {
     width: 100%;
 }
 
+/* The theme's responsive rules restate grid-template-columns for every layout, which puts back the
+   sidebar column a bare page does not have. */
+@media (max-width: 1200px) {
+    .nacara-layout--bare {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
 /* The theme exposes no navbar or footer surface tokens. */
 .nacara-navbar,
 .nacara-footer {

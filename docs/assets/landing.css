@@ -6,6 +6,12 @@
     max-width: 68rem;
 }
 
+/* The theme caps the content column at a comfortable measure for prose. The landing lays out its
+   own columns, so it takes the width the layout gives it. */
+.nacara-content:has(.landing) {
+    max-width: none;
+}
+
 .landing {
     display: flex;
     flex-direction: column;
@@ -15,13 +21,13 @@
 
 .selling-point {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: var(--nacara-space-8);
     align-items: center;
 }
 
 .selling-point.is-fullwidth {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     justify-items: center;
     text-align: center;
 }
@@ -29,6 +35,11 @@
 .selling-point.is-fullwidth .selling-point-showcase {
     width: 100%;
     text-align: left;
+}
+
+.selling-point-header,
+.selling-point-showcase {
+    min-width: 0;
 }
 
 .selling-point-header h3 {
@@ -55,6 +66,6 @@
 
 @media (max-width: 60rem) {
     .selling-point {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
