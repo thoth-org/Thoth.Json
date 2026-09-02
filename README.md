@@ -1,8 +1,26 @@
-# Thoth.Json [![Build Status](https://dev.azure.com/thoth-org/Thoth.Json/_apis/build/status/thoth-org.Thoth.Json?branchName=master)](https://dev.azure.com/thoth-org/Thoth.Json/_build/latest?definitionId=1&branchName=master)
+# Thoth.Json
 
-| Stable | Prerelease
---- | ---
-[![NuGet Badge](https://buildstats.info/nuget/Thoth.Json)](https://www.nuget.org/packages/Thoth.Json/) | [![NuGet Badge](https://buildstats.info/nuget/Thoth.Json?includePreReleases=true)](https://www.nuget.org/packages/Thoth.Json/)
+[![Tests](https://github.com/thoth-org/Thoth.Json/actions/workflows/test.yml/badge.svg)](https://github.com/thoth-org/Thoth.Json/actions/workflows/test.yml)
+
+JSON the simple and safe way, for F# on .NET, JavaScript and Python.
+
+**[Documentation](https://thoth-org.github.io/Thoth.Json/)**
+
+## Packages
+
+`Thoth.Json.Core` holds the API. Add it, plus the package for the runtime your code targets.
+
+| Package | |
+|---|---|
+| [Thoth.Json.Core](https://www.nuget.org/packages/Thoth.Json.Core/) | Decoders, encoders and codecs |
+| [Thoth.Json.Core.Auto](https://www.nuget.org/packages/Thoth.Json.Core.Auto/) | Coders generated from F# types |
+| [Thoth.Json.JavaScript](https://www.nuget.org/packages/Thoth.Json.JavaScript/) | Fable, compiling to JavaScript |
+| [Thoth.Json.Python](https://www.nuget.org/packages/Thoth.Json.Python/) | Fable, compiling to Python |
+| [Thoth.Json.Newtonsoft](https://www.nuget.org/packages/Thoth.Json.Newtonsoft/) | .NET, on top of Newtonsoft.Json |
+| [Thoth.Json.System.Text.Json](https://www.nuget.org/packages/Thoth.Json.System.Text.Json/) | .NET, on top of System.Text.Json |
+
+[Thoth.Json](https://www.nuget.org/packages/Thoth.Json/) and Thoth.Json.Net are the previous
+generation of the library. Their documentation is under the **Legacy** version of the site.
 
 ## Benchmark
 
