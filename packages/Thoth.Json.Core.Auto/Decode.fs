@@ -755,7 +755,7 @@ module Decode =
                     Decode.Generic.error unknown unknown.FullName
                 else
                     failwith
-                        $"Cannot generate auto decoder for '{unknown.FullName}'. Please pass an extra decoder.\n\nDocumentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"
+                        $"Cannot generate auto decoder for '{unknown.FullName}'. Please pass an extra decoder.\n\nDocumentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders/#ready-to-use-extra-coders"
 
     and private genericRecordDecoder
         (caseStyle: CaseStrategy option)

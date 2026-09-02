@@ -1505,7 +1505,7 @@ module Decode =
                 sprintf
                     """Cannot generate auto decoder for %s. Please pass an extra decoder.
 
-Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders.html#ready-to-use-extra-coders"""
+Documentation available at: https://thoth-org.github.io/Thoth.Json/legacy/documentation/auto/extra-coders/#ready-to-use-extra-coders"""
                     t.FullName
                 |> failwith
 
