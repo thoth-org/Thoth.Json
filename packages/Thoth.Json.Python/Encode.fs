@@ -8,6 +8,9 @@ open Fable.Python.Json
 [<RequireQualifiedAccess>]
 module Encode =
 
+    /// <summary>
+    /// Builds a <c>obj</c>, so an encoder written against Thoth.Json.Core runs on Python.
+    /// </summary>
     let helpers =
         { new IEncoderHelpers<obj> with
             member _.encodeString value = box value
@@ -39,6 +42,10 @@ module Encode =
             member _.encodeUnsignedIntegralNumber value = box value
         }
 
+    /// <summary>
+    /// Write an encodable as a JSON string, indented by the given number of spaces. Pass <c>0</c>
+    /// for a single line.
+    /// </summary>
     let toString (space: int) (value: IEncodable) : string =
         let json = Encode.toJsonValue helpers value
         // If we pass an indention of 0 to Python's json.dumps, it will

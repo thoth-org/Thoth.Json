@@ -9,6 +9,9 @@ open System.IO
 [<RequireQualifiedAccess>]
 module Decode =
 
+    /// <summary>
+    /// Reads a <c>JToken</c>, so a decoder written against Thoth.Json.Core runs on Newtonsoft.Json.
+    /// </summary>
     let helpers =
         { new IDecoderHelpers<JToken> with
             member _.isString jsonValue =
@@ -84,35 +87,39 @@ module Decode =
                     jsonValue.ToString()
         }
 
+/// <summary>
+/// Runs a decoder against Newtonsoft.Json.
+/// </summary>
 type Decode =
 
+    /// <summary>
+    /// Run a decoder against a <c>JToken</c> which is already parsed.
+    /// </summary>
     static member fromValue(decoder: Decoder<'T>) =
         Decode.Advanced.fromValue Decode.helpers decoder
 
+    /// <summary>
+    /// Run the decoder half of a codec against a <c>JToken</c> which is already parsed.
+    /// </summary>
     static member fromValue(codec: Codec<'T>) =
         codec |> Decode.codec |> Decode.fromValue
 
     /// <summary>
-    /// Decode a JSON string using a caller-supplied
-    /// <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>, giving full
-    /// control over the underlying Newtonsoft reader (for example to raise the
-    /// default <c>MaxDepth</c> of 64 for deeply nested documents).
+    /// Parse a JSON string with caller-supplied
+    /// <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/> and run the decoder against it.
     /// </summary>
     /// <remarks>
-    /// You are responsible for wiring the settings correctly: the settings you
-    /// pass <b>replace</b> the ones <see cref="M:fromString"/> uses, they are
-    /// not merged. In particular Thoth relies on two values to behave
-    /// correctly, so unless you have a reason not to, set both:
+    /// The settings <b>replace</b> the ones <see cref="M:fromString"/> uses, they are not merged.
+    /// Two of them are what Thoth.Json relies on, so set both unless you have a reason not to:
     /// <list type="bullet">
     /// <item><description>
-    /// <c>DateParseHandling = DateParseHandling.None</c> — otherwise Newtonsoft
-    /// eagerly turns date-like strings into <c>Date</c> tokens, and Thoth's
-    /// string-based date decoders (and <c>Decode.string</c>) will then fail on
-    /// those fields.
+    /// <c>DateParseHandling = DateParseHandling.None</c> - Newtonsoft otherwise turns date-like
+    /// strings into <c>Date</c> tokens, which the date decoders and <c>Decode.string</c> then
+    /// reject.
     /// </description></item>
     /// <item><description>
-    /// <c>CheckAdditionalContent = true</c> — so trailing content after the
-    /// JSON value is reported as invalid instead of being silently ignored.
+    /// <c>CheckAdditionalContent = true</c> - so content after the JSON value is reported as
+    /// invalid instead of being ignored.
     /// </description></item>
     /// </list>
     /// </remarks>
@@ -148,27 +155,22 @@ type Decode =
                 Error("Given an invalid JSON: " + ex.Message)
 
     /// <summary>
-    /// Decode a JSON string with a <see cref="T:Thoth.Json.Core.Codec`1"/>
-    /// using a caller-supplied
-    /// <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>, giving full
-    /// control over the underlying Newtonsoft reader (for example to raise the
-    /// default <c>MaxDepth</c> of 64 for deeply nested documents).
+    /// Parse a JSON string with caller-supplied
+    /// <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/> and run the decoder half of a codec
+    /// against it.
     /// </summary>
     /// <remarks>
-    /// You are responsible for wiring the settings correctly: the settings you
-    /// pass <b>replace</b> the ones <see cref="M:fromString"/> uses, they are
-    /// not merged. In particular Thoth relies on two values to behave
-    /// correctly, so unless you have a reason not to, set both:
+    /// The settings <b>replace</b> the ones <see cref="M:fromString"/> uses, they are not merged.
+    /// Two of them are what Thoth.Json relies on, so set both unless you have a reason not to:
     /// <list type="bullet">
     /// <item><description>
-    /// <c>DateParseHandling = DateParseHandling.None</c> — otherwise Newtonsoft
-    /// eagerly turns date-like strings into <c>Date</c> tokens, and Thoth's
-    /// string-based date decoders (and <c>Decode.string</c>) will then fail on
-    /// those fields.
+    /// <c>DateParseHandling = DateParseHandling.None</c> - Newtonsoft otherwise turns date-like
+    /// strings into <c>Date</c> tokens, which the date decoders and <c>Decode.string</c> then
+    /// reject.
     /// </description></item>
     /// <item><description>
-    /// <c>CheckAdditionalContent = true</c> — so trailing content after the
-    /// JSON value is reported as invalid instead of being silently ignored.
+    /// <c>CheckAdditionalContent = true</c> - so content after the JSON value is reported as
+    /// invalid instead of being ignored.
     /// </description></item>
     /// </list>
     /// </remarks>
@@ -189,6 +191,12 @@ type Decode =
         =
         Decode.fromStringWithOptions (settings, Decode.codec codec)
 
+    /// <summary>
+    /// Parse a JSON string and run the decoder against it.
+    /// </summary>
+    /// <returns>
+    /// <c>Ok</c> with the decoded value, or <c>Error</c> with the formatted message.
+    /// </returns>
     static member fromString(decoder: Decoder<'T>) =
         let settings =
             JsonSerializerSettings(
@@ -198,14 +206,25 @@ type Decode =
 
         Decode.fromStringWithOptions (settings, decoder)
 
+    /// <summary>
+    /// Parse a JSON string and run the decoder half of a codec against it.
+    /// </summary>
     static member fromString(codec: Codec<'T>) =
         codec |> Decode.codec |> Decode.fromString
 
+    /// <summary>
+    /// Parse a JSON string and run the decoder, raising an exception carrying the message on
+    /// failure.
+    /// </summary>
     static member unsafeFromString(decoder: Decoder<'T>) =
         fun value ->
             match Decode.fromString decoder value with
             | Ok x -> x
             | Error e -> failwith e
 
+    /// <summary>
+    /// Parse a JSON string and run the decoder half of a codec, raising an exception carrying the
+    /// message on failure.
+    /// </summary>
     static member unsafeFromString(codec: Codec<'T>) =
         codec |> Decode.codec |> Decode.unsafeFromString

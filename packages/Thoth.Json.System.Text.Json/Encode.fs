@@ -9,6 +9,9 @@ open System.IO
 [<RequireQualifiedAccess>]
 module Encode =
 
+    /// <summary>
+    /// Builds a <c>JsonNode</c>, so an encoder written against Thoth.Json.Core runs on System.Text.Json.
+    /// </summary>
     let helpers =
         { new IEncoderHelpers<JsonNode> with
             member _.encodeString value = JsonValue.Create(value)
@@ -37,6 +40,11 @@ module Encode =
                 JsonValue.Create(value)
         }
 
+    /// <summary>
+    /// Write an encodable as a JSON string with caller-supplied
+    /// <see cref="T:System.Text.Json.JsonSerializerOptions"/>, giving control over indentation,
+    /// escaping and depth.
+    /// </summary>
     let toStringWithOptions
         (options: JsonSerializerOptions)
         (value: IEncodable)
@@ -67,6 +75,10 @@ module Encode =
 
         Encoding.UTF8.GetString(stream.ToArray())
 
+    /// <summary>
+    /// Write an encodable as a JSON string, indented by the given number of spaces. Pass <c>0</c>
+    /// for a single line.
+    /// </summary>
     let toString (space: int) (value: IEncodable) : string =
         let writeIndented = space > 0
 

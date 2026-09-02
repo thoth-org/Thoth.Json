@@ -8,6 +8,9 @@ open System.IO
 [<RequireQualifiedAccess>]
 module Encode =
 
+    /// <summary>
+    /// Builds a <c>JToken</c>, so an encoder written against Thoth.Json.Core runs on Newtonsoft.Json.
+    /// </summary>
     let helpers =
         { new IEncoderHelpers<JToken> with
             member _.encodeString value = JValue(value)
@@ -39,16 +42,12 @@ module Encode =
         }
 
     /// <summary>
-    /// Serialize a value to a JSON string using a caller-supplied
-    /// <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>, giving full
-    /// control over the underlying Newtonsoft serializer (for example to set
-    /// <c>Formatting</c>, date handling or string escaping).
+    /// Write an encodable as a JSON string with caller-supplied
+    /// <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.
     /// </summary>
     /// <remarks>
-    /// Indentation follows <c>settings.Formatting</c>; the indent <em>width</em>
-    /// is the Newtonsoft default of two spaces and is not configurable through
-    /// settings. Use <see cref="M:toString"/> when you need a specific indent
-    /// width.
+    /// Indentation follows <c>settings.Formatting</c>. Its width is Newtonsoft's own two spaces and
+    /// settings cannot change it, so use <see cref="M:toString"/> when you need another width.
     /// </remarks>
     /// <example>
     /// <code lang="fsharp">
@@ -71,6 +70,10 @@ module Encode =
         serializer.Serialize(jsonWriter, json)
         stream.ToString()
 
+    /// <summary>
+    /// Write an encodable as a JSON string, indented by the given number of spaces. Pass <c>0</c>
+    /// for a single line.
+    /// </summary>
     let toString (space: int) (value: IEncodable) : string =
         let format =
             if space = 0 then

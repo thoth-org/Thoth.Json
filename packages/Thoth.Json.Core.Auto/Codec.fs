@@ -5,7 +5,13 @@ open Thoth.Json.Core
 [<RequireQualifiedAccess>]
 module Codec =
 
+    /// <summary>
+    /// Codecs generated from F# types.
+    /// </summary>
     type Auto private () =
+        /// <summary>
+        /// The codec for <c>'t</c>, generated from the type.
+        /// </summary>
         static member inline generateCodec
             (
                 ?caseStrategy: CaseStrategy,
