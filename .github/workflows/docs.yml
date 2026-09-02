@@ -4,14 +4,14 @@ on:
   pull_request:
     paths:
       - 'docs/**'
-      - 'packages/*/CHANGELOG.md'
+      - 'packages/**'
       - '.github/workflows/docs.yml'
   push:
     branches:
       - main
     paths:
       - 'docs/**'
-      - 'packages/*/CHANGELOG.md'
+      - 'packages/**'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
     inputs:
