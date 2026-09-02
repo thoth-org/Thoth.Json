@@ -19,6 +19,9 @@
     <loc>https://thoth-org.github.io/Thoth.Json/changelogs/thoth-json/</loc>
   </url>
   <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/documentation/advanced/custom-runtime/</loc>
+  </url>
+  <url>
     <loc>https://thoth-org.github.io/Thoth.Json/documentation/advanced/introduction/</loc>
   </url>
   <url>
@@ -26,6 +29,12 @@
   </url>
   <url>
     <loc>https://thoth-org.github.io/Thoth.Json/documentation/auto/caching/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/documentation/auto/codecs/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/documentation/auto/configuration/</loc>
   </url>
   <url>
     <loc>https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders/</loc>
@@ -37,16 +46,31 @@
     <loc>https://thoth-org.github.io/Thoth.Json/documentation/auto/json-representation/</loc>
   </url>
   <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/documentation/codec/introduction/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/documentation/codec/objects/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/documentation/codec/recursion/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/documentation/codec/unions/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/documentation/concept/codec/</loc>
+  </url>
+  <url>
     <loc>https://thoth-org.github.io/Thoth.Json/documentation/concept/decoder/</loc>
   </url>
   <url>
     <loc>https://thoth-org.github.io/Thoth.Json/documentation/concept/encoder/</loc>
   </url>
   <url>
-    <loc>https://thoth-org.github.io/Thoth.Json/documentation/concept/fable-and-dotnet-support/</loc>
+    <loc>https://thoth-org.github.io/Thoth.Json/documentation/installation/</loc>
   </url>
   <url>
-    <loc>https://thoth-org.github.io/Thoth.Json/documentation/concept/introduction/</loc>
+    <loc>https://thoth-org.github.io/Thoth.Json/documentation/introduction/</loc>
   </url>
   <url>
     <loc>https://thoth-org.github.io/Thoth.Json/documentation/manual/composition/</loc>
@@ -62,5 +86,224 @@
   </url>
   <url>
     <loc>https://thoth-org.github.io/Thoth.Json/documentation/manual/override-defaults/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/boxeddecoder/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/boxedencoder/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/cache/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/casestrategy/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/casing/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/codec/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/codec/auto/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/decode/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/decode/auto/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/encode/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/encode/auto/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/extra/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/extracoders/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core-auto/thoth-json-core-auto/typekey/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/codec/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/codec/enum/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/decode/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/decode/advanced/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/decode/enum/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/decode/getters/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/decode/helpers/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/decode/igetters/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/decode/ioptionalgetter/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/decode/irequiredgetter/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/decoder/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/decoderce/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/decoderce/decoderbuilder/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/decodererror/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/encode/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/encode/enum/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/encoder/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/errorreason/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/idecoderhelpers/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/iencodable/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/iencoderhelpers/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/json/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/objectcodeccomputationexpression/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/objectcodeccomputationexpression/codec/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/objectcodeccomputationexpression/objectcodecbuilder/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/objectcodeccomputationexpression/objectcodecfieldset/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/variantcodecbuilder/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/variantcodecbuilder/codec/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/variantcodecbuilder/variantcase/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/variantcodecbuilder/variantcodecbuilder/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-core/thoth-json-core/variantcodecbuilder/variantencoding/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-javascript/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-javascript/thoth-json-javascript/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-javascript/thoth-json-javascript/decode/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-javascript/thoth-json-javascript/decode/interop/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-javascript/thoth-json-javascript/encode/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-newtonsoft/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-newtonsoft/thoth-json-newtonsoft/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-newtonsoft/thoth-json-newtonsoft/decode/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-newtonsoft/thoth-json-newtonsoft/encode/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-python/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-python/global/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-python/global/python/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-python/global/python/json/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-python/global/python/json/jsondecodeerror/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-python/thoth-json-python/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-python/thoth-json-python/decode/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-python/thoth-json-python/encode/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-python/thoth-json-python/interop/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-python/thoth-json-python/interop/iexports/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-system-text-json/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-system-text-json/thoth-json-system-text-json/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-system-text-json/thoth-json-system-text-json/decode/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-system-text-json/thoth-json-system-text-json/encode/</loc>
   </url>
 </urlset>
