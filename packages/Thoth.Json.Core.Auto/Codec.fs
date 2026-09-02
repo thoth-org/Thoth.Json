@@ -10,7 +10,8 @@ module Codec =
             (
                 ?caseStrategy: CaseStrategy,
                 ?extra: ExtraCoders,
-                ?skipNullField: bool
+                ?skipNullField: bool,
+                ?losslessOption: bool
             )
             : Codec<'t>
             =
@@ -18,9 +19,11 @@ module Codec =
                 (Encode.Auto.generateEncoder (
                     ?caseStrategy = caseStrategy,
                     ?extra = extra,
-                    ?skipNullField = skipNullField
+                    ?skipNullField = skipNullField,
+                    ?losslessOption = losslessOption
                 ))
                 (Decode.Auto.generateDecoder (
                     ?caseStrategy = caseStrategy,
-                    ?extra = extra
+                    ?extra = extra,
+                    ?losslessOption = losslessOption
                 ))
