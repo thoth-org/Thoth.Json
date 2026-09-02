@@ -16,9 +16,9 @@
       },
       "Nacara.Core": {
         "type": "Direct",
-        "requested": "[2.0.0-beta.2, )",
-        "resolved": "2.0.0-beta.2",
-        "contentHash": "tETssKWWzhMWzSBg06RgG1477TKVksqqWzPhbHXh+NtkAMuphvidf9Cr5AxjOzMRmGzLH2jQ/JTCVpat57J1Fw==",
+        "requested": "[2.0.0-beta.3, )",
+        "resolved": "2.0.0-beta.3",
+        "contentHash": "MUmdy1mImapF82blk9Tk23cmJd8bHmOS7iXVZDNnUInMxFGyRzKRBQ6wS/2QnKEjRQQFiJZqRr5KWCkDJ7f21w==",
         "dependencies": {
           "FSharp.Core": "10.1.300",
           "Feliz.ViewEngine": "1.0.3",
@@ -101,12 +101,12 @@
       },
       "Nacara.Plugin.LiveExample": {
         "type": "Direct",
-        "requested": "[1.0.0-beta.1, )",
-        "resolved": "1.0.0-beta.1",
-        "contentHash": "VW8QjbbnOK5KV+QBiF4GTJQoTykLM1ah/lWnTrr9rVKyW+uZjVekdYZHONJKKIGCQqG1yqIF0syeR0YiCUw4Kg==",
+        "requested": "[1.0.0-beta.2, )",
+        "resolved": "1.0.0-beta.2",
+        "contentHash": "ea823eke/ZSA2LOY0yjFsVr8NjcrEL0/tVRU6ON1x9+r65eD4Lwkc6SJlwEYUgkiiWbkI7r2MrL0XL0H1YKFEA==",
         "dependencies": {
           "FSharp.Core": "10.1.300",
-          "Nacara.Core": "2.0.0-beta.1",
+          "Nacara.Core": "2.0.0-beta.3",
           "Nacara.Plugin.Highlight.TreeSitter": "1.0.0-beta.1",
           "Thoth.Json.Core": "0.9.1",
           "Thoth.Json.System.Text.Json": "0.4.0"
@@ -157,12 +157,12 @@
       },
       "Nacara.Theme.Default": {
         "type": "Direct",
-        "requested": "[1.0.0-beta.2, )",
-        "resolved": "1.0.0-beta.2",
-        "contentHash": "gWe8m+oUZlqfD5f0Y6EjecobgDUstutq6o2dOoFWR3Iq20qkE1zCnpUAS6TabFaTf+9jc6IwFE4c1F+CUFAM6Q==",
+        "requested": "[1.0.0-beta.3, )",
+        "resolved": "1.0.0-beta.3",
+        "contentHash": "sT5HaXCw2503JlMr7W9tEQ6pHkOjJMpTzQ+Sr1RQEGB056Xl0udptZGNPGh43B7+tt5rFsForhiYV08AkGQBiQ==",
         "dependencies": {
           "FSharp.Core": "10.1.300",
-          "Nacara.Core": "2.0.0-beta.1"
+          "Nacara.Core": "2.0.0-beta.2"
         }
       },
       "Fable.Core": {
