@@ -1,11 +1,39 @@
 module Docs.Site
 
+open System.IO
+open System.Reflection
 open Feliz.ViewEngine
 open Nacara.Core
 open Nacara.Plugins
 open Nacara.Theme
 
 let baseUrl = "/Thoth.Json/"
+
+/// The public API of the Thoth.Json packages, read from the assemblies this site is built with.
+let apiOptions =
+    { FSharpApi.defaults with
+        Root = "reference"
+        Title = "API reference"
+        Sources =
+            [
+                let beside =
+                    Assembly.GetExecutingAssembly().Location
+                    |> Path.GetDirectoryName
+
+                for name in
+                    [
+                        "Thoth.Json.Core"
+                        "Thoth.Json.Core.Auto"
+                        "Thoth.Json.JavaScript"
+                        "Thoth.Json.Newtonsoft"
+                        "Thoth.Json.Python"
+                        "Thoth.Json.System.Text.Json"
+                    ] ->
+                    FSharpApiSource.create (
+                        Path.Combine(beside, $"%s{name}.dll")
+                    )
+            ]
+    }
 
 let versions =
     [
@@ -153,9 +181,10 @@ let theme =
             NavbarSection(
                 "Docs",
                 "documentation",
-                "documentation/concept/introduction/"
+                "/documentation/introduction/"
             )
-            NavbarSection("Changelogs", "changelogs", "changelogs/thoth-json/")
+            NavbarSection("Reference", "reference", "/reference/")
+            NavbarSection("Changelogs", "changelogs", "/changelogs/thoth-json/")
             NavbarLink("Support", "https://gitter.im/fable-compiler/Fable")
             NavbarLink("Donate", "https://www.patreon.com/MangelMaxime")
         ]
@@ -175,40 +204,60 @@ let theme =
         "documentation"
         [
             Menu.section
+                "Getting started"
+                [
+                    Menu.page "documentation/introduction.md"
+                    Menu.page "documentation/installation.md"
+                ]
+            Menu.section
                 "Concept"
                 [
-                    Menu.page "documentation/concept/introduction.md"
-                    Menu.page "documentation/concept/decoder.fsx"
-                    Menu.page "documentation/concept/encoder.fsx"
-                    Menu.page
-                        "documentation/concept/fable-and-dotnet-support.md"
+                    Menu.page "documentation/concept/decoder.md"
+                    Menu.page "documentation/concept/encoder.md"
+                    Menu.page "documentation/concept/codec.md"
                 ]
             Menu.section
                 "Manual API"
                 [
-                    Menu.page "documentation/manual/introduction.fsx"
-                    Menu.page "documentation/manual/convention.fsx"
-                    Menu.page "documentation/manual/composition.fsx"
-                    Menu.page "documentation/manual/override-defaults.fsx"
-                    Menu.page "documentation/manual/json-representation.fsx"
+                    Menu.page "documentation/manual/introduction.md"
+                    Menu.page "documentation/manual/composition.md"
+                    Menu.page "documentation/manual/convention.md"
+                    Menu.page "documentation/manual/override-defaults.md"
+                    Menu.page "documentation/manual/json-representation.md"
+                ]
+            Menu.section
+                "Codec API"
+                [
+                    Menu.page "documentation/codec/introduction.md"
+                    Menu.page "documentation/codec/objects.md"
+                    Menu.page "documentation/codec/unions.md"
+                    Menu.page "documentation/codec/recursion.md"
                 ]
             Menu.section
                 "Auto API"
                 [
-                    Menu.page "documentation/auto/introduction.fsx"
-                    Menu.page "documentation/auto/extra-coders.fsx"
-                    Menu.page "documentation/auto/caching.fsx"
-                    Menu.page "documentation/auto/json-representation.fsx"
+                    Menu.page "documentation/auto/introduction.md"
+                    Menu.page "documentation/auto/configuration.md"
+                    Menu.page "documentation/auto/codecs.md"
+                    Menu.page "documentation/auto/extra-coders.md"
+                    Menu.page "documentation/auto/caching.md"
+                    Menu.page "documentation/auto/json-representation.md"
                 ]
             Menu.section
                 "Advanced"
                 [
                     Menu.page "documentation/advanced/introduction.md"
-                    Menu.page "documentation/advanced/unknown-fields.fsx"
+                    Menu.page "documentation/advanced/unknown-fields.md"
+                    Menu.page "documentation/advanced/custom-runtime.md"
                 ]
         ]
     |> Theme.editUrl "https://github.com/thoth-org/Thoth.Json/edit/main/docs"
     |> Theme.footer footer
+
+let reference =
+    FSharpApi.collection "reference" DocFrontMatter.decoder apiOptions
+    |> Collection.title _.Title
+    |> Collection.layout (Theme.layout theme)
 
 let changelog =
     Changelog.collection "changelogs" DocFrontMatter.decoder changelogs
@@ -225,8 +274,17 @@ let site =
     |> Site.stylesheet "assets/custom.css"
     |> Markdown.register
     |> TreeSitter.register
-    |> Literate.register
     |> Changelog.registerWith "changelogs" changelogs
+    |> FSharpApi.register apiOptions
+    |> LiveExample.registerWith (
+        LiveExample.preset (
+            LiveExamplePreset.create "thoth"
+            |> LiveExamplePreset.project "snippets/Snippets.fsproj"
+            |> LiveExamplePreset.asDefault
+        )
+        >> LiveExample.highlighting
+            LiveExampleHighlighting.TreeSitterHighlighting
+    )
     |> Search.register
     |> Sitemap.register
     |> Versions.register versions
@@ -240,6 +298,7 @@ let site =
     |> GitHubPages.register
     |> Theme.register theme
     |> Site.collection (Theme.docs theme "content")
+    |> Site.collection reference
     |> Site.collection changelog
 
 [<EntryPoint>]
