@@ -10,6 +10,7 @@ module VariantCodecBuilder =
         internal
         | TagAndValue of tagName: string * valueName: string
         | OnTag
+        | Tuple
 
     /// <summary>
     /// The cases declared so far by a <c>variantCodec</c> block.
@@ -46,9 +47,9 @@ module VariantCodecBuilder =
             (x: VariantCase<'t, 'v>)
             : Codec<'v>
             =
-            let decodeForTag tag fieldName : Decoder<_> =
+            let decodeForTag tag : Decoder<_> =
                 match Map.tryFind tag x.Decoders with
-                | Some decoder -> Decode.field fieldName decoder
+                | Some decoder -> decoder
                 | None -> Decode.fail $"The tag \"{tag}\" was not recognized"
 
             Codec.create
@@ -56,7 +57,9 @@ module VariantCodecBuilder =
                 (match variantEncoding with
                  | TagAndValue(tagName, valueName) ->
                      Decode.field tagName Decode.string
-                     |> Decode.andThen (fun tag -> decodeForTag tag valueName)
+                     |> Decode.andThen (fun tag ->
+                         Decode.field valueName (decodeForTag tag)
+                     )
                  | OnTag ->
                      Decode.keys
                      |> Decode.andThen (fun keys ->
@@ -67,7 +70,7 @@ module VariantCodecBuilder =
                              )
 
                          match Seq.tryExactlyOne recognizedKeys with
-                         | Some tag -> decodeForTag tag tag
+                         | Some tag -> Decode.field tag (decodeForTag tag)
                          | None ->
                              let found =
                                  recognizedKeys
@@ -76,6 +79,11 @@ module VariantCodecBuilder =
 
                              Decode.fail
                                  $"Expected exactly one object key but found: {found}"
+                     )
+                 | Tuple ->
+                     Decode.index 0 Decode.string
+                     |> Decode.andThen (fun tag ->
+                         Decode.index 1 (decodeForTag tag)
                      ))
 
     /// <summary>
@@ -106,7 +114,31 @@ module VariantCodecBuilder =
     /// </code>
     /// </example>
     let variantCodecWithTag tagName valueName =
+        if tagName = valueName then
+            invalidArg
+                (nameof valueName)
+                "value name must be distinct from tag name"
+
         VariantCodecBuilder(VariantEncoding.TagAndValue(tagName, valueName))
+
+    /// <summary>
+    /// Build a codec for a union, writing the tag and the value into a 2 element array.
+    /// </summary>
+    /// <example>
+    /// <code lang="fsharp">
+    /// // [ "square", 4 ]
+    /// let codec : Codec&lt;Shape&gt; =
+    ///     variantCodecTuple "type" "value" {
+    ///         let! square = Codec.case "square" Square Codec.int
+    ///         and! circle = Codec.case "circle" Circle Codec.int
+    ///
+    ///         return function
+    ///             | Square width -> square width
+    ///             | Circle radius -> circle radius
+    ///     }
+    /// </code>
+    /// </example>
+    let variantCodecTuple = VariantCodecBuilder(VariantEncoding.Tuple)
 
     /// <summary>
     /// Build a codec for a union, writing an object with a single property named after the case.
@@ -155,6 +187,11 @@ module VariantCodecBuilder =
                                     tagName, Encode.string tag
                                     valueName, caseCodec.Encoder t
                                 ]
+                        | Tuple ->
+                            Encode.tuple2
+                                Encode.string
+                                caseCodec.Encoder
+                                (tag, t)
                 Decoders =
                     Map.ofSeq
                         [ tag, caseCodec.Decoder |> Decode.map caseConstructor ]

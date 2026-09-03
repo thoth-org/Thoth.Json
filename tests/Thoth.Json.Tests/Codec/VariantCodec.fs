@@ -36,8 +36,27 @@ module Shape =
                 | Circle w -> circle w
         }
 
-    let codec': Codec<Shape> =
+    let codecWithTag: Codec<Shape> =
         variantCodecWithTag "type" "value" {
+            let! square = Codec.case "square" Square Codec.int
+
+            and! rectangle =
+                Codec.case
+                    "rectangle"
+                    Rectangle
+                    (Codec.tuple2 Codec.int Codec.int)
+
+            and! circle = Codec.case "circle" Circle Codec.int
+
+            return
+                function
+                | Square w -> square w
+                | Rectangle(w, h) -> rectangle (w, h)
+                | Circle w -> circle w
+        }
+
+    let codecTuple: Codec<Shape> =
+        variantCodecTuple {
             let! square = Codec.case "square" Square Codec.int
 
             and! rectangle =
@@ -59,7 +78,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
     testList
         "VariantCodec"
         [
-            test "variantCodec works for simple case 1" {
+            test "variantCodec works for simple case" {
                 let expected = Square 4
 
                 let actual = roundTrip runner Shape.codec expected
@@ -79,22 +98,42 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                 equal actual expected
             }
 
-            test "variantCodec works for simple case 2" {
+            test "variantCodecWithTag works for simple case" {
                 let expected = Square 4
 
-                let actual = roundTrip runner Shape.codec' expected
+                let actual = roundTrip runner Shape.codecWithTag expected
 
                 equal actual expected
 
                 let expected = Rectangle(7, 2)
 
-                let actual = roundTrip runner Shape.codec' expected
+                let actual = roundTrip runner Shape.codecWithTag expected
 
                 equal actual expected
 
                 let expected = Circle 3
 
-                let actual = roundTrip runner Shape.codec' expected
+                let actual = roundTrip runner Shape.codecWithTag expected
+
+                equal actual expected
+            }
+
+            test "variantCodecTuple works for simple case" {
+                let expected = Square 99
+
+                let actual = roundTrip runner Shape.codecTuple expected
+
+                equal actual expected
+
+                let expected = Rectangle(3, 4)
+
+                let actual = roundTrip runner Shape.codecTuple expected
+
+                equal actual expected
+
+                let expected = Circle 8
+
+                let actual = roundTrip runner Shape.codecTuple expected
 
                 equal actual expected
             }

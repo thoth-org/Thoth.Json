@@ -47,7 +47,7 @@ Decode.fromString Shape.codec json |> Docs.print
 A case with several fields takes a `Codec.tuple2` to `Codec.tuple8`, in the order the fields are
 declared.
 
-## The two representations
+## The representations
 
 ### One property per case
 
@@ -60,6 +60,8 @@ declared.
 ```
 
 Decoding fails unless the object carries exactly one recognised tag.
+
+This is sometimes called "Adjacent tag" encoding.
 
 ### A tag and a value property
 
@@ -98,6 +100,40 @@ printfn "%s" json
 
 Decode.fromString Shape.codec json |> Docs.print
 ```
+
+This is sometimes called "External tag" encoding.
+
+### A tuple of tag and data
+
+`variantCodecTuple` writes a two element array where the first element is the union case tag and the second is the case data.
+
+```json
+[ "square", 4 ]
+
+[ "rectangle", [ 7, 2 ] ]
+```
+
+This encoding was used in earlier versions of Thoth.
+
+### Intentionally omitted
+
+The "Internally tagged" encoding places payload data into the same object as the type data.
+
+```json
+{ "type": "rectangle", "width": 7, "length": 2 }
+```
+
+The "Untagged" encoding has no type data at all:
+
+```json
+4
+
+[ 7, 2 ]
+```
+
+*(The prior square and rectangle examples)*
+
+Both of these encodings risk mixing union case data with type information so are intentionally omitted.
 
 ## Cases without fields
 
