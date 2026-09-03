@@ -137,4 +137,17 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 
                 equal actual expected
             }
+
+            test "variantCodecTuple produces correct JSON for a simple case" {
+                let shape = Rectangle(3, 4)
+
+                let actual =
+                    shape
+                    |> Encode.codec Shape.codecTuple
+                    |> runner.Encode.toString 0
+
+                let expected = """["rectangle",[3,4]]"""
+
+                equal actual expected
+            }
         ]
