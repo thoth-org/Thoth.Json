@@ -123,6 +123,8 @@ The "Internally tagged" encoding places payload data into the same object as the
 { "type": "rectangle", "width": 7, "length": 2 }
 ```
 
+This encoding risk mixing union case data with type information.
+
 The "Untagged" encoding has no type data at all:
 
 ```json
@@ -133,7 +135,7 @@ The "Untagged" encoding has no type data at all:
 
 *(The prior square and rectangle examples)*
 
-Both of these encodings risk mixing union case data with type information so are intentionally omitted.
+This encoding risks producing JSON that is ambiguous between cases.
 
 ## Cases without fields
 
