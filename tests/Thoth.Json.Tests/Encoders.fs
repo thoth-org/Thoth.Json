@@ -319,7 +319,7 @@ let tests (runner: TestRunner<_, _>) =
 #endif
 
 #if FABLE_COMPILER_PYTHON
-                        let expected = "\"2018-10-01T11:12:55.000000Z\""
+                        let expected = "\"2018-10-01T11:12:55.0000000Z\""
 #endif
 
 #if !FABLE_COMPILER
@@ -606,7 +606,7 @@ let tests (runner: TestRunner<_, _>) =
 
 #if FABLE_COMPILER_PYTHON
                         let expected =
-                            """[1,"maxime",2.5,{"fieldA":"test"},"2018-10-01T11:12:55.000000Z"]"""
+                            """[1,"maxime",2.5,{"fieldA":"test"},"2018-10-01T11:12:55.0000000Z"]"""
 #endif
 
 #if !FABLE_COMPILER
