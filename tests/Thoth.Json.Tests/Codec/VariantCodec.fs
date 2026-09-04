@@ -150,4 +150,49 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 
                 equal actual expected
             }
+
+            test
+                "variantCodecWithTag reports an unrecognised tag, not a missing value" {
+                let expected =
+                    Error(
+                        "Error at: `$`\nThe following `failure` occurred with the decoder: The tag \"triangle\" was not recognized"
+                    )
+
+                // The value is absent, so the tag has to be reported before the decoder reaches for it.
+                let actual =
+                    runner.Decode.fromString
+                        (Decode.codec Shape.codecWithTag)
+                        """{"type":"triangle"}"""
+
+                equal actual expected
+
+                let actual =
+                    runner.Decode.fromString
+                        (Decode.codec Shape.codecWithTag)
+                        """{"type":"triangle","value":1}"""
+
+                equal actual expected
+            }
+
+            test
+                "variantCodecTuple reports an unrecognised tag, not a missing element" {
+                let expected =
+                    Error(
+                        "Error at: `$`\nThe following `failure` occurred with the decoder: The tag \"triangle\" was not recognized"
+                    )
+
+                let actual =
+                    runner.Decode.fromString
+                        (Decode.codec Shape.codecTuple)
+                        """["triangle"]"""
+
+                equal actual expected
+
+                let actual =
+                    runner.Decode.fromString
+                        (Decode.codec Shape.codecTuple)
+                        """["triangle",1]"""
+
+                equal actual expected
+            }
         ]

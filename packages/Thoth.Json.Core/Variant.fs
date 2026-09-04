@@ -47,10 +47,17 @@ module VariantCodecBuilder =
             (x: VariantCase<'t, 'v>)
             : Codec<'v>
             =
-            let decodeForTag tag : Decoder<_> =
+            // The value is read through `descend`, which differs per encoding. The tag is
+            // checked first so an unrecognised one is reported as such rather than as a
+            // missing field.
+            let decodeForTag
+                tag
+                (descend: Decoder<'v> -> Decoder<'v>)
+                : Decoder<_>
+                =
                 match Map.tryFind tag x.Decoders with
-                | Some decoder -> decoder
-                | None -> Decode.fail $"The tag \"{tag}\" was not recognized"
+                | Some decoder -> descend decoder
+                | None -> Decode.fail $"The tag \"%s{tag}\" was not recognized"
 
             Codec.create
                 (fun (v: 'v) -> f x.Value v variantEncoding)
@@ -58,7 +65,7 @@ module VariantCodecBuilder =
                  | TagAndValue(tagName, valueName) ->
                      Decode.field tagName Decode.string
                      |> Decode.andThen (fun tag ->
-                         Decode.field valueName (decodeForTag tag)
+                         decodeForTag tag (Decode.field valueName)
                      )
                  | OnTag ->
                      Decode.keys
@@ -70,7 +77,7 @@ module VariantCodecBuilder =
                              )
 
                          match Seq.tryExactlyOne recognizedKeys with
-                         | Some tag -> Decode.field tag (decodeForTag tag)
+                         | Some tag -> decodeForTag tag (Decode.field tag)
                          | None ->
                              let found =
                                  recognizedKeys
@@ -83,7 +90,7 @@ module VariantCodecBuilder =
                  | Tuple ->
                      Decode.index 0 Decode.string
                      |> Decode.andThen (fun tag ->
-                         Decode.index 1 (decodeForTag tag)
+                         decodeForTag tag (Decode.index 1)
                      ))
 
     /// <summary>
