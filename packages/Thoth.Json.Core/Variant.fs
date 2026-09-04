@@ -135,7 +135,7 @@ module VariantCodecBuilder =
     /// <code lang="fsharp">
     /// // [ "square", 4 ]
     /// let codec : Codec&lt;Shape&gt; =
-    ///     variantCodecTuple "type" "value" {
+    ///     variantCodecTuple {
     ///         let! square = Codec.case "square" Square Codec.int
     ///         and! circle = Codec.case "circle" Circle Codec.int
     ///

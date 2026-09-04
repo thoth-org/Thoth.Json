@@ -61,7 +61,7 @@ declared.
 
 Decoding fails unless the object carries exactly one recognised tag.
 
-This is sometimes called "Adjacent tag" encoding.
+This is sometimes called "External tag" encoding.
 
 ### A tag and a value property
 
@@ -101,7 +101,7 @@ printfn "%s" json
 Decode.fromString Shape.codec json |> Docs.print
 ```
 
-This is sometimes called "External tag" encoding.
+This is sometimes called "Adjacent tag" encoding.
 
 ### A tuple of tag and data
 
@@ -113,19 +113,21 @@ This is sometimes called "External tag" encoding.
 [ "rectangle", [ 7, 2 ] ]
 ```
 
-This encoding was used in earlier versions of Thoth.
+This is sometimes called "Internal tag" encoding. It is what earlier versions of Thoth wrote.
 
 ### Intentionally omitted
 
-The "Internally tagged" encoding places payload data into the same object as the type data.
+Two shapes are left out.
+
+The first puts the case fields beside the tag in one object:
 
 ```json
-{ "type": "rectangle", "width": 7, "length": 2 }
+{ "type": "rectangle", "width": 7, "height": 2 }
 ```
 
-This encoding risk mixing union case data with type information.
+A field of the case can then collide with the tag.
 
-The "Untagged" encoding has no type data at all:
+The second carries no tag at all:
 
 ```json
 4
@@ -133,9 +135,7 @@ The "Untagged" encoding has no type data at all:
 [ 7, 2 ]
 ```
 
-*(The prior square and rectangle examples)*
-
-This encoding risks producing JSON that is ambiguous between cases.
+Nothing says which case the value belongs to, so two cases of the same shape cannot be told apart.
 
 ## Cases without fields
 
