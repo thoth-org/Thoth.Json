@@ -412,6 +412,12 @@ module Decode =
             member _.Decode(helpers, value) =
                 if helpers.isNumber value then
                     Ok(helpers.asFloat value)
+                elif helpers.isString value then
+                    match helpers.asString value with
+                    | "NaN" -> Ok System.Double.NaN
+                    | "Infinity" -> Ok System.Double.PositiveInfinity
+                    | "-Infinity" -> Ok System.Double.NegativeInfinity
+                    | _ -> ("", BadPrimitive("a float", value)) |> Error
                 else
                     ("", BadPrimitive("a float", value)) |> Error
         }
@@ -423,6 +429,12 @@ module Decode =
             member _.Decode(helpers, value) =
                 if helpers.isNumber value then
                     Ok(helpers.asFloat32 value)
+                elif helpers.isString value then
+                    match helpers.asString value with
+                    | "NaN" -> Ok System.Single.NaN
+                    | "Infinity" -> Ok System.Single.PositiveInfinity
+                    | "-Infinity" -> Ok System.Single.NegativeInfinity
+                    | _ -> ("", BadPrimitive("a float32", value)) |> Error
                 else
                     ("", BadPrimitive("a float32", value)) |> Error
         }

@@ -86,6 +86,66 @@ let tests (runner: TestRunner<_, _>) =
 
                 equal (Ok expected) decoded
 
+            testCase "float keeps nan and infinity symmetric"
+            <| fun _ ->
+                // JSON has no number for these, so they travel as named strings.
+                let cases =
+                    [
+                        System.Double.PositiveInfinity
+                        System.Double.NegativeInfinity
+                        0.0
+                        -0.0
+                        1.5
+                        System.Double.Epsilon
+                        System.Double.MaxValue
+                        System.Double.MinValue
+                    ]
+
+                for expected in cases do
+                    let json =
+                        expected |> Encode.float |> runner.Encode.toString 0
+
+                    let decoded = runner.Decode.fromString Decode.float json
+
+                    equal (Ok expected) decoded
+
+                // nan is never equal to itself, so it is checked apart.
+                let json =
+                    System.Double.NaN
+                    |> Encode.float
+                    |> runner.Encode.toString 0
+
+                match runner.Decode.fromString Decode.float json with
+                | Ok value -> equal true (System.Double.IsNaN value)
+                | Error error -> failwith error
+
+            testCase "float32 keeps nan and infinity symmetric"
+            <| fun _ ->
+                let cases =
+                    [
+                        System.Single.PositiveInfinity
+                        System.Single.NegativeInfinity
+                        0.0f
+                        1.5f
+                    ]
+
+                for expected in cases do
+                    let json =
+                        expected |> Encode.float32 |> runner.Encode.toString 0
+
+                    let decoded = runner.Decode.fromString Decode.float32 json
+
+                    equal (Ok expected) decoded
+
+                let json =
+                    System.Single.NaN
+                    |> Encode.float32
+                    |> runner.Encode.toString 0
+
+                match runner.Decode.fromString Decode.float32 json with
+                | Ok value -> equal true (System.Single.IsNaN value)
+                | Error error -> failwith error
+
             testCase "int64 is symmetric"
             <| fun _ ->
                 let cases =
