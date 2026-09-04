@@ -10,11 +10,12 @@ import { Uri } from "fable-library-js/Uri.js";
 import { tryParse as tryParse_3 } from "fable-library-js/Int32.js";
 import { tryParse as tryParse_4 } from "fable-library-js/Long.js";
 import { tryParse as tryParse_5, fromInt32 } from "fable-library-js/BigInt.js";
-import { tryParse as tryParse_6 } from "fable-library-js/Decimal.js";
+import { tryParse as tryParse_6 } from "fable-library-js/Double.js";
+import { tryParse as tryParse_7 } from "fable-library-js/Decimal.js";
 import Decimal from "fable-library-js/Decimal.js";
-import { toUniversalTime, tryParse as tryParse_7, minValue } from "fable-library-js/Date.js";
-import { tryParse as tryParse_8, minValue as minValue_1 } from "fable-library-js/DateOffset.js";
-import { tryParse as tryParse_9 } from "fable-library-js/TimeSpan.js";
+import { toUniversalTime, tryParse as tryParse_8, minValue } from "fable-library-js/Date.js";
+import { tryParse as tryParse_9, minValue as minValue_1 } from "fable-library-js/DateOffset.js";
+import { tryParse as tryParse_10 } from "fable-library-js/TimeSpan.js";
 import { value as value_7, defaultArg, some } from "fable-library-js/Option.js";
 import { fill, setItem, fold as fold_1, item } from "fable-library-js/Array.js";
 import { toArray, toList, append as append_1, reverse } from "fable-library-js/Seq.js";
@@ -351,11 +352,42 @@ export const bool = {
 export const float = {
     Decode(helpers, value_1) {
         if (helpers.isNumber(value_1)) {
-            return new FSharpResult$2(/* Ok */ 0, [helpers.asFloat(value_1)]);
+            const rawString = helpers.anyToString(value_1);
+            switch (rawString) {
+                case "NaN":
+                    return new FSharpResult$2(/* Ok */ 0, [NaN]);
+                case "Infinity":
+                    return new FSharpResult$2(/* Ok */ 0, [Infinity]);
+                case "-Infinity":
+                    return new FSharpResult$2(/* Ok */ 0, [-Infinity]);
+                default: {
+                    let matchValue;
+                    let outArg = 0;
+                    matchValue = [tryParse_6(rawString, new FSharpRef(() => outArg, (v) => {
+                        outArg = v;
+                    })), outArg];
+                    return matchValue[0] ? (new FSharpResult$2(/* Ok */ 0, [matchValue[1]])) : (new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a float", value_1])]]));
+                }
+            }
         }
         else if (helpers.isString(value_1)) {
-            const matchValue = helpers.asString(value_1);
-            return (matchValue === "NaN") ? (new FSharpResult$2(/* Ok */ 0, [NaN])) : ((matchValue === "Infinity") ? (new FSharpResult$2(/* Ok */ 0, [Infinity])) : ((matchValue === "-Infinity") ? (new FSharpResult$2(/* Ok */ 0, [-Infinity])) : (new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a float", value_1])]]))));
+            const rawString_1 = helpers.asString(value_1);
+            switch (rawString_1) {
+                case "NaN":
+                    return new FSharpResult$2(/* Ok */ 0, [NaN]);
+                case "Infinity":
+                    return new FSharpResult$2(/* Ok */ 0, [Infinity]);
+                case "-Infinity":
+                    return new FSharpResult$2(/* Ok */ 0, [-Infinity]);
+                default: {
+                    let matchValue_1;
+                    let outArg_1 = 0;
+                    matchValue_1 = [tryParse_6(rawString_1, new FSharpRef(() => outArg_1, (v_1) => {
+                        outArg_1 = v_1;
+                    })), outArg_1];
+                    return matchValue_1[0] ? (new FSharpResult$2(/* Ok */ 0, [matchValue_1[1]])) : (new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a float", value_1])]]));
+                }
+            }
         }
         else {
             return new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a float", value_1])]]);
@@ -386,7 +418,7 @@ export const decimal = {
         else if (helpers.isString(value_1)) {
             let matchValue;
             let outArg = new Decimal("0");
-            matchValue = [tryParse_6(helpers.asString(value_1), new FSharpRef(() => outArg, (v) => {
+            matchValue = [tryParse_7(helpers.asString(value_1), new FSharpRef(() => outArg, (v) => {
                 outArg = v;
             })), outArg];
             return matchValue[0] ? (new FSharpResult$2(/* Ok */ 0, [matchValue[1]])) : (new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a decimal", value_1])]]));
@@ -402,7 +434,7 @@ export const datetimeUtc = {
         if (helpers.isString(value_1)) {
             let matchValue;
             let outArg = minValue();
-            matchValue = [tryParse_7(helpers.asString(value_1), new FSharpRef(() => outArg, (v) => {
+            matchValue = [tryParse_8(helpers.asString(value_1), new FSharpRef(() => outArg, (v) => {
                 outArg = v;
             })), outArg];
             return matchValue[0] ? (new FSharpResult$2(/* Ok */ 0, [toUniversalTime(matchValue[1])])) : (new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a datetime", value_1])]]));
@@ -418,7 +450,7 @@ export const datetimeLocal = {
         if (helpers.isString(value_1)) {
             let matchValue;
             let outArg = minValue();
-            matchValue = [tryParse_7(helpers.asString(value_1), new FSharpRef(() => outArg, (v) => {
+            matchValue = [tryParse_8(helpers.asString(value_1), new FSharpRef(() => outArg, (v) => {
                 outArg = v;
             })), outArg];
             return matchValue[0] ? (new FSharpResult$2(/* Ok */ 0, [matchValue[1]])) : (new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a datetime", value_1])]]));
@@ -434,7 +466,7 @@ export const datetimeOffset = {
         if (helpers.isString(value_1)) {
             let matchValue;
             let outArg = minValue_1();
-            matchValue = [tryParse_8(helpers.asString(value_1), new FSharpRef(() => outArg, (v) => {
+            matchValue = [tryParse_9(helpers.asString(value_1), new FSharpRef(() => outArg, (v) => {
                 outArg = v;
             })), outArg];
             return matchValue[0] ? (new FSharpResult$2(/* Ok */ 0, [matchValue[1]])) : (new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a datetimeoffset", value_1])]]));
@@ -450,7 +482,7 @@ export const timespan = {
         if (helpers.isString(value_1)) {
             let matchValue;
             let outArg = 0;
-            matchValue = [tryParse_9(helpers.asString(value_1), new FSharpRef(() => outArg, (v) => {
+            matchValue = [tryParse_10(helpers.asString(value_1), new FSharpRef(() => outArg, (v) => {
                 outArg = v;
             })), outArg];
             return matchValue[0] ? (new FSharpResult$2(/* Ok */ 0, [matchValue[1]])) : (new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a timespan", value_1])]]));
@@ -1531,7 +1563,7 @@ class FixDecoder$1 {
         const this$ = new FSharpRef(defaultOf());
         this$.contents = this;
         this.self = make(this$.contents);
-        this["init@1655"] = 1;
+        this["init@1673"] = 1;
     }
     Decode(helpers, value_1) {
         const this$ = this;
