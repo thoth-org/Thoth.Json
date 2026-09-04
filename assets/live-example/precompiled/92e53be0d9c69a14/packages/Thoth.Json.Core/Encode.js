@@ -1,4 +1,5 @@
 
+import { isNegativeInfinity, isPositiveInfinity } from "fable-library-js/Double.js";
 import { map as map_1 } from "fable-library-js/List.js";
 import { map as map_2 } from "fable-library-js/Seq.js";
 import { disposeSafe, getEnumerator } from "fable-library-js/Util.js";
@@ -7,14 +8,21 @@ import { toList, toSeq } from "fable-library-js/Map.js";
 import { value as value_6 } from "fable-library-js/Option.js";
 
 /**
+ * Encode a float as a number.
+ */
+export function float(value_1) {
+    return {
+        Encode(helpers) {
+            return Number.isNaN(value_1) ? helpers.encodeString("NaN") : (isPositiveInfinity(value_1) ? helpers.encodeString("Infinity") : (isNegativeInfinity(value_1) ? helpers.encodeString("-Infinity") : helpers.encodeDecimalNumber(value_1)));
+        },
+    };
+}
+
+/**
  * Encode a float32 as a number.
  */
 export function float32(value_1) {
-    return {
-        Encode(helpers) {
-            return helpers.encodeDecimalNumber(value_1);
-        },
-    };
+    return float(value_1);
 }
 
 /**
@@ -357,19 +365,15 @@ export function value(json) {
                 },
             };
         case 1:
-            return {
-                Encode(helpers_3) {
-                    return helpers_3.encodeDecimalNumber(json.fields[0]);
-                },
-            };
+            return float(json.fields[0]);
         case 5:
             return list(map_1(value, json.fields[0]));
         case 4: {
             const values = map_2((tupledArg) => [tupledArg[0], value(tupledArg[1])], json.fields[0]);
             return {
-                Encode(helpers_4) {
-                    const arg = map_2((tupledArg_1) => [tupledArg_1[0], tupledArg_1[1].Encode(helpers_4)], values);
-                    return helpers_4.encodeObject(arg);
+                Encode(helpers_3) {
+                    const arg = map_2((tupledArg_1) => [tupledArg_1[0], tupledArg_1[1].Encode(helpers_3)], values);
+                    return helpers_3.encodeObject(arg);
                 },
             };
         }

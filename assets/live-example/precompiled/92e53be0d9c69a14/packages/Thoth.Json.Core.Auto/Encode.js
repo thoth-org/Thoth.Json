@@ -1,6 +1,6 @@
 
 import { getTupleElements, getUnionCaseFields, fullName, string_type, name, getUnionFields, getRecordField, lambda_type, obj_type, class_type } from "fable-library-js/Reflection.js";
-import { float32, dict, seq, Enum_uint32, Enum_int, Enum_uint16, Enum_int16, Enum_sbyte, Enum_byte, tuple2, list as list_1, lazily, losslessOption as losslessOption_1, lossyOption } from "../Thoth.Json.Core/Encode.js";
+import { float, float32, dict, seq, Enum_uint32, Enum_int, Enum_uint16, Enum_int16, Enum_sbyte, Enum_byte, tuple2, list as list_1, lazily, losslessOption as losslessOption_1, lossyOption } from "../Thoth.Json.Core/Encode.js";
 import { append, isEmpty, empty, singleton, collect, delay, toList, map, toArray } from "fable-library-js/Seq.js";
 import { item, map as map_1 } from "fable-library-js/Array.js";
 import { map as map_2 } from "fable-library-js/List.js";
@@ -13,7 +13,7 @@ import { toString } from "fable-library-js/BigInt.js";
 import { toString as toString_1 } from "fable-library-js/TimeSpan.js";
 import { toString as toString_2 } from "fable-library-js/Date.js";
 import { concat } from "fable-library-js/String.js";
-import { value as value_45 } from "fable-library-js/Option.js";
+import { value as value_44 } from "fable-library-js/Option.js";
 import { Operators_IsNull } from "fable-library-js/FSharp.Core.js";
 import { rangeDouble } from "fable-library-js/Range.js";
 
@@ -462,17 +462,13 @@ export function generateEncoder(caseStyle, existingEncoders, skipNullField, loss
             case 13:
                 return float32;
             case 14:
-                return (value_28) => ({
-                    Encode(helpers_13) {
-                        return helpers_13.encodeDecimalNumber(value_28);
-                    },
-                });
+                return float;
             case 15:
-                return (value_30) => {
-                    const value_1_4 = value_30.toString();
+                return (value_29) => {
+                    const value_1_4 = value_29.toString();
                     return {
-                        Encode(helpers_14) {
-                            return helpers_14.encodeString(value_1_4);
+                        Encode(helpers_13) {
+                            return helpers_13.encodeString(value_1_4);
                         },
                     };
                 };
@@ -482,8 +478,8 @@ export function generateEncoder(caseStyle, existingEncoders, skipNullField, loss
                     let copyOfStruct = g;
                     value_1_5 = copyOfStruct;
                     return {
-                        Encode(helpers_15) {
-                            return helpers_15.encodeString(value_1_5);
+                        Encode(helpers_14) {
+                            return helpers_14.encodeString(value_1_5);
                         },
                     };
                 };
@@ -493,8 +489,8 @@ export function generateEncoder(caseStyle, existingEncoders, skipNullField, loss
                     let copyOfStruct_1 = ts;
                     value_1_6 = toString_1(copyOfStruct_1);
                     return {
-                        Encode(helpers_16) {
-                            return helpers_16.encodeString(value_1_6);
+                        Encode(helpers_15) {
+                            return helpers_15.encodeString(value_1_6);
                         },
                     };
                 };
@@ -502,26 +498,26 @@ export function generateEncoder(caseStyle, existingEncoders, skipNullField, loss
                 return (u) => {
                     const value_1_7 = u.originalString;
                     return {
-                        Encode(helpers_17) {
-                            return helpers_17.encodeString(value_1_7);
+                        Encode(helpers_16) {
+                            return helpers_16.encodeString(value_1_7);
                         },
                     };
                 };
             case 19:
-                return (value_39) => {
-                    const value_1_8 = toString_2(value_39, "O", {});
+                return (value_38) => {
+                    const value_1_8 = toString_2(value_38, "O", {});
                     return {
-                        Encode(helpers_18) {
-                            return helpers_18.encodeString(value_1_8);
+                        Encode(helpers_17) {
+                            return helpers_17.encodeString(value_1_8);
                         },
                     };
                 };
             case 20:
-                return (value_42) => {
-                    const value_1_9 = toString_2(value_42, "O", {});
+                return (value_41) => {
+                    const value_1_9 = toString_2(value_41, "O", {});
                     return {
-                        Encode(helpers_19) {
-                            return helpers_19.encodeString(value_1_9);
+                        Encode(helpers_18) {
+                            return helpers_18.encodeString(value_1_9);
                         },
                     };
                 };
@@ -715,7 +711,7 @@ export function generateEncoder(caseStyle, existingEncoders, skipNullField, loss
         }
     }
     else {
-        return value_45(matchValue);
+        return value_44(matchValue);
     }
 }
 

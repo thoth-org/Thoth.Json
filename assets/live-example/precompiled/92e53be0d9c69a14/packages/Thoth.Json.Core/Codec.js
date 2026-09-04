@@ -1,8 +1,8 @@
 
 import { Codec$1 } from "./Types.js";
-import { tuple8 as tuple8_2, tuple7 as tuple7_2, tuple6 as tuple6_2, tuple5 as tuple5_2, tuple4 as tuple4_2, tuple3 as tuple3_2, tuple2 as tuple2_2, at as at_1, keyValuePairs as keyValuePairs_1, map$0027 as map$0027_1, dict as dict_2, resizeArray as resizeArray_1, seq as seq_1, array as array_1, list as list_2, lazily as lazily_2, oneOf as oneOf_1, losslessOption as losslessOption_2, lossyOption as lossyOption_2, map as map_1, nil as nil_1, value as value_5, timespan as timespan_1, datetimeOffset as datetimeOffset_1, decimal as decimal_1, float32 as float32_2, float as float_1, bool as bool_1, bigint as bigint_1, uint64 as uint64_1, int64 as int64_1, uint32 as uint32_1, int as int_1, uint16 as uint16_1, int16 as int16_1, byte as byte_1, sbyte as sbyte_1, unit as unit_1, uri as uri_1, guid as guid_1, char as char_1, string as string_1 } from "./Decode.js";
+import { tuple8 as tuple8_2, tuple7 as tuple7_2, tuple6 as tuple6_2, tuple5 as tuple5_2, tuple4 as tuple4_2, tuple3 as tuple3_2, tuple2 as tuple2_2, at as at_1, keyValuePairs as keyValuePairs_1, map$0027 as map$0027_1, dict as dict_2, resizeArray as resizeArray_1, seq as seq_1, array as array_1, list as list_2, lazily as lazily_2, oneOf as oneOf_1, losslessOption as losslessOption_2, lossyOption as lossyOption_2, map as map_1, nil as nil_1, value as value_5, timespan as timespan_1, datetimeOffset as datetimeOffset_1, decimal as decimal_1, float32 as float32_2, float as float_2, bool as bool_1, bigint as bigint_1, uint64 as uint64_1, int64 as int64_1, uint32 as uint32_1, int as int_1, uint16 as uint16_1, int16 as int16_1, byte as byte_1, sbyte as sbyte_1, unit as unit_1, uri as uri_1, guid as guid_1, char as char_1, string as string_1 } from "./Decode.js";
 import { toString } from "fable-library-js/BigInt.js";
-import { tuple8 as tuple8_1, tuple7 as tuple7_1, tuple6 as tuple6_1, tuple5 as tuple5_1, tuple4 as tuple4_1, tuple3 as tuple3_1, tuple2 as tuple2_1, map as map_4, dict as dict_1, mapResizeArray, mapSeq, mapArray, mapList, lazily as lazily_1, losslessOption as losslessOption_1, lossyOption as lossyOption_1, value as value_4, float32 as float32_1 } from "./Encode.js";
+import { tuple8 as tuple8_1, tuple7 as tuple7_1, tuple6 as tuple6_1, tuple5 as tuple5_1, tuple4 as tuple4_1, tuple3 as tuple3_1, tuple2 as tuple2_1, map as map_4, dict as dict_1, mapResizeArray, mapSeq, mapArray, mapList, lazily as lazily_1, losslessOption as losslessOption_1, lossyOption as lossyOption_1, value as value_4, float32 as float32_1, float as float_1 } from "./Encode.js";
 import { toString as toString_1 } from "fable-library-js/Date.js";
 import { toString as toString_2 } from "fable-library-js/TimeSpan.js";
 import { foldBack, map as map_2, head, isEmpty } from "fable-library-js/List.js";
@@ -138,11 +138,7 @@ export const bool = create((value_1) => ({
     },
 }), bool_1);
 
-export const float = create((value_1) => ({
-    Encode(helpers) {
-        return helpers.encodeDecimalNumber(value_1);
-    },
-}), float_1);
+export const float = create(float_1, float_2);
 
 export const float32 = create(float32_1, float32_2);
 

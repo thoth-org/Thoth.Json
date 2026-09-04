@@ -350,13 +350,31 @@ export const bool = {
 
 export const float = {
     Decode(helpers, value_1) {
-        return helpers.isNumber(value_1) ? (new FSharpResult$2(/* Ok */ 0, [helpers.asFloat(value_1)])) : (new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a float", value_1])]]));
+        if (helpers.isNumber(value_1)) {
+            return new FSharpResult$2(/* Ok */ 0, [helpers.asFloat(value_1)]);
+        }
+        else if (helpers.isString(value_1)) {
+            const matchValue = helpers.asString(value_1);
+            return (matchValue === "NaN") ? (new FSharpResult$2(/* Ok */ 0, [NaN])) : ((matchValue === "Infinity") ? (new FSharpResult$2(/* Ok */ 0, [Infinity])) : ((matchValue === "-Infinity") ? (new FSharpResult$2(/* Ok */ 0, [-Infinity])) : (new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a float", value_1])]]))));
+        }
+        else {
+            return new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a float", value_1])]]);
+        }
     },
 };
 
 export const float32 = {
     Decode(helpers, value_1) {
-        return helpers.isNumber(value_1) ? (new FSharpResult$2(/* Ok */ 0, [helpers.asFloat32(value_1)])) : (new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a float32", value_1])]]));
+        if (helpers.isNumber(value_1)) {
+            return new FSharpResult$2(/* Ok */ 0, [helpers.asFloat32(value_1)]);
+        }
+        else if (helpers.isString(value_1)) {
+            const matchValue = helpers.asString(value_1);
+            return (matchValue === "NaN") ? (new FSharpResult$2(/* Ok */ 0, [NaN])) : ((matchValue === "Infinity") ? (new FSharpResult$2(/* Ok */ 0, [Infinity])) : ((matchValue === "-Infinity") ? (new FSharpResult$2(/* Ok */ 0, [-Infinity])) : (new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a float32", value_1])]]))));
+        }
+        else {
+            return new FSharpResult$2(/* Error */ 1, [["", new ErrorReason$1(/* BadPrimitive */ 0, ["a float32", value_1])]]);
+        }
     },
 };
 
@@ -1513,7 +1531,7 @@ class FixDecoder$1 {
         const this$ = new FSharpRef(defaultOf());
         this$.contents = this;
         this.self = make(this$.contents);
-        this["init@1643"] = 1;
+        this["init@1655"] = 1;
     }
     Decode(helpers, value_1) {
         const this$ = this;
