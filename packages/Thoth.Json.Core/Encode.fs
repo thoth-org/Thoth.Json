@@ -25,9 +25,22 @@ module Encode =
     let inline uri (value: Uri) = value.OriginalString |> string
 
     /// <summary>Encode a float as a number.</summary>
-    let inline float value =
+    /// <remarks>
+    /// JSON has no number for <c>nan</c>, <c>infinity</c> and <c>-infinity</c>, so they are written
+    /// as the strings <c>"NaN"</c>, <c>"Infinity"</c> and <c>"-Infinity"</c>, the names
+    /// System.Text.Json uses for its named floating point literals.
+    /// </remarks>
+    let float (value: float) =
         { new IEncodable with
-            member _.Encode(helpers) = helpers.encodeDecimalNumber value
+            member _.Encode(helpers) =
+                if Double.IsNaN value then
+                    helpers.encodeString "NaN"
+                elif Double.IsPositiveInfinity value then
+                    helpers.encodeString "Infinity"
+                elif Double.IsNegativeInfinity value then
+                    helpers.encodeString "-Infinity"
+                else
+                    helpers.encodeDecimalNumber value
         }
 
     /// <summary>Encode a float32 as a number.</summary>

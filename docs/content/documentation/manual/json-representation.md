@@ -17,11 +17,9 @@ choose your own representation.
 
 ## Numbers
 
-Thoth.Json follows the [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754) standard for representing
-numbers, like other libraries such as the
-[Google APIs](https://developers.google.com/discovery/v1/type-format).
-
-Numbers which don't fit in a `float` without losing precision are represented as strings.
+A value is written as a JSON number when it round-trips exactly through a 64-bit float, and as a
+string when it doesn't. This is the convention the
+[Google APIs](https://developers.google.com/discovery/v1/type-format) follow.
 
 Represented using **numbers**:
 
@@ -44,6 +42,21 @@ Represented using **strings**:
 :::info
 The decoders accept both string and numeric JSON values.
 :::
+
+### nan and infinity
+
+`nan`, `infinity` and `-infinity` have no JSON number, so they are written as the strings `"NaN"`,
+`"Infinity"` and `"-Infinity"`. The decoders read them back.
+
+```fsharp live
+open Thoth.Json.Core
+open Thoth.Json.JavaScript
+
+for value in [ nan; infinity; -infinity; 1.5 ] do
+    let json = value |> Encode.float |> Encode.toString 0
+
+    printfn "%-9s -> %-12s -> %A" (string value) json (Decode.fromString Decode.float json)
+```
 
 ## Record
 
