@@ -410,14 +410,32 @@ module Decode =
     let float: Decoder<float> =
         { new Decoder<float> with
             member _.Decode(helpers, value) =
+                let inline decodeString (rawString: string) =
+                    match rawString with
+                    // Double.TryParse does not read all three of these on every runtime.
+                    | "NaN" -> Ok Double.NaN
+                    | "Infinity" -> Ok Double.PositiveInfinity
+                    | "-Infinity" -> Ok Double.NegativeInfinity
+                    | _ ->
+                        match
+#if FABLE_COMPILER_PYTHON || FABLE_COMPILER_JAVASCRIPT
+                            Double.TryParse(rawString)
+#else
+                            Double.TryParse(
+                                rawString,
+                                NumberStyles.Float,
+                                CultureInfo.InvariantCulture
+                            )
+#endif
+                        with
+                        | true, f -> Ok f
+                        | false, _ ->
+                            ("", BadPrimitive("a float", value)) |> Error
+
                 if helpers.isNumber value then
-                    Ok(helpers.asFloat value)
+                    decodeString (helpers.anyToString value)
                 elif helpers.isString value then
-                    match helpers.asString value with
-                    | "NaN" -> Ok System.Double.NaN
-                    | "Infinity" -> Ok System.Double.PositiveInfinity
-                    | "-Infinity" -> Ok System.Double.NegativeInfinity
-                    | _ -> ("", BadPrimitive("a float", value)) |> Error
+                    decodeString (helpers.asString value)
                 else
                     ("", BadPrimitive("a float", value)) |> Error
         }
