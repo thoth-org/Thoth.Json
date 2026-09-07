@@ -1,7 +1,7 @@
 module Thoth.Json.Tests.Testing
 
 open Thoth.Json.Core
-open Fable.Pyxpecto
+open Scriptorium.Nib.Assertion
 
 type IEncode =
     abstract toString: int -> IEncodable -> string
@@ -21,8 +21,15 @@ type TestRunner<'DecoderJsonValue, 'EncoderJsonValue>() =
     abstract MapEncoderValueToDecoderValue:
         'EncoderJsonValue -> 'DecoderJsonValue
 
-let equal (actual: 'T) (expected: 'T) = Expect.equal actual expected ""
-let notEqual (actual: 'T) (expected: 'T) = Expect.notEqual actual expected ""
+let equal (actual: 'T) (expected: 'T) = assertThat actual (isEqualTo expected)
+
+let notEqual (actual: 'T) (expected: 'T) =
+    assertThat actual (isNotEqualTo expected)
+
+let contains (expected: string) : Assertion<string> =
+    assertion
+        (fun (actual: string) -> actual.Contains expected)
+        (fun actual -> $"given %A{actual} should contain %A{expected}")
 
 let roundTrip (testRunner: TestRunner<_, _>) (codec: Codec<'t>) v =
     let encoded = v |> Encode.codec codec |> testRunner.Encode.toString 2
@@ -32,4 +39,6 @@ let roundTrip (testRunner: TestRunner<_, _>) (codec: Codec<'t>) v =
 
     let decoded = encoded |> testRunner.Decode.fromString (Decode.codec codec)
 
-    Expect.wantOk decoded "Decoding must succeed"
+    match decoded with
+    | Ok value -> value
+    | Error error -> failwith $"Decoding must succeed but got: {error}"

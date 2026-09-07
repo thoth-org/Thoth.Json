@@ -122,7 +122,6 @@ type TestPythonCommand() =
             |> CmdLine.appendRaw runArg
             |> CmdLine.appendRaw "uv run python"
             |> CmdLine.appendRaw "fableBuild/main.py"
-            |> CmdLine.appendRaw "--silent"
             |> CmdLine.toString,
             workingDirectory = Workspace.tests.``Thoth.Json.Tests.Python``.``.``
         )

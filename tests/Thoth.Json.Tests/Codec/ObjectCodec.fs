@@ -7,7 +7,7 @@ open Fable.Core
 #endif
 
 open Thoth.Json.Tests.Testing
-open Fable.Pyxpecto
+open type Scriptorium.Quill.Test
 
 open Thoth.Json.Core
 
@@ -89,68 +89,80 @@ module Codec =
         }
 
 let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
-    testList
-        "ObjectCodec"
+    testList (
+        "ObjectCodec",
         [
-            test "objectCodec works for simple case 1" {
-                let expected =
-                    {
-                        Foo = 123
-                        Bar = "abc"
-                    }
+            test (
+                "objectCodec works for simple case 1",
+                fun _ ->
+                    let expected =
+                        {
+                            Foo = 123
+                            Bar = "abc"
+                        }
 
-                let actual = roundTrip runner Codec.fooBar expected
+                    let actual = roundTrip runner Codec.fooBar expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "objectCodec works for simple case 2" {
-                let expected =
-                    {
-                        Qux = 101
-                        FooBar =
-                            {
-                                Foo = 456
-                                Bar = "def"
-                            }
-                    }
+            test (
+                "objectCodec works for simple case 2",
+                fun _ ->
+                    let expected =
+                        {
+                            Qux = 101
+                            FooBar =
+                                {
+                                    Foo = 456
+                                    Bar = "def"
+                                }
+                        }
 
-                let actual = roundTrip runner Codec.qux expected
+                    let actual = roundTrip runner Codec.qux expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "objectCodec works for simple case 3" {
-                let expected =
-                    {
-                        Foo = 101
-                        Bar = "def"
-                        Qux = true
-                        Baz = Guid.Parse "3739a1b7-ee2f-4cab-9597-94fbf7a3766e"
-                    }
+            test (
+                "objectCodec works for simple case 3",
+                fun _ ->
+                    let expected =
+                        {
+                            Foo = 101
+                            Bar = "def"
+                            Qux = true
+                            Baz =
+                                Guid.Parse
+                                    "3739a1b7-ee2f-4cab-9597-94fbf7a3766e"
+                        }
 
-                let actual = roundTrip runner Codec.large expected
+                    let actual = roundTrip runner Codec.large expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "objectCodec optional field works" {
-                let withValue =
-                    {
-                        Baz = Some "abc"
-                    }
+            test (
+                "objectCodec optional field works",
+                fun _ ->
+                    let withValue =
+                        {
+                            Baz = Some "abc"
+                        }
 
-                let withoutValue =
-                    {
-                        Baz = None
-                    }
+                    let withoutValue =
+                        {
+                            Baz = None
+                        }
 
-                let actualWithValue = roundTrip runner Codec.baz withValue
+                    let actualWithValue = roundTrip runner Codec.baz withValue
 
-                let actualWithoutValue = roundTrip runner Codec.baz withoutValue
+                    let actualWithoutValue =
+                        roundTrip runner Codec.baz withoutValue
 
-                equal actualWithValue withValue
+                    equal actualWithValue withValue
 
-                equal actualWithoutValue withoutValue
-            }
+                    equal actualWithoutValue withoutValue
+            )
         ]
+    )

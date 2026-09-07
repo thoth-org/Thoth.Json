@@ -3,7 +3,8 @@ module Thoth.Json.Tests.Auto
 open Thoth.Json.Tests.Testing
 open Thoth.Json.Core
 open Thoth.Json.Core.Auto
-open Fable.Pyxpecto
+open Scriptorium.Nib.Assertion
+open type Scriptorium.Quill.Test
 open System
 open Thoth.Json.Tests.Types
 
@@ -88,151 +89,154 @@ let tests (runner: TestRunner<_, _>) =
             )
         )
 
-    testList
-        "Thoth.Json.Core.Auto"
+    testList (
+        "Thoth.Json.Core.Auto",
         [
-            testCase "Auto.runner.Decode.fromString works"
-            <| fun _ ->
-                let now = DateTime.Now
+            test (
+                "Auto.runner.Decode.fromString works",
+                fun _ ->
+                    let now = DateTime.Now
 
-                let value: Record9 =
-                    {
-                        a = 5
-                        b = "bar"
-                        c =
-                            [
-                                false, 3
-                                true, 5
-                                false, 10
-                            ]
-                        d =
-                            [|
-                                Some(Foo 14)
-                                None
-                            |]
-                        e =
-                            Map
-                                [
-                                    ("oh",
-                                     {
-                                         a = 2.
-                                         b = 2.
-                                     })
-                                    ("ah",
-                                     {
-                                         a = -1.5
-                                         b = 0.
-                                     })
-                                ]
-                        f = now
-                        g =
-                            set
-                                [
-                                    {
-                                        a = 2.
-                                        b = 2.
-                                    }
-                                    {
-                                        a = -1.5
-                                        b = 0.
-                                    }
-                                ]
-                        h = TimeSpan.FromSeconds(5.)
-                        i = 120y
-                        j = 120uy
-                        k = 250s
-                        l = 250us
-                        m = 99u
-                        n = 99L
-                        o = 999UL
-                        p = ()
-                        r =
-                            Map
-                                [
-                                    ({
-                                        a = 1.
-                                        b = 2.
-                                     },
-                                     "value 1")
-                                    ({
-                                        a = -2.5
-                                        b = 22.1
-                                     },
-                                     "value 2")
-                                ]
-                        s = 'y'
-                    // s = seq [ "item n°1"; "item n°2"]
-                    }
-
-                let extra = Extra.empty |> Extra.withInt64 |> Extra.withUInt64
-
-                let json = autoEncodeWithOptions value PascalCase extra
-
-                let r2: Record9 =
-                    autoDecodeUnsafeWithOptions json PascalCase extra
-
-                equal 5 r2.a
-                equal "bar" r2.b
-
-                equal
-                    [
-                        false, 3
-                        true, 5
-                        false, 10
-                    ]
-                    r2.c
-
-                equal (Some(Foo 14)) r2.d.[0]
-                equal None r2.d.[1]
-                equal -1.5 (Map.find "ah" r2.e).a
-                equal 2. (Map.find "oh" r2.e).b
-                equal (now.ToString()) (value.f.ToString())
-
-                equal
-                    true
-                    (Set.contains
+                    let value: Record9 =
                         {
-                            a = -1.5
-                            b = 0.
+                            a = 5
+                            b = "bar"
+                            c =
+                                [
+                                    false, 3
+                                    true, 5
+                                    false, 10
+                                ]
+                            d =
+                                [|
+                                    Some(Foo 14)
+                                    None
+                                |]
+                            e =
+                                Map
+                                    [
+                                        ("oh",
+                                         {
+                                             a = 2.
+                                             b = 2.
+                                         })
+                                        ("ah",
+                                         {
+                                             a = -1.5
+                                             b = 0.
+                                         })
+                                    ]
+                            f = now
+                            g =
+                                set
+                                    [
+                                        {
+                                            a = 2.
+                                            b = 2.
+                                        }
+                                        {
+                                            a = -1.5
+                                            b = 0.
+                                        }
+                                    ]
+                            h = TimeSpan.FromSeconds(5.)
+                            i = 120y
+                            j = 120uy
+                            k = 250s
+                            l = 250us
+                            m = 99u
+                            n = 99L
+                            o = 999UL
+                            p = ()
+                            r =
+                                Map
+                                    [
+                                        ({
+                                            a = 1.
+                                            b = 2.
+                                         },
+                                         "value 1")
+                                        ({
+                                            a = -2.5
+                                            b = 22.1
+                                         },
+                                         "value 2")
+                                    ]
+                            s = 'y'
+                        // s = seq [ "item n°1"; "item n°2"]
                         }
-                        r2.g)
 
-                equal
-                    false
-                    (Set.contains
-                        {
-                            a = 1.5
-                            b = 0.
-                        }
-                        r2.g)
+                    let extra =
+                        Extra.empty |> Extra.withInt64 |> Extra.withUInt64
 
-                equal 5000. value.h.TotalMilliseconds
-                equal 120y r2.i
-                equal 120uy r2.j
-                equal 250s r2.k
-                equal 250us r2.l
-                equal 99u r2.m
-                equal 99L r2.n
-                equal 999UL r2.o
-                equal () r2.p
+                    let json = autoEncodeWithOptions value PascalCase extra
 
-                equal
-                    (Map
+                    let r2: Record9 =
+                        autoDecodeUnsafeWithOptions json PascalCase extra
+
+                    equal 5 r2.a
+                    equal "bar" r2.b
+
+                    equal
                         [
-                            ({
-                                a = 1.
-                                b = 2.
-                             },
-                             "value 1")
-                            ({
-                                a = -2.5
-                                b = 22.1
-                             },
-                             "value 2")
-                        ])
-                    r2.r
+                            false, 3
+                            true, 5
+                            false, 10
+                        ]
+                        r2.c
 
-                equal 'y' r2.s
+                    equal (Some(Foo 14)) r2.d.[0]
+                    equal None r2.d.[1]
+                    equal -1.5 (Map.find "ah" r2.e).a
+                    equal 2. (Map.find "oh" r2.e).b
+                    equal (now.ToString()) (value.f.ToString())
+
+                    equal
+                        true
+                        (Set.contains
+                            {
+                                a = -1.5
+                                b = 0.
+                            }
+                            r2.g)
+
+                    equal
+                        false
+                        (Set.contains
+                            {
+                                a = 1.5
+                                b = 0.
+                            }
+                            r2.g)
+
+                    equal 5000. value.h.TotalMilliseconds
+                    equal 120y r2.i
+                    equal 120uy r2.j
+                    equal 250s r2.k
+                    equal 250us r2.l
+                    equal 99u r2.m
+                    equal 99L r2.n
+                    equal 999UL r2.o
+                    equal () r2.p
+
+                    equal
+                        (Map
+                            [
+                                ({
+                                    a = 1.
+                                    b = 2.
+                                 },
+                                 "value 1")
+                                ({
+                                    a = -2.5
+                                    b = 22.1
+                                 },
+                                 "value 2")
+                            ])
+                        r2.r
+
+                    equal 'y' r2.s
+            )
             // equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.s |> Seq.toList)
 
             // testCase "Auto serialization works with recursive types"
@@ -257,113 +261,139 @@ let tests (runner: TestRunner<_, _>) =
             //     | Nil -> 0
             //     |> equal 6
 
-            testCase "Auto decoders works for string"
-            <| fun _ ->
-                let value = "maxime"
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
+            test (
+                "Auto decoders works for string",
+                fun _ ->
+                    let value = "maxime"
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
 
-            testCase "Auto decoders works for guid"
-            <| fun _ ->
-                let value = Guid.NewGuid()
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
+            test (
+                "Auto decoders works for guid",
+                fun _ ->
+                    let value = Guid.NewGuid()
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
 
-            testCase "Auto decoders works for uri"
-            <| fun _ ->
-                let value = Uri "http://example.com/path?q=1"
-                let json = autoEncode value
-                let res: Uri = autoDecodeUnsafe json
-                // Compare on OriginalString because Fable's Uri does not
-                // implement structural equality
-                equal value.OriginalString res.OriginalString
+            test (
+                "Auto decoders works for uri",
+                fun _ ->
+                    let value = Uri "http://example.com/path?q=1"
+                    let json = autoEncode value
+                    let res: Uri = autoDecodeUnsafe json
+                    // Compare on OriginalString because Fable's Uri does not
+                    // implement structural equality
+                    equal value.OriginalString res.OriginalString
+            )
 
-            testCase "Auto decoders works for int"
-            <| fun _ ->
-                let value = 12
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
+            test (
+                "Auto decoders works for int",
+                fun _ ->
+                    let value = 12
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
 
-            testCase "Auto decoders works for int64"
-            <| fun _ ->
-                let extra = Extra.empty |> Extra.withInt64
-                let value = 9999999999L
-                let json = autoEncodeWithExtra value extra
+            test (
+                "Auto decoders works for int64",
+                fun _ ->
+                    let extra = Extra.empty |> Extra.withInt64
+                    let value = 9999999999L
+                    let json = autoEncodeWithExtra value extra
 
-                let res = autoDecodeUnsafeWithExtra json extra
+                    let res = autoDecodeUnsafeWithExtra json extra
 
-                equal value res
+                    equal value res
+            )
 
-            testCase "Auto decoders works for uint32"
-            <| fun _ ->
-                let value = 12u
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
+            test (
+                "Auto decoders works for uint32",
+                fun _ ->
+                    let value = 12u
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
 
-            testCase "Auto decoders works for uint64"
-            <| fun _ ->
-                let extra = Extra.empty |> Extra.withUInt64
-                let value = 9999999999999999999UL
-                let json = autoEncodeWithExtra value extra
+            test (
+                "Auto decoders works for uint64",
+                fun _ ->
+                    let extra = Extra.empty |> Extra.withUInt64
+                    let value = 9999999999999999999UL
+                    let json = autoEncodeWithExtra value extra
 
-                let res = autoDecodeUnsafeWithExtra json extra
+                    let res = autoDecodeUnsafeWithExtra json extra
 
-                equal value res
+                    equal value res
+            )
 
-            testCase "Auto decoders works for bigint"
-            <| fun _ ->
-                let extra = Extra.empty |> Extra.withBigInt
-                let value = 99999999999999999999999I
-                let json = autoEncodeWithExtra value extra
+            test (
+                "Auto decoders works for bigint",
+                fun _ ->
+                    let extra = Extra.empty |> Extra.withBigInt
+                    let value = 99999999999999999999999I
+                    let json = autoEncodeWithExtra value extra
 
-                let res = autoDecodeUnsafeWithExtra json extra
+                    let res = autoDecodeUnsafeWithExtra json extra
 
-                equal value res
+                    equal value res
+            )
 
-            testCase "Auto decoders works for bool"
-            <| fun _ ->
-                let value = false
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
+            test (
+                "Auto decoders works for bool",
+                fun _ ->
+                    let value = false
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
 
-            testCase "Auto decoders works for float"
-            <| fun _ ->
-                let value = 12.
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
+            test (
+                "Auto decoders works for float",
+                fun _ ->
+                    let value = 12.
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
 
-            testCase "Auto decoders works for decimal"
-            <| fun _ ->
-                let extra = Extra.empty |> Extra.withDecimal
-                let value = 0.7833M
-                let json = autoEncodeWithExtra value extra
-                let res = autoDecodeUnsafeWithExtra json extra
+            test (
+                "Auto decoders works for decimal",
+                fun _ ->
+                    let extra = Extra.empty |> Extra.withDecimal
+                    let value = 0.7833M
+                    let json = autoEncodeWithExtra value extra
+                    let res = autoDecodeUnsafeWithExtra json extra
 
-                equal value res
+                    equal value res
+            )
 
-            testCase "Auto extra decoders can override default decoders"
-            <| fun _ ->
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom IntAsRecord.encode IntAsRecord.decode
+            test (
+                "Auto extra decoders can override default decoders",
+                fun _ ->
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom
+                            IntAsRecord.encode
+                            IntAsRecord.decode
 
-                let json =
-                    """
+                    let json =
+                        """
 {
     "type": "int",
     "value": 12
 }
                 """
 
-                let res = autoDecodeUnsafeWithExtra json extra
+                    let res = autoDecodeUnsafeWithExtra json extra
 
-                equal 12 res
+                    equal 12 res
+            )
 
             // testCase "Auto decoders works for datetime"
             // <| fun _ ->
@@ -375,329 +405,369 @@ let tests (runner: TestRunner<_, _>) =
             //     equal value.Minute res.Minute
             //     equal value.Second res.Second
 
-            testCase "Auto decoders works for datetime UTC"
-            <| fun _ ->
-                let value = DateTime.UtcNow
-                let json = autoEncode value
-                let res: DateTime = autoDecodeUnsafe json
-                equal value.Date res.Date
-                equal value.Hour res.Hour
-                equal value.Minute res.Minute
-                equal value.Second res.Second
+            test (
+                "Auto decoders works for datetime UTC",
+                fun _ ->
+                    let value = DateTime.UtcNow
+                    let json = autoEncode value
+                    let res: DateTime = autoDecodeUnsafe json
+                    equal value.Date res.Date
+                    equal value.Hour res.Hour
+                    equal value.Minute res.Minute
+                    equal value.Second res.Second
+            )
 
-            testCase "Auto decoders works for datetimeOffset"
-            <| fun _ ->
-                let value = DateTimeOffset.Now
-                let json = autoEncode value
+            test (
+                "Auto decoders works for datetimeOffset",
+                fun _ ->
+                    let value = DateTimeOffset.Now
+                    let json = autoEncode value
 
-                let res: DateTimeOffset = autoDecodeUnsafe json
-                // let res = res.ToLocalTime()
+                    let res: DateTimeOffset = autoDecodeUnsafe json
+                    // let res = res.ToLocalTime()
 
-                equal value.Date res.Date
-                equal value.Hour res.Hour
-                equal value.Minute res.Minute
-                equal value.Second res.Second
+                    equal value.Date res.Date
+                    equal value.Hour res.Hour
+                    equal value.Minute res.Minute
+                    equal value.Second res.Second
+            )
 
-            testCase "Auto decoders works for datetimeOffset UTC"
-            <| fun _ ->
-                let value = DateTimeOffset.UtcNow
-                let json = autoEncode value
+            test (
+                "Auto decoders works for datetimeOffset UTC",
+                fun _ ->
+                    let value = DateTimeOffset.UtcNow
+                    let json = autoEncode value
 
-                let res: DateTimeOffset = autoDecodeUnsafe json
-                let res = res.ToUniversalTime()
+                    let res: DateTimeOffset = autoDecodeUnsafe json
+                    let res = res.ToUniversalTime()
 
-                equal value.Date res.Date
-                equal value.Hour res.Hour
-                equal value.Minute res.Minute
-                equal value.Second res.Second
+                    equal value.Date res.Date
+                    equal value.Hour res.Hour
+                    equal value.Minute res.Minute
+                    equal value.Second res.Second
+            )
 
-            testCase "Auto decoders works for TimeSpan"
-            <| fun _ ->
-                let value = TimeSpan(1, 2, 3, 4, 5)
-                let json = autoEncode value
-                let res: TimeSpan = autoDecodeUnsafe json
-                equal value.Days res.Days
-                equal value.Hours res.Hours
-                equal value.Minutes res.Minutes
-                equal value.Seconds res.Seconds
-                equal value.Milliseconds res.Milliseconds
+            test (
+                "Auto decoders works for TimeSpan",
+                fun _ ->
+                    let value = TimeSpan(1, 2, 3, 4, 5)
+                    let json = autoEncode value
+                    let res: TimeSpan = autoDecodeUnsafe json
+                    equal value.Days res.Days
+                    equal value.Hours res.Hours
+                    equal value.Minutes res.Minutes
+                    equal value.Seconds res.Seconds
+                    equal value.Milliseconds res.Milliseconds
+            )
 
-            testCase "Auto decoders works for list"
-            <| fun _ ->
-                let value =
-                    [
-                        1
-                        2
-                        3
-                        4
-                    ]
-
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
-
-            testCase "Auto decoders works for array"
-            <| fun _ ->
-                let value =
-                    [|
-                        1
-                        2
-                        3
-                        4
-                    |]
-
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
-
-            testCase "Auto decoders works for Map with string keys"
-            <| fun _ ->
-                let value =
-                    Map.ofSeq
+            test (
+                "Auto decoders works for list",
+                fun _ ->
+                    let value =
                         [
-                            "a", 1
-                            "b", 2
-                            "c", 3
+                            1
+                            2
+                            3
+                            4
                         ]
 
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
 
-            testCase "Auto decoders works for Map with complex keys"
-            <| fun _ ->
-                let value =
-                    Map.ofSeq
-                        [
-                            (1, 6), "a"
-                            (2, 7), "b"
-                            (3, 8), "c"
-                        ]
+            test (
+                "Auto decoders works for array",
+                fun _ ->
+                    let value =
+                        [|
+                            1
+                            2
+                            3
+                            4
+                        |]
 
-                let json = autoEncode value
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
 
-                let res = autoDecodeUnsafe json
+            test (
+                "Auto decoders works for Map with string keys",
+                fun _ ->
+                    let value =
+                        Map.ofSeq
+                            [
+                                "a", 1
+                                "b", 2
+                                "c", 3
+                            ]
 
-                equal value res
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
 
-            testCase "Auto decoders works for option None"
-            <| fun _ ->
-                let value: int option = None
-                let json = autoEncode value
-                let res: int option = autoDecodeUnsafe json
-                equal value res
+            test (
+                "Auto decoders works for Map with complex keys",
+                fun _ ->
+                    let value =
+                        Map.ofSeq
+                            [
+                                (1, 6), "a"
+                                (2, 7), "b"
+                                (3, 8), "c"
+                            ]
 
-            testCase "Auto decoders works for option Some"
-            <| fun _ ->
-                let value = Some 5
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
+                    let json = autoEncode value
 
-            testCase "Auto decoders works for Unit"
-            <| fun _ ->
-                let value = ()
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
+                    let res = autoDecodeUnsafe json
 
-            testCase "Auto decoders works for enum<int8>"
-            <| fun _ ->
-                let res: Enum_Int8 = autoDecodeUnsafe "99"
-                equal Enum_Int8.NinetyNine res
+                    equal value res
+            )
 
-            testCase
-                "Auto decoders for enum<int8> returns an error if the Enum value is invalid"
-            <| fun _ ->
+            test (
+                "Auto decoders works for option None",
+                fun _ ->
+                    let value: int option = None
+                    let json = autoEncode value
+                    let res: int option = autoDecodeUnsafe json
+                    equal value res
+            )
+
+            test (
+                "Auto decoders works for option Some",
+                fun _ ->
+                    let value = Some 5
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
+
+            test (
+                "Auto decoders works for Unit",
+                fun _ ->
+                    let value = ()
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
+
+            test (
+                "Auto decoders works for enum<int8>",
+                fun _ ->
+                    let res: Enum_Int8 = autoDecodeUnsafe "99"
+                    equal Enum_Int8.NinetyNine res
+            )
+
+            test (
+                "Auto decoders for enum<int8> returns an error if the Enum value is invalid",
+                fun _ ->
 #if FABLE_COMPILER
-                let value =
-                    Error(
-                        """
+                    let value =
+                        Error(
+                            """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types.Enum_Int8[System.SByte] but instead got: 2
 Reason: Unknown value provided for the enum
                         """
-                            .Trim()
-                    )
+                                .Trim()
+                        )
 #else
-                let value =
-                    Error(
-                        """
+                    let value =
+                        Error(
+                            """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types+Enum_Int8 but instead got: 2
 Reason: Unknown value provided for the enum
                         """
-                            .Trim()
-                    )
+                                .Trim()
+                        )
 #endif
 
-                let res: Result<Enum_Int8, string> = autoDecode "2"
-                equal value res
+                    let res: Result<Enum_Int8, string> = autoDecode "2"
+                    equal value res
+            )
 
-            testCase "Auto decoders works for enum<uint8>"
-            <| fun _ ->
-                let res: Enum_UInt8 = autoDecodeUnsafe "99"
-                equal Enum_UInt8.NinetyNine res
+            test (
+                "Auto decoders works for enum<uint8>",
+                fun _ ->
+                    let res: Enum_UInt8 = autoDecodeUnsafe "99"
+                    equal Enum_UInt8.NinetyNine res
+            )
 
-            testCase
-                "Auto decoders for enum<uint8> returns an error if the Enum value is invalid"
-            <| fun _ ->
+            test (
+                "Auto decoders for enum<uint8> returns an error if the Enum value is invalid",
+                fun _ ->
 #if FABLE_COMPILER
-                let value =
-                    Error(
-                        """
+                    let value =
+                        Error(
+                            """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types.Enum_UInt8[System.Byte] but instead got: 2
 Reason: Unknown value provided for the enum
                         """
-                            .Trim()
-                    )
+                                .Trim()
+                        )
 #else
-                let value =
-                    Error(
-                        """
+                    let value =
+                        Error(
+                            """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types+Enum_UInt8 but instead got: 2
 Reason: Unknown value provided for the enum
                         """
-                            .Trim()
-                    )
+                                .Trim()
+                        )
 #endif
 
-                let res: Result<Enum_UInt8, string> = autoDecode "2"
-                equal value res
+                    let res: Result<Enum_UInt8, string> = autoDecode "2"
+                    equal value res
+            )
 
-            testCase "Auto decoders works for enum<int16>"
-            <| fun _ ->
-                let res: Enum_Int16 = autoDecodeUnsafe "99"
-                equal Enum_Int16.NinetyNine res
+            test (
+                "Auto decoders works for enum<int16>",
+                fun _ ->
+                    let res: Enum_Int16 = autoDecodeUnsafe "99"
+                    equal Enum_Int16.NinetyNine res
+            )
 
-            testCase
-                "Auto decoders for enum<int16> returns an error if the Enum value is invalid"
-            <| fun _ ->
+            test (
+                "Auto decoders for enum<int16> returns an error if the Enum value is invalid",
+                fun _ ->
 #if FABLE_COMPILER
-                let value =
-                    Error(
-                        """
+                    let value =
+                        Error(
+                            """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types.Enum_Int16[System.Int16] but instead got: 2
 Reason: Unknown value provided for the enum
                         """
-                            .Trim()
-                    )
+                                .Trim()
+                        )
 #else
-                let value =
-                    Error(
-                        """
+                    let value =
+                        Error(
+                            """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types+Enum_Int16 but instead got: 2
 Reason: Unknown value provided for the enum
                         """
-                            .Trim()
-                    )
+                                .Trim()
+                        )
 #endif
 
-                let res: Result<Enum_Int16, string> = autoDecode "2"
-                equal value res
+                    let res: Result<Enum_Int16, string> = autoDecode "2"
+                    equal value res
+            )
 
-            testCase "Auto decoders works for enum<uint16>"
-            <| fun _ ->
-                let res: Enum_UInt16 = autoDecodeUnsafe "99"
-                equal Enum_UInt16.NinetyNine res
+            test (
+                "Auto decoders works for enum<uint16>",
+                fun _ ->
+                    let res: Enum_UInt16 = autoDecodeUnsafe "99"
+                    equal Enum_UInt16.NinetyNine res
+            )
 
-            testCase
-                "Auto decoders for enum<ºint16> returns an error if the Enum value is invalid"
-            <| fun _ ->
+            test (
+                "Auto decoders for enum<ºint16> returns an error if the Enum value is invalid",
+                fun _ ->
 #if FABLE_COMPILER
-                let value =
-                    Error(
-                        """
+                    let value =
+                        Error(
+                            """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types.Enum_UInt16[System.UInt16] but instead got: 2
 Reason: Unknown value provided for the enum
                         """
-                            .Trim()
-                    )
+                                .Trim()
+                        )
 #else
-                let value =
-                    Error(
-                        """
+                    let value =
+                        Error(
+                            """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types+Enum_UInt16 but instead got: 2
 Reason: Unknown value provided for the enum
                         """
-                            .Trim()
-                    )
+                                .Trim()
+                        )
 #endif
 
-                let res: Result<Enum_UInt16, string> = autoDecode "2"
-                equal value res
+                    let res: Result<Enum_UInt16, string> = autoDecode "2"
+                    equal value res
+            )
 
-            testCase "Auto decoders works for enum<int>"
-            <| fun _ ->
-                let res: Enum_Int = autoDecodeUnsafe "1"
-                equal Enum_Int.One res
+            test (
+                "Auto decoders works for enum<int>",
+                fun _ ->
+                    let res: Enum_Int = autoDecodeUnsafe "1"
+                    equal Enum_Int.One res
+            )
 
-            testCase
-                "Auto decoders for enum<int> returns an error if the Enum value is invalid"
-            <| fun _ ->
+            test (
+                "Auto decoders for enum<int> returns an error if the Enum value is invalid",
+                fun _ ->
 #if FABLE_COMPILER
-                let value =
-                    Error(
-                        """
+                    let value =
+                        Error(
+                            """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types.Enum_Int[System.Int32] but instead got: 4
 Reason: Unknown value provided for the enum
                         """
-                            .Trim()
-                    )
+                                .Trim()
+                        )
 #else
-                let value =
-                    Error(
-                        """
+                    let value =
+                        Error(
+                            """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types+Enum_Int but instead got: 4
 Reason: Unknown value provided for the enum
                         """
-                            .Trim()
-                    )
+                                .Trim()
+                        )
 #endif
 
-                let res: Result<Enum_Int, string> = autoDecode "4"
-                equal value res
+                    let res: Result<Enum_Int, string> = autoDecode "4"
+                    equal value res
+            )
 
-            testCase "Auto decoders works for enum<uint32>"
-            <| fun _ ->
-                let res: Enum_UInt32 = autoDecodeUnsafe "99"
-                equal Enum_UInt32.NinetyNine res
+            test (
+                "Auto decoders works for enum<uint32>",
+                fun _ ->
+                    let res: Enum_UInt32 = autoDecodeUnsafe "99"
+                    equal Enum_UInt32.NinetyNine res
+            )
 
-            testCase
-                "Auto decoders for enum<uint32> returns an error if the Enum value is invalid"
-            <| fun _ ->
+            test (
+                "Auto decoders for enum<uint32> returns an error if the Enum value is invalid",
+                fun _ ->
 #if FABLE_COMPILER
-                let value =
-                    Error(
-                        """
+                    let value =
+                        Error(
+                            """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types.Enum_UInt32[System.UInt32] but instead got: 2
 Reason: Unknown value provided for the enum
                         """
-                            .Trim()
-                    )
+                                .Trim()
+                        )
 #else
-                let value =
-                    Error(
-                        """
+                    let value =
+                        Error(
+                            """
 Error at: `$`
 Expecting Thoth.Json.Tests.Types+Enum_UInt32 but instead got: 2
 Reason: Unknown value provided for the enum
                         """
-                            .Trim()
-                    )
+                                .Trim()
+                        )
 #endif
 
-                let res: Result<Enum_UInt32, string> = autoDecode "2"
-                equal value res
+                    let res: Result<Enum_UInt32, string> = autoDecode "2"
+                    equal value res
+            )
 
             (*
 #if NETFRAMEWORK
@@ -717,1409 +787,1541 @@ Reason: Unknown value provided for the enum
             //     let res : string = autoDecodeUnsafe json
             //     equal value res
 
-            testCase "Auto decoders works for anonymous record"
-            <| fun _ ->
-                let value =
-                    {|
-                        A = "string"
-                    |}
+            test (
+                "Auto decoders works for anonymous record",
+                fun _ ->
+                    let value =
+                        {|
+                            A = "string"
+                        |}
 
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
 
-            testCase "Auto decoders works for nested anonymous record"
-            <| fun _ ->
-                let value =
-                    {|
-                        A =
-                            {|
-                                B = "string"
-                            |}
-                    |}
+            test (
+                "Auto decoders works for nested anonymous record",
+                fun _ ->
+                    let value =
+                        {|
+                            A =
+                                {|
+                                    B = "string"
+                                |}
+                        |}
 
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
 
-            testCase
-                "Auto decoders works even if type is determined by the compiler"
-            <| fun _ ->
-                let value =
-                    [
-                        1
-                        2
-                        3
-                        4
-                    ]
+            test (
+                "Auto decoders works even if type is determined by the compiler",
+                fun _ ->
+                    let value =
+                        [
+                            1
+                            2
+                            3
+                            4
+                        ]
 
-                let json = autoEncode value
-                let res = autoDecodeUnsafe json
-                equal value res
+                    let json = autoEncode value
+                    let res = autoDecodeUnsafe json
+                    equal value res
+            )
 
-            testCase "Auto.unsafeFromString works with camelCase"
-            <| fun _ ->
-                let json =
-                    """{ "id" : 0, "name": "maxime", "email": "mail@domain.com", "followers": 0 }"""
+            test (
+                "Auto.unsafeFromString works with camelCase",
+                fun _ ->
+                    let json =
+                        """{ "id" : 0, "name": "maxime", "email": "mail@domain.com", "followers": 0 }"""
 
-                let user: User =
-                    autoDecodeUnsafeWithOptions json CamelCase Extra.empty
+                    let user: User =
+                        autoDecodeUnsafeWithOptions json CamelCase Extra.empty
 
-                equal "maxime" user.Name
-                equal 0 user.Id
-                equal 0 user.Followers
-                equal "mail@domain.com" user.Email
+                    equal "maxime" user.Name
+                    equal 0 user.Id
+                    equal 0 user.Followers
+                    equal "mail@domain.com" user.Email
+            )
 
-            testCase "works with snake_case"
-            <| fun _ ->
-                let json =
-                    """{ "one" : 1, "two_part": 2, "three_part_field": 3 }"""
+            test (
+                "works with snake_case",
+                fun _ ->
+                    let json =
+                        """{ "one" : 1, "two_part": 2, "three_part_field": 3 }"""
 
-                let decoded: RecordForCharacterCase =
-                    autoDecodeUnsafeWithOptions json SnakeCase Extra.empty
+                    let decoded: RecordForCharacterCase =
+                        autoDecodeUnsafeWithOptions json SnakeCase Extra.empty
 
-                let expected =
-                    {
-                        One = 1
-                        TwoPart = 2
-                        ThreePartField = 3
-                    }
+                    let expected =
+                        {
+                            One = 1
+                            TwoPart = 2
+                            ThreePartField = 3
+                        }
 
-                equal expected decoded
+                    equal expected decoded
+            )
 
-            testCase
-                "works for records with an actual value for the optional field value"
-            <| fun _ ->
-                let json =
-                    """{ "maybe" : "maybe value", "must": "must value"}"""
+            test (
+                "works for records with an actual value for the optional field value",
+                fun _ ->
+                    let json =
+                        """{ "maybe" : "maybe value", "must": "must value"}"""
 
-                let actual: TestMaybeRecord =
-                    autoDecodeUnsafeWithOptions json CamelCase Extra.empty
+                    let actual: TestMaybeRecord =
+                        autoDecodeUnsafeWithOptions json CamelCase Extra.empty
 
-                let expected =
-                    {
-                        Maybe = Some "maybe value"
-                        Must = "must value"
-                    }
+                    let expected =
+                        {
+                            Maybe = Some "maybe value"
+                            Must = "must value"
+                        }
 
-                equal expected actual
+                    equal expected actual
+            )
 
-            testCase
-                "works for records with `null` for the optional field value"
-            <| fun _ ->
-                let json = """{ "maybe" : null, "must": "must value"}"""
+            test (
+                "works for records with `null` for the optional field value",
+                fun _ ->
+                    let json = """{ "maybe" : null, "must": "must value"}"""
 
-                let actual: TestMaybeRecord =
-                    autoDecodeUnsafeWithOptions json CamelCase Extra.empty
+                    let actual: TestMaybeRecord =
+                        autoDecodeUnsafeWithOptions json CamelCase Extra.empty
 
-                let expected =
-                    {
-                        Maybe = None
-                        Must = "must value"
-                    }
+                    let expected =
+                        {
+                            Maybe = None
+                            Must = "must value"
+                        }
 
-                equal expected actual
+                    equal expected actual
+            )
 
-            testCase
-                "works for records with `null` for the optional field value on classes"
-            <| fun _ ->
-                let json = """{ "maybeClass" : null, "must": "must value"}"""
+            test (
+                "works for records with `null` for the optional field value on classes",
+                fun _ ->
+                    let json =
+                        """{ "maybeClass" : null, "must": "must value"}"""
 
-                let actual: RecordWithOptionalClass =
-                    autoDecodeUnsafeWithOptions json CamelCase Extra.empty
+                    let actual: RecordWithOptionalClass =
+                        autoDecodeUnsafeWithOptions json CamelCase Extra.empty
 
-                let expected =
-                    {
-                        MaybeClass = None
-                        Must = "must value"
-                    }
+                    let expected =
+                        {
+                            MaybeClass = None
+                            Must = "must value"
+                        }
 
-                equal expected actual
+                    equal expected actual
+            )
 
-            testCase "works for records missing optional field value on classes"
-            <| fun _ ->
-                let json = """{ "must": "must value"}"""
+            test (
+                "works for records missing optional field value on classes",
+                fun _ ->
+                    let json = """{ "must": "must value"}"""
 
-                let actual: RecordWithOptionalClass =
-                    autoDecodeUnsafeWithOptions json CamelCase Extra.empty
+                    let actual: RecordWithOptionalClass =
+                        autoDecodeUnsafeWithOptions json CamelCase Extra.empty
 
-                let expected =
-                    {
-                        MaybeClass = None
-                        Must = "must value"
-                    }
+                    let expected =
+                        {
+                            MaybeClass = None
+                            Must = "must value"
+                        }
 
-                equal expected actual
+                    equal expected actual
+            )
 
-            testCase
-                "Auto.generateDecoder throws for field using a non optional class"
-            <| fun _ ->
-                let expected =
-                    """Cannot generate auto decoder for 'Thoth.Json.Tests.Types.BaseClass'. Please pass an extra decoder.
+            test (
+                "Auto.generateDecoder throws for field using a non optional class",
+                fun _ ->
+                    let expected =
+                        """Cannot generate auto decoder for 'Thoth.Json.Tests.Types.BaseClass'. Please pass an extra decoder.
 
 Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders/#ready-to-use-extra-coders"""
 
-                let errorMsg =
-                    try
-                        let decoder =
-                            Decode.Auto.generateDecoder<RecordWithRequiredClass> (
-                                caseStrategy = CamelCase
-                            )
+                    let errorMsg =
+                        try
+                            let decoder =
+                                Decode.Auto.generateDecoder<
+                                    RecordWithRequiredClass
+                                 > (
+                                    caseStrategy = CamelCase
+                                )
 
-                        failwith "Should have thrown an error"
-                    with ex ->
-                        ex.Message
+                            failwith "Should have thrown an error"
+                        with ex ->
+                            ex.Message
 
-                errorMsg.Replace("+", ".") |> equal expected
+                    errorMsg.Replace("+", ".") |> equal expected
+            )
 
-            testCase "works for Class marked as optional"
-            <| fun _ ->
-                let json = """null"""
+            test (
+                "works for Class marked as optional",
+                fun _ ->
+                    let json = """null"""
 
-                let actual: BaseClass option = autoDecodeUnsafe json
+                    let actual: BaseClass option = autoDecodeUnsafe json
 
-                let expected = None
-                equal expected actual
+                    let expected = None
+                    equal expected actual
+            )
 
-            testCase "Auto.generateDecoder throws for Class"
-            <| fun _ ->
-                let expected =
-                    """Cannot generate auto decoder for 'Thoth.Json.Tests.Types.BaseClass'. Please pass an extra decoder.
+            test (
+                "Auto.generateDecoder throws for Class",
+                fun _ ->
+                    let expected =
+                        """Cannot generate auto decoder for 'Thoth.Json.Tests.Types.BaseClass'. Please pass an extra decoder.
 
 Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation/auto/extra-coders/#ready-to-use-extra-coders"""
 
-                let errorMsg =
-                    try
-                        let decoder =
-                            Decode.Auto.generateDecoder<BaseClass> (
-                                caseStrategy = CamelCase
-                            )
+                    let errorMsg =
+                        try
+                            let decoder =
+                                Decode.Auto.generateDecoder<BaseClass> (
+                                    caseStrategy = CamelCase
+                                )
 
-                        ""
-                    with ex ->
-                        ex.Message
+                            ""
+                        with ex ->
+                            ex.Message
 
-                errorMsg.Replace("+", ".") |> equal expected
+                    errorMsg.Replace("+", ".") |> equal expected
+            )
 
-            testCase "works for records missing an optional field"
-            <| fun _ ->
-                let json = """{ "must": "must value"}"""
+            test (
+                "works for records missing an optional field",
+                fun _ ->
+                    let json = """{ "must": "must value"}"""
 
-                let actual: TestMaybeRecord =
-                    autoDecodeUnsafeWithOptions json CamelCase Extra.empty
+                    let actual: TestMaybeRecord =
+                        autoDecodeUnsafeWithOptions json CamelCase Extra.empty
 
-                let expected =
-                    {
-                        Maybe = None
-                        Must = "must value"
-                    }
+                    let expected =
+                        {
+                            Maybe = None
+                            Must = "must value"
+                        }
 
-                equal expected actual
+                    equal expected actual
+            )
 
-            testCase "works with maps encoded as objects"
-            <| fun _ ->
-                let expected =
-                    Map
+            test (
+                "works with maps encoded as objects",
+                fun _ ->
+                    let expected =
+                        Map
+                            [
+                                ("oh",
+                                 {
+                                     a = 2.
+                                     b = 2.
+                                 })
+                                ("ah",
+                                 {
+                                     a = -1.5
+                                     b = 0.
+                                 })
+                            ]
+
+                    let json = """{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}}"""
+                    let actual = autoDecode json
+                    equal (Ok expected) actual
+            )
+
+            test (
+                "works with maps encoded as arrays",
+                fun _ ->
+                    let expected =
+                        Map
+                            [
+                                ({
+                                    a = 2.
+                                    b = 2.
+                                 },
+                                 "oh")
+                                ({
+                                    a = -1.5
+                                    b = 0.
+                                 },
+                                 "ah")
+                            ]
+
+                    let json =
+                        """[[{"a":-1.5,"b":0},"ah"],[{"a":2,"b":2},"oh"]]"""
+
+                    let actual = autoDecode json
+                    equal (Ok expected) actual
+            )
+
+            test (
+                "Decoder.Auto.toString works with bigint extra",
+                fun _ ->
+                    let extra = Extra.empty |> Extra.withBigInt
+
+                    let expected =
+                        {
+                            bigintField = 9999999999999999999999I
+                        }
+
+                    let actual =
+                        autoDecodeUnsafeWithExtra
+                            """{"bigintField":"9999999999999999999999"}"""
+                            extra
+
+                    equal expected actual
+            )
+
+            test (
+                "Decoder.Auto.toString works with custom extra",
+                fun _ ->
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom ChildType.Encode ChildType.Decoder
+
+                    let expected =
+                        {
+                            ParentField =
+                                {
+                                    ChildField = "bumbabon"
+                                }
+                        }
+
+                    let actual =
+                        autoDecodeUnsafeWithExtra
+                            """{"ParentField":"bumbabon"}"""
+                            extra
+
+                    equal expected actual
+            )
+
+            test (
+                "works with records with private constructors",
+                fun _ ->
+                    let json = """{ "foo1": 5, "foo2": 7.8 }"""
+
+                    let actual: RecordWithPrivateConstructor =
+                        autoDecodeUnsafeWithOptions json CamelCase Extra.empty
+
+                    actual
+                    |> equal (
+                        {
+                            Foo1 = 5
+                            Foo2 = 7.8
+                        }
+                        : RecordWithPrivateConstructor
+                    )
+            )
+
+            test (
+                "works with unions with private constructors",
+                fun _ ->
+                    let json = """[ "Baz", ["Bar", "foo"]]"""
+
+                    let actual: UnionWithPrivateConstructor list =
+                        autoDecodeUnsafeWithOptions json CamelCase Extra.empty
+
+                    actual
+                    |> equal (
                         [
-                            ("oh",
-                             {
-                                 a = 2.
-                                 b = 2.
-                             })
-                            ("ah",
-                             {
-                                 a = -1.5
-                                 b = 0.
-                             })
+                            Baz
+                            Bar "foo"
                         ]
+                    )
+            )
 
-                let json = """{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}}"""
-                let actual = autoDecode json
-                equal (Ok expected) actual
+            test (
+                "works gives proper error for wrong union fields",
+                fun _ ->
+                    let json = """["Multi", "bar", "foo", "zas"]"""
 
-            testCase "works with maps encoded as arrays"
-            <| fun _ ->
-                let expected =
-                    Map
-                        [
-                            ({
-                                a = 2.
-                                b = 2.
-                             },
-                             "oh")
-                            ({
-                                a = -1.5
-                                b = 0.
-                             },
-                             "ah")
-                        ]
+                    let actual: Result<UnionWithMultipleFields, string> =
+                        autoDecodeWithOptions json CamelCase Extra.empty
 
-                let json = """[[{"a":-1.5,"b":0},"ah"],[{"a":2,"b":2},"oh"]]"""
-                let actual = autoDecode json
-                equal (Ok expected) actual
-
-            testCase "Decoder.Auto.toString works with bigint extra"
-            <| fun _ ->
-                let extra = Extra.empty |> Extra.withBigInt
-
-                let expected =
-                    {
-                        bigintField = 9999999999999999999999I
-                    }
-
-                let actual =
-                    autoDecodeUnsafeWithExtra
-                        """{"bigintField":"9999999999999999999999"}"""
-                        extra
-
-                equal expected actual
-
-            testCase "Decoder.Auto.toString works with custom extra"
-            <| fun _ ->
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom ChildType.Encode ChildType.Decoder
-
-                let expected =
-                    {
-                        ParentField =
-                            {
-                                ChildField = "bumbabon"
-                            }
-                    }
-
-                let actual =
-                    autoDecodeUnsafeWithExtra
-                        """{"ParentField":"bumbabon"}"""
-                        extra
-
-                equal expected actual
-
-            testCase "works with records with private constructors"
-            <| fun _ ->
-                let json = """{ "foo1": 5, "foo2": 7.8 }"""
-
-                let actual: RecordWithPrivateConstructor =
-                    autoDecodeUnsafeWithOptions json CamelCase Extra.empty
-
-                actual
-                |> equal (
-                    {
-                        Foo1 = 5
-                        Foo2 = 7.8
-                    }
-                    : RecordWithPrivateConstructor
-                )
-
-            testCase "works with unions with private constructors"
-            <| fun _ ->
-                let json = """[ "Baz", ["Bar", "foo"]]"""
-
-                let actual: UnionWithPrivateConstructor list =
-                    autoDecodeUnsafeWithOptions json CamelCase Extra.empty
-
-                actual
-                |> equal (
-                    [
-                        Baz
-                        Bar "foo"
-                    ]
-                )
-
-            testCase "works gives proper error for wrong union fields"
-            <| fun _ ->
-                let json = """["Multi", "bar", "foo", "zas"]"""
-
-                let actual: Result<UnionWithMultipleFields, string> =
-                    autoDecodeWithOptions json CamelCase Extra.empty
-
-                actual
-                |> equal (
-                    Error
-                        "Error at: `$.[2]`\nExpecting an int but instead got: \"foo\""
-                )
+                    actual
+                    |> equal (
+                        Error
+                            "Error at: `$.[2]`\nExpecting an int but instead got: \"foo\""
+                    )
+            )
 
             // TODO: Should we allow shorter arrays when last fields are options?
-            testCase "works gives proper error for wrong array length"
-            <| fun _ ->
-                let json = """["Multi", "bar", 1]"""
+            test (
+                "works gives proper error for wrong array length",
+                fun _ ->
+                    let json = """["Multi", "bar", 1]"""
 
-                let actual: Result<UnionWithMultipleFields, string> =
-                    autoDecodeWithOptions json CamelCase Extra.empty
+                    let actual: Result<UnionWithMultipleFields, string> =
+                        autoDecodeWithOptions json CamelCase Extra.empty
 
-                actual
-                |> equal (
-                    Error
-                        """Error at: `$.[3]`
+                    actual
+                    |> equal (
+                        Error
+                            """Error at: `$.[3]`
 Expecting a longer array. Need index `3` but there are only `3` entries.
 [
     "Multi",
     "bar",
     1
 ]"""
-                )
+                    )
+            )
 
-            testCase
-                "works gives proper error for wrong array length when no fields"
-            <| fun _ ->
-                let json = """["Multi"]"""
+            test (
+                "works gives proper error for wrong array length when no fields",
+                fun _ ->
+                    let json = """["Multi"]"""
 
-                let actual: Result<UnionWithMultipleFields, string> =
-                    autoDecodeWithOptions json CamelCase Extra.empty
+                    let actual: Result<UnionWithMultipleFields, string> =
+                        autoDecodeWithOptions json CamelCase Extra.empty
 
-                actual
-                |> equal (
-                    Error
-                        """Error at: `$.[1]`
+                    actual
+                    |> equal (
+                        Error
+                            """Error at: `$.[1]`
 Expecting a longer array. Need index `1` but there are only `1` entries.
 [
     "Multi"
 ]"""
-                )
+                    )
+            )
 
-            testCase "works gives proper error for wrong case name"
-            <| fun _ ->
-                let json = """[1]"""
+            test (
+                "works gives proper error for wrong case name",
+                fun _ ->
+                    let json = """[1]"""
 
-                let actual: Result<UnionWithMultipleFields, string> =
-                    autoDecodeWithOptions json CamelCase Extra.empty
+                    let actual: Result<UnionWithMultipleFields, string> =
+                        autoDecodeWithOptions json CamelCase Extra.empty
 
-                actual
-                |> equal (
-                    Error
-                        "Error at: `$.[0]`\nExpecting a string but instead got: 1"
-                )
+                    actual
+                    |> equal (
+                        Error
+                            "Error at: `$.[0]`\nExpecting a string but instead got: 1"
+                    )
+            )
 
-            testCase "Auto.generateDecoderCached works"
-            <| fun _ ->
-                let expected =
-                    Ok
+            test (
+                "Auto.generateDecoderCached works",
+                fun _ ->
+                    let expected =
+                        Ok
+                            {
+                                Id = 0
+                                Name = "maxime"
+                                Email = "mail@domain.com"
+                                Followers = 0
+                            }
+
+                    let json =
+                        """{ "id" : 0, "name": "maxime", "email": "mail@domain.com", "followers": 0 }"""
+
+                    let decoder1 =
+                        Decode.Auto.generateDecoderCached<User> (
+                            caseStrategy = CamelCase
+                        )
+
+                    let decoder2 =
+                        Decode.Auto.generateDecoderCached<User> (
+                            caseStrategy = CamelCase
+                        )
+
+                    let actual1 = runner.Decode.fromString decoder1 json
+                    let actual2 = runner.Decode.fromString decoder2 json
+                    equal expected actual1
+                    equal expected actual2
+                    equal actual1 actual2
+            )
+
+            test (
+                "Auto.generateDecoderCached returns same decoder for same configuration",
+                fun _ ->
+                    let decoder1 =
+                        Decode.Auto.generateDecoderCached<User> (
+                            caseStrategy = CamelCase
+                        )
+
+                    let decoder2 =
+                        Decode.Auto.generateDecoderCached<User> (
+                            caseStrategy = CamelCase
+                        )
+
+                    let json =
+                        """{ "id": 0, "name": "maxime", "email": "test@test.com", "followers": 5 }"""
+
+                    let res1 = runner.Decode.unsafeFromString decoder1 json
+                    let res2 = runner.Decode.unsafeFromString decoder2 json
+
+                    equal res1 res2
+
+                    let expected =
                         {
                             Id = 0
                             Name = "maxime"
-                            Email = "mail@domain.com"
-                            Followers = 0
+                            Email = "test@test.com"
+                            Followers = 5
                         }
 
-                let json =
-                    """{ "id" : 0, "name": "maxime", "email": "mail@domain.com", "followers": 0 }"""
+                    equal expected res1
+            )
 
-                let decoder1 =
-                    Decode.Auto.generateDecoderCached<User> (
-                        caseStrategy = CamelCase
+            test (
+                "works with strange types if they are None",
+                fun _ ->
+                    let json = """{"Id":0}"""
+
+                    let res: RecordWithStrangeType = autoDecodeUnsafe json
+
+                    res
+                    |> equal (
+                        {
+                            Id = 0
+                            Thread = None
+                        }
                     )
+            )
 
-                let decoder2 =
-                    Decode.Auto.generateDecoderCached<User> (
-                        caseStrategy = CamelCase
-                    )
+            test (
+                "works with recursive types",
+                fun _ ->
+                    let vater =
+                        {
+                            Name = "Alfonso"
+                            Children =
+                                [
+                                    {
+                                        Name = "Narumi"
+                                        Children = []
+                                    }
+                                    {
+                                        Name = "Takumi"
+                                        Children = []
+                                    }
+                                ]
+                        }
 
-                let actual1 = runner.Decode.fromString decoder1 json
-                let actual2 = runner.Decode.fromString decoder2 json
-                equal expected actual1
-                equal expected actual2
-                equal actual1 actual2
+                    let json =
+                        """{"Name":"Alfonso","Children":[{"Name":"Narumi","Children":[]},{"Name":"Takumi","Children":[]}]}"""
 
-            testCase
-                "Auto.generateDecoderCached returns same decoder for same configuration"
-            <| fun _ ->
-                let decoder1 =
-                    Decode.Auto.generateDecoderCached<User> (
-                        caseStrategy = CamelCase
-                    )
+                    autoDecodeUnsafe json |> equal vater
+            )
 
-                let decoder2 =
-                    Decode.Auto.generateDecoderCached<User> (
-                        caseStrategy = CamelCase
-                    )
+            test (
+                "Auto.unsafeFromString works for unit",
+                fun _ ->
+                    let json = Encode.unit () |> runner.Encode.toString 4
+                    let res: unit = autoDecodeUnsafe json
+                    equal () res
+            )
 
-                let json =
-                    """{ "id": 0, "name": "maxime", "email": "test@test.com", "followers": 5 }"""
+            test (
+                "Erased single-case DUs works",
+                fun _ ->
+                    let expected = NoAllocAttributeId(Guid.NewGuid())
+                    let json = autoEncode expected
 
-                let res1 = runner.Decode.unsafeFromString decoder1 json
-                let res2 = runner.Decode.unsafeFromString decoder2 json
+                    let actual: NoAllocAttributeId = autoDecodeUnsafe json
 
-                equal res1 res2
+                    equal expected actual
+            )
 
-                let expected =
-                    {
-                        Id = 0
-                        Name = "maxime"
-                        Email = "test@test.com"
-                        Followers = 5
-                    }
+            test (
+                "Auto.unsafeFromString works with HTML inside of a string",
+                fun _ ->
+                    let expected =
+                        {
+                            FeedName = "Ars"
+                            Content =
+                                "<div><figure class=\"intro-image intro-left\"><img src=\"https://cdn.arstechnica.net/wp-content/uploads/2019/05/qualcomm-enforcer-800x450.jpg\" alt=\"How Qualcomm shook down the cell phone industry for almost 20 years\"><p class=\"caption\" style=\"font-size: 0.8em\"><a href=\"https://cdn.arstechnica.net/wp-content/uploads/2019/05/qualcomm-enforcer.jpg\" class=\"enlarge-link\">Enlarge</a> (credit: Getty / Aurich Lawson)</p>  </figure><div><a name=\"page-1\"></a></div><p>In 2005, Apple contacted Qualcomm as a potential supplier for modem chips in the first iPhone. Qualcomm's response was unusual: a letter demanding that Apple sign a patent licensing agreement before Qualcomm would even consider supplying chips.</p><p>\"I'd spent 20 years in the industry, I had never seen a letter like this,\" said Tony Blevins, Apple's vice president of procurement.</p><p>Most suppliers are eager to talk to new customers—especially customers as big and prestigious as Apple. But Qualcomm wasn't like other suppliers; it enjoyed a dominant position in the market for cellular chips. That gave Qualcomm a lot of leverage, and the company wasn't afraid to use it.</p></div><p><a href=\"https://arstechnica.com/?p=1510419#p3\">Read 70 remaining paragraphs</a> | <a href=\"https://arstechnica.com/?p=1510419&amp;comments=1\">Comments</a></p><div class=\"feedflare\"><a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:V_sGLiPBpWU\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?i=7NLlD3YvqFA:DF_-B3_cDwc:V_sGLiPBpWU\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:F7zBnMyn0Lo\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?i=7NLlD3YvqFA:DF_-B3_cDwc:F7zBnMyn0Lo\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:qj6IDK7rITs\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:yIl2AUoC8zA\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA\" border=\"0\"></a></div>"
+                        }
 
-                equal expected res1
-
-            testCase "works with strange types if they are None"
-            <| fun _ ->
-                let json = """{"Id":0}"""
-
-                let res: RecordWithStrangeType = autoDecodeUnsafe json
-
-                res
-                |> equal (
-                    {
-                        Id = 0
-                        Thread = None
-                    }
-                )
-
-            testCase "works with recursive types"
-            <| fun _ ->
-                let vater =
-                    {
-                        Name = "Alfonso"
-                        Children =
-                            [
-                                {
-                                    Name = "Narumi"
-                                    Children = []
-                                }
-                                {
-                                    Name = "Takumi"
-                                    Children = []
-                                }
-                            ]
-                    }
-
-                let json =
-                    """{"Name":"Alfonso","Children":[{"Name":"Narumi","Children":[]},{"Name":"Takumi","Children":[]}]}"""
-
-                autoDecodeUnsafe json |> equal vater
-
-            testCase "Auto.unsafeFromString works for unit"
-            <| fun _ ->
-                let json = Encode.unit () |> runner.Encode.toString 4
-                let res: unit = autoDecodeUnsafe json
-                equal () res
-
-            testCase "Erased single-case DUs works"
-            <| fun _ ->
-                let expected = NoAllocAttributeId(Guid.NewGuid())
-                let json = autoEncode expected
-
-                let actual: NoAllocAttributeId = autoDecodeUnsafe json
-
-                equal expected actual
-
-            testCase "Auto.unsafeFromString works with HTML inside of a string"
-            <| fun _ ->
-                let expected =
-                    {
-                        FeedName = "Ars"
-                        Content =
-                            "<div><figure class=\"intro-image intro-left\"><img src=\"https://cdn.arstechnica.net/wp-content/uploads/2019/05/qualcomm-enforcer-800x450.jpg\" alt=\"How Qualcomm shook down the cell phone industry for almost 20 years\"><p class=\"caption\" style=\"font-size: 0.8em\"><a href=\"https://cdn.arstechnica.net/wp-content/uploads/2019/05/qualcomm-enforcer.jpg\" class=\"enlarge-link\">Enlarge</a> (credit: Getty / Aurich Lawson)</p>  </figure><div><a name=\"page-1\"></a></div><p>In 2005, Apple contacted Qualcomm as a potential supplier for modem chips in the first iPhone. Qualcomm's response was unusual: a letter demanding that Apple sign a patent licensing agreement before Qualcomm would even consider supplying chips.</p><p>\"I'd spent 20 years in the industry, I had never seen a letter like this,\" said Tony Blevins, Apple's vice president of procurement.</p><p>Most suppliers are eager to talk to new customers—especially customers as big and prestigious as Apple. But Qualcomm wasn't like other suppliers; it enjoyed a dominant position in the market for cellular chips. That gave Qualcomm a lot of leverage, and the company wasn't afraid to use it.</p></div><p><a href=\"https://arstechnica.com/?p=1510419#p3\">Read 70 remaining paragraphs</a> | <a href=\"https://arstechnica.com/?p=1510419&amp;comments=1\">Comments</a></p><div class=\"feedflare\"><a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:V_sGLiPBpWU\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?i=7NLlD3YvqFA:DF_-B3_cDwc:V_sGLiPBpWU\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:F7zBnMyn0Lo\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?i=7NLlD3YvqFA:DF_-B3_cDwc:F7zBnMyn0Lo\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:qj6IDK7rITs\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:yIl2AUoC8zA\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA\" border=\"0\"></a></div>"
-                    }
-
-                let articleJson =
-                    """
+                    let articleJson =
+                        """
                 {
                     "FeedName": "Ars",
                     "Content": "<div><figure class=\"intro-image intro-left\"><img src=\"https://cdn.arstechnica.net/wp-content/uploads/2019/05/qualcomm-enforcer-800x450.jpg\" alt=\"How Qualcomm shook down the cell phone industry for almost 20 years\"><p class=\"caption\" style=\"font-size: 0.8em\"><a href=\"https://cdn.arstechnica.net/wp-content/uploads/2019/05/qualcomm-enforcer.jpg\" class=\"enlarge-link\">Enlarge</a> (credit: Getty / Aurich Lawson)</p>  </figure><div><a name=\"page-1\"></a></div><p>In 2005, Apple contacted Qualcomm as a potential supplier for modem chips in the first iPhone. Qualcomm's response was unusual: a letter demanding that Apple sign a patent licensing agreement before Qualcomm would even consider supplying chips.</p><p>\"I'd spent 20 years in the industry, I had never seen a letter like this,\" said Tony Blevins, Apple's vice president of procurement.</p><p>Most suppliers are eager to talk to new customers—especially customers as big and prestigious as Apple. But Qualcomm wasn't like other suppliers; it enjoyed a dominant position in the market for cellular chips. That gave Qualcomm a lot of leverage, and the company wasn't afraid to use it.</p></div><p><a href=\"https://arstechnica.com/?p=1510419#p3\">Read 70 remaining paragraphs</a> | <a href=\"https://arstechnica.com/?p=1510419&amp;comments=1\">Comments</a></p><div class=\"feedflare\"><a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:V_sGLiPBpWU\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?i=7NLlD3YvqFA:DF_-B3_cDwc:V_sGLiPBpWU\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:F7zBnMyn0Lo\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?i=7NLlD3YvqFA:DF_-B3_cDwc:F7zBnMyn0Lo\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:qj6IDK7rITs\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?d=qj6IDK7rITs\" border=\"0\"></a> <a href=\"http://feeds.arstechnica.com/~ff/arstechnica/index?a=7NLlD3YvqFA:DF_-B3_cDwc:yIl2AUoC8zA\"><img src=\"http://feeds.feedburner.com/~ff/arstechnica/index?d=yIl2AUoC8zA\" border=\"0\"></a></div>"
                 }
                     """
 
-                let actual: TestStringWithHTML = autoDecodeUnsafe articleJson
+                    let actual: TestStringWithHTML =
+                        autoDecodeUnsafe articleJson
 
-                equal expected actual
+                    equal expected actual
+            )
 
             // =====================
             // Lossless Option Tests
             // =====================
 
-            testCase "losslessOption: encodes Some value as array with type"
-            <| fun _ ->
-                let value = Some 42
+            test (
+                "losslessOption: encodes Some value as array with type",
+                fun _ ->
+                    let value = Some 42
 
-                let encoder =
-                    Encode.Auto.generateEncoder<int option> (
-                        losslessOption = true
-                    )
+                    let encoder =
+                        Encode.Auto.generateEncoder<int option> (
+                            losslessOption = true
+                        )
 
-                let json = encoder value |> runner.Encode.toString 4
+                    let json = encoder value |> runner.Encode.toString 4
 
-                // Lossless encoding should produce: {"$type":"option","$value":42}
-                Expect.stringContains
-                    json
-                    "\"$type\""
-                    "Should contain $type field"
+                    // Lossless encoding should produce: {"$type":"option","$value":42}
+                    assertThat json (contains "\"$type\"")
+                    assertThat json (contains "\"option\"")
+                    assertThat json (contains "42")
+            )
 
-                Expect.stringContains
-                    json
-                    "\"option\""
-                    "Should contain 'option' as type"
-
-                Expect.stringContains json "42" "Should contain the value 42"
-
-            testCase "losslessOption: encodes None as null"
-            <| fun _ ->
-                let expected =
-                    """{
+            test (
+                "losslessOption: encodes None as null",
+                fun _ ->
+                    let expected =
+                        """{
     "$type": "option",
     "$case": "none"
 }"""
 
-                let value: int option = None
+                    let value: int option = None
 
-                let encoder =
-                    Encode.Auto.generateEncoder<int option> (
-                        losslessOption = true
-                    )
+                    let encoder =
+                        Encode.Auto.generateEncoder<int option> (
+                            losslessOption = true
+                        )
 
-                let json = encoder value |> runner.Encode.toString 4
+                    let json = encoder value |> runner.Encode.toString 4
 
-                equal json expected
+                    equal json expected
+            )
 
-            testCase "losslessOption: roundtrip with Some value"
-            <| fun _ ->
-                let expected = Some 42
+            test (
+                "losslessOption: roundtrip with Some value",
+                fun _ ->
+                    let expected = Some 42
 
-                let encoder =
-                    Encode.Auto.generateEncoder<int option> (
-                        losslessOption = true
-                    )
+                    let encoder =
+                        Encode.Auto.generateEncoder<int option> (
+                            losslessOption = true
+                        )
 
-                let decoder =
-                    Decode.Auto.generateDecoder<int option> (
-                        losslessOption = true
-                    )
+                    let decoder =
+                        Decode.Auto.generateDecoder<int option> (
+                            losslessOption = true
+                        )
 
-                let json = encoder expected |> runner.Encode.toString 4
-                let actual = runner.Decode.unsafeFromString decoder json
+                    let json = encoder expected |> runner.Encode.toString 4
+                    let actual = runner.Decode.unsafeFromString decoder json
 
-                equal expected actual
+                    equal expected actual
+            )
 
-            testCase "losslessOption: roundtrip with None"
-            <| fun _ ->
-                let expected: int option = None
+            test (
+                "losslessOption: roundtrip with None",
+                fun _ ->
+                    let expected: int option = None
 
-                let encoder =
-                    Encode.Auto.generateEncoder<int option> (
-                        losslessOption = true
-                    )
+                    let encoder =
+                        Encode.Auto.generateEncoder<int option> (
+                            losslessOption = true
+                        )
 
-                let decoder =
-                    Decode.Auto.generateDecoder<int option> (
-                        losslessOption = true
-                    )
+                    let decoder =
+                        Decode.Auto.generateDecoder<int option> (
+                            losslessOption = true
+                        )
 
-                let json = encoder expected |> runner.Encode.toString 4
-                let actual = runner.Decode.unsafeFromString decoder json
+                    let json = encoder expected |> runner.Encode.toString 4
+                    let actual = runner.Decode.unsafeFromString decoder json
 
-                equal expected actual
+                    equal expected actual
+            )
 
-            testCase
-                "losslessOption: can distinguish between Some None and None"
-            <| fun _ ->
-                // Some None should encode differently than None
-                let someNone: int option option = Some None
-                let none: int option option = None
+            test (
+                "losslessOption: can distinguish between Some None and None",
+                fun _ ->
+                    // Some None should encode differently than None
+                    let someNone: int option option = Some None
+                    let none: int option option = None
 
-                let encoder =
-                    Encode.Auto.generateEncoder<int option option> (
-                        losslessOption = true
-                    )
+                    let encoder =
+                        Encode.Auto.generateEncoder<int option option> (
+                            losslessOption = true
+                        )
 
-                let someNoneJson = encoder someNone |> runner.Encode.toString 0
-                let noneJson = encoder none |> runner.Encode.toString 0
+                    let someNoneJson =
+                        encoder someNone |> runner.Encode.toString 0
 
-                // They should be different
-                notEqual someNoneJson noneJson
+                    let noneJson = encoder none |> runner.Encode.toString 0
 
-                equal
-                    someNoneJson
-                    """{"$type":"option","$case":"some","$value":{"$type":"option","$case":"none"}}"""
+                    // They should be different
+                    notEqual someNoneJson noneJson
 
-                equal noneJson """{"$type":"option","$case":"none"}"""
+                    equal
+                        someNoneJson
+                        """{"$type":"option","$case":"some","$value":{"$type":"option","$case":"none"}}"""
 
-            testCase "losslessOption: roundtrip with nested options"
-            <| fun _ ->
-                let expected: int option option = Some(Some 42)
+                    equal noneJson """{"$type":"option","$case":"none"}"""
+            )
 
-                let encoder =
-                    Encode.Auto.generateEncoder<int option option> (
-                        losslessOption = true
-                    )
+            test (
+                "losslessOption: roundtrip with nested options",
+                fun _ ->
+                    let expected: int option option = Some(Some 42)
 
-                let decoder =
-                    Decode.Auto.generateDecoder<int option option> (
-                        losslessOption = true
-                    )
+                    let encoder =
+                        Encode.Auto.generateEncoder<int option option> (
+                            losslessOption = true
+                        )
 
-                let json = encoder expected |> runner.Encode.toString 4
-                let actual = runner.Decode.unsafeFromString decoder json
+                    let decoder =
+                        Decode.Auto.generateDecoder<int option option> (
+                            losslessOption = true
+                        )
 
-                equal expected actual
+                    let json = encoder expected |> runner.Encode.toString 4
+                    let actual = runner.Decode.unsafeFromString decoder json
 
-            testCase "losslessOption: roundtrip with Some None"
-            <| fun _ ->
-                let expected: int option option = Some None
+                    equal expected actual
+            )
 
-                let encoder =
-                    Encode.Auto.generateEncoder<int option option> (
-                        losslessOption = true
-                    )
+            test (
+                "losslessOption: roundtrip with Some None",
+                fun _ ->
+                    let expected: int option option = Some None
 
-                let decoder =
-                    Decode.Auto.generateDecoder<int option option> (
-                        losslessOption = true
-                    )
+                    let encoder =
+                        Encode.Auto.generateEncoder<int option option> (
+                            losslessOption = true
+                        )
 
-                let json = encoder expected |> runner.Encode.toString 4
-                let actual = runner.Decode.unsafeFromString decoder json
+                    let decoder =
+                        Decode.Auto.generateDecoder<int option option> (
+                            losslessOption = true
+                        )
 
-                equal expected actual
+                    let json = encoder expected |> runner.Encode.toString 4
+                    let actual = runner.Decode.unsafeFromString decoder json
 
-            testCase "losslessOption: works with record containing option field"
-            <| fun _ ->
-                let expected =
-                    {
-                        Maybe = Some "hello"
-                        Must = "world"
-                    }
+                    equal expected actual
+            )
 
-                let encoder =
-                    Encode.Auto.generateEncoder<TestMaybeRecord> (
-                        losslessOption = true
-                    )
+            test (
+                "losslessOption: works with record containing option field",
+                fun _ ->
+                    let expected =
+                        {
+                            Maybe = Some "hello"
+                            Must = "world"
+                        }
 
-                let decoder =
-                    Decode.Auto.generateDecoder<TestMaybeRecord> (
-                        losslessOption = true
-                    )
+                    let encoder =
+                        Encode.Auto.generateEncoder<TestMaybeRecord> (
+                            losslessOption = true
+                        )
 
-                let json = encoder expected |> runner.Encode.toString 4
-                let actual = runner.Decode.unsafeFromString decoder json
+                    let decoder =
+                        Decode.Auto.generateDecoder<TestMaybeRecord> (
+                            losslessOption = true
+                        )
 
-                equal expected actual
+                    let json = encoder expected |> runner.Encode.toString 4
+                    let actual = runner.Decode.unsafeFromString decoder json
 
-            testCase "losslessOption: default is false (lossy encoding)"
-            <| fun _ ->
-                let value = Some 42
-                let lossyEncoder = Encode.Auto.generateEncoder<int option> ()
+                    equal expected actual
+            )
 
-                let losslessEncoder =
-                    Encode.Auto.generateEncoder<int option> (
-                        losslessOption = true
-                    )
+            test (
+                "losslessOption: default is false (lossy encoding)",
+                fun _ ->
+                    let value = Some 42
 
-                let lossyJson = lossyEncoder value |> runner.Encode.toString 4
+                    let lossyEncoder =
+                        Encode.Auto.generateEncoder<int option> ()
 
-                let losslessJson =
-                    losslessEncoder value |> runner.Encode.toString 4
+                    let losslessEncoder =
+                        Encode.Auto.generateEncoder<int option> (
+                            losslessOption = true
+                        )
 
-                // Lossy should just be the value
-                equal "42" lossyJson
-                // Lossless should be different
-                Expect.notEqual
-                    lossyJson
-                    losslessJson
-                    "Lossy and lossless should be different"
+                    let lossyJson =
+                        lossyEncoder value |> runner.Encode.toString 4
 
-            testCase "losslessOption: cached encoder works correctly"
-            <| fun _ ->
-                let expected = Some "test"
+                    let losslessJson =
+                        losslessEncoder value |> runner.Encode.toString 4
 
-                let encoder =
-                    Encode.Auto.generateEncoderCached<string option> (
-                        losslessOption = true
-                    )
+                    // Lossy should just be the value
+                    equal "42" lossyJson
+                    // Lossless should be different
+                    notEqual lossyJson losslessJson
+            )
 
-                let decoder =
-                    Decode.Auto.generateDecoderCached<string option> (
-                        losslessOption = true
-                    )
+            test (
+                "losslessOption: cached encoder works correctly",
+                fun _ ->
+                    let expected = Some "test"
 
-                let json = encoder expected |> runner.Encode.toString 4
-                let actual = runner.Decode.unsafeFromString decoder json
+                    let encoder =
+                        Encode.Auto.generateEncoderCached<string option> (
+                            losslessOption = true
+                        )
 
-                equal expected actual
+                    let decoder =
+                        Decode.Auto.generateDecoderCached<string option> (
+                            losslessOption = true
+                        )
 
-            testCase
-                "losslessOption: different cache entries for different settings"
-            <| fun _ ->
-                let value = Some 123
+                    let json = encoder expected |> runner.Encode.toString 4
+                    let actual = runner.Decode.unsafeFromString decoder json
 
-                let lossyEncoder =
-                    Encode.Auto.generateEncoderCached<int option> (
-                        losslessOption = false
-                    )
+                    equal expected actual
+            )
 
-                let losslessEncoder =
-                    Encode.Auto.generateEncoderCached<int option> (
-                        losslessOption = true
-                    )
+            test (
+                "losslessOption: different cache entries for different settings",
+                fun _ ->
+                    let value = Some 123
 
-                let lossyJson = lossyEncoder value |> runner.Encode.toString 0
+                    let lossyEncoder =
+                        Encode.Auto.generateEncoderCached<int option> (
+                            losslessOption = false
+                        )
 
-                let losslessJson =
-                    losslessEncoder value |> runner.Encode.toString 0
+                    let losslessEncoder =
+                        Encode.Auto.generateEncoderCached<int option> (
+                            losslessOption = true
+                        )
 
-                // Verify they produce different outputs
-                equal "123" lossyJson
+                    let lossyJson =
+                        lossyEncoder value |> runner.Encode.toString 0
 
-                equal
-                    """{"$type":"option","$case":"some","$value":123}"""
-                    losslessJson
+                    let losslessJson =
+                        losslessEncoder value |> runner.Encode.toString 0
+
+                    // Verify they produce different outputs
+                    equal "123" lossyJson
+
+                    equal
+                        """{"$type":"option","$case":"some","$value":123}"""
+                        losslessJson
+            )
 
             // =====================
             // Generic Type Extra Coder Tests
             // Issue #169: Extra encoder doesn't get called for type with generic params
             // =====================
 
-            testCase
-                "Extra coder for generic type gets called for concrete instantiation"
-            <| fun _ ->
-                // Define a generic type wrapper
-                let value: GenericWrapper<int> =
-                    {
-                        Node = 1234
-                        Source =
-                            [
-                                1
-                                2
-                                3
-                            ]
-                    }
-
-                // Create an extra encoder for the generic type (not a concrete instantiation)
-                // This encoder only encodes the Node field, ignoring Source
-                let cstNodeIntEncoder (cstNode: GenericWrapper<int>) =
-                    Encode.int cstNode.Node
-
-                let cstNodeIntDecoder: Decoder<GenericWrapper<int>> =
-                    Decode.fail "Not implemented"
-
-                // Register the generic coder
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom cstNodeIntEncoder cstNodeIntDecoder
-
-                // Generate encoder for the concrete type
-                let encoder =
-                    Encode.Auto.generateEncoder<GenericWrapper<int>> (
-                        extra = extra
-                    )
-
-                let json = encoder value |> runner.Encode.toString 4
-
-                // The JSON should only contain the node value (1234), not the source field
-                equal "1234" json
-
-            testCase
-                "Extra coder for generic type works with string instantiation"
-            <| fun _ ->
-                // Test with string instead of int
-                let value: GenericWrapper<string> =
-                    {
-                        Node = "hello"
-                        Source =
-                            [
-                                1
-                                2
-                                3
-                            ]
-                    }
-
-                // Create an extra encoder that only encodes the Node field
-                let cstNodeStringEncoder (cstNode: GenericWrapper<string>) =
-                    Encode.string cstNode.Node
-
-                let cstNodeStringDecoder: Decoder<GenericWrapper<string>> =
-                    Decode.fail "Not implemented"
-
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom
-                        cstNodeStringEncoder
-                        cstNodeStringDecoder
-
-                let encoder =
-                    Encode.Auto.generateEncoder<GenericWrapper<string>> (
-                        extra = extra
-                    )
-
-                let json = encoder value |> runner.Encode.toString 4
-
-                // The JSON should only contain the node value ("hello"), not the source field
-                equal "\"hello\"" json
-
-            testCase
-                "Extra decoder for generic type gets called for concrete instantiation"
-            <| fun _ ->
-                // Create an extra decoder that reconstructs the GenericWrapper from just the node value
-                let cstNodeIntDecoder: Decoder<GenericWrapper<int>> =
-                    Decode.int
-                    |> Decode.map (fun node ->
+            test (
+                "Extra coder for generic type gets called for concrete instantiation",
+                fun _ ->
+                    // Define a generic type wrapper
+                    let value: GenericWrapper<int> =
                         {
-                            Node = node
-                            Source = [] // Default empty source
+                            Node = 1234
+                            Source =
+                                [
+                                    1
+                                    2
+                                    3
+                                ]
                         }
-                    )
 
-                // Use the standard encoder
-                let cstNodeIntEncoder (cstNode: GenericWrapper<int>) =
-                    Encode.object
-                        [
-                            "node", Encode.int cstNode.Node
-                            "source",
-                            Encode.list (List.map Encode.int cstNode.Source)
-                        ]
+                    // Create an extra encoder for the generic type (not a concrete instantiation)
+                    // This encoder only encodes the Node field, ignoring Source
+                    let cstNodeIntEncoder (cstNode: GenericWrapper<int>) =
+                        Encode.int cstNode.Node
 
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom cstNodeIntEncoder cstNodeIntDecoder
+                    let cstNodeIntDecoder: Decoder<GenericWrapper<int>> =
+                        Decode.fail "Not implemented"
 
-                let decoder =
-                    Decode.Auto.generateDecoder<GenericWrapper<int>> (
-                        extra = extra
-                    )
+                    // Register the generic coder
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom cstNodeIntEncoder cstNodeIntDecoder
 
-                // JSON just contains the node value, no source field
-                let json = "1234"
-                let result = runner.Decode.fromString decoder json
+                    // Generate encoder for the concrete type
+                    let encoder =
+                        Encode.Auto.generateEncoder<GenericWrapper<int>> (
+                            extra = extra
+                        )
 
-                let expected: GenericWrapper<int> =
-                    {
-                        Node = 1234
-                        Source = []
-                    }
+                    let json = encoder value |> runner.Encode.toString 4
 
-                equal (Ok expected) result
+                    // The JSON should only contain the node value (1234), not the source field
+                    equal "1234" json
+            )
 
-            testCase "Generic type coder works with list instantiation"
-            <| fun _ ->
-                let value: GenericWrapper<int list> =
-                    GenericWrapper<int list>.Create
-                        [
-                            1
-                            2
-                            3
-                        ]
-                        [
-                            4
-                            5
-                        ]
+            test (
+                "Extra coder for generic type works with string instantiation",
+                fun _ ->
+                    // Test with string instead of int
+                    let value: GenericWrapper<string> =
+                        {
+                            Node = "hello"
+                            Source =
+                                [
+                                    1
+                                    2
+                                    3
+                                ]
+                        }
 
-                // Encoder that only encodes the Node field
-                let cstNodeListEncoder (cstNode: GenericWrapper<int list>) =
-                    Encode.list (List.map Encode.int cstNode.Node)
+                    // Create an extra encoder that only encodes the Node field
+                    let cstNodeStringEncoder (cstNode: GenericWrapper<string>) =
+                        Encode.string cstNode.Node
 
-                let cstNodeListDecoder: Decoder<GenericWrapper<int list>> =
-                    Decode.fail "Not implemented"
+                    let cstNodeStringDecoder: Decoder<GenericWrapper<string>> =
+                        Decode.fail "Not implemented"
 
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom cstNodeListEncoder cstNodeListDecoder
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom
+                            cstNodeStringEncoder
+                            cstNodeStringDecoder
 
-                let encoder =
-                    Encode.Auto.generateEncoder<GenericWrapper<int list>> (
-                        extra = extra
-                    )
+                    let encoder =
+                        Encode.Auto.generateEncoder<GenericWrapper<string>> (
+                            extra = extra
+                        )
 
-                let json = encoder value |> runner.Encode.toString 4
+                    let json = encoder value |> runner.Encode.toString 4
 
-                // Should only contain the list [1,2,3], not the Source field
-                equal "[\n    1,\n    2,\n    3\n]" json
+                    // The JSON should only contain the node value ("hello"), not the source field
+                    equal "\"hello\"" json
+            )
+
+            test (
+                "Extra decoder for generic type gets called for concrete instantiation",
+                fun _ ->
+                    // Create an extra decoder that reconstructs the GenericWrapper from just the node value
+                    let cstNodeIntDecoder: Decoder<GenericWrapper<int>> =
+                        Decode.int
+                        |> Decode.map (fun node ->
+                            {
+                                Node = node
+                                Source = [] // Default empty source
+                            }
+                        )
+
+                    // Use the standard encoder
+                    let cstNodeIntEncoder (cstNode: GenericWrapper<int>) =
+                        Encode.object
+                            [
+                                "node", Encode.int cstNode.Node
+                                "source",
+                                Encode.list (List.map Encode.int cstNode.Source)
+                            ]
+
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom cstNodeIntEncoder cstNodeIntDecoder
+
+                    let decoder =
+                        Decode.Auto.generateDecoder<GenericWrapper<int>> (
+                            extra = extra
+                        )
+
+                    // JSON just contains the node value, no source field
+                    let json = "1234"
+                    let result = runner.Decode.fromString decoder json
+
+                    let expected: GenericWrapper<int> =
+                        {
+                            Node = 1234
+                            Source = []
+                        }
+
+                    equal (Ok expected) result
+            )
+
+            test (
+                "Generic type coder works with list instantiation",
+                fun _ ->
+                    let value: GenericWrapper<int list> =
+                        GenericWrapper<int list>.Create
+                            [
+                                1
+                                2
+                                3
+                            ]
+                            [
+                                4
+                                5
+                            ]
+
+                    // Encoder that only encodes the Node field
+                    let cstNodeListEncoder (cstNode: GenericWrapper<int list>) =
+                        Encode.list (List.map Encode.int cstNode.Node)
+
+                    let cstNodeListDecoder: Decoder<GenericWrapper<int list>> =
+                        Decode.fail "Not implemented"
+
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom
+                            cstNodeListEncoder
+                            cstNodeListDecoder
+
+                    let encoder =
+                        Encode.Auto.generateEncoder<GenericWrapper<int list>> (
+                            extra = extra
+                        )
+
+                    let json = encoder value |> runner.Encode.toString 4
+
+                    // Should only contain the list [1,2,3], not the Source field
+                    equal "[\n    1,\n    2,\n    3\n]" json
+            )
 
             // =====================
             // Override Built-in Generic Types Tests
             // Issue #88: Check if user can override behaviour of generic type
             // =====================
 
-            testCase "User can override Option<'T> encoding behavior"
-            <| fun _ ->
-                let value: int option = Some 42
+            test (
+                "User can override Option<'T> encoding behavior",
+                fun _ ->
+                    let value: int option = Some 42
 
-                // Custom encoder that wraps option in a custom object
-                let customOptionEncoder
-                    (encoder: Encoder<int>)
-                    : Encoder<int option>
-                    =
-                    fun (opt: int option) ->
-                        match opt with
-                        | Some v ->
-                            Encode.object
-                                [
-                                    "kind", Encode.string "customSome"
-                                    "data", encoder v
-                                ]
-                        | None ->
-                            Encode.object [ "kind", Encode.string "customNone" ]
+                    // Custom encoder that wraps option in a custom object
+                    let customOptionEncoder
+                        (encoder: Encoder<int>)
+                        : Encoder<int option>
+                        =
+                        fun (opt: int option) ->
+                            match opt with
+                            | Some v ->
+                                Encode.object
+                                    [
+                                        "kind", Encode.string "customSome"
+                                        "data", encoder v
+                                    ]
+                            | None ->
+                                Encode.object
+                                    [ "kind", Encode.string "customNone" ]
 
-                let customOptionDecoder
-                    (decoder: Decoder<int>)
-                    : Decoder<int option>
-                    =
-                    Decode.fail "Not implemented"
+                    let customOptionDecoder
+                        (decoder: Decoder<int>)
+                        : Decoder<int option>
+                        =
+                        Decode.fail "Not implemented"
 
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom
-                        (customOptionEncoder Encode.int)
-                        (customOptionDecoder Decode.int)
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom
+                            (customOptionEncoder Encode.int)
+                            (customOptionDecoder Decode.int)
 
-                let encoder =
-                    Encode.Auto.generateEncoder<int option> (extra = extra)
+                    let encoder =
+                        Encode.Auto.generateEncoder<int option> (extra = extra)
 
-                let json = encoder value |> runner.Encode.toString 0
+                    let json = encoder value |> runner.Encode.toString 0
 
-                // Should use custom encoding format
-                equal json """{"kind":"customSome","data":42}"""
+                    // Should use custom encoding format
+                    equal json """{"kind":"customSome","data":42}"""
+            )
 
-            testCase "User can override Option<'T> decoding behavior"
-            <| fun _ ->
-                // Custom decoder that reads custom format
-                let customOptionDecoder
-                    (decoder: Decoder<int>)
-                    : Decoder<int option>
-                    =
-                    Decode.field "kind" Decode.string
-                    |> Decode.andThen (fun kind ->
-                        match kind with
-                        | "customSome" ->
-                            Decode.field "data" decoder |> Decode.map Some
-                        | "customNone" -> Decode.succeed None
-                        | _ -> Decode.fail "Unknown kind"
-                    )
-
-                let customOptionEncoder
-                    (encoder: Encoder<int>)
-                    : Encoder<int option>
-                    =
-                    fun _ -> Encode.nil
-
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom
-                        (customOptionEncoder Encode.int)
-                        (customOptionDecoder Decode.int)
-
-                let decoder =
-                    Decode.Auto.generateDecoder<int option> (extra = extra)
-
-                let json = """{"kind":"customSome","data":42}"""
-                let result = runner.Decode.fromString decoder json
-
-                equal result (Ok(Some 42))
-
-            testCase "User can override Map<string, 'V> encoding behavior"
-            <| fun _ ->
-                let value =
-                    Map.ofList
-                        [
-                            "a", 1
-                            "b", 2
-                        ]
-
-                // Custom encoder that converts map to array of key-value objects
-                let customMapEncoder
-                    (encoder: Encoder<int>)
-                    : Encoder<Map<string, int>>
-                    =
-                    fun (m: Map<string, int>) ->
-                        m
-                        |> Map.toList
-                        |> List.map (fun (k, v) ->
-                            Encode.object
-                                [
-                                    "key", Encode.string k
-                                    "value", encoder v
-                                ]
+            test (
+                "User can override Option<'T> decoding behavior",
+                fun _ ->
+                    // Custom decoder that reads custom format
+                    let customOptionDecoder
+                        (decoder: Decoder<int>)
+                        : Decoder<int option>
+                        =
+                        Decode.field "kind" Decode.string
+                        |> Decode.andThen (fun kind ->
+                            match kind with
+                            | "customSome" ->
+                                Decode.field "data" decoder |> Decode.map Some
+                            | "customNone" -> Decode.succeed None
+                            | _ -> Decode.fail "Unknown kind"
                         )
-                        |> Encode.list
 
-                let customMapDecoder
-                    (decoder: Decoder<int>)
-                    : Decoder<Map<string, int>>
-                    =
-                    Decode.fail "Not implemented"
+                    let customOptionEncoder
+                        (encoder: Encoder<int>)
+                        : Encoder<int option>
+                        =
+                        fun _ -> Encode.nil
 
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom
-                        (customMapEncoder Encode.int)
-                        (customMapDecoder Decode.int)
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom
+                            (customOptionEncoder Encode.int)
+                            (customOptionDecoder Decode.int)
 
-                let encoder =
-                    Encode.Auto.generateEncoder<Map<string, int>> (
-                        extra = extra
-                    )
+                    let decoder =
+                        Decode.Auto.generateDecoder<int option> (extra = extra)
 
-                let json = encoder value |> runner.Encode.toString 0
+                    let json = """{"kind":"customSome","data":42}"""
+                    let result = runner.Decode.fromString decoder json
 
-                // Should use custom array format instead of default object format
-                // The order of keys in a Map is not guaranteed, so we check the format structure
-                // Custom format: [{"key":"a","value":1},{"key":"b","value":2}] or with keys reversed
-                let expected1 =
-                    """[{"key":"a","value":1},{"key":"b","value":2}]"""
+                    equal result (Ok(Some 42))
+            )
 
-                let expected2 =
-                    """[{"key":"b","value":2},{"key":"a","value":1}]"""
-
-                if json = expected1 then
-                    equal json expected1
-                else
-                    equal json expected2
-
-            testCase "User can override Map<string, 'V> decoding behavior"
-            <| fun _ ->
-                // Custom decoder that reads array of key-value objects
-                let customMapDecoder
-                    (decoder: Decoder<int>)
-                    : Decoder<Map<string, int>>
-                    =
-                    Decode.list (
-                        Decode.object (fun get ->
-                            let key = get.Required.Field "key" Decode.string
-                            let value = get.Required.Field "value" decoder
-                            key, value
-                        )
-                    )
-                    |> Decode.map Map.ofList
-
-                let customMapEncoder
-                    (encoder: Encoder<int>)
-                    : Encoder<Map<string, int>>
-                    =
-                    fun _ -> Encode.nil
-
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom
-                        (customMapEncoder Encode.int)
-                        (customMapDecoder Decode.int)
-
-                let decoder =
-                    Decode.Auto.generateDecoder<Map<string, int>> (
-                        extra = extra
-                    )
-
-                let json = """[{"key":"x","value":10},{"key":"y","value":20}]"""
-                let result = runner.Decode.fromString decoder json
-
-                let expected =
-                    Map.ofList
-                        [
-                            "x", 10
-                            "y", 20
-                        ]
-
-                equal result (Ok expected)
-
-            testCase "User can override List<'T> encoding behavior"
-            <| fun _ ->
-                let value =
-                    [
-                        1
-                        2
-                        3
-                    ]
-
-                // Custom encoder that wraps list in metadata
-                let customListEncoder
-                    (encoder: Encoder<int>)
-                    : Encoder<int list>
-                    =
-                    fun (lst: int list) ->
-                        Encode.object
+            test (
+                "User can override Map<string, 'V> encoding behavior",
+                fun _ ->
+                    let value =
+                        Map.ofList
                             [
-                                "count", Encode.int (List.length lst)
-                                "items", Encode.list (List.map encoder lst)
+                                "a", 1
+                                "b", 2
                             ]
 
-                let customListDecoder
-                    (decoder: Decoder<int>)
-                    : Decoder<int list>
-                    =
-                    Decode.fail "Not implemented"
+                    // Custom encoder that converts map to array of key-value objects
+                    let customMapEncoder
+                        (encoder: Encoder<int>)
+                        : Encoder<Map<string, int>>
+                        =
+                        fun (m: Map<string, int>) ->
+                            m
+                            |> Map.toList
+                            |> List.map (fun (k, v) ->
+                                Encode.object
+                                    [
+                                        "key", Encode.string k
+                                        "value", encoder v
+                                    ]
+                            )
+                            |> Encode.list
 
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom
-                        (customListEncoder Encode.int)
-                        (customListDecoder Decode.int)
+                    let customMapDecoder
+                        (decoder: Decoder<int>)
+                        : Decoder<Map<string, int>>
+                        =
+                        Decode.fail "Not implemented"
 
-                let encoder =
-                    Encode.Auto.generateEncoder<int list> (extra = extra)
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom
+                            (customMapEncoder Encode.int)
+                            (customMapDecoder Decode.int)
 
-                let json = encoder value |> runner.Encode.toString 0
+                    let encoder =
+                        Encode.Auto.generateEncoder<Map<string, int>> (
+                            extra = extra
+                        )
 
-                // Should use custom object format with count and items
-                equal json """{"count":3,"items":[1,2,3]}"""
+                    let json = encoder value |> runner.Encode.toString 0
 
-            testCase "User can override List<'T> decoding behavior"
-            <| fun _ ->
-                // Custom decoder that unwraps metadata
-                let customListDecoder
-                    (decoder: Decoder<int>)
-                    : Decoder<int list>
-                    =
-                    Decode.field "items" (Decode.list decoder)
+                    // Should use custom array format instead of default object format
+                    // The order of keys in a Map is not guaranteed, so we check the format structure
+                    // Custom format: [{"key":"a","value":1},{"key":"b","value":2}] or with keys reversed
+                    let expected1 =
+                        """[{"key":"a","value":1},{"key":"b","value":2}]"""
 
-                let customListEncoder
-                    (encoder: Encoder<int>)
-                    : Encoder<int list>
-                    =
-                    fun _ -> Encode.nil
+                    let expected2 =
+                        """[{"key":"b","value":2},{"key":"a","value":1}]"""
 
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom
-                        (customListEncoder Encode.int)
-                        (customListDecoder Decode.int)
+                    if json = expected1 then
+                        equal json expected1
+                    else
+                        equal json expected2
+            )
 
-                let decoder =
-                    Decode.Auto.generateDecoder<int list> (extra = extra)
+            test (
+                "User can override Map<string, 'V> decoding behavior",
+                fun _ ->
+                    // Custom decoder that reads array of key-value objects
+                    let customMapDecoder
+                        (decoder: Decoder<int>)
+                        : Decoder<Map<string, int>>
+                        =
+                        Decode.list (
+                            Decode.object (fun get ->
+                                let key =
+                                    get.Required.Field "key" Decode.string
 
-                let json = """{"count":3,"items":[1,2,3]}"""
-                let result = runner.Decode.fromString decoder json
+                                let value = get.Required.Field "value" decoder
+                                key, value
+                            )
+                        )
+                        |> Decode.map Map.ofList
 
-                equal
-                    result
-                    (Ok
+                    let customMapEncoder
+                        (encoder: Encoder<int>)
+                        : Encoder<Map<string, int>>
+                        =
+                        fun _ -> Encode.nil
+
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom
+                            (customMapEncoder Encode.int)
+                            (customMapDecoder Decode.int)
+
+                    let decoder =
+                        Decode.Auto.generateDecoder<Map<string, int>> (
+                            extra = extra
+                        )
+
+                    let json =
+                        """[{"key":"x","value":10},{"key":"y","value":20}]"""
+
+                    let result = runner.Decode.fromString decoder json
+
+                    let expected =
+                        Map.ofList
+                            [
+                                "x", 10
+                                "y", 20
+                            ]
+
+                    equal result (Ok expected)
+            )
+
+            test (
+                "User can override List<'T> encoding behavior",
+                fun _ ->
+                    let value =
                         [
                             1
                             2
                             3
-                        ])
+                        ]
+
+                    // Custom encoder that wraps list in metadata
+                    let customListEncoder
+                        (encoder: Encoder<int>)
+                        : Encoder<int list>
+                        =
+                        fun (lst: int list) ->
+                            Encode.object
+                                [
+                                    "count", Encode.int (List.length lst)
+                                    "items", Encode.list (List.map encoder lst)
+                                ]
+
+                    let customListDecoder
+                        (decoder: Decoder<int>)
+                        : Decoder<int list>
+                        =
+                        Decode.fail "Not implemented"
+
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom
+                            (customListEncoder Encode.int)
+                            (customListDecoder Decode.int)
+
+                    let encoder =
+                        Encode.Auto.generateEncoder<int list> (extra = extra)
+
+                    let json = encoder value |> runner.Encode.toString 0
+
+                    // Should use custom object format with count and items
+                    equal json """{"count":3,"items":[1,2,3]}"""
+            )
+
+            test (
+                "User can override List<'T> decoding behavior",
+                fun _ ->
+                    // Custom decoder that unwraps metadata
+                    let customListDecoder
+                        (decoder: Decoder<int>)
+                        : Decoder<int list>
+                        =
+                        Decode.field "items" (Decode.list decoder)
+
+                    let customListEncoder
+                        (encoder: Encoder<int>)
+                        : Encoder<int list>
+                        =
+                        fun _ -> Encode.nil
+
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom
+                            (customListEncoder Encode.int)
+                            (customListDecoder Decode.int)
+
+                    let decoder =
+                        Decode.Auto.generateDecoder<int list> (extra = extra)
+
+                    let json = """{"count":3,"items":[1,2,3]}"""
+                    let result = runner.Decode.fromString decoder json
+
+                    equal
+                        result
+                        (Ok
+                            [
+                                1
+                                2
+                                3
+                            ])
+            )
 
             // =====================
             // Override Primitive Types Tests
             // Verify users can override built-in primitive encoders/decoders
             // =====================
 
-            testCase "User can override string encoding behavior"
-            <| fun _ ->
-                let value = "hello"
+            test (
+                "User can override string encoding behavior",
+                fun _ ->
+                    let value = "hello"
 
-                // Custom encoder that wraps strings
-                let customStringEncoder (s: string) =
-                    Encode.object
-                        [
-                            "type", Encode.string "string"
-                            "value", Encode.string s
-                        ]
+                    // Custom encoder that wraps strings
+                    let customStringEncoder (s: string) =
+                        Encode.object
+                            [
+                                "type", Encode.string "string"
+                                "value", Encode.string s
+                            ]
 
-                let customStringDecoder: Decoder<string> =
-                    Decode.fail "Not implemented"
+                    let customStringDecoder: Decoder<string> =
+                        Decode.fail "Not implemented"
 
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom customStringEncoder customStringDecoder
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom
+                            customStringEncoder
+                            customStringDecoder
 
-                let encoder =
-                    Encode.Auto.generateEncoder<string> (extra = extra)
+                    let encoder =
+                        Encode.Auto.generateEncoder<string> (extra = extra)
 
-                let json = encoder value |> runner.Encode.toString 0
+                    let json = encoder value |> runner.Encode.toString 0
 
-                // Should use custom object format
-                equal json """{"type":"string","value":"hello"}"""
+                    // Should use custom object format
+                    equal json """{"type":"string","value":"hello"}"""
+            )
 
-            testCase "User can override string decoding behavior"
-            <| fun _ ->
-                // Custom decoder that unwraps string object
-                let customStringDecoder: Decoder<string> =
-                    Decode.field "value" Decode.string
+            test (
+                "User can override string decoding behavior",
+                fun _ ->
+                    // Custom decoder that unwraps string object
+                    let customStringDecoder: Decoder<string> =
+                        Decode.field "value" Decode.string
 
-                let customStringEncoder (s: string) = Encode.nil
+                    let customStringEncoder (s: string) = Encode.nil
 
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom customStringEncoder customStringDecoder
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom
+                            customStringEncoder
+                            customStringDecoder
 
-                let decoder =
-                    Decode.Auto.generateDecoder<string> (extra = extra)
+                    let decoder =
+                        Decode.Auto.generateDecoder<string> (extra = extra)
 
-                let json = """{"type":"string","value":"world"}"""
-                let result = runner.Decode.fromString decoder json
+                    let json = """{"type":"string","value":"world"}"""
+                    let result = runner.Decode.fromString decoder json
 
-                equal result (Ok "world")
+                    equal result (Ok "world")
+            )
 
-            testCase "User can override int encoding behavior"
-            <| fun _ ->
-                let value = 42
+            test (
+                "User can override int encoding behavior",
+                fun _ ->
+                    let value = 42
 
-                // Custom encoder that wraps ints in hex format string
-                let customIntEncoder (i: int) =
-                    Encode.object
-                        [
-                            "type", Encode.string "int"
-                            "hex", Encode.string (sprintf "0x%X" i)
-                        ]
+                    // Custom encoder that wraps ints in hex format string
+                    let customIntEncoder (i: int) =
+                        Encode.object
+                            [
+                                "type", Encode.string "int"
+                                "hex", Encode.string (sprintf "0x%X" i)
+                            ]
 
-                let customIntDecoder: Decoder<int> =
-                    Decode.fail "Not implemented"
+                    let customIntDecoder: Decoder<int> =
+                        Decode.fail "Not implemented"
 
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom customIntEncoder customIntDecoder
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom customIntEncoder customIntDecoder
 
-                let encoder = Encode.Auto.generateEncoder<int> (extra = extra)
+                    let encoder =
+                        Encode.Auto.generateEncoder<int> (extra = extra)
 
-                let json = encoder value |> runner.Encode.toString 0
+                    let json = encoder value |> runner.Encode.toString 0
 
-                // Should use custom object format
-                equal json """{"type":"int","hex":"0x2A"}"""
+                    // Should use custom object format
+                    equal json """{"type":"int","hex":"0x2A"}"""
+            )
 
-            testCase "User can override int decoding behavior"
-            <| fun _ ->
-                // Custom decoder that reads hex string
-                let customIntDecoder: Decoder<int> =
-                    Decode.field "hex" Decode.string
-                    |> Decode.map (fun hexStr ->
-                        if hexStr.StartsWith("0x") then
-                            Convert.ToInt32(hexStr, 16)
-                        else
-                            int hexStr
-                    )
+            test (
+                "User can override int decoding behavior",
+                fun _ ->
+                    // Custom decoder that reads hex string
+                    let customIntDecoder: Decoder<int> =
+                        Decode.field "hex" Decode.string
+                        |> Decode.map (fun hexStr ->
+                            if hexStr.StartsWith("0x") then
+                                Convert.ToInt32(hexStr, 16)
+                            else
+                                int hexStr
+                        )
 
-                let customIntEncoder (i: int) = Encode.nil
+                    let customIntEncoder (i: int) = Encode.nil
 
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom customIntEncoder customIntDecoder
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom customIntEncoder customIntDecoder
 
-                let decoder = Decode.Auto.generateDecoder<int> (extra = extra)
+                    let decoder =
+                        Decode.Auto.generateDecoder<int> (extra = extra)
 
-                let json = """{"type":"int","hex":"0x2A"}"""
-                let result = runner.Decode.fromString decoder json
+                    let json = """{"type":"int","hex":"0x2A"}"""
+                    let result = runner.Decode.fromString decoder json
 
-                equal result (Ok 42)
+                    equal result (Ok 42)
+            )
 
-            testCase "User can override bool encoding behavior"
-            <| fun _ ->
-                let value = true
+            test (
+                "User can override bool encoding behavior",
+                fun _ ->
+                    let value = true
 
-                // Custom encoder that encodes bool as string
-                let customBoolEncoder (b: bool) =
-                    Encode.string (
-                        if b then
-                            "yes"
-                        else
-                            "no"
-                    )
+                    // Custom encoder that encodes bool as string
+                    let customBoolEncoder (b: bool) =
+                        Encode.string (
+                            if b then
+                                "yes"
+                            else
+                                "no"
+                        )
 
-                let customBoolDecoder: Decoder<bool> =
-                    Decode.fail "Not implemented"
+                    let customBoolDecoder: Decoder<bool> =
+                        Decode.fail "Not implemented"
 
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom customBoolEncoder customBoolDecoder
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom customBoolEncoder customBoolDecoder
 
-                let encoder = Encode.Auto.generateEncoder<bool> (extra = extra)
+                    let encoder =
+                        Encode.Auto.generateEncoder<bool> (extra = extra)
 
-                let json = encoder value |> runner.Encode.toString 0
+                    let json = encoder value |> runner.Encode.toString 0
 
-                // Should use custom string format (bool encoded as "yes" for true)
-                equal json "\"yes\""
+                    // Should use custom string format (bool encoded as "yes" for true)
+                    equal json "\"yes\""
+            )
 
-            testCase "User can override bool decoding behavior"
-            <| fun _ ->
-                // Custom decoder that reads bool from string
-                let customBoolDecoder: Decoder<bool> =
-                    Decode.string
-                    |> Decode.map (fun s ->
-                        match s.ToLower() with
-                        | "yes"
-                        | "true" -> true
-                        | "no"
-                        | "false" -> false
-                        | _ -> failwith "Invalid boolean string"
-                    )
+            test (
+                "User can override bool decoding behavior",
+                fun _ ->
+                    // Custom decoder that reads bool from string
+                    let customBoolDecoder: Decoder<bool> =
+                        Decode.string
+                        |> Decode.map (fun s ->
+                            match s.ToLower() with
+                            | "yes"
+                            | "true" -> true
+                            | "no"
+                            | "false" -> false
+                            | _ -> failwith "Invalid boolean string"
+                        )
 
-                let customBoolEncoder (b: bool) = Encode.nil
+                    let customBoolEncoder (b: bool) = Encode.nil
 
-                let extra =
-                    Extra.empty
-                    |> Extra.withCustom customBoolEncoder customBoolDecoder
+                    let extra =
+                        Extra.empty
+                        |> Extra.withCustom customBoolEncoder customBoolDecoder
 
-                let decoder = Decode.Auto.generateDecoder<bool> (extra = extra)
+                    let decoder =
+                        Decode.Auto.generateDecoder<bool> (extra = extra)
 
-                let json = "\"yes\""
-                let resultYes = runner.Decode.fromString decoder json
-                let json2 = "\"no\""
-                let resultNo = runner.Decode.fromString decoder json2
+                    let json = "\"yes\""
+                    let resultYes = runner.Decode.fromString decoder json
+                    let json2 = "\"no\""
+                    let resultNo = runner.Decode.fromString decoder json2
 
-                equal resultYes (Ok true)
-                equal resultNo (Ok false)
+                    equal resultYes (Ok true)
+                    equal resultNo (Ok false)
+            )
 
             // =====================
             // Single-Case DU with Multiple Arguments Tests
             // Issue #86: DUs with a single Case but multiple arguments aren't encoded correctly
             // =====================
 
-            testCase "Single-case DU with multiple arguments encodes correctly"
-            <| fun _ ->
-                let value = SeveralArgs(10, "hello", 42)
+            test (
+                "Single-case DU with multiple arguments encodes correctly",
+                fun _ ->
+                    let value = SeveralArgs(10, "hello", 42)
 
-                let encoder =
-                    Encode.Auto.generateEncoder<SingleCaseMultipleArgs> ()
+                    let encoder =
+                        Encode.Auto.generateEncoder<SingleCaseMultipleArgs> ()
 
-                let json = encoder value |> runner.Encode.toString 0
+                    let json = encoder value |> runner.Encode.toString 0
 
-                // Should encode as an array with all three arguments
-                // Expected: [10,"hello",42] or similar
-                let expected = "[\"SeveralArgs\",10,\"hello\",42]"
-                equal json expected
+                    // Should encode as an array with all three arguments
+                    // Expected: [10,"hello",42] or similar
+                    let expected = "[\"SeveralArgs\",10,\"hello\",42]"
+                    equal json expected
+            )
 
-            testCase
-                "Single-case DU with multiple arguments roundtrips correctly"
-            <| fun _ ->
-                let expected = SeveralArgs(10, "hello", 42)
+            test (
+                "Single-case DU with multiple arguments roundtrips correctly",
+                fun _ ->
+                    let expected = SeveralArgs(10, "hello", 42)
 
-                let encoder =
-                    Encode.Auto.generateEncoder<SingleCaseMultipleArgs> ()
+                    let encoder =
+                        Encode.Auto.generateEncoder<SingleCaseMultipleArgs> ()
 
-                let decoder =
-                    Decode.Auto.generateDecoder<SingleCaseMultipleArgs> ()
+                    let decoder =
+                        Decode.Auto.generateDecoder<SingleCaseMultipleArgs> ()
 
-                let json = encoder expected |> runner.Encode.toString 0
-                let actual = runner.Decode.unsafeFromString decoder json
+                    let json = encoder expected |> runner.Encode.toString 0
+                    let actual = runner.Decode.unsafeFromString decoder json
 
-                equal expected actual
+                    equal expected actual
+            )
 
-            testCase "Single-case DU with anonymous record encodes correctly"
-            <| fun _ ->
-                let value =
-                    SingleWithAnon(
-                        10,
-                        {|
-                            Name = "maxime"
-                            Age = 28
-                        |}
-                    )
+            test (
+                "Single-case DU with anonymous record encodes correctly",
+                fun _ ->
+                    let value =
+                        SingleWithAnon(
+                            10,
+                            {|
+                                Name = "maxime"
+                                Age = 28
+                            |}
+                        )
 
-                let encoder =
-                    Encode.Auto.generateEncoder<SingleCaseWithAnonymousRecord> ()
+                    let encoder =
+                        Encode.Auto.generateEncoder<
+                            SingleCaseWithAnonymousRecord
+                         > ()
 
-                let json = encoder value |> runner.Encode.toString 0
+                    let json = encoder value |> runner.Encode.toString 0
 
-                let expected =
-                    "[\"SingleWithAnon\",10,{\"Age\":28,\"Name\":\"maxime\"}]"
+                    let expected =
+                        "[\"SingleWithAnon\",10,{\"Age\":28,\"Name\":\"maxime\"}]"
 
-                equal json expected
+                    equal json expected
+            )
 
-            testCase "Single-case DU with anonymous record roundtrips correctly"
-            <| fun _ ->
-                let expected =
-                    SingleWithAnon(
-                        10,
-                        {|
-                            Name = "maxime"
-                            Age = 28
-                        |}
-                    )
+            test (
+                "Single-case DU with anonymous record roundtrips correctly",
+                fun _ ->
+                    let expected =
+                        SingleWithAnon(
+                            10,
+                            {|
+                                Name = "maxime"
+                                Age = 28
+                            |}
+                        )
 
-                let encoder =
-                    Encode.Auto.generateEncoder<SingleCaseWithAnonymousRecord> ()
+                    let encoder =
+                        Encode.Auto.generateEncoder<
+                            SingleCaseWithAnonymousRecord
+                         > ()
 
-                let decoder =
-                    Decode.Auto.generateDecoder<SingleCaseWithAnonymousRecord> ()
+                    let decoder =
+                        Decode.Auto.generateDecoder<
+                            SingleCaseWithAnonymousRecord
+                         > ()
 
-                let json = encoder expected |> runner.Encode.toString 0
-                let actual = runner.Decode.unsafeFromString decoder json
+                    let json = encoder expected |> runner.Encode.toString 0
+                    let actual = runner.Decode.unsafeFromString decoder json
 
-                equal expected actual
+                    equal expected actual
+            )
         ]
+    )

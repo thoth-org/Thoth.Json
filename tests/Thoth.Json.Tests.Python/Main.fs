@@ -1,6 +1,8 @@
 module Thoth.Json.Tests.Python
 
-open Fable.Pyxpecto
+open Scriptorium.Nib.Assertion
+open type Scriptorium.Quill.Test
+open type Scriptorium.Quill.Runner
 open Thoth.Json.Tests.Testing
 open Thoth.Json.Python
 
@@ -35,18 +37,20 @@ type PythonTestRunner() =
 let main args =
     let runner = PythonTestRunner()
 
-    testList
-        "All"
-        [
-            Decoders.tests runner
-            Encoders.tests runner
-            BackAndForth.tests runner
-            DecoderCE.tests runner
-            Codec.Primitives.tests runner
-            Codec.Combinators.tests runner
-            Codec.ObjectCodec.tests runner
-            Codec.VariantCodec.tests runner
-        // Auto.tests runner // Python does not pass all the tests yet so we disable it
-        // Codec.AutoCodec.tests runner // Depends on the Auto API which is disabled above
-        ]
-    |> Pyxpecto.runTests [||]
+    runTests (
+        testList (
+            "All",
+            [
+                Decoders.tests runner
+                Encoders.tests runner
+                BackAndForth.tests runner
+                DecoderCE.tests runner
+                Codec.Primitives.tests runner
+                Codec.Combinators.tests runner
+                Codec.ObjectCodec.tests runner
+                Codec.VariantCodec.tests runner
+            // Auto.tests runner // Python does not pass all the tests yet so we disable it
+            // Codec.AutoCodec.tests runner // Depends on the Auto API which is disabled above
+            ]
+        )
+    )

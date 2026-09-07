@@ -7,175 +7,218 @@ open Fable.Core
 #endif
 
 open Thoth.Json.Tests.Testing
-open Fable.Pyxpecto
+open type Scriptorium.Quill.Test
 
 open Thoth.Json.Core
 
 let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
-    testList
-        "Primitives"
+    testList (
+        "Primitives",
         [
-            test "Codec.int works for simple case 1" {
-                let expected = 123
+            test (
+                "Codec.int works for simple case 1",
+                fun _ ->
+                    let expected = 123
 
-                let actual = roundTrip runner Codec.int expected
+                    let actual = roundTrip runner Codec.int expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.string works for simple case 1" {
-                let expected = "Hello, world. "
+            test (
+                "Codec.string works for simple case 1",
+                fun _ ->
+                    let expected = "Hello, world. "
 
-                let actual = roundTrip runner Codec.string expected
+                    let actual = roundTrip runner Codec.string expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.char works for simple case 1" {
-                let expected = 'c'
+            test (
+                "Codec.char works for simple case 1",
+                fun _ ->
+                    let expected = 'c'
 
-                let actual = roundTrip runner Codec.char expected
+                    let actual = roundTrip runner Codec.char expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.bool works for simple case 1" {
-                let expected = true
+            test (
+                "Codec.bool works for simple case 1",
+                fun _ ->
+                    let expected = true
 
-                let actual = roundTrip runner Codec.bool expected
+                    let actual = roundTrip runner Codec.bool expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.guid works for simple case 1" {
-                let expected = Guid.Parse "11850f17-351a-436c-8358-b28eb85a52a6"
+            test (
+                "Codec.guid works for simple case 1",
+                fun _ ->
+                    let expected =
+                        Guid.Parse "11850f17-351a-436c-8358-b28eb85a52a6"
 
-                let actual = roundTrip runner Codec.guid expected
+                    let actual = roundTrip runner Codec.guid expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.uri works for simple case 1" {
-                let expected = Uri "http://example.com/path?q=1"
+            test (
+                "Codec.uri works for simple case 1",
+                fun _ ->
+                    let expected = Uri "http://example.com/path?q=1"
 
-                let actual = roundTrip runner Codec.uri expected
+                    let actual = roundTrip runner Codec.uri expected
 
-                // Compare on OriginalString because Fable's Uri does not
-                // implement structural equality
-                equal actual.OriginalString expected.OriginalString
-            }
+                    // Compare on OriginalString because Fable's Uri does not
+                    // implement structural equality
+                    equal actual.OriginalString expected.OriginalString
+            )
 
-            test "Codec.unit works for simple case 1" {
-                let expected = ()
+            test (
+                "Codec.unit works for simple case 1",
+                fun _ ->
+                    let expected = ()
 
-                let actual = roundTrip runner Codec.unit expected
+                    let actual = roundTrip runner Codec.unit expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.sbyte works for simple case 1" {
-                let expected = 99y
+            test (
+                "Codec.sbyte works for simple case 1",
+                fun _ ->
+                    let expected = 99y
 
-                let actual = roundTrip runner Codec.sbyte expected
+                    let actual = roundTrip runner Codec.sbyte expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.byte works for simple case 1" {
-                let expected = 99uy
+            test (
+                "Codec.byte works for simple case 1",
+                fun _ ->
+                    let expected = 99uy
 
-                let actual = roundTrip runner Codec.byte expected
+                    let actual = roundTrip runner Codec.byte expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.int16 works for simple case 1" {
-                let expected = 999s
+            test (
+                "Codec.int16 works for simple case 1",
+                fun _ ->
+                    let expected = 999s
 
-                let actual = roundTrip runner Codec.int16 expected
+                    let actual = roundTrip runner Codec.int16 expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.uint16 works for simple case 1" {
-                let expected = 999us
+            test (
+                "Codec.uint16 works for simple case 1",
+                fun _ ->
+                    let expected = 999us
 
-                let actual = roundTrip runner Codec.uint16 expected
+                    let actual = roundTrip runner Codec.uint16 expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.uint32 works for simple case 1" {
-                let expected = 999u
+            test (
+                "Codec.uint32 works for simple case 1",
+                fun _ ->
+                    let expected = 999u
 
-                let actual = roundTrip runner Codec.uint32 expected
+                    let actual = roundTrip runner Codec.uint32 expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.int64 works for simple case 1" {
-                let expected = 7923209L
+            test (
+                "Codec.int64 works for simple case 1",
+                fun _ ->
+                    let expected = 7923209L
 
-                let actual = roundTrip runner Codec.int64 expected
+                    let actual = roundTrip runner Codec.int64 expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.uint64 works for simple case 1" {
-                let expected = 7923209UL
+            test (
+                "Codec.uint64 works for simple case 1",
+                fun _ ->
+                    let expected = 7923209UL
 
-                let actual = roundTrip runner Codec.uint64 expected
+                    let actual = roundTrip runner Codec.uint64 expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.bigint works for simple case 1" {
-                let expected = 12I
+            test (
+                "Codec.bigint works for simple case 1",
+                fun _ ->
+                    let expected = 12I
 
-                let actual = roundTrip runner Codec.bigint expected
+                    let actual = roundTrip runner Codec.bigint expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.float works for simple case 1" {
-                let expected = 42.5
+            test (
+                "Codec.float works for simple case 1",
+                fun _ ->
+                    let expected = 42.5
 
-                let actual = roundTrip runner Codec.float expected
+                    let actual = roundTrip runner Codec.float expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.float32 works for simple case 1" {
-                let expected = 42.5f
+            test (
+                "Codec.float32 works for simple case 1",
+                fun _ ->
+                    let expected = 42.5f
 
-                let actual = roundTrip runner Codec.float32 expected
+                    let actual = roundTrip runner Codec.float32 expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.decimal works for simple case 1" {
-                let expected = 1234.75M
+            test (
+                "Codec.decimal works for simple case 1",
+                fun _ ->
+                    let expected = 1234.75M
 
-                let actual = roundTrip runner Codec.decimal expected
+                    let actual = roundTrip runner Codec.decimal expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "Codec.timespan works for simple case 1" {
-                let expected = TimeSpan(23, 45, 0)
+            test (
+                "Codec.timespan works for simple case 1",
+                fun _ ->
+                    let expected = TimeSpan(23, 45, 0)
 
-                let actual = roundTrip runner Codec.timespan expected
+                    let actual = roundTrip runner Codec.timespan expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
 #if !FABLE_COMPILER_PYTHON
-            test "Codec.datetimeOffset works for simple case 1" {
-                let expected = DateTimeOffset.Parse "2022-05-23T07:45:39.700Z"
+            test (
+                "Codec.datetimeOffset works for simple case 1",
+                fun _ ->
+                    let expected =
+                        DateTimeOffset.Parse "2022-05-23T07:45:39.700Z"
 
-                let actual = roundTrip runner Codec.datetimeOffset expected
+                    let actual = roundTrip runner Codec.datetimeOffset expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 #endif
         ]
+    )

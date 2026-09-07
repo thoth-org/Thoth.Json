@@ -5,7 +5,9 @@ open Thoth.Json.Core
 open Thoth.Json.Newtonsoft
 open Newtonsoft.Json
 open Newtonsoft.Json.Linq
-open Fable.Pyxpecto
+open Scriptorium.Nib.Assertion
+open type Scriptorium.Quill.Test
+open type Scriptorium.Quill.Runner
 
 // Build a JSON value nested `depth` objects deep: {"a":{"a":...{"a":1}...}}
 let private deeplyNestedJson (depth: int) =
@@ -30,74 +32,77 @@ let private nestedCodec (depth: int) : Thoth.Json.Core.Codec<int> =
         (nestedDecoder depth)
 
 let backendSpecificTests =
-    testList
-        "Newtonsoft specific"
+    testList (
+        "Newtonsoft specific",
         [
             // Issue #194: allow customising the underlying JSON library, e.g.
             // raising Newtonsoft's default MaxDepth of 64.
-            testCase "fromString fails on JSON deeper than the default MaxDepth"
-            <| fun _ ->
-                let json = deeplyNestedJson 80
+            test (
+                "fromString fails on JSON deeper than the default MaxDepth",
+                fun _ ->
+                    let json = deeplyNestedJson 80
 
-                let actual = Decode.fromString (nestedDecoder 80) json
+                    let actual = Decode.fromString (nestedDecoder 80) json
 
-                match actual with
-                | Error msg ->
-                    Expect.isTrue
-                        (msg.Contains "MaxDepth")
-                        $"Expected a MaxDepth error but got: {msg}"
-                | Ok _ ->
-                    failwith "Expected a MaxDepth error but decoding succeeded"
+                    assertThat actual (Result.errorValue >> contains "MaxDepth")
+            )
 
-            testCase
-                "fromStringWithOptions can raise MaxDepth to decode deep JSON"
-            <| fun _ ->
-                let json = deeplyNestedJson 80
+            test (
+                "fromStringWithOptions can raise MaxDepth to decode deep JSON",
+                fun _ ->
+                    let json = deeplyNestedJson 80
 
-                let settings =
-                    JsonSerializerSettings(
-                        DateParseHandling = DateParseHandling.None,
-                        CheckAdditionalContent = true,
-                        MaxDepth = 256
-                    )
+                    let settings =
+                        JsonSerializerSettings(
+                            DateParseHandling = DateParseHandling.None,
+                            CheckAdditionalContent = true,
+                            MaxDepth = 256
+                        )
 
-                let actual =
-                    Decode.fromStringWithOptions
-                        (settings, nestedDecoder 80)
-                        json
+                    let actual =
+                        Decode.fromStringWithOptions
+                            (settings, nestedDecoder 80)
+                            json
 
-                equal (Ok 1) actual
+                    equal (Ok 1) actual
+            )
 
-            testCase
-                "fromStringWithOptions accepts a codec and applies the options"
-            <| fun _ ->
-                let json = deeplyNestedJson 80
+            test (
+                "fromStringWithOptions accepts a codec and applies the options",
+                fun _ ->
+                    let json = deeplyNestedJson 80
 
-                let settings =
-                    JsonSerializerSettings(
-                        DateParseHandling = DateParseHandling.None,
-                        CheckAdditionalContent = true,
-                        MaxDepth = 256
-                    )
+                    let settings =
+                        JsonSerializerSettings(
+                            DateParseHandling = DateParseHandling.None,
+                            CheckAdditionalContent = true,
+                            MaxDepth = 256
+                        )
 
-                let actual =
-                    Decode.fromStringWithOptions (settings, nestedCodec 80) json
+                    let actual =
+                        Decode.fromStringWithOptions
+                            (settings, nestedCodec 80)
+                            json
 
-                equal (Ok 1) actual
+                    equal (Ok 1) actual
+            )
 
-            testCase "toStringWithOptions honors the provided settings"
-            <| fun _ ->
-                let value =
-                    Thoth.Json.Core.Encode.object
-                        [ "a", Thoth.Json.Core.Encode.int 1 ]
+            test (
+                "toStringWithOptions honors the provided settings",
+                fun _ ->
+                    let value =
+                        Thoth.Json.Core.Encode.object
+                            [ "a", Thoth.Json.Core.Encode.int 1 ]
 
-                let settings =
-                    JsonSerializerSettings(Formatting = Formatting.Indented)
+                    let settings =
+                        JsonSerializerSettings(Formatting = Formatting.Indented)
 
-                let actual = Encode.toStringWithOptions settings value
+                    let actual = Encode.toStringWithOptions settings value
 
-                equal "{\n  \"a\": 1\n}" actual
+                    equal "{\n  \"a\": 1\n}" actual
+            )
         ]
+    )
 
 type NewtonsoftEncode() =
     interface IEncode with
@@ -130,19 +135,21 @@ type NewtonsoftTestRunner() =
 let main args =
     let runner = NewtonsoftTestRunner()
 
-    testList
-        "All"
-        [
-            Decoders.tests runner
-            Encoders.tests runner
-            BackAndForth.tests runner
-            DecoderCE.tests runner
-            Auto.tests runner
-            Codec.Primitives.tests runner
-            Codec.Combinators.tests runner
-            Codec.ObjectCodec.tests runner
-            Codec.VariantCodec.tests runner
-            Codec.AutoCodec.tests runner
-            backendSpecificTests
-        ]
-    |> Pyxpecto.runTests [||]
+    runTests (
+        testList (
+            "All",
+            [
+                Decoders.tests runner
+                Encoders.tests runner
+                BackAndForth.tests runner
+                DecoderCE.tests runner
+                Auto.tests runner
+                Codec.Primitives.tests runner
+                Codec.Combinators.tests runner
+                Codec.ObjectCodec.tests runner
+                Codec.VariantCodec.tests runner
+                Codec.AutoCodec.tests runner
+                backendSpecificTests
+            ]
+        )
+    )

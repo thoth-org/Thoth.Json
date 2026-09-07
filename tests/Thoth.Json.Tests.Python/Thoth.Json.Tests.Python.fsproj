@@ -13,7 +13,8 @@
         <ProjectReference Include="..\Thoth.Json.Tests\Thoth.Json.Tests.fsproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Fable.Core" />
-        <PackageReference Include="Fable.Pyxpecto" />
+        <PackageReference Include="Fable.Core" VersionOverride="5.2.0" />
+        <PackageReference Include="Scriptorium.Nib" />
+        <PackageReference Include="Scriptorium.Quill" />
     </ItemGroup>
 </Project>

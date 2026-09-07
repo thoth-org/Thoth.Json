@@ -5,7 +5,7 @@ open Fable.Core
 #endif
 
 open Thoth.Json.Tests.Testing
-open Fable.Pyxpecto
+open type Scriptorium.Quill.Test
 
 open Thoth.Json.Core
 open Thoth.Json.Core.Auto
@@ -37,47 +37,51 @@ module Nested =
     let codec: Codec<Nested> = Codec.Auto.generateCodec (losslessOption = true)
 
 let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
-    testList
-        "Auto"
+    testList (
+        "Auto",
         [
-            test "Auto.generateCodec works for simple case 1" {
-                let expected =
-                    {
-                        Bar = "abc"
-                        Baz =
-                            {
-                                Baz = true
-                                Bic = Some 123
-                            }
-                        Qux =
-                            [
-                                2
-                                4
-                                8
-                            ]
-                    }
-
-                let actual = roundTrip runner Foo.codec expected
-
-                equal actual expected
-            }
-
-            test
-                "Auto.generateCodec round-trips nested options when losslessOption is set" {
-                for expected in
-                    [
+            test (
+                "Auto.generateCodec works for simple case 1",
+                fun _ ->
+                    let expected =
                         {
-                            Data = Some None
+                            Bar = "abc"
+                            Baz =
+                                {
+                                    Baz = true
+                                    Bic = Some 123
+                                }
+                            Qux =
+                                [
+                                    2
+                                    4
+                                    8
+                                ]
                         }
-                        {
-                            Data = Some(Some 123)
-                        }
-                        {
-                            Data = None
-                        }
-                    ] do
-                    let actual = roundTrip runner Nested.codec expected
+
+                    let actual = roundTrip runner Foo.codec expected
 
                     equal actual expected
-            }
+            )
+
+            test (
+                "Auto.generateCodec round-trips nested options when losslessOption is set",
+                fun _ ->
+                    for expected in
+                        [
+                            {
+                                Data = Some None
+                            }
+                            {
+                                Data = Some(Some 123)
+                            }
+                            {
+                                Data = None
+                            }
+                        ] do
+                        let actual = roundTrip runner Nested.codec expected
+
+                        equal actual expected
+            )
         ]
+    )

@@ -5,7 +5,7 @@ open Fable.Core
 #endif
 
 open Thoth.Json.Tests.Testing
-open Fable.Pyxpecto
+open type Scriptorium.Quill.Test
 
 open Thoth.Json.Core
 
@@ -75,124 +75,135 @@ module Shape =
         }
 
 let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
-    testList
-        "VariantCodec"
+    testList (
+        "VariantCodec",
         [
-            test "variantCodec works for simple case" {
-                let expected = Square 4
+            test (
+                "variantCodec works for simple case",
+                fun _ ->
+                    let expected = Square 4
 
-                let actual = roundTrip runner Shape.codec expected
+                    let actual = roundTrip runner Shape.codec expected
 
-                equal actual expected
+                    equal actual expected
 
-                let expected = Rectangle(7, 2)
+                    let expected = Rectangle(7, 2)
 
-                let actual = roundTrip runner Shape.codec expected
+                    let actual = roundTrip runner Shape.codec expected
 
-                equal actual expected
+                    equal actual expected
 
-                let expected = Circle 3
+                    let expected = Circle 3
 
-                let actual = roundTrip runner Shape.codec expected
+                    let actual = roundTrip runner Shape.codec expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "variantCodecWithTag works for simple case" {
-                let expected = Square 4
+            test (
+                "variantCodecWithTag works for simple case",
+                fun _ ->
+                    let expected = Square 4
 
-                let actual = roundTrip runner Shape.codecWithTag expected
+                    let actual = roundTrip runner Shape.codecWithTag expected
 
-                equal actual expected
+                    equal actual expected
 
-                let expected = Rectangle(7, 2)
+                    let expected = Rectangle(7, 2)
 
-                let actual = roundTrip runner Shape.codecWithTag expected
+                    let actual = roundTrip runner Shape.codecWithTag expected
 
-                equal actual expected
+                    equal actual expected
 
-                let expected = Circle 3
+                    let expected = Circle 3
 
-                let actual = roundTrip runner Shape.codecWithTag expected
+                    let actual = roundTrip runner Shape.codecWithTag expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "variantCodecTuple works for simple case" {
-                let expected = Square 99
+            test (
+                "variantCodecTuple works for simple case",
+                fun _ ->
+                    let expected = Square 99
 
-                let actual = roundTrip runner Shape.codecTuple expected
+                    let actual = roundTrip runner Shape.codecTuple expected
 
-                equal actual expected
+                    equal actual expected
 
-                let expected = Rectangle(3, 4)
+                    let expected = Rectangle(3, 4)
 
-                let actual = roundTrip runner Shape.codecTuple expected
+                    let actual = roundTrip runner Shape.codecTuple expected
 
-                equal actual expected
+                    equal actual expected
 
-                let expected = Circle 8
+                    let expected = Circle 8
 
-                let actual = roundTrip runner Shape.codecTuple expected
+                    let actual = roundTrip runner Shape.codecTuple expected
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test "variantCodecTuple produces correct JSON for a simple case" {
-                let shape = Rectangle(3, 4)
+            test (
+                "variantCodecTuple produces correct JSON for a simple case",
+                fun _ ->
+                    let shape = Rectangle(3, 4)
 
-                let actual =
-                    shape
-                    |> Encode.codec Shape.codecTuple
-                    |> runner.Encode.toString 0
+                    let actual =
+                        shape
+                        |> Encode.codec Shape.codecTuple
+                        |> runner.Encode.toString 0
 
-                let expected = """["rectangle",[3,4]]"""
+                    let expected = """["rectangle",[3,4]]"""
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test
-                "variantCodecWithTag reports an unrecognised tag, not a missing value" {
-                let expected =
-                    Error(
-                        "Error at: `$`\nThe following `failure` occurred with the decoder: The tag \"triangle\" was not recognized"
-                    )
+            test (
+                "variantCodecWithTag reports an unrecognised tag, not a missing value",
+                fun _ ->
+                    let expected =
+                        Error(
+                            "Error at: `$`\nThe following `failure` occurred with the decoder: The tag \"triangle\" was not recognized"
+                        )
 
-                // The value is absent, so the tag has to be reported before the decoder reaches for it.
-                let actual =
-                    runner.Decode.fromString
-                        (Decode.codec Shape.codecWithTag)
-                        """{"type":"triangle"}"""
+                    // The value is absent, so the tag has to be reported before the decoder reaches for it.
+                    let actual =
+                        runner.Decode.fromString
+                            (Decode.codec Shape.codecWithTag)
+                            """{"type":"triangle"}"""
 
-                equal actual expected
+                    equal actual expected
 
-                let actual =
-                    runner.Decode.fromString
-                        (Decode.codec Shape.codecWithTag)
-                        """{"type":"triangle","value":1}"""
+                    let actual =
+                        runner.Decode.fromString
+                            (Decode.codec Shape.codecWithTag)
+                            """{"type":"triangle","value":1}"""
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
 
-            test
-                "variantCodecTuple reports an unrecognised tag, not a missing element" {
-                let expected =
-                    Error(
-                        "Error at: `$`\nThe following `failure` occurred with the decoder: The tag \"triangle\" was not recognized"
-                    )
+            test (
+                "variantCodecTuple reports an unrecognised tag, not a missing element",
+                fun _ ->
+                    let expected =
+                        Error(
+                            "Error at: `$`\nThe following `failure` occurred with the decoder: The tag \"triangle\" was not recognized"
+                        )
 
-                let actual =
-                    runner.Decode.fromString
-                        (Decode.codec Shape.codecTuple)
-                        """["triangle"]"""
+                    let actual =
+                        runner.Decode.fromString
+                            (Decode.codec Shape.codecTuple)
+                            """["triangle"]"""
 
-                equal actual expected
+                    equal actual expected
 
-                let actual =
-                    runner.Decode.fromString
-                        (Decode.codec Shape.codecTuple)
-                        """["triangle",1]"""
+                    let actual =
+                        runner.Decode.fromString
+                            (Decode.codec Shape.codecTuple)
+                            """["triangle",1]"""
 
-                equal actual expected
-            }
+                    equal actual expected
+            )
         ]
+    )

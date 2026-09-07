@@ -6,7 +6,7 @@ open Fable.Core
 
 open Thoth.Json.Tests.Testing
 open System
-open Fable.Pyxpecto
+open type Scriptorium.Quill.Test
 
 open Thoth.Json.Core
 open Thoth.Json.Core.Auto
@@ -52,49 +52,51 @@ type Tree<'a> =
     | Branch of Tree<'a> * 'a * Tree<'a>
 
 let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
-    testList
-        "Thoth.Json.Decode"
+    testList (
+        "Thoth.Json.Decode",
         [
 
-            testList
-                "Errors"
+            testList (
+                "Errors",
                 [
 
-                    testCase "invalid json"
-                    <| fun _ ->
+                    test (
+                        "invalid json",
+                        fun _ ->
 
-                        let expected =
-                            Error
-                                "Make the compiler happy in the editor, but you should shadow this variable using a compiler directive"
+                            let expected =
+                                Error
+                                    "Make the compiler happy in the editor, but you should shadow this variable using a compiler directive"
 
 #if FABLE_COMPILER_JAVASCRIPT
-                        let expected: Result<float, string> =
-                            Error
-                                "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
+                            let expected: Result<float, string> =
+                                Error
+                                    "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
 #endif
 
 #if FABLE_COMPILER_PYTHON
-                        let expected: Result<float, string> =
-                            Error
-                                "Given an invalid JSON: Expecting value: line 1 column 1 (char 0)"
+                            let expected: Result<float, string> =
+                                Error
+                                    "Given an invalid JSON: Expecting value: line 1 column 1 (char 0)"
 #endif
 
 #if THOTH_JSON_NEWTONSOFT
-                        let expected: Result<float, string> =
-                            Error
-                                "Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0."
+                            let expected: Result<float, string> =
+                                Error
+                                    "Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0."
 #endif
 
 #if THOTH_JSON_SYSTEM_TEXT_JSON
-                        let expected: Result<float, string> =
-                            Error
-                                "Given an invalid JSON: 'm' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0."
+                            let expected: Result<float, string> =
+                                Error
+                                    "Given an invalid JSON: 'm' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0."
 #endif
 
-                        let actual =
-                            runner.Decode.fromString Decode.float "maxime"
+                            let actual =
+                                runner.Decode.fromString Decode.float "maxime"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
                     // testCase "invalid json #2 - Special case for Thoth.Json.Net" <| fun _ ->
                     //     // See: https://github.com/thoth-org/Thoth.Json.Net/issues/42
@@ -107,39 +109,40 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 
                     //     equal expected actual
 
-                    testCase "invalid json #3 - Special case for Thoth.Json.Net"
-                    <| fun _ ->
-                        let expected =
-                            Error
-                                "Make the compiler happy in the editor, but you should shadow this variable using a compiler directive"
+                    test (
+                        "invalid json #3 - Special case for Thoth.Json.Net",
+                        fun _ ->
+                            let expected =
+                                Error
+                                    "Make the compiler happy in the editor, but you should shadow this variable using a compiler directive"
 
-                        // See: https://github.com/thoth-org/Thoth.Json.Net/pull/48
+                            // See: https://github.com/thoth-org/Thoth.Json.Net/pull/48
 #if FABLE_COMPILER_JAVASCRIPT
-                        let expected: Result<float, string> =
-                            Error
-                                "Given an invalid JSON: Expected double-quoted property name in JSON at position 172 (line 8 column 17)"
+                            let expected: Result<float, string> =
+                                Error
+                                    "Given an invalid JSON: Expected double-quoted property name in JSON at position 172 (line 8 column 17)"
 #endif
 
 #if FABLE_COMPILER_PYTHON
-                        let expected: Result<float, string> =
-                            Error
-                                "Given an invalid JSON: Expecting property name enclosed in double quotes: line 8 column 17 (char 172)"
+                            let expected: Result<float, string> =
+                                Error
+                                    "Given an invalid JSON: Expecting property name enclosed in double quotes: line 8 column 17 (char 172)"
 #endif
 
 #if THOTH_JSON_NEWTONSOFT
-                        let expected: Result<float, string> =
-                            Error
-                                "Given an invalid JSON: Unexpected end when reading token. Path 'Ab[1]'."
+                            let expected: Result<float, string> =
+                                Error
+                                    "Given an invalid JSON: Unexpected end when reading token. Path 'Ab[1]'."
 #endif
 
 #if THOTH_JSON_SYSTEM_TEXT_JSON
-                        let expected: Result<float, string> =
-                            Error
-                                "Given an invalid JSON: Expected start of a property name or value, but instead reached end of data. LineNumber: 7 | BytePositionInLine: 16."
+                            let expected: Result<float, string> =
+                                Error
+                                    "Given an invalid JSON: Expected start of a property name or value, but instead reached end of data. LineNumber: 7 | BytePositionInLine: 16."
 #endif
 
-                        let incorrectJson =
-                            """
+                            let incorrectJson =
+                                """
                 {
                 "Ab": [
                     "RecordC",
@@ -148,831 +151,1022 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                     "C2": "",
                 """
 
-                        let actual =
-                            runner.Decode.fromString Decode.float incorrectJson
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.float
+                                    incorrectJson
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "user exceptions are not captured by the decoders"
-                    <| fun _ ->
-                        let expected = true
+                    test (
+                        "user exceptions are not captured by the decoders",
+                        fun _ ->
+                            let expected = true
 
-                        let decoder =
-                            { new Decoder<'a> with
-                                member _.Decode(_, _) = raise CustomException
-                            }
+                            let decoder =
+                                { new Decoder<'a> with
+                                    member _.Decode(_, _) =
+                                        raise CustomException
+                                }
 
-                        let actual =
-                            try
-                                runner.Decode.fromString decoder "\"maxime\""
-                                |> ignore // Ignore the result as we only want to trigger the decoder and capture the exception
+                            let actual =
+                                try
+                                    runner.Decode.fromString
+                                        decoder
+                                        "\"maxime\""
+                                    |> ignore // Ignore the result as we only want to trigger the decoder and capture the exception
 
-                                false
-                            with CustomException ->
-                                true
+                                    false
+                                with CustomException ->
+                                    true
 
-                        equal expected actual
+                            equal expected actual
+                    )
                 ]
+            )
 
-            testList
-                "Decode.fromValue"
+            testList (
+                "Decode.fromValue",
                 [
-                    testCase "works"
-                    <| fun _ ->
+                    test (
+                        "works",
+                        fun _ ->
 
-                        let value =
-                            runner.EncoderHelpers.encodeObject
-                                [
-                                    "value",
-                                    runner.EncoderHelpers.encodeSignedIntegralNumber
-                                        42
-                                ]
-                            |> runner.MapEncoderValueToDecoderValue
+                            let value =
+                                runner.EncoderHelpers.encodeObject
+                                    [
+                                        "value",
+                                        runner.EncoderHelpers.encodeSignedIntegralNumber
+                                            42
+                                    ]
+                                |> runner.MapEncoderValueToDecoderValue
 
-                        let expected: Result<int, string> = Ok 42
+                            let expected: Result<int, string> = Ok 42
 
-                        let actual =
-                            runner.Decode.fromValue
-                                (Decode.field "value" Decode.int)
-                                value
+                            let actual =
+                                runner.Decode.fromValue
+                                    (Decode.field "value" Decode.int)
+                                    value
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "returns an error if the field is missing"
-                    <| fun _ ->
+                    test (
+                        "returns an error if the field is missing",
+                        fun _ ->
 
-                        let value =
-                            runner.EncoderHelpers.encodeObject []
-                            |> runner.MapEncoderValueToDecoderValue
+                            let value =
+                                runner.EncoderHelpers.encodeObject []
+                                |> runner.MapEncoderValueToDecoderValue
 
-                        let expected: Result<int, string> =
-                            Error
-                                "Error at: ``\nExpecting an object with a field named `value` but instead got:\n{}"
+                            let expected: Result<int, string> =
+                                Error
+                                    "Error at: ``\nExpecting an object with a field named `value` but instead got:\n{}"
 
-                        let actual =
-                            runner.Decode.fromValue
-                                (Decode.field "value" Decode.int)
-                                value
+                            let actual =
+                                runner.Decode.fromValue
+                                    (Decode.field "value" Decode.int)
+                                    value
 
-                        equal expected actual
+                            equal expected actual
+                    )
                 ]
+            )
 
-            testList
-                "Decode.unsafeString"
+            testList (
+                "Decode.unsafeString",
                 [
 
-                    testCase "works"
-                    <| fun _ ->
-                        let expected = "maxime"
+                    test (
+                        "works",
+                        fun _ ->
+                            let expected = "maxime"
 
-                        let actual =
-                            runner.Decode.unsafeFromString
-                                Decode.string
-                                "\"maxime\""
+                            let actual =
+                                runner.Decode.unsafeFromString
+                                    Decode.string
+                                    "\"maxime\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "throw an exception if the json is invalid"
-                    <| fun _ ->
+                    test (
+                        "throw an exception if the json is invalid",
+                        fun _ ->
 
-                        let expected =
-                            "Make the compiler happy in the editor, but you should shadow this variable using a compiler directive"
+                            let expected =
+                                "Make the compiler happy in the editor, but you should shadow this variable using a compiler directive"
 
 #if FABLE_COMPILER_JAVASCRIPT
-                        let expected =
-                            "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
+                            let expected =
+                                "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
 #endif
 
 #if FABLE_COMPILER_PYTHON
-                        let expected =
-                            "Given an invalid JSON: Expecting value: line 1 column 1 (char 0)"
+                            let expected =
+                                "Given an invalid JSON: Expecting value: line 1 column 1 (char 0)"
 #endif
 
 #if THOTH_JSON_NEWTONSOFT
-                        let expected =
-                            "Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0."
+                            let expected =
+                                "Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0."
 #endif
 
 #if THOTH_JSON_SYSTEM_TEXT_JSON
-                        let expected =
-                            "Given an invalid JSON: 'm' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0."
+                            let expected =
+                                "Given an invalid JSON: 'm' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0."
 #endif
 
-                        try
-                            runner.Decode.unsafeFromString
-                                Decode.string
-                                "maxime"
-                            |> ignore // Ignore the result as we only want to trigger the decoder and capture the exception
+                            try
+                                runner.Decode.unsafeFromString
+                                    Decode.string
+                                    "maxime"
+                                |> ignore // Ignore the result as we only want to trigger the decoder and capture the exception
 
-                        with ex ->
-                            equal expected ex.Message
+                            with ex ->
+                                equal expected ex.Message
+                    )
                 ]
+            )
 
-            testList
-                "Primitives"
+            testList (
+                "Primitives",
                 [
 
-                    testCase "unit works"
-                    <| fun _ ->
-                        let expected = Ok()
-                        let actual = runner.Decode.fromString Decode.unit "null"
+                    test (
+                        "unit works",
+                        fun _ ->
+                            let expected = Ok()
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.unit "null"
 
-                    testCase "a string works"
-                    <| fun _ ->
-                        let expected = Ok("maxime")
+                            equal expected actual
+                    )
 
-                        let actual =
-                            runner.Decode.fromString Decode.string "\"maxime\""
+                    test (
+                        "a string works",
+                        fun _ ->
+                            let expected = Ok("maxime")
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.string
+                                    "\"maxime\""
 
-                    testCase "a string with new line works"
-                    <| fun _ ->
-                        let expected = Ok("a\nb")
+                            equal expected actual
+                    )
 
-                        let actual =
-                            runner.Decode.fromString Decode.string "\"a\\nb\""
+                    test (
+                        "a string with new line works",
+                        fun _ ->
+                            let expected = Ok("a\nb")
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.string
+                                    "\"a\\nb\""
 
-                    testCase "a string with new line character works"
-                    <| fun _ ->
-                        let expected = Ok("a\\nb")
+                            equal expected actual
+                    )
 
-                        let actual =
-                            runner.Decode.fromString Decode.string "\"a\\\\nb\""
+                    test (
+                        "a string with new line character works",
+                        fun _ ->
+                            let expected = Ok("a\\nb")
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.string
+                                    "\"a\\\\nb\""
 
-                    testCase "a string with tab works"
-                    <| fun _ ->
-                        let expected = Ok("a\tb")
+                            equal expected actual
+                    )
 
-                        let actual =
-                            runner.Decode.fromString Decode.string "\"a\\tb\""
+                    test (
+                        "a string with tab works",
+                        fun _ ->
+                            let expected = Ok("a\tb")
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.string
+                                    "\"a\\tb\""
 
-                    testCase "a string with tab character works"
-                    <| fun _ ->
-                        let expected = Ok("a\\tb")
+                            equal expected actual
+                    )
 
-                        let actual =
-                            runner.Decode.fromString Decode.string "\"a\\\\tb\""
+                    test (
+                        "a string with tab character works",
+                        fun _ ->
+                            let expected = Ok("a\\tb")
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.string
+                                    "\"a\\\\tb\""
 
-                    testCase "a char works"
-                    <| fun _ ->
-                        let expected = Ok('a')
+                            equal expected actual
+                    )
 
-                        let actual =
-                            runner.Decode.fromString Decode.char "\"a\""
+                    test (
+                        "a char works",
+                        fun _ ->
+                            let expected = Ok('a')
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.char "\"a\""
 
-                    testCase
-                        "a char reports an error if there are more than 1 characters in the string"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                            equal expected actual
+                    )
+
+                    test (
+                        "a char reports an error if there are more than 1 characters in the string",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting a single character string but instead got: "ab"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.char "\"ab\""
+                            let actual =
+                                runner.Decode.fromString Decode.char "\"ab\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "a float works"
-                    <| fun _ ->
-                        let expected = Ok(1.2)
-                        let actual = runner.Decode.fromString Decode.float "1.2"
+                    test (
+                        "a float works",
+                        fun _ ->
+                            let expected = Ok(1.2)
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.float "1.2"
 
-                    testCase "a float from int works"
-                    <| fun _ ->
-                        let expected = Ok(1.0)
-                        let actual = runner.Decode.fromString Decode.float "1"
+                            equal expected actual
+                    )
 
-                        equal expected actual
+                    test (
+                        "a float from int works",
+                        fun _ ->
+                            let expected = Ok(1.0)
+
+                            let actual =
+                                runner.Decode.fromString Decode.float "1"
+
+                            equal expected actual
+                    )
 
                     // https://github.com/thoth-org/Thoth.Json/issues/212
-                    testCase "a really big float works"
-                    <| fun _ ->
-                        let json =
-                            "179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                    test (
+                        "a really big float works",
+                        fun _ ->
+                            let json =
+                                "179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
 
-                        let expected =
-                            Ok(
-                                179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.
-                            )
+                            let expected =
+                                Ok(
+                                    179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.
+                                )
 
-                        let actual = runner.Decode.fromString Decode.float json
+                            let actual =
+                                runner.Decode.fromString Decode.float json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "a bool works"
-                    <| fun _ ->
-                        let expected = Ok(true)
-                        let actual = runner.Decode.fromString Decode.bool "true"
+                    test (
+                        "a bool works",
+                        fun _ ->
+                            let expected = Ok(true)
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.bool "true"
 
-                    testCase "an invalid bool output an error"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                "Error at: `$`\nExpecting a boolean but instead got: 2"
-                            )
+                            equal expected actual
+                    )
 
-                        let actual = runner.Decode.fromString Decode.bool "2"
+                    test (
+                        "an invalid bool output an error",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    "Error at: `$`\nExpecting a boolean but instead got: 2"
+                                )
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.bool "2"
 
-                    testCase "an int works"
-                    <| fun _ ->
-                        let expected = Ok(25)
-                        let actual = runner.Decode.fromString Decode.int "25"
+                            equal expected actual
+                    )
 
-                        equal expected actual
+                    test (
+                        "an int works",
+                        fun _ ->
+                            let expected = Ok(25)
 
-                    testCase
-                        "an invalid int [invalid range: too big] output an error"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                "Error at: `$`\nExpecting an int but instead got: 2147483648\nReason: Value was either too large or too small for an int"
-                            )
+                            let actual =
+                                runner.Decode.fromString Decode.int "25"
 
-                        let actual =
-                            runner.Decode.fromString Decode.int "2147483648"
+                            equal expected actual
+                    )
 
-                        equal expected actual
+                    test (
+                        "an invalid int [invalid range: too big] output an error",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    "Error at: `$`\nExpecting an int but instead got: 2147483648\nReason: Value was either too large or too small for an int"
+                                )
+
+                            let actual =
+                                runner.Decode.fromString Decode.int "2147483648"
+
+                            equal expected actual
+                    )
 
 
-                    testCase
-                        "an invalid int [invalid range: too small] output an error"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                "Error at: `$`\nExpecting an int but instead got: -2147483649\nReason: Value was either too large or too small for an int"
-                            )
+                    test (
+                        "an invalid int [invalid range: too small] output an error",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    "Error at: `$`\nExpecting an int but instead got: -2147483649\nReason: Value was either too large or too small for an int"
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.int "-2147483649"
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.int
+                                    "-2147483649"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an int16 works from number"
-                    <| fun _ ->
-                        let expected = Ok(int16 25)
-                        let actual = runner.Decode.fromString Decode.int16 "25"
+                    test (
+                        "an int16 works from number",
+                        fun _ ->
+                            let expected = Ok(int16 25)
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.int16 "25"
+
+                            equal expected actual
+                    )
 
 #if !FABLE_COMPILER_JAVASCRIPT
                     // I don't know how to differentiate between 1.0 and 1 in JS
-                    testCase
-                        "validate that Helpers.isIntegral is implemented correctly"
-                    // int16 is using Helpers.isIntegral under the hood
-                    <| fun _ ->
-                        let expected =
-                            Error
-                                """Error at: `$`
+                    test (
+                        "validate that Helpers.isIntegral is implemented correctly for 25.0",
+                        fun _ -> // int16 is using Helpers.isIntegral under the hood
+                            let expected =
+                                Error
+                                    """Error at: `$`
 Expecting an int16 but instead got: 25.0
 Reason: Value is not an integral value"""
 
-                        let actual =
-                            runner.Decode.fromString Decode.int16 "25.0"
+                            let actual =
+                                runner.Decode.fromString Decode.int16 "25.0"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 #endif
 
 #if !FABLE_COMPILER_JAVASCRIPT
-                    testCase
-                        "validate that Helpers.isIntegral is implemented correctly"
-                    // int16 is using Helpers.isIntegral under the hood
-                    <| fun _ ->
-                        let expected =
-                            Error
-                                """Error at: `$`
+                    test (
+                        "validate that Helpers.isIntegral is implemented correctly for 25.001",
+                        fun _ -> // int16 is using Helpers.isIntegral under the hood
+                            let expected =
+                                Error
+                                    """Error at: `$`
 Expecting an int16 but instead got: 25.001
 Reason: Value is not an integral value"""
 
-                        let actual =
-                            runner.Decode.fromString Decode.int16 "25.001"
+                            let actual =
+                                runner.Decode.fromString Decode.int16 "25.001"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 #endif
 
-                    testCase "an int16 works from string"
-                    <| fun _ ->
-                        let expected = Ok(int16 -25)
+                    test (
+                        "an int16 works from string",
+                        fun _ ->
+                            let expected = Ok(int16 -25)
 
-                        let actual =
-                            runner.Decode.fromString Decode.int16 "\"-25\""
+                            let actual =
+                                runner.Decode.fromString Decode.int16 "\"-25\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an int16 output an error if value is too big"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "an int16 output an error if value is too big",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an int16 but instead got: 32768
 Reason: Value was either too large or too small for an int16
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.int16 "32768"
+                            let actual =
+                                runner.Decode.fromString Decode.int16 "32768"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an int16 output an error if value is too small"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "an int16 output an error if value is too small",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an int16 but instead got: -32769
 Reason: Value was either too large or too small for an int16
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.int16 "-32769"
+                            let actual =
+                                runner.Decode.fromString Decode.int16 "-32769"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an int16 output an error if incorrect string"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "an int16 output an error if incorrect string",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an int16 but instead got: "maxime"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.int16 "\"maxime\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.int16
+                                    "\"maxime\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an uint16 works from number"
-                    <| fun _ ->
-                        let expected = Ok(uint16 25)
-                        let actual = runner.Decode.fromString Decode.uint16 "25"
+                    test (
+                        "an uint16 works from number",
+                        fun _ ->
+                            let expected = Ok(uint16 25)
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.uint16 "25"
 
-                    testCase "an uint16 works from string"
-                    <| fun _ ->
-                        let expected = Ok(uint16 25)
+                            equal expected actual
+                    )
 
-                        let actual =
-                            runner.Decode.fromString Decode.uint16 "\"25\""
+                    test (
+                        "an uint16 works from string",
+                        fun _ ->
+                            let expected = Ok(uint16 25)
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.uint16 "\"25\""
 
-                    testCase "an uint16 output an error if value is too big"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                            equal expected actual
+                    )
+
+                    test (
+                        "an uint16 output an error if value is too big",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an uint16 but instead got: 65536
 Reason: Value was either too large or too small for an uint16
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.uint16 "65536"
+                            let actual =
+                                runner.Decode.fromString Decode.uint16 "65536"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an uint16 output an error if value is too small"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "an uint16 output an error if value is too small",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an uint16 but instead got: -1
 Reason: Value was either too large or too small for an uint16
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual = runner.Decode.fromString Decode.uint16 "-1"
+                            let actual =
+                                runner.Decode.fromString Decode.uint16 "-1"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an uint16 output an error if incorrect string"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "an uint16 output an error if incorrect string",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an uint16 but instead got: "maxime"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.uint16 "\"maxime\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.uint16
+                                    "\"maxime\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an int64 works from number"
-                    <| fun _ ->
-                        let expected = Ok 1000L
+                    test (
+                        "an int64 works from number",
+                        fun _ ->
+                            let expected = Ok 1000L
 
-                        let actual =
-                            runner.Decode.fromString Decode.int64 "1000"
+                            let actual =
+                                runner.Decode.fromString Decode.int64 "1000"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an int64 works from string"
-                    <| fun _ ->
-                        let expected = Ok 99L
+                    test (
+                        "an int64 works from string",
+                        fun _ ->
+                            let expected = Ok 99L
 
-                        let actual =
-                            runner.Decode.fromString Decode.int64 "\"99\""
+                            let actual =
+                                runner.Decode.fromString Decode.int64 "\"99\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an int64 works from negative string"
-                    <| fun _ ->
-                        let expected = Ok -99L
+                    test (
+                        "an int64 works from negative string",
+                        fun _ ->
+                            let expected = Ok -99L
 
-                        let actual =
-                            runner.Decode.fromString Decode.int64 "\"-99\""
+                            let actual =
+                                runner.Decode.fromString Decode.int64 "\"-99\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an int64 works from string with leading plus"
-                    <| fun _ ->
-                        let expected = Ok 99L
+                    test (
+                        "an int64 works from string with leading plus",
+                        fun _ ->
+                            let expected = Ok 99L
 
-                        let actual =
-                            runner.Decode.fromString Decode.int64 "\"+99\""
+                            let actual =
+                                runner.Decode.fromString Decode.int64 "\"+99\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
                     // This is beyond the range of `JSON.parse`
 #if !FABLE_COMPILER_JAVASCRIPT
-                    testCase "an int64 works from large number"
-                    <| fun _ ->
-                        let expected = Ok 9223372036854775806L
+                    test (
+                        "an int64 works from large number",
+                        fun _ ->
+                            let expected = Ok 9223372036854775806L
 
-                        let actual =
-                            runner.Decode.fromString
-                                Decode.int64
-                                "9223372036854775806"
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.int64
+                                    "9223372036854775806"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 #endif
 
-                    testCase "an int64 works from large string"
-                    <| fun _ ->
-                        let expected = Ok 9223372036854775806L
+                    test (
+                        "an int64 works from large string",
+                        fun _ ->
+                            let expected = Ok 9223372036854775806L
 
-                        let actual =
-                            runner.Decode.fromString
-                                Decode.int64
-                                "\"9223372036854775806\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.int64
+                                    "\"9223372036854775806\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an int64 works from scientific notation"
-                    <| fun _ ->
-                        let expected = Ok 1000L
+                    test (
+                        "an int64 works from scientific notation",
+                        fun _ ->
+                            let expected = Ok 1000L
 
-                        let actual = runner.Decode.fromString Decode.int64 "1e3"
+                            let actual =
+                                runner.Decode.fromString Decode.int64 "1e3"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "the backend numberToString of 1e3"
-                    <| fun _ ->
-                        let reprDecoder =
-                            { new Decoder<string> with
-                                member _.Decode(helpers, value) =
-                                    Ok(helpers.numberToString value)
-                            }
+                    test (
+                        "the backend numberToString of 1e3",
+                        fun _ ->
+                            let reprDecoder =
+                                { new Decoder<string> with
+                                    member _.Decode(helpers, value) =
+                                        Ok(helpers.numberToString value)
+                                }
 
-                        let expected = Ok "1000"
+                            let expected = Ok "1000"
 
-                        let actual = runner.Decode.fromString reprDecoder "1e3"
+                            let actual =
+                                runner.Decode.fromString reprDecoder "1e3"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "an int64 works output an error if incorrect string"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "an int64 works output an error if incorrect string",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an int64 but instead got: "maxime"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.int64 "\"maxime\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.int64
+                                    "\"maxime\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an uint32 works from number"
-                    <| fun _ ->
-                        let expected = Ok 1000u
+                    test (
+                        "an uint32 works from number",
+                        fun _ ->
+                            let expected = Ok 1000u
 
-                        let actual =
-                            runner.Decode.fromString Decode.uint32 "1000"
+                            let actual =
+                                runner.Decode.fromString Decode.uint32 "1000"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an uint32 works from string"
-                    <| fun _ ->
-                        let expected = Ok 1000u
+                    test (
+                        "an uint32 works from string",
+                        fun _ ->
+                            let expected = Ok 1000u
 
-                        let actual =
-                            runner.Decode.fromString Decode.uint32 "\"1000\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.uint32
+                                    "\"1000\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an uint32 output an error if incorrect string"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "an uint32 output an error if incorrect string",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an uint32 but instead got: "maxime"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.uint32 "\"maxime\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.uint32
+                                    "\"maxime\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an uint64 works from number"
-                    <| fun _ ->
-                        let expected = Ok 1000UL
+                    test (
+                        "an uint64 works from number",
+                        fun _ ->
+                            let expected = Ok 1000UL
 
-                        let actual =
-                            runner.Decode.fromString Decode.uint64 "1000"
+                            let actual =
+                                runner.Decode.fromString Decode.uint64 "1000"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an uint64 works from string"
-                    <| fun _ ->
-                        let expected = Ok 1000UL
+                    test (
+                        "an uint64 works from string",
+                        fun _ ->
+                            let expected = Ok 1000UL
 
-                        let actual =
-                            runner.Decode.fromString Decode.uint64 "\"1000\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.uint64
+                                    "\"1000\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an uint64 works from string with leading plus"
-                    <| fun _ ->
-                        let expected = Ok 99UL
+                    test (
+                        "an uint64 works from string with leading plus",
+                        fun _ ->
+                            let expected = Ok 99UL
 
-                        let actual =
-                            runner.Decode.fromString Decode.uint64 "\"+99\""
+                            let actual =
+                                runner.Decode.fromString Decode.uint64 "\"+99\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
                     // This is beyond the range of `JSON.parse`
 #if !FABLE_COMPILER_JAVASCRIPT
-                    testCase "an uint64 works from large number"
-                    <| fun _ ->
-                        let expected = Ok 9223372036854775806UL
+                    test (
+                        "an uint64 works from large number",
+                        fun _ ->
+                            let expected = Ok 9223372036854775806UL
 
-                        let actual =
-                            runner.Decode.fromString
-                                Decode.uint64
-                                "9223372036854775806"
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.uint64
+                                    "9223372036854775806"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 #endif
 
-                    testCase "an uint64 works from large string"
-                    <| fun _ ->
-                        let expected = Ok 9223372036854775806UL
+                    test (
+                        "an uint64 works from large string",
+                        fun _ ->
+                            let expected = Ok 9223372036854775806UL
 
-                        let actual =
-                            runner.Decode.fromString
-                                Decode.uint64
-                                "\"9223372036854775806\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.uint64
+                                    "\"9223372036854775806\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an uint64 works from scientific notation"
-                    <| fun _ ->
-                        let expected = Ok 1000UL
+                    test (
+                        "an uint64 works from scientific notation",
+                        fun _ ->
+                            let expected = Ok 1000UL
 
-                        let actual =
-                            runner.Decode.fromString Decode.uint64 "1e3"
+                            let actual =
+                                runner.Decode.fromString Decode.uint64 "1e3"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an uint64 output an error if incorrect string"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "an uint64 output an error if incorrect string",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an uint64 but instead got: "maxime"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.uint64 "\"maxime\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.uint64
+                                    "\"maxime\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "a byte works from number"
-                    <| fun _ ->
-                        let expected = Ok 25uy
-                        let actual = runner.Decode.fromString Decode.byte "25"
+                    test (
+                        "a byte works from number",
+                        fun _ ->
+                            let expected = Ok 25uy
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.byte "25"
 
-                    testCase "a byte works from string"
-                    <| fun _ ->
-                        let expected = Ok 25uy
+                            equal expected actual
+                    )
 
-                        let actual =
-                            runner.Decode.fromString Decode.byte "\"25\""
+                    test (
+                        "a byte works from string",
+                        fun _ ->
+                            let expected = Ok 25uy
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.byte "\"25\""
 
-                    testCase "a byte output an error if value is too big"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                            equal expected actual
+                    )
+
+                    test (
+                        "a byte output an error if value is too big",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting a byte but instead got: 256
 Reason: Value was either too large or too small for a byte
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual = runner.Decode.fromString Decode.byte "256"
+                            let actual =
+                                runner.Decode.fromString Decode.byte "256"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "a byte output an error if value is too small"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "a byte output an error if value is too small",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting a byte but instead got: -1
 Reason: Value was either too large or too small for a byte
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual = runner.Decode.fromString Decode.byte "-1"
+                            let actual =
+                                runner.Decode.fromString Decode.byte "-1"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "a byte output an error if incorrect string"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "a byte output an error if incorrect string",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting a byte but instead got: "maxime"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.byte "\"maxime\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.byte
+                                    "\"maxime\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
 
-                    testCase "a sbyte works from number"
-                    <| fun _ ->
-                        let expected = Ok 25y
-                        let actual = runner.Decode.fromString Decode.sbyte "25"
+                    test (
+                        "a sbyte works from number",
+                        fun _ ->
+                            let expected = Ok 25y
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.sbyte "25"
 
-                    testCase "a sbyte works from string"
-                    <| fun _ ->
-                        let expected = Ok -25y
+                            equal expected actual
+                    )
 
-                        let actual =
-                            runner.Decode.fromString Decode.sbyte "\"-25\""
+                    test (
+                        "a sbyte works from string",
+                        fun _ ->
+                            let expected = Ok -25y
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.sbyte "\"-25\""
 
-                    testCase "a sbyte output an error if value is too big"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                            equal expected actual
+                    )
+
+                    test (
+                        "a sbyte output an error if value is too big",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting a sbyte but instead got: 128
 Reason: Value was either too large or too small for a sbyte
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual = runner.Decode.fromString Decode.sbyte "128"
+                            let actual =
+                                runner.Decode.fromString Decode.sbyte "128"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "a sbyte output an error if value is too small"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "a sbyte output an error if value is too small",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting a sbyte but instead got: -129
 Reason: Value was either too large or too small for a sbyte
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.sbyte "-129"
+                            let actual =
+                                runner.Decode.fromString Decode.sbyte "-129"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "a sbyte output an error if incorrect string"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "a sbyte output an error if incorrect string",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting a sbyte but instead got: "maxime"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.sbyte "\"maxime\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.sbyte
+                                    "\"maxime\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an bigint works from number"
-                    <| fun _ ->
-                        let expected = Ok 12I
-                        let actual = runner.Decode.fromString Decode.bigint "12"
+                    test (
+                        "an bigint works from number",
+                        fun _ ->
+                            let expected = Ok 12I
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.bigint "12"
 
-                    testCase "an bigint works from string"
-                    <| fun _ ->
-                        let expected = Ok 12I
+                            equal expected actual
+                    )
 
-                        let actual =
-                            runner.Decode.fromString Decode.bigint "\"12\""
+                    test (
+                        "an bigint works from string",
+                        fun _ ->
+                            let expected = Ok 12I
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.bigint "\"12\""
 
-                    testCase "an bigint output an error if invalid string"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                            equal expected actual
+                    )
+
+                    test (
+                        "an bigint output an error if invalid string",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting a bigint but instead got: "maxime"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.bigint "\"maxime\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.bigint
+                                    "\"maxime\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
 #if !FABLE_COMPILER_JAVASCRIPT && !FABLE_COMPILER_PYTHON
-                    testList
-                        "a decimal string uses invariant culture"
+                    testList (
+                        "a decimal string uses invariant culture",
                         ([
                             "de-DE" // Decimal separator is comma in this culture.
                             "fi-FI" // Uses U+2212 as negative sign in NumberFormat.
@@ -982,528 +1176,590 @@ Expecting a bigint but instead got: "maxime"
                             "ru-RU" // Uses comma decimal separator and non-dot parsing conventions.
                          ]
                          |> List.map (fun culture ->
-                             testCase (
-                                 sprintf
+                             test (
+                                 (sprintf
                                      "a decimal string works in %s culture"
-                                     culture
+                                     culture),
+                                 fun _ ->
+                                     let previousCulture =
+                                         Globalization.CultureInfo.CurrentCulture
+
+                                     let previousUiCulture =
+                                         Globalization.CultureInfo.CurrentUICulture
+
+                                     try
+                                         let testCulture =
+                                             Globalization.CultureInfo(culture)
+
+                                         Globalization.CultureInfo.CurrentCulture <-
+                                             testCulture
+
+                                         Globalization.CultureInfo.CurrentUICulture <-
+                                             testCulture
+
+                                         let actual =
+                                             runner.Decode.fromString
+                                                 Decode.decimal
+                                                 $"\"-1234.75\""
+
+                                         equal (Ok -1234.75M) actual
+                                     finally
+                                         Globalization.CultureInfo.CurrentCulture <-
+                                             previousCulture
+
+                                         Globalization.CultureInfo.CurrentUICulture <-
+                                             previousUiCulture
                              )
-                             <| fun _ ->
-                                 let previousCulture =
-                                     Globalization.CultureInfo.CurrentCulture
-
-                                 let previousUiCulture =
-                                     Globalization.CultureInfo.CurrentUICulture
-
-                                 try
-                                     let testCulture =
-                                         Globalization.CultureInfo(culture)
-
-                                     Globalization.CultureInfo.CurrentCulture <-
-                                         testCulture
-
-                                     Globalization.CultureInfo.CurrentUICulture <-
-                                         testCulture
-
-                                     let actual =
-                                         runner.Decode.fromString
-                                             Decode.decimal
-                                             $"\"-1234.75\""
-
-                                     equal (Ok -1234.75M) actual
-                                 finally
-                                     Globalization.CultureInfo.CurrentCulture <-
-                                         previousCulture
-
-                                     Globalization.CultureInfo.CurrentUICulture <-
-                                         previousUiCulture
                          ))
+                    )
 #endif
 
-                    testCase
-                        "a string representing a DateTime should be accepted as a string"
-                    <| fun _ ->
-                        let expected = "2018-10-01T11:12:55.00Z"
+                    test (
+                        "a string representing a DateTime should be accepted as a string",
+                        fun _ ->
+                            let expected = "2018-10-01T11:12:55.00Z"
 
-                        let actual =
-                            runner.Decode.fromString
-                                Decode.string
-                                "\"2018-10-01T11:12:55.00Z\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.string
+                                    "\"2018-10-01T11:12:55.00Z\""
 
-                        equal (Ok expected) actual
+                            equal (Ok expected) actual
+                    )
 
 #if !FABLE_COMPILER_PYTHON
-                    testCase "a datetime works"
-                    <| fun _ ->
-                        let expected =
-                            new DateTime(
-                                2018,
-                                10,
-                                1,
-                                11,
-                                12,
-                                55,
-                                DateTimeKind.Utc
-                            )
+                    test (
+                        "a datetime works",
+                        fun _ ->
+                            let expected =
+                                new DateTime(
+                                    2018,
+                                    10,
+                                    1,
+                                    11,
+                                    12,
+                                    55,
+                                    DateTimeKind.Utc
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                Decode.datetimeUtc
-                                "\"2018-10-01T11:12:55.00Z\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.datetimeUtc
+                                    "\"2018-10-01T11:12:55.00Z\""
 
-                        equal (Ok expected) actual
+                            equal (Ok expected) actual
+                    )
 #endif
 
 #if !FABLE_COMPILER_PYTHON
-                    testCase "a non-UTC datetime works"
-                    <| fun _ ->
-                        let expected = new DateTime(2018, 10, 1, 11, 12, 55)
+                    test (
+                        "a non-UTC datetime works",
+                        fun _ ->
+                            let expected = new DateTime(2018, 10, 1, 11, 12, 55)
 
-                        let actual =
-                            runner.Decode.fromString
-                                Decode.datetimeLocal
-                                "\"2018-10-01T11:12:55\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.datetimeLocal
+                                    "\"2018-10-01T11:12:55\""
 
-                        equal (Ok expected) actual
+                            equal (Ok expected) actual
+                    )
 
-                    testCase "a datetime output an error if invalid string"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "a datetime output an error if invalid string",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting a datetime but instead got: "invalid_string"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                Decode.datetimeUtc
-                                "\"invalid_string\""
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.datetimeUtc
+                                    "\"invalid_string\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "a datetime works with TimeZone"
-                    <| fun _ ->
-                        let localDate =
-                            DateTime(
-                                2018,
-                                10,
-                                1,
-                                11,
-                                12,
-                                55,
-                                DateTimeKind.Local
-                            )
+                    test (
+                        "a datetime works with TimeZone",
+                        fun _ ->
+                            let localDate =
+                                DateTime(
+                                    2018,
+                                    10,
+                                    1,
+                                    11,
+                                    12,
+                                    55,
+                                    DateTimeKind.Local
+                                )
 
-                        let expected = Ok(localDate.ToUniversalTime())
-                        let json = sprintf "\"%s\"" (localDate.ToString("O"))
+                            let expected = Ok(localDate.ToUniversalTime())
 
-                        let actual =
-                            runner.Decode.fromString Decode.datetimeUtc json
+                            let json =
+                                sprintf "\"%s\"" (localDate.ToString("O"))
 
-                        equal expected actual
+                            let actual =
+                                runner.Decode.fromString Decode.datetimeUtc json
+
+                            equal expected actual
+                    )
 #endif
 
 #if !FABLE_COMPILER_PYTHON
-                    testCase "a datetimeOffset works"
-                    <| fun _ ->
-                        let expected =
-                            DateTimeOffset(
-                                2018,
-                                7,
-                                2,
-                                12,
-                                23,
-                                45,
-                                0,
-                                TimeSpan.FromHours(2.)
-                            )
-                            |> Ok
+                    test (
+                        "a datetimeOffset works",
+                        fun _ ->
+                            let expected =
+                                DateTimeOffset(
+                                    2018,
+                                    7,
+                                    2,
+                                    12,
+                                    23,
+                                    45,
+                                    0,
+                                    TimeSpan.FromHours(2.)
+                                )
+                                |> Ok
 
-                        let json = "\"2018-07-02T12:23:45+02:00\""
+                            let json = "\"2018-07-02T12:23:45+02:00\""
 
-                        let actual =
-                            runner.Decode.fromString Decode.datetimeOffset json
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.datetimeOffset
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "a datetimeOffset returns Error if invalid format"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "a datetimeOffset returns Error if invalid format",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting a datetimeoffset but instead got: "NOT A DATETIMEOFFSET"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let json = "\"NOT A DATETIMEOFFSET\""
+                            let json = "\"NOT A DATETIMEOFFSET\""
 
-                        let actual =
-                            runner.Decode.fromString Decode.datetimeOffset json
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.datetimeOffset
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 #endif
 
-                    testCase "a timespan works"
-                    <| fun _ ->
-                        let expected = TimeSpan(23, 45, 0) |> Ok
-                        let json = "\"23:45:00\""
+                    test (
+                        "a timespan works",
+                        fun _ ->
+                            let expected = TimeSpan(23, 45, 0) |> Ok
+                            let json = "\"23:45:00\""
 
-                        let actual =
-                            runner.Decode.fromString Decode.timespan json
+                            let actual =
+                                runner.Decode.fromString Decode.timespan json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "a timespan returns Error if invalid format"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "a timespan returns Error if invalid format",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting a timespan but instead got: "NOT A TimeSpan"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let json = "\"NOT A TimeSpan\""
+                            let json = "\"NOT A TimeSpan\""
 
-                        let actual =
-                            runner.Decode.fromString Decode.timespan json
+                            let actual =
+                                runner.Decode.fromString Decode.timespan json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an absolute uri works"
-                    <| fun _ ->
-                        // Compare on OriginalString because Fable's Uri does not
-                        // implement structural equality
-                        let expected = Ok "http://example.com/path?q=1"
+                    test (
+                        "an absolute uri works",
+                        fun _ ->
+                            // Compare on OriginalString because Fable's Uri does not
+                            // implement structural equality
+                            let expected = Ok "http://example.com/path?q=1"
 
-                        let json = "\"http://example.com/path?q=1\""
+                            let json = "\"http://example.com/path?q=1\""
 
-                        let actual =
-                            runner.Decode.fromString Decode.uri json
-                            |> Result.map _.OriginalString
+                            let actual =
+                                runner.Decode.fromString Decode.uri json
+                                |> Result.map _.OriginalString
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "a relative uri works"
-                    <| fun _ ->
-                        let expected = Ok "/path?q=1"
-                        let json = "\"/path?q=1\""
+                    test (
+                        "a relative uri works",
+                        fun _ ->
+                            let expected = Ok "/path?q=1"
+                            let json = "\"/path?q=1\""
 
-                        let actual =
-                            runner.Decode.fromString Decode.uri json
-                            |> Result.map _.OriginalString
+                            let actual =
+                                runner.Decode.fromString Decode.uri json
+                                |> Result.map _.OriginalString
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "a uri returns Error if not a string"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "a uri returns Error if not a string",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting a URI but instead got: 42
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let json = "42"
+                            let json = "42"
 
-                        let actual = runner.Decode.fromString Decode.uri json
+                            let actual =
+                                runner.Decode.fromString Decode.uri json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an enum<sbyte> works"
-                    <| fun _ ->
-                        let expected = Ok Enum_Int8.NinetyNine
+                    test (
+                        "an enum<sbyte> works",
+                        fun _ ->
+                            let expected = Ok Enum_Int8.NinetyNine
 
-                        let actual =
-                            runner.Decode.fromString Decode.Enum.sbyte "99"
+                            let actual =
+                                runner.Decode.fromString Decode.Enum.sbyte "99"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an enum<byte> works"
-                    <| fun _ ->
-                        let expected = Ok Enum_UInt8.NinetyNine
+                    test (
+                        "an enum<byte> works",
+                        fun _ ->
+                            let expected = Ok Enum_UInt8.NinetyNine
 
-                        let actual =
-                            runner.Decode.fromString Decode.Enum.byte "99"
+                            let actual =
+                                runner.Decode.fromString Decode.Enum.byte "99"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an enum<int> works"
-                    <| fun _ ->
-                        let expected = Ok Enum_Int.One
+                    test (
+                        "an enum<int> works",
+                        fun _ ->
+                            let expected = Ok Enum_Int.One
 
-                        let actual =
-                            runner.Decode.fromString Decode.Enum.int "1"
+                            let actual =
+                                runner.Decode.fromString Decode.Enum.int "1"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an enum<uint32> works"
-                    <| fun _ ->
-                        let expected = Ok Enum_UInt32.NinetyNine
+                    test (
+                        "an enum<uint32> works",
+                        fun _ ->
+                            let expected = Ok Enum_UInt32.NinetyNine
 
-                        let actual =
-                            runner.Decode.fromString Decode.Enum.uint32 "99"
+                            let actual =
+                                runner.Decode.fromString Decode.Enum.uint32 "99"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an enum<int16> works"
-                    <| fun _ ->
-                        let expected = Ok Enum_Int16.NinetyNine
+                    test (
+                        "an enum<int16> works",
+                        fun _ ->
+                            let expected = Ok Enum_Int16.NinetyNine
 
-                        let actual =
-                            runner.Decode.fromString Decode.Enum.int16 "99"
+                            let actual =
+                                runner.Decode.fromString Decode.Enum.int16 "99"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an enum<uint16> works"
-                    <| fun _ ->
-                        let expected = Ok Enum_UInt16.NinetyNine
+                    test (
+                        "an enum<uint16> works",
+                        fun _ ->
+                            let expected = Ok Enum_UInt16.NinetyNine
 
-                        let actual =
-                            runner.Decode.fromString Decode.Enum.uint16 "99"
+                            let actual =
+                                runner.Decode.fromString Decode.Enum.uint16 "99"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
                 ]
+            )
 
-            testList
-                "Tuples"
+            testList (
+                "Tuples",
                 [
-                    testCase "tuple2 works"
-                    <| fun _ ->
-                        let json = """[1, "maxime"]"""
-                        let expected = Ok(1, "maxime")
+                    test (
+                        "tuple2 works",
+                        fun _ ->
+                            let json = """[1, "maxime"]"""
+                            let expected = Ok(1, "maxime")
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple2 Decode.int Decode.string)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple2 Decode.int Decode.string)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "tuple3 works"
-                    <| fun _ ->
-                        let json = """[1, "maxime", 2.5]"""
-                        let expected = Ok(1, "maxime", 2.5)
+                    test (
+                        "tuple3 works",
+                        fun _ ->
+                            let json = """[1, "maxime", 2.5]"""
+                            let expected = Ok(1, "maxime", 2.5)
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple3
-                                    Decode.int
-                                    Decode.string
-                                    Decode.float)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple3
+                                        Decode.int
+                                        Decode.string
+                                        Decode.float)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "tuple4 works"
-                    <| fun _ ->
-                        let json =
-                            """[1, "maxime", 2.5, { "fieldA" : "test" }]"""
+                    test (
+                        "tuple4 works",
+                        fun _ ->
+                            let json =
+                                """[1, "maxime", 2.5, { "fieldA" : "test" }]"""
 
-                        let expected =
-                            Ok(
-                                1,
-                                "maxime",
-                                2.5,
-                                {
-                                    fieldA = "test"
-                                }
-                            )
+                            let expected =
+                                Ok(
+                                    1,
+                                    "maxime",
+                                    2.5,
+                                    {
+                                        fieldA = "test"
+                                    }
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple4
-                                    Decode.int
-                                    Decode.string
-                                    Decode.float
-                                    SmallRecord.Decoder)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple4
+                                        Decode.int
+                                        Decode.string
+                                        Decode.float
+                                        SmallRecord.Decoder)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "tuple5 works"
-                    <| fun _ ->
-                        let json =
-                            """[1, "maxime", 2.5, { "fieldA" : "test" }, false]"""
+                    test (
+                        "tuple5 works",
+                        fun _ ->
+                            let json =
+                                """[1, "maxime", 2.5, { "fieldA" : "test" }, false]"""
 
-                        let expected =
-                            Ok(
-                                1,
-                                "maxime",
-                                2.5,
-                                {
-                                    fieldA = "test"
-                                },
-                                false
-                            )
+                            let expected =
+                                Ok(
+                                    1,
+                                    "maxime",
+                                    2.5,
+                                    {
+                                        fieldA = "test"
+                                    },
+                                    false
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple5
-                                    Decode.int
-                                    Decode.string
-                                    Decode.float
-                                    SmallRecord.Decoder
-                                    Decode.bool)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple5
+                                        Decode.int
+                                        Decode.string
+                                        Decode.float
+                                        SmallRecord.Decoder
+                                        Decode.bool)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "tuple6 works"
-                    <| fun _ ->
-                        let json =
-                            """[1, "maxime", 2.5, { "fieldA" : "test" }, false, null]"""
+                    test (
+                        "tuple6 works",
+                        fun _ ->
+                            let json =
+                                """[1, "maxime", 2.5, { "fieldA" : "test" }, false, null]"""
 
-                        let expected =
-                            Ok(
-                                1,
-                                "maxime",
-                                2.5,
-                                {
-                                    fieldA = "test"
-                                },
-                                false,
-                                null
-                            )
+                            let expected =
+                                Ok(
+                                    1,
+                                    "maxime",
+                                    2.5,
+                                    {
+                                        fieldA = "test"
+                                    },
+                                    false,
+                                    null
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple6
-                                    Decode.int
-                                    Decode.string
-                                    Decode.float
-                                    SmallRecord.Decoder
-                                    Decode.bool
-                                    (Decode.nil null))
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple6
+                                        Decode.int
+                                        Decode.string
+                                        Decode.float
+                                        SmallRecord.Decoder
+                                        Decode.bool
+                                        (Decode.nil null))
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "tuple7 works"
-                    <| fun _ ->
-                        let json =
-                            """[1, "maxime", 2.5, { "fieldA" : "test" }, false, null, 56]"""
+                    test (
+                        "tuple7 works",
+                        fun _ ->
+                            let json =
+                                """[1, "maxime", 2.5, { "fieldA" : "test" }, false, null, 56]"""
 
-                        let expected =
-                            Ok(
-                                1,
-                                "maxime",
-                                2.5,
-                                {
-                                    fieldA = "test"
-                                },
-                                false,
-                                null,
-                                56
-                            )
+                            let expected =
+                                Ok(
+                                    1,
+                                    "maxime",
+                                    2.5,
+                                    {
+                                        fieldA = "test"
+                                    },
+                                    false,
+                                    null,
+                                    56
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple7
-                                    Decode.int
-                                    Decode.string
-                                    Decode.float
-                                    SmallRecord.Decoder
-                                    Decode.bool
-                                    (Decode.nil null)
-                                    Decode.int)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple7
+                                        Decode.int
+                                        Decode.string
+                                        Decode.float
+                                        SmallRecord.Decoder
+                                        Decode.bool
+                                        (Decode.nil null)
+                                        Decode.int)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "tuple8 works"
-                    <| fun _ ->
-                        let json =
-                            """[1, "maxime", 2.5, { "fieldA" : "test" }, false, null, true, 98]"""
+                    test (
+                        "tuple8 works",
+                        fun _ ->
+                            let json =
+                                """[1, "maxime", 2.5, { "fieldA" : "test" }, false, null, true, 98]"""
 
-                        let expected =
-                            Ok(
-                                1,
-                                "maxime",
-                                2.5,
-                                {
-                                    fieldA = "test"
-                                },
-                                false,
-                                null,
-                                true,
-                                98
-                            )
+                            let expected =
+                                Ok(
+                                    1,
+                                    "maxime",
+                                    2.5,
+                                    {
+                                        fieldA = "test"
+                                    },
+                                    false,
+                                    null,
+                                    true,
+                                    98
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple8
-                                    Decode.int
-                                    Decode.string
-                                    Decode.float
-                                    SmallRecord.Decoder
-                                    Decode.bool
-                                    (Decode.nil null)
-                                    Decode.bool
-                                    Decode.int)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple8
+                                        Decode.int
+                                        Decode.string
+                                        Decode.float
+                                        SmallRecord.Decoder
+                                        Decode.bool
+                                        (Decode.nil null)
+                                        Decode.bool
+                                        Decode.int)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "tuple2 returns an error if invalid json"
-                    <| fun _ ->
-                        let json = """[1, false, "unused value"]"""
+                    test (
+                        "tuple2 returns an error if invalid json",
+                        fun _ ->
+                            let json = """[1, false, "unused value"]"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.[1]`
 Expecting a string but instead got: false
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple2 Decode.int Decode.string)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple2 Decode.int Decode.string)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "tuple3 returns an error if invalid json"
-                    <| fun _ ->
-                        let json = """[1, "maxime", false]"""
+                    test (
+                        "tuple3 returns an error if invalid json",
+                        fun _ ->
+                            let json = """[1, "maxime", false]"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.[2]`
 Expecting a float but instead got: false
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple3
-                                    Decode.int
-                                    Decode.string
-                                    Decode.float)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple3
+                                        Decode.int
+                                        Decode.string
+                                        Decode.float)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "tuple4 returns an error if invalid json (missing index)"
-                    <| fun _ ->
-                        let json = """[1, "maxime", 2.5]"""
+                    test (
+                        "tuple4 returns an error if invalid json (missing index)",
+                        fun _ ->
+                            let json = """[1, "maxime", 2.5]"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.[3]`
 Expecting a longer array. Need index `3` but there are only `3` entries.
 [
@@ -1512,203 +1768,218 @@ Expecting a longer array. Need index `3` but there are only `3` entries.
     2.5
 ]
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple4
-                                    Decode.int
-                                    Decode.string
-                                    Decode.float
-                                    SmallRecord.Decoder)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple4
+                                        Decode.int
+                                        Decode.string
+                                        Decode.float
+                                        SmallRecord.Decoder)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "tuple4 returns an error if invalid json (error in the nested object)"
-                    <| fun _ ->
-                        let json =
-                            """[1, "maxime", 2.5, { "fieldA" : false }]"""
+                    test (
+                        "tuple4 returns an error if invalid json (error in the nested object)",
+                        fun _ ->
+                            let json =
+                                """[1, "maxime", 2.5, { "fieldA" : false }]"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.[3].fieldA`
 Expecting a string but instead got: false
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple4
-                                    Decode.int
-                                    Decode.string
-                                    Decode.float
-                                    SmallRecord.Decoder)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple4
+                                        Decode.int
+                                        Decode.string
+                                        Decode.float
+                                        SmallRecord.Decoder)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
 #if !FABLE_COMPILER_PYTHON
-                    testCase "tuple5 returns an error if invalid json"
-                    <| fun _ ->
-                        let json =
-                            """[1, "maxime", 2.5, { "fieldA" : "test" }, false]"""
+                    test (
+                        "tuple5 returns an error if invalid json",
+                        fun _ ->
+                            let json =
+                                """[1, "maxime", 2.5, { "fieldA" : "test" }, false]"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.[4]`
 Expecting a datetime but instead got: false
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple5
-                                    Decode.int
-                                    Decode.string
-                                    Decode.float
-                                    SmallRecord.Decoder
-                                    Decode.datetimeUtc)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple5
+                                        Decode.int
+                                        Decode.string
+                                        Decode.float
+                                        SmallRecord.Decoder
+                                        Decode.datetimeUtc)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "tuple6 returns an error if invalid json"
-                    <| fun _ ->
-                        let json =
-                            """[1, "maxime", 2.5, { "fieldA" : "test" }, "2018-10-01T11:12:55.00Z", false]"""
+                    test (
+                        "tuple6 returns an error if invalid json",
+                        fun _ ->
+                            let json =
+                                """[1, "maxime", 2.5, { "fieldA" : "test" }, "2018-10-01T11:12:55.00Z", false]"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.[5]`
 Expecting null but instead got: false
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple6
-                                    Decode.int
-                                    Decode.string
-                                    Decode.float
-                                    SmallRecord.Decoder
-                                    Decode.datetimeUtc
-                                    (Decode.nil null))
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple6
+                                        Decode.int
+                                        Decode.string
+                                        Decode.float
+                                        SmallRecord.Decoder
+                                        Decode.datetimeUtc
+                                        (Decode.nil null))
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "tuple7 returns an error if invalid json"
-                    <| fun _ ->
-                        let json =
-                            """[1, "maxime", 2.5, { "fieldA" : "test" }, "2018-10-01T11:12:55.00Z", null, false]"""
+                    test (
+                        "tuple7 returns an error if invalid json",
+                        fun _ ->
+                            let json =
+                                """[1, "maxime", 2.5, { "fieldA" : "test" }, "2018-10-01T11:12:55.00Z", null, false]"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.[6]`
 Expecting an int but instead got: false
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple7
-                                    Decode.int
-                                    Decode.string
-                                    Decode.float
-                                    SmallRecord.Decoder
-                                    Decode.datetimeUtc
-                                    (Decode.nil null)
-                                    Decode.int)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple7
+                                        Decode.int
+                                        Decode.string
+                                        Decode.float
+                                        SmallRecord.Decoder
+                                        Decode.datetimeUtc
+                                        (Decode.nil null)
+                                        Decode.int)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "tuple8 returns an error if invalid json"
-                    <| fun _ ->
-                        let json =
-                            """[1, "maxime", 2.5, { "fieldA" : "test" }, "2018-10-01T11:12:55.00Z", null, 56, "maxime"]"""
+                    test (
+                        "tuple8 returns an error if invalid json",
+                        fun _ ->
+                            let json =
+                                """[1, "maxime", 2.5, { "fieldA" : "test" }, "2018-10-01T11:12:55.00Z", null, 56, "maxime"]"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.[7]`
 Expecting an int but instead got: "maxime"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.tuple8
-                                    Decode.int
-                                    Decode.string
-                                    Decode.float
-                                    SmallRecord.Decoder
-                                    Decode.datetimeUtc
-                                    (Decode.nil null)
-                                    Decode.int
-                                    Decode.int)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.tuple8
+                                        Decode.int
+                                        Decode.string
+                                        Decode.float
+                                        SmallRecord.Decoder
+                                        Decode.datetimeUtc
+                                        (Decode.nil null)
+                                        Decode.int
+                                        Decode.int)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 #endif
                 ]
+            )
 
-            testList
-                "Object primitives"
+            testList (
+                "Object primitives",
                 [
 
-                    testCase "field works"
-                    <| fun _ ->
-                        let json = """{ "name": "maxime", "age": 25 }"""
-                        let expected = Ok("maxime")
+                    test (
+                        "field works",
+                        fun _ ->
+                            let json = """{ "name": "maxime", "age": 25 }"""
+                            let expected = Ok("maxime")
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.field "name" Decode.string)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.field "name" Decode.string)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "field output an error explaining why the value is considered invalid"
-                    <| fun _ ->
-                        let json = """{ "name": null, "age": 25 }"""
+                    test (
+                        "field output an error explaining why the value is considered invalid",
+                        fun _ ->
+                            let json = """{ "name": null, "age": 25 }"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.name`
 Expecting an int but instead got: null
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.field "name" Decode.int)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.field "name" Decode.int)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "field output an error when field is missing"
-                    <| fun _ ->
-                        let json = """{ "name": "maxime", "age": 25 }"""
+                    test (
+                        "field output an error when field is missing",
+                        fun _ ->
+                            let json = """{ "name": "maxime", "age": 25 }"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an object with a field named `height` but instead got:
 {
@@ -1716,44 +1987,48 @@ Expecting an object with a field named `height` but instead got:
     "age": 25
 }
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.field "height" Decode.float)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.field "height" Decode.float)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "at works"
-                    <| fun _ ->
+                    test (
+                        "at works",
+                        fun _ ->
 
-                        let json =
-                            """{ "user": { "name": "maxime", "age": 25 } }"""
+                            let json =
+                                """{ "user": { "name": "maxime", "age": 25 } }"""
 
-                        let expected = Ok "maxime"
+                            let expected = Ok "maxime"
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.at
-                                    [
-                                        "user"
-                                        "name"
-                                    ]
-                                    Decode.string)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.at
+                                        [
+                                            "user"
+                                            "name"
+                                        ]
+                                        Decode.string)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "at output an error if the path failed"
-                    <| fun _ ->
-                        let json =
-                            """{ "user": { "name": "maxime", "age": 25 } }"""
+                    test (
+                        "at output an error if the path failed",
+                        fun _ ->
+                            let json =
+                                """{ "user": { "name": "maxime", "age": 25 } }"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.user.firstname`
 Expecting an object with path `user.firstname` but instead got:
 {
@@ -1764,61 +2039,66 @@ Expecting an object with path `user.firstname` but instead got:
 }
 Node `firstname` is unknown.
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.at
-                                    [
-                                        "user"
-                                        "firstname"
-                                    ]
-                                    Decode.string)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.at
+                                        [
+                                            "user"
+                                            "firstname"
+                                        ]
+                                        Decode.string)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "at output an error explaining why the value is considered invalid"
-                    <| fun _ ->
-                        let json = """{ "name": null, "age": 25 }"""
+                    test (
+                        "at output an error explaining why the value is considered invalid",
+                        fun _ ->
+                            let json = """{ "name": null, "age": 25 }"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.name`
 Expecting an int but instead got: null
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.at [ "name" ] Decode.int)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.at [ "name" ] Decode.int)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "index works"
-                    <| fun _ ->
-                        let json = """["maxime", "alfonso", "steffen"]"""
-                        let expected = Ok("alfonso")
+                    test (
+                        "index works",
+                        fun _ ->
+                            let json = """["maxime", "alfonso", "steffen"]"""
+                            let expected = Ok("alfonso")
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.index 1 Decode.string)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.index 1 Decode.string)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "index output an error if array is to small"
-                    <| fun _ ->
-                        let json = """["maxime", "alfonso", "steffen"]"""
+                    test (
+                        "index output an error if array is to small",
+                        fun _ ->
+                            let json = """["maxime", "alfonso", "steffen"]"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.[5]`
 Expecting a longer array. Need index `5` but there are only `3` entries.
 [
@@ -1827,304 +2107,337 @@ Expecting a longer array. Need index `5` but there are only `3` entries.
     "steffen"
 ]
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.index 5 Decode.string)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.index 5 Decode.string)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "index output an error if value isn't an array"
-                    <| fun _ ->
-                        let json = "1"
+                    test (
+                        "index output an error if value isn't an array",
+                        fun _ ->
+                            let json = "1"
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an array but instead got: 1
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.index 5 Decode.string)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.index 5 Decode.string)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
                 ]
+            )
 
 
-            testList
-                "Data structure"
+            testList (
+                "Data structure",
                 [
 
-                    testCase "list works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
+                    test (
+                        "list works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    [
+                                        1
+                                        2
+                                        3
+                                    ]
+                                )
+
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.list Decode.int)
+                                    "[1, 2, 3]"
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "nested lists work",
+                        fun _ ->
+                            [ [ "maxime2" ] ]
+                            |> List.map (fun d ->
+                                d |> List.map Encode.string |> Encode.list
+                            )
+                            |> Encode.list
+                            |> runner.Encode.toString 4
+                            |> runner.Decode.fromString (
+                                Decode.list (Decode.list Decode.string)
+                            )
+                            |> function
+                                | Ok v -> equal [ [ "maxime2" ] ] v
+                                | Error er -> failwith er
+                    )
+
+                    test (
+                        "an invalid list output an error",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    "Error at: `$`\nExpecting a list but instead got: 1"
+                                )
+
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.list Decode.int)
+                                    "1"
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "a list with some invalid element output an error",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    "Error at: `$.[2]`\nExpecting an int but instead got: \"maxime\""
+                                )
+
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.list Decode.int)
+                                    "[1, 2, \"maxime\"]"
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "array works",
+                        fun _ ->
+                            // Need to pass by a list otherwise Fable use:
+                            // new Int32Array([1, 2, 3]) and the test fails
+                            // And this would give:
+                            // Expected: Result { tag: 0, data: Int32Array [ 1, 2, 3 ] }
+                            // Actual: Result { tag: 0, data: [ 1, 2, 3 ] }
+                            let expected =
+                                Ok(
+                                    [
+                                        1
+                                        2
+                                        3
+                                    ]
+                                    |> List.toArray
+                                )
+
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.array Decode.int)
+                                    "[1, 2, 3]"
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "an invalid array output an error",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    "Error at: `$`\nExpecting an array but instead got: 1"
+                                )
+
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.array Decode.int)
+                                    "1"
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "ResizeArray works",
+                        fun _ ->
+                            let expected =
                                 [
                                     1
                                     2
                                     3
                                 ]
-                            )
+                                |> ResizeArray
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.list Decode.int)
-                                "[1, 2, 3]"
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.resizeArray Decode.int)
+                                    "[1, 2, 3]"
 
-                        equal expected actual
+                            // F# sequence are compared using reference equality
+                            // so we need to convert them to arrays first
+                            // See https://stackoverflow.com/questions/17101329/f-sequence-comparison
+                            match actual with
+                            | Ok actual ->
+                                equal
+                                    (expected |> Seq.toArray)
+                                    (actual |> Seq.toArray)
+                            | Error error -> failwith error
+                    )
 
-                    testCase "nested lists work"
-                    <| fun _ ->
-                        [ [ "maxime2" ] ]
-                        |> List.map (fun d ->
-                            d |> List.map Encode.string |> Encode.list
-                        )
-                        |> Encode.list
-                        |> runner.Encode.toString 4
-                        |> runner.Decode.fromString (
-                            Decode.list (Decode.list Decode.string)
-                        )
-                        |> function
-                            | Ok v -> equal [ [ "maxime2" ] ] v
-                            | Error er -> failwith er
+                    test (
+                        "ResizeArray keeps the order",
+                        fun _ ->
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.resizeArray Decode.int)
+                                    "[1, 2, 3]"
 
-                    testCase "an invalid list output an error"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                "Error at: `$`\nExpecting a list but instead got: 1"
-                            )
+                            // F# sequence are compared using reference equality
+                            // so we need to convert them to arrays first
+                            // See https://stackoverflow.com/questions/17101329/f-sequence-comparison
+                            match actual with
+                            | Ok actual ->
+                                equal 1 actual.[0]
+                                equal 2 actual.[1]
+                                equal 3 actual.[2]
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.list Decode.int)
-                                "1"
+                            | Error error -> failwith error
+                    )
 
-                        equal expected actual
+                    test (
+                        "an invalid ResizeArray output an error",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    "Error at: `$`\nExpecting a ResizeArray but instead got: 1"
+                                )
 
-                    testCase "a list with some invalid element output an error"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                "Error at: `$.[2]`\nExpecting an int but instead got: \"maxime\""
-                            )
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.resizeArray Decode.int)
+                                    "1"
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.list Decode.int)
-                                "[1, 2, \"maxime\"]"
+                            equal expected actual
+                    )
 
-                        equal expected actual
+                    test (
+                        "keys works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    [
+                                        "a"
+                                        "b"
+                                        "c"
+                                    ]
+                                )
 
-                    testCase "array works"
-                    <| fun _ ->
-                        // Need to pass by a list otherwise Fable use:
-                        // new Int32Array([1, 2, 3]) and the test fails
-                        // And this would give:
-                        // Expected: Result { tag: 0, data: Int32Array [ 1, 2, 3 ] }
-                        // Actual: Result { tag: 0, data: [ 1, 2, 3 ] }
-                        let expected =
-                            Ok(
-                                [
-                                    1
-                                    2
-                                    3
-                                ]
-                                |> List.toArray
-                            )
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.keys
+                                    """{ "a": 1, "b": 2, "c": 3 }"""
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.array Decode.int)
-                                "[1, 2, 3]"
+                            equal expected actual
+                    )
 
-                        equal expected actual
+                    test (
+                        "keys returns an error for invalid objects",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    "Error at: `$`\nExpecting an object but instead got: 1"
+                                )
 
-                    testCase "an invalid array output an error"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                "Error at: `$`\nExpecting an array but instead got: 1"
-                            )
+                            let actual =
+                                runner.Decode.fromString Decode.keys "1"
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.array Decode.int)
-                                "1"
+                            equal expected actual
+                    )
 
-                        equal expected actual
-
-                    testCase "ResizeArray works"
-                    <| fun _ ->
-                        let expected =
-                            [
-                                1
-                                2
-                                3
-                            ]
-                            |> ResizeArray
-
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.resizeArray Decode.int)
-                                "[1, 2, 3]"
-
-                        // F# sequence are compared using reference equality
-                        // so we need to convert them to arrays first
-                        // See https://stackoverflow.com/questions/17101329/f-sequence-comparison
-                        match actual with
-                        | Ok actual ->
-                            equal
-                                (expected |> Seq.toArray)
-                                (actual |> Seq.toArray)
-                        | Error error -> failwith error
-
-                    testCase "ResizeArray keeps the order"
-                    <| fun _ ->
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.resizeArray Decode.int)
-                                "[1, 2, 3]"
-
-                        // F# sequence are compared using reference equality
-                        // so we need to convert them to arrays first
-                        // See https://stackoverflow.com/questions/17101329/f-sequence-comparison
-                        match actual with
-                        | Ok actual ->
-                            equal 1 actual.[0]
-                            equal 2 actual.[1]
-                            equal 3 actual.[2]
-
-                        | Error error -> failwith error
-
-                    testCase "an invalid ResizeArray output an error"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                "Error at: `$`\nExpecting a ResizeArray but instead got: 1"
-                            )
-
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.resizeArray Decode.int)
-                                "1"
-
-                        equal expected actual
-
-                    testCase "keys works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                [
-                                    "a"
-                                    "b"
-                                    "c"
-                                ]
-                            )
-
-                        let actual =
-                            runner.Decode.fromString
-                                Decode.keys
-                                """{ "a": 1, "b": 2, "c": 3 }"""
-
-                        equal expected actual
-
-                    testCase "keys returns an error for invalid objects"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                "Error at: `$`\nExpecting an object but instead got: 1"
-                            )
-
-                        let actual = runner.Decode.fromString Decode.keys "1"
-
-                        equal expected actual
-
-                    testCase "keyValuePairs works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                [
-                                    ("a", 1)
-                                    ("b", 2)
-                                    ("c", 3)
-                                ]
-                            )
-
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.keyValuePairs Decode.int)
-                                """{ "a": 1, "b": 2, "c": 3 }"""
-
-                        equal expected actual
-
-                    testCase
-                        "keyValuePairs with an invalid value outputs an error"
-                    <| fun _ ->
-                        let expected =
-                            Error
-                                """Error at: `$.b`
-Expecting a boolean but instead got: 123"""
-
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.keyValuePairs Decode.bool)
-                                """{ "a": true, "b": 123, "c": false }"""
-
-                        equal actual expected
-
-                    testCase "dict works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                Map.ofList (
+                    test (
+                        "keyValuePairs works",
+                        fun _ ->
+                            let expected =
+                                Ok(
                                     [
                                         ("a", 1)
                                         ("b", 2)
                                         ("c", 3)
                                     ]
                                 )
-                            )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.dict Decode.int)
-                                """{ "a": 1, "b": 2, "c": 3 }"""
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.keyValuePairs Decode.int)
+                                    """{ "a": 1, "b": 2, "c": 3 }"""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "dict with custom decoder works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                Map.ofList (
-                                    [
-                                        ("a", Record2.Create 1. 1.)
-                                        ("b", Record2.Create 2. 2.)
-                                        ("c", Record2.Create 3. 3.)
-                                    ]
+                    test (
+                        "keyValuePairs with an invalid value outputs an error",
+                        fun _ ->
+                            let expected =
+                                Error
+                                    """Error at: `$.b`
+Expecting a boolean but instead got: 123"""
+
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.keyValuePairs Decode.bool)
+                                    """{ "a": true, "b": 123, "c": false }"""
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "dict works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    Map.ofList (
+                                        [
+                                            ("a", 1)
+                                            ("b", 2)
+                                            ("c", 3)
+                                        ]
+                                    )
                                 )
-                            )
 
-                        let decodePoint =
-                            Decode.map2
-                                Record2.Create
-                                (Decode.field "a" Decode.float)
-                                (Decode.field "b" Decode.float)
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.dict Decode.int)
+                                    """{ "a": 1, "b": 2, "c": 3 }"""
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.dict decodePoint)
-                                """
+                            equal expected actual
+                    )
+
+                    test (
+                        "dict with custom decoder works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    Map.ofList (
+                                        [
+                                            ("a", Record2.Create 1. 1.)
+                                            ("b", Record2.Create 2. 2.)
+                                            ("c", Record2.Create 3. 3.)
+                                        ]
+                                    )
+                                )
+
+                            let decodePoint =
+                                Decode.map2
+                                    Record2.Create
+                                    (Decode.field "a" Decode.float)
+                                    (Decode.field "b" Decode.float)
+
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.dict decodePoint)
+                                    """
 {
     "a":
         {
@@ -2144,65 +2457,71 @@ Expecting a boolean but instead got: 123"""
 }
                         """
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "an invalid dict output an error"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                "Error at: `$`\nExpecting an object but instead got: 1"
-                            )
-
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.dict Decode.int)
-                                "1"
-
-                        equal expected actual
-
-                    testCase "map' works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                Map.ofList (
-                                    [
-                                        (1, "x")
-                                        (2, "y")
-                                        (3, "z")
-                                    ]
+                    test (
+                        "an invalid dict output an error",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    "Error at: `$`\nExpecting an object but instead got: 1"
                                 )
-                            )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.map' Decode.int Decode.string)
-                                """[ [ 1, "x" ], [ 2, "y" ], [ 3, "z" ] ]"""
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.dict Decode.int)
+                                    "1"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "map' with custom key decoder works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                Map.ofList (
-                                    [
-                                        ((1, 6), "a")
-                                        ((2, 7), "b")
-                                        ((3, 8), "c")
-                                    ]
+                    test (
+                        "map' works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    Map.ofList (
+                                        [
+                                            (1, "x")
+                                            (2, "y")
+                                            (3, "z")
+                                        ]
+                                    )
                                 )
-                            )
 
-                        let decodePoint =
-                            Decode.map2
-                                (fun x y -> x, y)
-                                (Decode.field "x" Decode.int)
-                                (Decode.field "y" Decode.int)
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.map' Decode.int Decode.string)
+                                    """[ [ 1, "x" ], [ 2, "y" ], [ 3, "z" ] ]"""
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.map' decodePoint Decode.string)
-                                """
+                            equal expected actual
+                    )
+
+                    test (
+                        "map' with custom key decoder works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    Map.ofList (
+                                        [
+                                            ((1, 6), "a")
+                                            ((2, 7), "b")
+                                            ((3, 8), "c")
+                                        ]
+                                    )
+                                )
+
+                            let decodePoint =
+                                Decode.map2
+                                    (fun x y -> x, y)
+                                    (Decode.field "x" Decode.int)
+                                    (Decode.field "y" Decode.int)
+
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.map' decodePoint Decode.string)
+                                    """
 [
     [
         {
@@ -2228,55 +2547,64 @@ Expecting a boolean but instead got: 123"""
 ]
                         """
 
-                        equal expected actual
+                            equal expected actual
+                    )
                 ]
+            )
 
-            testList
-                "option related decoders"
+            testList (
+                "option related decoders",
                 [
-                    testCase "lossyOption works with a non null value"
-                    <| fun _ ->
-                        let expected = Ok(Some 1)
+                    test (
+                        "lossyOption works with a non null value",
+                        fun _ ->
+                            let expected = Ok(Some 1)
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.lossyOption Decode.int)
-                                "1"
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.lossyOption Decode.int)
+                                    "1"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "lossyOption works with a null value"
-                    <| fun _ ->
-                        let expected = Ok None
+                    test (
+                        "lossyOption works with a null value",
+                        fun _ ->
+                            let expected = Ok None
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.lossyOption Decode.int)
-                                "null"
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.lossyOption Decode.int)
+                                    "null"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "lossyOption can't handle nested None options"
-                    <| fun _ ->
-                        let expected = Ok(Some None)
+                    test (
+                        "lossyOption can't handle nested None options",
+                        fun _ ->
+                            let expected = Ok(Some None)
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.lossyOption (
-                                    Decode.lossyOption Decode.int
-                                ))
-                                "null"
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.lossyOption (
+                                        Decode.lossyOption Decode.int
+                                    ))
+                                    "null"
 
-                        notEqual expected actual
+                            notEqual expected actual
+                    )
 
-                    testCase "losslessOption works with a non null value"
-                    <| fun _ ->
-                        let expected = Ok(Some 1)
+                    test (
+                        "losslessOption works with a non null value",
+                        fun _ ->
+                            let expected = Ok(Some 1)
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.losslessOption Decode.int)
-                                """
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.losslessOption Decode.int)
+                                    """
 {
     "$type": "option",
     "$case": "some",
@@ -2284,34 +2612,38 @@ Expecting a boolean but instead got: 123"""
 }
 """
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "losslessOption works with a null value"
-                    <| fun _ ->
-                        let expected = Ok None
+                    test (
+                        "losslessOption works with a null value",
+                        fun _ ->
+                            let expected = Ok None
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.losslessOption Decode.int)
-                                """
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.losslessOption Decode.int)
+                                    """
 {
     "$type": "option",
     "$case": "none"
 }
 """
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "losslessOption can handle nested None options"
-                    <| fun _ ->
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.losslessOption (
-                                    Decode.losslessOption (
-                                        Decode.losslessOption Decode.int
-                                    )
-                                ))
-                                """
+                    test (
+                        "losslessOption can handle nested None options",
+                        fun _ ->
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.losslessOption (
+                                        Decode.losslessOption (
+                                            Decode.losslessOption Decode.int
+                                        )
+                                    ))
+                                    """
 {
     "$type": "option",
     "$case": "some",
@@ -2328,110 +2660,121 @@ Expecting a boolean but instead got: 123"""
 }
 """
 
-                        notEqual (Ok(Some None)) actual
-                        equal (Ok(Some(Some None))) actual
+                            notEqual (Ok(Some None)) actual
+                            equal (Ok(Some(Some None))) actual
+                    )
                 ]
+            )
 
-            testList
-                "Inconsistent structure"
+            testList (
+                "Inconsistent structure",
                 [
 
-                    testCase "oneOf works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                [
-                                    1
-                                    2
-                                    0
-                                    4
-                                ]
-                            )
+                    test (
+                        "oneOf works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    [
+                                        1
+                                        2
+                                        0
+                                        4
+                                    ]
+                                )
 
-                        let badInt =
-                            Decode.oneOf
-                                [
-                                    Decode.int
-                                    Decode.nil 0
-                                ]
+                            let badInt =
+                                Decode.oneOf
+                                    [
+                                        Decode.int
+                                        Decode.nil 0
+                                    ]
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.list badInt)
-                                "[1,2,null,4]"
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.list badInt)
+                                    "[1,2,null,4]"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "oneOf works in combination with object builders"
-                    <| fun _ ->
-                        let json =
-                            """{ "Bar": { "name": "maxime", "age": 25 } }"""
+                    test (
+                        "oneOf works in combination with object builders",
+                        fun _ ->
+                            let json =
+                                """{ "Bar": { "name": "maxime", "age": 25 } }"""
 
-                        let expected =
-                            Ok(
-                                Choice2Of2
+                            let expected =
+                                Ok(
+                                    Choice2Of2
+                                        {
+                                            fieldA = "maxime"
+                                        }
+                                )
+
+                            let decoder1 =
+                                Decode.object (fun get ->
                                     {
-                                        fieldA = "maxime"
+                                        fieldA =
+                                            get.Required.Field
+                                                "name"
+                                                Decode.string
                                     }
-                            )
+                                )
 
-                        let decoder1 =
-                            Decode.object (fun get ->
-                                {
-                                    fieldA =
-                                        get.Required.Field "name" Decode.string
-                                }
-                            )
+                            let decoder2 =
+                                Decode.oneOf
+                                    [
+                                        Decode.field "Foo" decoder1
+                                        |> Decode.map Choice1Of2
+                                        Decode.field "Bar" decoder1
+                                        |> Decode.map Choice2Of2
+                                    ]
 
-                        let decoder2 =
-                            Decode.oneOf
-                                [
-                                    Decode.field "Foo" decoder1
-                                    |> Decode.map Choice1Of2
-                                    Decode.field "Bar" decoder1
-                                    |> Decode.map Choice2Of2
-                                ]
+                            let actual = runner.Decode.fromString decoder2 json
 
-                        let actual = runner.Decode.fromString decoder2 json
+                            equal expected actual
+                    )
 
-                        equal expected actual
+                    test (
+                        "oneOf works with optional",
+                        fun _ ->
+                            let decoder =
+                                Decode.oneOf
+                                    [
+                                        Decode.field "Normal" Decode.float
+                                        |> Decode.map Normal
+                                        Decode.field
+                                            "Reduced"
+                                            (Decode.lossyOption Decode.float)
+                                        |> Decode.map Reduced
+                                        Decode.field "Zero" Decode.bool
+                                        |> Decode.map (fun _ -> Zero)
+                                    ]
 
-                    testCase "oneOf works with optional"
-                    <| fun _ ->
-                        let decoder =
-                            Decode.oneOf
-                                [
-                                    Decode.field "Normal" Decode.float
-                                    |> Decode.map Normal
-                                    Decode.field
-                                        "Reduced"
-                                        (Decode.lossyOption Decode.float)
-                                    |> Decode.map Reduced
-                                    Decode.field "Zero" Decode.bool
-                                    |> Decode.map (fun _ -> Zero)
-                                ]
+                            """{"Normal": 4.5}"""
+                            |> runner.Decode.fromString decoder
+                            |> equal (Ok(Normal 4.5))
 
-                        """{"Normal": 4.5}"""
-                        |> runner.Decode.fromString decoder
-                        |> equal (Ok(Normal 4.5))
+                            """{"Reduced": 4.5}"""
+                            |> runner.Decode.fromString decoder
+                            |> equal (Ok(Reduced(Some 4.5)))
 
-                        """{"Reduced": 4.5}"""
-                        |> runner.Decode.fromString decoder
-                        |> equal (Ok(Reduced(Some 4.5)))
+                            """{"Reduced": null}"""
+                            |> runner.Decode.fromString decoder
+                            |> equal (Ok(Reduced None))
 
-                        """{"Reduced": null}"""
-                        |> runner.Decode.fromString decoder
-                        |> equal (Ok(Reduced None))
+                            """{"Zero": true}"""
+                            |> runner.Decode.fromString decoder
+                            |> equal (Ok Zero)
+                    )
 
-                        """{"Zero": true}"""
-                        |> runner.Decode.fromString decoder
-                        |> equal (Ok Zero)
-
-                    testCase "oneOf output errors if all case fails"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "oneOf output errors if all case fails",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 The following errors were found:
 
 Error at: `$.[0]`
@@ -2441,277 +2784,216 @@ Error at: `$.[0]`
 Expecting an object but instead got:
 1
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let badInt =
-                            Decode.oneOf
-                                [
-                                    Decode.string
-                                    Decode.field "test" Decode.string
-                                ]
+                            let badInt =
+                                Decode.oneOf
+                                    [
+                                        Decode.string
+                                        Decode.field "test" Decode.string
+                                    ]
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.list badInt)
-                                "[1,2,null,4]"
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.list badInt)
+                                    "[1,2,null,4]"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "optional works"
-                    <| fun _ ->
-                        let json =
-                            """{ "name": "maxime", "age": 25, "something_undefined": null }"""
+                    test (
+                        "optional works",
+                        fun _ ->
+                            let json =
+                                """{ "name": "maxime", "age": 25, "something_undefined": null }"""
 
-                        let expectedValid = Ok(Some "maxime")
+                            let expectedValid = Ok(Some "maxime")
 
-                        let actualValid =
-                            runner.Decode.fromString
-                                (Decode.optional "name" Decode.string)
-                                json
+                            let actualValid =
+                                runner.Decode.fromString
+                                    (Decode.optional "name" Decode.string)
+                                    json
 
-                        equal expectedValid actualValid
+                            equal expectedValid actualValid
 
-                        match
-                            runner.Decode.fromString
-                                (Decode.optional "name" Decode.int)
-                                json
-                        with
-                        | Error _ -> ()
-                        | Ok _ ->
-                            failwith "Expected type error for `name` field"
+                            match
+                                runner.Decode.fromString
+                                    (Decode.optional "name" Decode.int)
+                                    json
+                            with
+                            | Error _ -> ()
+                            | Ok _ ->
+                                failwith "Expected type error for `name` field"
 
-                        let expectedMissingField = Ok(None)
+                            let expectedMissingField = Ok(None)
 
-                        let actualMissingField =
-                            runner.Decode.fromString
-                                (Decode.optional "height" Decode.int)
-                                json
+                            let actualMissingField =
+                                runner.Decode.fromString
+                                    (Decode.optional "height" Decode.int)
+                                    json
 
-                        equal expectedMissingField actualMissingField
+                            equal expectedMissingField actualMissingField
 
-                        let expectedUndefinedField = Ok(None)
+                            let expectedUndefinedField = Ok(None)
 
-                        let actualUndefinedField =
-                            runner.Decode.fromString
-                                (Decode.optional
-                                    "something_undefined"
-                                    Decode.string)
-                                json
+                            let actualUndefinedField =
+                                runner.Decode.fromString
+                                    (Decode.optional
+                                        "something_undefined"
+                                        Decode.string)
+                                    json
 
-                        equal expectedUndefinedField actualUndefinedField
+                            equal expectedUndefinedField actualUndefinedField
+                    )
 
-                    testCase "optional returns Error value if decoder fails"
-                    <| fun _ ->
-                        let json = """{ "name": 12, "age": 25 }"""
+                    test (
+                        "optional returns Error value if decoder fails",
+                        fun _ ->
+                            let json = """{ "name": 12, "age": 25 }"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.name`
 Expecting a string but instead got: 12
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.optional "name" Decode.string)
-                                json
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.optional "name" Decode.string)
+                                    json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "optionalAt works"
-                    <| fun _ ->
-                        let json =
-                            """{ "data" : { "name": "maxime", "age": 25, "something_undefined": null } }"""
+                    test (
+                        "optionalAt works",
+                        fun _ ->
+                            let json =
+                                """{ "data" : { "name": "maxime", "age": 25, "something_undefined": null } }"""
 
-                        let expectedValid = Ok(Some "maxime")
+                            let expectedValid = Ok(Some "maxime")
 
-                        let actualValid =
-                            runner.Decode.fromString
-                                (Decode.optionalAt
-                                    [
-                                        "data"
+                            let actualValid =
+                                runner.Decode.fromString
+                                    (Decode.optionalAt
+                                        [
+                                            "data"
+                                            "name"
+                                        ]
+                                        Decode.string)
+                                    json
+
+                            equal expectedValid actualValid
+
+                            match
+                                runner.Decode.fromString
+                                    (Decode.optionalAt
+                                        [
+                                            "data"
+                                            "name"
+                                        ]
+                                        Decode.int)
+                                    json
+                            with
+                            | Error _ -> ()
+                            | Ok _ ->
+                                failwith "Expected type error for `name` field"
+
+                            let expectedMissingField = Ok None
+
+                            let actualMissingField =
+                                runner.Decode.fromString
+                                    (Decode.optionalAt
+                                        [
+                                            "data"
+                                            "height"
+                                        ]
+                                        Decode.int)
+                                    json
+
+                            equal expectedMissingField actualMissingField
+
+                            let expectedUndefinedField = Ok(None)
+
+                            let actualUndefinedField =
+                                runner.Decode.fromString
+                                    (Decode.optionalAt
+                                        [
+                                            "data"
+                                            "something_undefined"
+                                        ]
+                                        Decode.string)
+                                    json
+
+                            equal expectedUndefinedField actualUndefinedField
+
+                            let expectedUndefinedField = Ok(None)
+
+                            let actualUndefinedField =
+                                runner.Decode.fromString
+                                    (Decode.optionalAt
+                                        [
+                                            "data"
+                                            "something_undefined"
+                                            "name"
+                                        ]
+                                        Decode.string)
+                                    json
+
+                            equal expectedUndefinedField actualUndefinedField
+                    )
+
+                    test (
+                        "combining field and option decoders works",
+                        fun _ ->
+                            let json =
+                                """{ "name": "maxime", "age": 25, "something_undefined": null }"""
+
+                            let expectedValid = Ok(Some "maxime")
+
+                            let actualValid =
+                                runner.Decode.fromString
+                                    (Decode.field
                                         "name"
-                                    ]
-                                    Decode.string)
-                                json
+                                        (Decode.lossyOption Decode.string))
+                                    json
 
-                        equal expectedValid actualValid
+                            equal expectedValid actualValid
 
-                        match
-                            runner.Decode.fromString
-                                (Decode.optionalAt
-                                    [
-                                        "data"
+                            match
+                                runner.Decode.fromString
+                                    (Decode.field
                                         "name"
-                                    ]
-                                    Decode.int)
-                                json
-                        with
-                        | Error _ -> ()
-                        | Ok _ ->
-                            failwith "Expected type error for `name` field"
-
-                        let expectedMissingField = Ok None
-
-                        let actualMissingField =
-                            runner.Decode.fromString
-                                (Decode.optionalAt
-                                    [
-                                        "data"
-                                        "height"
-                                    ]
-                                    Decode.int)
-                                json
-
-                        equal expectedMissingField actualMissingField
-
-                        let expectedUndefinedField = Ok(None)
-
-                        let actualUndefinedField =
-                            runner.Decode.fromString
-                                (Decode.optionalAt
-                                    [
-                                        "data"
-                                        "something_undefined"
-                                    ]
-                                    Decode.string)
-                                json
-
-                        equal expectedUndefinedField actualUndefinedField
-
-                        let expectedUndefinedField = Ok(None)
-
-                        let actualUndefinedField =
-                            runner.Decode.fromString
-                                (Decode.optionalAt
-                                    [
-                                        "data"
-                                        "something_undefined"
-                                        "name"
-                                    ]
-                                    Decode.string)
-                                json
-
-                        equal expectedUndefinedField actualUndefinedField
-
-                    testCase "combining field and option decoders works"
-                    <| fun _ ->
-                        let json =
-                            """{ "name": "maxime", "age": 25, "something_undefined": null }"""
-
-                        let expectedValid = Ok(Some "maxime")
-
-                        let actualValid =
-                            runner.Decode.fromString
-                                (Decode.field
-                                    "name"
-                                    (Decode.lossyOption Decode.string))
-                                json
-
-                        equal expectedValid actualValid
-
-                        match
-                            runner.Decode.fromString
-                                (Decode.field
-                                    "name"
-                                    (Decode.lossyOption Decode.int))
-                                json
-                        with
-                        | Error msg ->
-                            let expected =
-                                """
+                                        (Decode.lossyOption Decode.int))
+                                    json
+                            with
+                            | Error msg ->
+                                let expected =
+                                    """
 Error at: `$.name`
 Expecting an int but instead got: "maxime"
                         """
-                                    .Trim()
+                                        .Trim()
 
-                            equal expected msg
-                        | Ok _ ->
-                            failwith "Expected type error for `name` field #1"
+                                equal expected msg
+                            | Ok _ ->
+                                failwith
+                                    "Expected type error for `name` field #1"
 
-                        match
-                            runner.Decode.fromString
-                                (Decode.field
-                                    "this_field_do_not_exist"
-                                    (Decode.lossyOption Decode.int))
-                                json
-                        with
-                        | Error msg ->
-                            let expected =
-                                """
-Error at: `$`
-Expecting an object with a field named `this_field_do_not_exist` but instead got:
-{
-    "name": "maxime",
-    "age": 25,
-    "something_undefined": null
-}
-                        """
-                                    .Trim()
-
-                            equal expected msg
-                        | Ok _ ->
-                            failwith "Expected type error for `name` field #2"
-
-                        match
-                            runner.Decode.fromString
-                                (Decode.field
-                                    "something_undefined"
-                                    (Decode.lossyOption Decode.int))
-                                json
-                        with
-                        | Error _ ->
-                            failwith
-                                """`Decode.field "something_undefined" (Decode.option Decode.int)` test should pass"""
-                        | Ok result -> equal None result
-
-                        // Same tests as before but we are calling `option` then `field`
-
-                        let expectedValid2 = Ok(Some "maxime")
-
-                        let actualValid2 =
-                            runner.Decode.fromString
-                                (Decode.lossyOption (
-                                    Decode.field "name" Decode.string
-                                ))
-                                json
-
-                        equal expectedValid2 actualValid2
-
-                        match
-                            runner.Decode.fromString
-                                (Decode.lossyOption (
-                                    Decode.field "name" Decode.int
-                                ))
-                                json
-                        with
-                        | Error msg ->
-                            let expected =
-                                """
-Error at: `$.name`
-Expecting an int but instead got: "maxime"
-                        """
-                                    .Trim()
-
-                            equal expected msg
-                        | Ok _ ->
-                            failwith "Expected type error for `name` field #3"
-
-                        match
-                            runner.Decode.fromString
-                                (Decode.lossyOption (
-                                    Decode.field
+                            match
+                                runner.Decode.fromString
+                                    (Decode.field
                                         "this_field_do_not_exist"
-                                        Decode.int
-                                ))
-                                json
-                        with
-                        | Error msg ->
-                            let expected =
-                                """
+                                        (Decode.lossyOption Decode.int))
+                                    json
+                            with
+                            | Error msg ->
+                                let expected =
+                                    """
 Error at: `$`
 Expecting an object with a field named `this_field_do_not_exist` but instead got:
 {
@@ -2720,54 +3002,127 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
     "something_undefined": null
 }
                         """
-                                    .Trim()
+                                        .Trim()
 
-                            equal expected msg
-                        | Ok _ ->
-                            failwith "Expected type error for `name` field #4"
+                                equal expected msg
+                            | Ok _ ->
+                                failwith
+                                    "Expected type error for `name` field #2"
 
-                        match
-                            runner.Decode.fromString
-                                (Decode.lossyOption (
-                                    Decode.field
+                            match
+                                runner.Decode.fromString
+                                    (Decode.field
                                         "something_undefined"
-                                        Decode.int
-                                ))
-                                json
-                        with
-                        | Error msg ->
-                            let expected =
-                                """
+                                        (Decode.lossyOption Decode.int))
+                                    json
+                            with
+                            | Error _ ->
+                                failwith
+                                    """`Decode.field "something_undefined" (Decode.option Decode.int)` test should pass"""
+                            | Ok result -> equal None result
+
+                            // Same tests as before but we are calling `option` then `field`
+
+                            let expectedValid2 = Ok(Some "maxime")
+
+                            let actualValid2 =
+                                runner.Decode.fromString
+                                    (Decode.lossyOption (
+                                        Decode.field "name" Decode.string
+                                    ))
+                                    json
+
+                            equal expectedValid2 actualValid2
+
+                            match
+                                runner.Decode.fromString
+                                    (Decode.lossyOption (
+                                        Decode.field "name" Decode.int
+                                    ))
+                                    json
+                            with
+                            | Error msg ->
+                                let expected =
+                                    """
+Error at: `$.name`
+Expecting an int but instead got: "maxime"
+                        """
+                                        .Trim()
+
+                                equal expected msg
+                            | Ok _ ->
+                                failwith
+                                    "Expected type error for `name` field #3"
+
+                            match
+                                runner.Decode.fromString
+                                    (Decode.lossyOption (
+                                        Decode.field
+                                            "this_field_do_not_exist"
+                                            Decode.int
+                                    ))
+                                    json
+                            with
+                            | Error msg ->
+                                let expected =
+                                    """
+Error at: `$`
+Expecting an object with a field named `this_field_do_not_exist` but instead got:
+{
+    "name": "maxime",
+    "age": 25,
+    "something_undefined": null
+}
+                        """
+                                        .Trim()
+
+                                equal expected msg
+                            | Ok _ ->
+                                failwith
+                                    "Expected type error for `name` field #4"
+
+                            match
+                                runner.Decode.fromString
+                                    (Decode.lossyOption (
+                                        Decode.field
+                                            "something_undefined"
+                                            Decode.int
+                                    ))
+                                    json
+                            with
+                            | Error msg ->
+                                let expected =
+                                    """
 Error at: `$.something_undefined`
 Expecting an int but instead got: null
                         """
-                                    .Trim()
+                                        .Trim()
 
-                            equal expected msg
-                        | Ok _ ->
-                            failwith "Expected type error for `name` field"
+                                equal expected msg
+                            | Ok _ ->
+                                failwith "Expected type error for `name` field"
 
-                        // Alfonso: Should this test pass? We should use Decode.optional instead
-                        // - `runner.Decode.fromString (Decode.field "height" (Decode.option Decode.int)) json` == `Ok(None)`
-                        //
-                        // Maxime here :)
-                        // I don't think this test should pass.
-                        // For me `Decode.field "height" (Decode.option Decode.int)` means:
-                        // 1. The field `height` is required
-                        // 2. If `height` exist then, it's value can be `Some X` where `X` is an `int` or `None`
-                        //
-                        // I am keep the comments here so we keep track of the explanation if we later need to give it a second though.
-                        //
-                        match
-                            runner.Decode.fromString
-                                (Decode.field
-                                    "height"
-                                    (Decode.lossyOption Decode.int))
-                                json
-                        with
-                        | Error msg ->
-                            let expected =
-                                """
+                            // Alfonso: Should this test pass? We should use Decode.optional instead
+                            // - `runner.Decode.fromString (Decode.field "height" (Decode.option Decode.int)) json` == `Ok(None)`
+                            //
+                            // Maxime here :)
+                            // I don't think this test should pass.
+                            // For me `Decode.field "height" (Decode.option Decode.int)` means:
+                            // 1. The field `height` is required
+                            // 2. If `height` exist then, it's value can be `Some X` where `X` is an `int` or `None`
+                            //
+                            // I am keep the comments here so we keep track of the explanation if we later need to give it a second though.
+                            //
+                            match
+                                runner.Decode.fromString
+                                    (Decode.field
+                                        "height"
+                                        (Decode.lossyOption Decode.int))
+                                    json
+                            with
+                            | Error msg ->
+                                let expected =
+                                    """
 Error at: `$`
 Expecting an object with a field named `height` but instead got:
 {
@@ -2776,182 +3131,208 @@ Expecting an object with a field named `height` but instead got:
     "something_undefined": null
 }
                         """
-                                    .Trim()
+                                        .Trim()
 
-                            equal expected msg
+                                equal expected msg
 
-                        | Ok _ ->
-                            failwith "Expected type error for `height` field"
+                            | Ok _ ->
+                                failwith
+                                    "Expected type error for `height` field"
 
-                        let expectedUndefinedField = Ok(None)
+                            let expectedUndefinedField = Ok(None)
 
-                        let actualUndefinedField =
-                            runner.Decode.fromString
-                                (Decode.field
-                                    "something_undefined"
-                                    (Decode.lossyOption Decode.string))
-                                json
+                            let actualUndefinedField =
+                                runner.Decode.fromString
+                                    (Decode.field
+                                        "something_undefined"
+                                        (Decode.lossyOption Decode.string))
+                                    json
 
-                        equal expectedUndefinedField actualUndefinedField
+                            equal expectedUndefinedField actualUndefinedField
+                    )
 
                 ]
+            )
 
-            testList
-                "Fancy decoding"
+            testList (
+                "Fancy decoding",
                 [
 
-                    testCase "null works (test on an int)"
-                    <| fun _ ->
-                        let expected = Ok(20)
+                    test (
+                        "null works (test on an int)",
+                        fun _ ->
+                            let expected = Ok(20)
 
-                        let actual =
-                            runner.Decode.fromString (Decode.nil 20) "null"
+                            let actual =
+                                runner.Decode.fromString (Decode.nil 20) "null"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "null works (test on a boolean)"
-                    <| fun _ ->
-                        let expected = Ok(false)
+                    test (
+                        "null works (test on a boolean)",
+                        fun _ ->
+                            let expected = Ok(false)
 
-                        let actual =
-                            runner.Decode.fromString (Decode.nil false) "null"
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.nil false)
+                                    "null"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "succeed works"
-                    <| fun _ ->
-                        let expected = Ok(7)
+                    test (
+                        "succeed works",
+                        fun _ ->
+                            let expected = Ok(7)
 
-                        let actual =
-                            runner.Decode.fromString (Decode.succeed 7) "true"
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.succeed 7)
+                                    "true"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "succeed output an error if the JSON is invalid"
-                    <| fun _ ->
-                        let expected =
-                            Error
-                                "Make the compiler happy in the editor, but you should shadow this variable using a compiler directive"
+                    test (
+                        "succeed output an error if the JSON is invalid",
+                        fun _ ->
+                            let expected =
+                                Error
+                                    "Make the compiler happy in the editor, but you should shadow this variable using a compiler directive"
 
 #if FABLE_COMPILER_JAVASCRIPT
-                        let expected =
-                            Error(
-                                "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
-                            )
+                            let expected =
+                                Error(
+                                    "Given an invalid JSON: Unexpected token 'm', \"maxime\" is not valid JSON"
+                                )
 #endif
 
 #if FABLE_COMPILER_PYTHON
-                        let expected =
-                            Error(
-                                "Given an invalid JSON: Expecting value: line 1 column 1 (char 0)"
-                            )
+                            let expected =
+                                Error(
+                                    "Given an invalid JSON: Expecting value: line 1 column 1 (char 0)"
+                                )
 #endif
 
 #if THOTH_JSON_NEWTONSOFT
-                        let expected =
-                            Error(
-                                "Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0."
-                            )
+                            let expected =
+                                Error(
+                                    "Given an invalid JSON: Unexpected character encountered while parsing value: m. Path '', line 0, position 0."
+                                )
 #endif
 
 #if THOTH_JSON_SYSTEM_TEXT_JSON
-                        let expected =
-                            Error
-                                "Given an invalid JSON: 'm' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0."
+                            let expected =
+                                Error
+                                    "Given an invalid JSON: 'm' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0."
 #endif
 
-                        let actual =
-                            runner.Decode.fromString (Decode.succeed 7) "maxime"
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.succeed 7)
+                                    "maxime"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "fail works"
-                    <| fun _ ->
-                        let msg = "Failing because it's fun"
+                    test (
+                        "fail works",
+                        fun _ ->
+                            let msg = "Failing because it's fun"
 
-                        let expected =
-                            Error(
-                                "Error at: `$`\nThe following `failure` occurred with the decoder: "
-                                + msg
-                            )
+                            let expected =
+                                Error(
+                                    "Error at: `$`\nThe following `failure` occurred with the decoder: "
+                                    + msg
+                                )
 
-                        let actual =
-                            runner.Decode.fromString (Decode.fail msg) "true"
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.fail msg)
+                                    "true"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "andMap works for any arity"
-                    <| fun _ ->
-                        // In the past maximum arity in Fable was 8
-                        let json =
-                            """{"a": 1,"b": 2,"c": 3,"d": 4,"e": 5,"f": 6,"g": 7,"h": 8,"i": 9,"j": 10,"k": 11}"""
+                    test (
+                        "andMap works for any arity",
+                        fun _ ->
+                            // In the past maximum arity in Fable was 8
+                            let json =
+                                """{"a": 1,"b": 2,"c": 3,"d": 4,"e": 5,"f": 6,"g": 7,"h": 8,"i": 9,"j": 10,"k": 11}"""
 
-                        let decodeRecord10 =
-                            Decode.succeed Record10.Create
-                            |> Decode.andMap (Decode.field "a" Decode.int)
-                            |> Decode.andMap (Decode.field "b" Decode.int)
-                            |> Decode.andMap (Decode.field "c" Decode.int)
-                            |> Decode.andMap (Decode.field "d" Decode.int)
-                            |> Decode.andMap (Decode.field "e" Decode.int)
-                            |> Decode.andMap (Decode.field "f" Decode.int)
-                            |> Decode.andMap (Decode.field "g" Decode.int)
-                            |> Decode.andMap (Decode.field "h" Decode.int)
-                            |> Decode.andMap (Decode.field "i" Decode.int)
-                            |> Decode.andMap (Decode.field "j" Decode.int)
-                            |> Decode.andMap (Decode.field "k" Decode.int)
+                            let decodeRecord10 =
+                                Decode.succeed Record10.Create
+                                |> Decode.andMap (Decode.field "a" Decode.int)
+                                |> Decode.andMap (Decode.field "b" Decode.int)
+                                |> Decode.andMap (Decode.field "c" Decode.int)
+                                |> Decode.andMap (Decode.field "d" Decode.int)
+                                |> Decode.andMap (Decode.field "e" Decode.int)
+                                |> Decode.andMap (Decode.field "f" Decode.int)
+                                |> Decode.andMap (Decode.field "g" Decode.int)
+                                |> Decode.andMap (Decode.field "h" Decode.int)
+                                |> Decode.andMap (Decode.field "i" Decode.int)
+                                |> Decode.andMap (Decode.field "j" Decode.int)
+                                |> Decode.andMap (Decode.field "k" Decode.int)
 
-                        let actual =
-                            runner.Decode.fromString decodeRecord10 json
+                            let actual =
+                                runner.Decode.fromString decodeRecord10 json
 
-                        let expected =
-                            Ok
-                                {
-                                    a = 1
-                                    b = 2
-                                    c = 3
-                                    d = 4
-                                    e = 5
-                                    f = 6
-                                    g = 7
-                                    h = 8
-                                    i = 9
-                                    j = 10
-                                    k = 11
-                                }
+                            let expected =
+                                Ok
+                                    {
+                                        a = 1
+                                        b = 2
+                                        c = 3
+                                        d = 4
+                                        e = 5
+                                        f = 6
+                                        g = 7
+                                        h = 8
+                                        i = 9
+                                        j = 10
+                                        k = 11
+                                    }
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "andThen works"
-                    <| fun _ ->
-                        let expected = Ok 1
+                    test (
+                        "andThen works",
+                        fun _ ->
+                            let expected = Ok 1
 
-                        let infoHelp version =
-                            match version with
-                            | 4 -> Decode.succeed 1
-                            | 3 -> Decode.succeed 1
-                            | _ ->
-                                Decode.fail
-                                <| "Trying to decode info, but version "
-                                   + (version.ToString())
-                                   + "is not supported"
+                            let infoHelp version =
+                                match version with
+                                | 4 -> Decode.succeed 1
+                                | 3 -> Decode.succeed 1
+                                | _ ->
+                                    Decode.fail
+                                    <| "Trying to decode info, but version "
+                                       + (version.ToString())
+                                       + "is not supported"
 
-                        let info: Decoder<int> =
-                            Decode.field "version" Decode.int
-                            |> Decode.andThen infoHelp
+                            let info: Decoder<int> =
+                                Decode.field "version" Decode.int
+                                |> Decode.andThen infoHelp
 
-                        let actual =
-                            runner.Decode.fromString
-                                info
-                                """{ "version": 3, "data": 2 }"""
+                            let actual =
+                                runner.Decode.fromString
+                                    info
+                                    """{ "version": 3, "data": 2 }"""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
 
-                    testCase "andThen generate an error if an error occuered"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                """
+                    test (
+                        "andThen generate an error if an error occuered",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an object with a field named `version` but instead got:
 {
@@ -2959,354 +3340,400 @@ Expecting an object with a field named `version` but instead got:
     "data": 2
 }
                         """
-                                    .Trim()
-                            )
-
-                        let infoHelp version : Decoder<int> =
-                            match version with
-                            | 4 -> Decode.succeed 1
-                            | 3 -> Decode.succeed 1
-                            | _ ->
-                                Decode.fail
-                                <| "Trying to decode info, but version "
-                                   + (version.ToString())
-                                   + "is not supported"
-
-                        let info =
-                            Decode.field "version" Decode.int
-                            |> Decode.andThen infoHelp
-
-                        let actual =
-                            runner.Decode.fromString
-                                info
-                                """{ "info": 3, "data": 2 }"""
-
-                        equal expected actual
-
-
-                    testCase "all works"
-                    <| fun _ ->
-                        let expected =
-                            Ok
-                                [
-                                    1
-                                    2
-                                    3
-                                ]
-
-                        let decodeAll =
-                            Decode.all
-                                [
-                                    Decode.succeed 1
-                                    Decode.succeed 2
-                                    Decode.succeed 3
-                                ]
-
-                        let actual = runner.Decode.fromString decodeAll "{}"
-
-                        equal expected actual
-
-                    testCase "combining Decode.all and Decode.keys works"
-                    <| fun _ ->
-                        let expected =
-                            Ok
-                                [
-                                    1
-                                    2
-                                    3
-                                ]
-
-                        let decoder =
-                            Decode.keys
-                            |> Decode.andThen (fun keys ->
-                                keys
-                                |> List.except [ "special_property" ]
-                                |> List.map (fun key ->
-                                    Decode.field key Decode.int
+                                        .Trim()
                                 )
-                                |> Decode.all
-                            )
 
-                        let actual =
-                            runner.Decode.fromString
-                                decoder
-                                """{ "a": 1, "b": 2, "c": 3 }"""
+                            let infoHelp version : Decoder<int> =
+                                match version with
+                                | 4 -> Decode.succeed 1
+                                | 3 -> Decode.succeed 1
+                                | _ ->
+                                    Decode.fail
+                                    <| "Trying to decode info, but version "
+                                       + (version.ToString())
+                                       + "is not supported"
 
-                        equal expected actual
+                            let info =
+                                Decode.field "version" Decode.int
+                                |> Decode.andThen infoHelp
 
-                    testCase "all succeeds on empty lists"
-                    <| fun _ ->
-                        let expected = Ok []
+                            let actual =
+                                runner.Decode.fromString
+                                    info
+                                    """{ "info": 3, "data": 2 }"""
 
-                        let decodeNone = Decode.all []
-
-                        let actual = runner.Decode.fromString decodeNone "{}"
-
-                        equal expected actual
-
-
-                    testCase "all fails when one decoder fails"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                "Error at: `$`\nExpecting an int but instead got: {}"
-                            )
-
-                        let decodeAll =
-                            Decode.all
-                                [
-                                    Decode.succeed 1
-                                    Decode.int
-                                    Decode.succeed 3
-                                ]
-
-                        let actual = runner.Decode.fromString decodeAll "{}"
-
-                        equal expected actual
+                            equal expected actual
+                    )
 
 
-                    testCase "fix works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                Tree.Branch(
-                                    Tree.Empty,
-                                    3,
+                    test (
+                        "all works",
+                        fun _ ->
+                            let expected =
+                                Ok
+                                    [
+                                        1
+                                        2
+                                        3
+                                    ]
+
+                            let decodeAll =
+                                Decode.all
+                                    [
+                                        Decode.succeed 1
+                                        Decode.succeed 2
+                                        Decode.succeed 3
+                                    ]
+
+                            let actual = runner.Decode.fromString decodeAll "{}"
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "combining Decode.all and Decode.keys works",
+                        fun _ ->
+                            let expected =
+                                Ok
+                                    [
+                                        1
+                                        2
+                                        3
+                                    ]
+
+                            let decoder =
+                                Decode.keys
+                                |> Decode.andThen (fun keys ->
+                                    keys
+                                    |> List.except [ "special_property" ]
+                                    |> List.map (fun key ->
+                                        Decode.field key Decode.int
+                                    )
+                                    |> Decode.all
+                                )
+
+                            let actual =
+                                runner.Decode.fromString
+                                    decoder
+                                    """{ "a": 1, "b": 2, "c": 3 }"""
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "all succeeds on empty lists",
+                        fun _ ->
+                            let expected = Ok []
+
+                            let decodeNone = Decode.all []
+
+                            let actual =
+                                runner.Decode.fromString decodeNone "{}"
+
+                            equal expected actual
+                    )
+
+
+                    test (
+                        "all fails when one decoder fails",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    "Error at: `$`\nExpecting an int but instead got: {}"
+                                )
+
+                            let decodeAll =
+                                Decode.all
+                                    [
+                                        Decode.succeed 1
+                                        Decode.int
+                                        Decode.succeed 3
+                                    ]
+
+                            let actual = runner.Decode.fromString decodeAll "{}"
+
+                            equal expected actual
+                    )
+
+
+                    test (
+                        "fix works",
+                        fun _ ->
+                            let expected =
+                                Ok(
                                     Tree.Branch(
-                                        Tree.Branch(Tree.Empty, 5, Tree.Empty),
-                                        4,
-                                        Tree.Empty
+                                        Tree.Empty,
+                                        3,
+                                        Tree.Branch(
+                                            Tree.Branch(
+                                                Tree.Empty,
+                                                5,
+                                                Tree.Empty
+                                            ),
+                                            4,
+                                            Tree.Empty
+                                        )
                                     )
                                 )
-                            )
 
-                        let decoder =
-                            Decode.fix (fun self ->
-                                Decode.oneOf
-                                    [
-                                        Decode.unit
-                                        |> Decode.map (fun () -> Tree.Empty)
+                            let decoder =
+                                Decode.fix (fun self ->
+                                    Decode.oneOf
+                                        [
+                                            Decode.unit
+                                            |> Decode.map (fun () ->
+                                                Tree.Empty
+                                            )
 
-                                        Decode.tuple3 self Decode.int self
-                                        |> Decode.map Tree.Branch
-                                    ]
-                            )
+                                            Decode.tuple3 self Decode.int self
+                                            |> Decode.map Tree.Branch
+                                        ]
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                decoder
-                                "[ null, 3, [ [ null, 5, null ], 4, null ]]"
+                            let actual =
+                                runner.Decode.fromString
+                                    decoder
+                                    "[ null, 3, [ [ null, 5, null ], 4, null ]]"
 
-                        equal expected actual
+                            equal expected actual
+                    )
                 ]
+            )
 
-            testList
-                "requireSome"
+            testList (
+                "requireSome",
                 [
 
-                    testCase "returns the value when Some"
-                    <| fun _ ->
-                        let expected = Ok 42
+                    test (
+                        "returns the value when Some",
+                        fun _ ->
+                            let expected = Ok 42
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.int
-                                 |> Decode.map Some
-                                 |> Decode.requireSome "expected a value")
-                                "42"
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.int
+                                     |> Decode.map Some
+                                     |> Decode.requireSome "expected a value")
+                                    "42"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "returns error when None"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                "Error at: `$`\nThe following `failure` occurred with the decoder: invalid email"
-                            )
+                    test (
+                        "returns error when None",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    "Error at: `$`\nThe following `failure` occurred with the decoder: invalid email"
+                                )
 
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.string
-                                 |> Decode.map (fun _ -> None)
-                                 |> Decode.requireSome "invalid email")
-                                "\"a\""
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.string
+                                     |> Decode.map (fun _ -> None)
+                                     |> Decode.requireSome "invalid email")
+                                    "\"a\""
 
-                        equal expected actual
-
-                ]
-
-            testList
-                "notNone"
-                [
-
-                    testCase "returns the value when Some"
-                    <| fun _ ->
-                        let expected = Ok "hello"
-
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.string
-                                 |> Decode.map Some
-                                 |> Decode.notNone)
-                                "\"hello\""
-
-                        equal expected actual
-
-                    testCase "returns error when None"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                "Error at: `$`\nThe following `failure` occurred with the decoder: Expecting a value but instead got: None"
-                            )
-
-                        let actual =
-                            runner.Decode.fromString
-                                (Decode.string
-                                 |> Decode.map (fun _ -> None)
-                                 |> Decode.notNone)
-                                "\"a\""
-
-                        equal expected actual
+                            equal expected actual
+                    )
 
                 ]
+            )
 
-            testList
-                "value"
+            testList (
+                "notNone",
                 [
 
-                    testCase "works for a string"
-                    <| fun _ ->
-                        let expected = Ok(Json.String "abcdef")
+                    test (
+                        "returns the value when Some",
+                        fun _ ->
+                            let expected = Ok "hello"
 
-                        let actual =
-                            runner.Decode.fromString Decode.value "\"abcdef\""
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.string
+                                     |> Decode.map Some
+                                     |> Decode.notNone)
+                                    "\"hello\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "works for a char"
-                    <| fun _ ->
-                        let expected = Ok(Json.String "a")
+                    test (
+                        "returns error when None",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    "Error at: `$`\nThe following `failure` occurred with the decoder: Expecting a value but instead got: None"
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.value "\"a\""
+                            let actual =
+                                runner.Decode.fromString
+                                    (Decode.string
+                                     |> Decode.map (fun _ -> None)
+                                     |> Decode.notNone)
+                                    "\"a\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "works for a number"
-                    <| fun _ ->
-                        let expected = Ok(Json.Number 1.23)
+                ]
+            )
 
-                        let actual =
-                            runner.Decode.fromString Decode.value "1.23"
+            testList (
+                "value",
+                [
 
-                        equal expected actual
+                    test (
+                        "works for a string",
+                        fun _ ->
+                            let expected = Ok(Json.String "abcdef")
 
-                    testCase "works for zero"
-                    <| fun _ ->
-                        let expected = Ok(Json.Number 0.0)
+                            let actual =
+                                runner.Decode.fromString
+                                    Decode.value
+                                    "\"abcdef\""
 
-                        let actual = runner.Decode.fromString Decode.value "0"
+                            equal expected actual
+                    )
 
-                        equal expected actual
+                    test (
+                        "works for a char",
+                        fun _ ->
+                            let expected = Ok(Json.String "a")
 
-                    testCase "works for negative number"
-                    <| fun _ ->
-                        let expected = Ok(Json.Number -1.0)
+                            let actual =
+                                runner.Decode.fromString Decode.value "\"a\""
 
-                        let actual = runner.Decode.fromString Decode.value "-1"
+                            equal expected actual
+                    )
 
-                        equal expected actual
+                    test (
+                        "works for a number",
+                        fun _ ->
+                            let expected = Ok(Json.Number 1.23)
 
-                    testCase "works for a whole number"
-                    <| fun _ ->
-                        let expected = Ok(Json.Number 12345)
+                            let actual =
+                                runner.Decode.fromString Decode.value "1.23"
 
-                        let actual =
-                            runner.Decode.fromString Decode.value "12345"
+                            equal expected actual
+                    )
 
-                        equal expected actual
+                    test (
+                        "works for zero",
+                        fun _ ->
+                            let expected = Ok(Json.Number 0.0)
 
-                    testCase "works for scientific notation"
-                    <| fun _ ->
-                        let expected = Ok(Json.Number 1.5e10)
+                            let actual =
+                                runner.Decode.fromString Decode.value "0"
 
-                        let actual =
-                            runner.Decode.fromString Decode.value "1.5e10"
+                            equal expected actual
+                    )
 
-                        equal expected actual
+                    test (
+                        "works for negative number",
+                        fun _ ->
+                            let expected = Ok(Json.Number -1.0)
 
-                    testCase "works for null"
-                    <| fun _ ->
-                        let expected = Ok Json.Null
+                            let actual =
+                                runner.Decode.fromString Decode.value "-1"
 
-                        let actual =
-                            runner.Decode.fromString Decode.value "null"
+                            equal expected actual
+                    )
 
-                        equal expected actual
+                    test (
+                        "works for a whole number",
+                        fun _ ->
+                            let expected = Ok(Json.Number 12345)
 
-                    testCase "works for boolean"
-                    <| fun _ ->
-                        let expected = Ok(Json.Boolean true)
+                            let actual =
+                                runner.Decode.fromString Decode.value "12345"
 
-                        let actual =
-                            runner.Decode.fromString Decode.value "true"
+                            equal expected actual
+                    )
 
-                        equal expected actual
+                    test (
+                        "works for scientific notation",
+                        fun _ ->
+                            let expected = Ok(Json.Number 1.5e10)
+
+                            let actual =
+                                runner.Decode.fromString Decode.value "1.5e10"
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "works for null",
+                        fun _ ->
+                            let expected = Ok Json.Null
+
+                            let actual =
+                                runner.Decode.fromString Decode.value "null"
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "works for boolean",
+                        fun _ ->
+                            let expected = Ok(Json.Boolean true)
+
+                            let actual =
+                                runner.Decode.fromString Decode.value "true"
+
+                            equal expected actual
+                    )
 
 
-                    testCase "works for null"
-                    <| fun _ ->
-                        let expected = Ok Json.Null
+                    test (
+                        "works for arrays",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    Json.Array
+                                        [
+                                            Json.Number 1.23
+                                            Json.String "abc"
+                                            Json.Boolean true
+                                            Json.Null
+                                        ]
+                                )
 
-                        let actual =
-                            runner.Decode.fromString Decode.value "null"
-
-                        equal expected actual
-
-                    testCase "works for arrays"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                Json.Array
-                                    [
-                                        Json.Number 1.23
-                                        Json.String "abc"
-                                        Json.Boolean true
-                                        Json.Null
-                                    ]
-                            )
-
-                        let json =
-                            """
+                            let json =
+                                """
                             [ 1.23, "abc", true, null ]
                             """
 
-                        let actual = runner.Decode.fromString Decode.value json
+                            let actual =
+                                runner.Decode.fromString Decode.value json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "works objects"
-                    <| fun _ ->
-                        let expected =
-                            Json.Object
-                                [
-                                    "foo", Json.Boolean true
-                                    "bar",
-                                    Json.Object
-                                        [
-                                            "qux",
-                                            Json.Array
-                                                [
-                                                    Json.Number 1.23
-                                                    Json.String "abc"
-                                                ]
-                                            "baz", Json.Null
-                                        ]
-                                ]
-                            |> Ok
+                    test (
+                        "works objects",
+                        fun _ ->
+                            let expected =
+                                Json.Object
+                                    [
+                                        "foo", Json.Boolean true
+                                        "bar",
+                                        Json.Object
+                                            [
+                                                "qux",
+                                                Json.Array
+                                                    [
+                                                        Json.Number 1.23
+                                                        Json.String "abc"
+                                                    ]
+                                                "baz", Json.Null
+                                            ]
+                                    ]
+                                |> Ok
 
-                        let json =
-                            """
+                            let json =
+                                """
                             {
                                 "foo": true,
                                 "bar": {
@@ -3316,562 +3743,624 @@ Expecting an object with a field named `version` but instead got:
                             }
                             """
 
-                        let actual = runner.Decode.fromString Decode.value json
+                            let actual =
+                                runner.Decode.fromString Decode.value json
 
-                        equal expected actual
+                            equal expected actual
+                    )
                 ]
+            )
 
-            testList
-                "Mapping"
+            testList (
+                "Mapping",
                 [
 
-                    testCase "map works"
-                    <| fun _ ->
-                        let expected = Ok(6)
+                    test (
+                        "map works",
+                        fun _ ->
+                            let expected = Ok(6)
 
-                        let stringLength =
-                            Decode.map String.length Decode.string
+                            let stringLength =
+                                Decode.map String.length Decode.string
 
-                        let actual =
-                            runner.Decode.fromString stringLength "\"maxime\""
+                            let actual =
+                                runner.Decode.fromString
+                                    stringLength
+                                    "\"maxime\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
 
-                    testCase "map2 works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                {
-                                    a = 1.
-                                    b = 2.
-                                }
-                                : Record2
-                            )
+                    test (
+                        "map2 works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    {
+                                        a = 1.
+                                        b = 2.
+                                    }
+                                    : Record2
+                                )
 
-                        let decodePoint =
-                            Decode.map2
-                                Record2.Create
-                                (Decode.field "a" Decode.float)
-                                (Decode.field "b" Decode.float)
+                            let decodePoint =
+                                Decode.map2
+                                    Record2.Create
+                                    (Decode.field "a" Decode.float)
+                                    (Decode.field "b" Decode.float)
 
-                        let actual =
-                            runner.Decode.fromString decodePoint jsonRecord
+                            let actual =
+                                runner.Decode.fromString decodePoint jsonRecord
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "map3 works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                {
-                                    a = 1.
-                                    b = 2.
-                                    c = 3.
-                                }
-                                : Record3
-                            )
+                    test (
+                        "map3 works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    {
+                                        a = 1.
+                                        b = 2.
+                                        c = 3.
+                                    }
+                                    : Record3
+                                )
 
-                        let decodePoint =
-                            Decode.map3
-                                Record3.Create
-                                (Decode.field "a" Decode.float)
-                                (Decode.field "b" Decode.float)
-                                (Decode.field "c" Decode.float)
+                            let decodePoint =
+                                Decode.map3
+                                    Record3.Create
+                                    (Decode.field "a" Decode.float)
+                                    (Decode.field "b" Decode.float)
+                                    (Decode.field "c" Decode.float)
 
-                        let actual =
-                            runner.Decode.fromString decodePoint jsonRecord
+                            let actual =
+                                runner.Decode.fromString decodePoint jsonRecord
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "map4 works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                {
-                                    a = 1.
-                                    b = 2.
-                                    c = 3.
-                                    d = 4.
-                                }
-                                : Record4
-                            )
+                    test (
+                        "map4 works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    {
+                                        a = 1.
+                                        b = 2.
+                                        c = 3.
+                                        d = 4.
+                                    }
+                                    : Record4
+                                )
 
-                        let decodePoint =
-                            Decode.map4
-                                Record4.Create
-                                (Decode.field "a" Decode.float)
-                                (Decode.field "b" Decode.float)
-                                (Decode.field "c" Decode.float)
-                                (Decode.field "d" Decode.float)
+                            let decodePoint =
+                                Decode.map4
+                                    Record4.Create
+                                    (Decode.field "a" Decode.float)
+                                    (Decode.field "b" Decode.float)
+                                    (Decode.field "c" Decode.float)
+                                    (Decode.field "d" Decode.float)
 
-                        let actual =
-                            runner.Decode.fromString decodePoint jsonRecord
+                            let actual =
+                                runner.Decode.fromString decodePoint jsonRecord
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "map5 works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                {
-                                    a = 1.
-                                    b = 2.
-                                    c = 3.
-                                    d = 4.
-                                    e = 5.
-                                }
-                                : Record5
-                            )
+                    test (
+                        "map5 works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    {
+                                        a = 1.
+                                        b = 2.
+                                        c = 3.
+                                        d = 4.
+                                        e = 5.
+                                    }
+                                    : Record5
+                                )
 
-                        let decodePoint =
-                            Decode.map5
-                                Record5.Create
-                                (Decode.field "a" Decode.float)
-                                (Decode.field "b" Decode.float)
-                                (Decode.field "c" Decode.float)
-                                (Decode.field "d" Decode.float)
-                                (Decode.field "e" Decode.float)
+                            let decodePoint =
+                                Decode.map5
+                                    Record5.Create
+                                    (Decode.field "a" Decode.float)
+                                    (Decode.field "b" Decode.float)
+                                    (Decode.field "c" Decode.float)
+                                    (Decode.field "d" Decode.float)
+                                    (Decode.field "e" Decode.float)
 
-                        let actual =
-                            runner.Decode.fromString decodePoint jsonRecord
+                            let actual =
+                                runner.Decode.fromString decodePoint jsonRecord
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "map6 works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                {
-                                    a = 1.
-                                    b = 2.
-                                    c = 3.
-                                    d = 4.
-                                    e = 5.
-                                    f = 6.
-                                }
-                                : Record6
-                            )
+                    test (
+                        "map6 works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    {
+                                        a = 1.
+                                        b = 2.
+                                        c = 3.
+                                        d = 4.
+                                        e = 5.
+                                        f = 6.
+                                    }
+                                    : Record6
+                                )
 
-                        let decodePoint =
-                            Decode.map6
-                                Record6.Create
-                                (Decode.field "a" Decode.float)
-                                (Decode.field "b" Decode.float)
-                                (Decode.field "c" Decode.float)
-                                (Decode.field "d" Decode.float)
-                                (Decode.field "e" Decode.float)
-                                (Decode.field "f" Decode.float)
+                            let decodePoint =
+                                Decode.map6
+                                    Record6.Create
+                                    (Decode.field "a" Decode.float)
+                                    (Decode.field "b" Decode.float)
+                                    (Decode.field "c" Decode.float)
+                                    (Decode.field "d" Decode.float)
+                                    (Decode.field "e" Decode.float)
+                                    (Decode.field "f" Decode.float)
 
-                        let actual =
-                            runner.Decode.fromString decodePoint jsonRecord
+                            let actual =
+                                runner.Decode.fromString decodePoint jsonRecord
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "map7 works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                {
-                                    a = 1.
-                                    b = 2.
-                                    c = 3.
-                                    d = 4.
-                                    e = 5.
-                                    f = 6.
-                                    g = 7.
-                                }
-                                : Record7
-                            )
+                    test (
+                        "map7 works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    {
+                                        a = 1.
+                                        b = 2.
+                                        c = 3.
+                                        d = 4.
+                                        e = 5.
+                                        f = 6.
+                                        g = 7.
+                                    }
+                                    : Record7
+                                )
 
-                        let decodePoint =
-                            Decode.map7
-                                Record7.Create
-                                (Decode.field "a" Decode.float)
-                                (Decode.field "b" Decode.float)
-                                (Decode.field "c" Decode.float)
-                                (Decode.field "d" Decode.float)
-                                (Decode.field "e" Decode.float)
-                                (Decode.field "f" Decode.float)
-                                (Decode.field "g" Decode.float)
+                            let decodePoint =
+                                Decode.map7
+                                    Record7.Create
+                                    (Decode.field "a" Decode.float)
+                                    (Decode.field "b" Decode.float)
+                                    (Decode.field "c" Decode.float)
+                                    (Decode.field "d" Decode.float)
+                                    (Decode.field "e" Decode.float)
+                                    (Decode.field "f" Decode.float)
+                                    (Decode.field "g" Decode.float)
 
-                        let actual =
-                            runner.Decode.fromString decodePoint jsonRecord
+                            let actual =
+                                runner.Decode.fromString decodePoint jsonRecord
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "map8 works"
-                    <| fun _ ->
-                        let expected =
-                            Ok(
-                                {
-                                    a = 1.
-                                    b = 2.
-                                    c = 3.
-                                    d = 4.
-                                    e = 5.
-                                    f = 6.
-                                    g = 7.
-                                    h = 8.
-                                }
-                                : Record8
-                            )
+                    test (
+                        "map8 works",
+                        fun _ ->
+                            let expected =
+                                Ok(
+                                    {
+                                        a = 1.
+                                        b = 2.
+                                        c = 3.
+                                        d = 4.
+                                        e = 5.
+                                        f = 6.
+                                        g = 7.
+                                        h = 8.
+                                    }
+                                    : Record8
+                                )
 
-                        let decodePoint =
-                            Decode.map8
-                                Record8.Create
-                                (Decode.field "a" Decode.float)
-                                (Decode.field "b" Decode.float)
-                                (Decode.field "c" Decode.float)
-                                (Decode.field "d" Decode.float)
-                                (Decode.field "e" Decode.float)
-                                (Decode.field "f" Decode.float)
-                                (Decode.field "g" Decode.float)
-                                (Decode.field "h" Decode.float)
+                            let decodePoint =
+                                Decode.map8
+                                    Record8.Create
+                                    (Decode.field "a" Decode.float)
+                                    (Decode.field "b" Decode.float)
+                                    (Decode.field "c" Decode.float)
+                                    (Decode.field "d" Decode.float)
+                                    (Decode.field "e" Decode.float)
+                                    (Decode.field "f" Decode.float)
+                                    (Decode.field "g" Decode.float)
+                                    (Decode.field "h" Decode.float)
 
-                        let actual =
-                            runner.Decode.fromString decodePoint jsonRecord
+                            let actual =
+                                runner.Decode.fromString decodePoint jsonRecord
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "map2 generate an error if invalid"
-                    <| fun _ ->
-                        let expected =
-                            Error(
-                                "Error at: `$.a`\nExpecting a float but instead got: \"invalid_a_field\""
-                            )
+                    test (
+                        "map2 generate an error if invalid",
+                        fun _ ->
+                            let expected =
+                                Error(
+                                    "Error at: `$.a`\nExpecting a float but instead got: \"invalid_a_field\""
+                                )
 
-                        let decodePoint =
-                            Decode.map2
-                                Record2.Create
-                                (Decode.field "a" Decode.float)
-                                (Decode.field "b" Decode.float)
+                            let decodePoint =
+                                Decode.map2
+                                    Record2.Create
+                                    (Decode.field "a" Decode.float)
+                                    (Decode.field "b" Decode.float)
 
-                        let actual =
-                            runner.Decode.fromString
-                                decodePoint
-                                jsonRecordInvalid
+                            let actual =
+                                runner.Decode.fromString
+                                    decodePoint
+                                    jsonRecordInvalid
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
                 ]
+            )
 
-            testList
-                "object builder"
+            testList (
+                "object builder",
                 [
 
-                    testCase "get.Required.Field works"
-                    <| fun _ ->
-                        let json = """{ "name": "maxime", "age": 25 }"""
+                    test (
+                        "get.Required.Field works",
+                        fun _ ->
+                            let json = """{ "name": "maxime", "age": 25 }"""
 
-                        let expected =
-                            Ok(
-                                {
-                                    fieldA = "maxime"
-                                }
-                            )
+                            let expected =
+                                Ok(
+                                    {
+                                        fieldA = "maxime"
+                                    }
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    fieldA =
-                                        get.Required.Field "name" Decode.string
-                                }
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        fieldA =
+                                            get.Required.Field
+                                                "name"
+                                                Decode.string
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "get.Required.Field returns Error if field is missing"
-                    <| fun _ ->
-                        let json = """{ "age": 25 }"""
+                    test (
+                        "get.Required.Field returns Error if field is missing",
+                        fun _ ->
+                            let json = """{ "age": 25 }"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an object with a field named `name` but instead got:
 {
     "age": 25
 }
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    fieldA =
-                                        get.Required.Field "name" Decode.string
-                                }
-                            )
-
-                        let actual = runner.Decode.fromString decoder json
-
-                        equal expected actual
-
-                    testCase
-                        "get.Required.Field returns Error if type is incorrect"
-                    <| fun _ ->
-                        let json = """{ "name": 12, "age": 25 }"""
-
-                        let expected =
-                            Error(
-                                """
-Error at: `$.name`
-Expecting a string but instead got: 12
-                        """
-                                    .Trim()
-                            )
-
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    fieldA =
-                                        get.Required.Field "name" Decode.string
-                                }
-                            )
-
-                        let actual = runner.Decode.fromString decoder json
-
-                        equal expected actual
-
-                    testCase "get.Optional.Field works"
-                    <| fun _ ->
-                        let json = """{ "name": "maxime", "age": 25 }"""
-
-                        let expected =
-                            Ok(
-                                {
-                                    optionalField = Some "maxime"
-                                }
-                            )
-
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    optionalField =
-                                        get.Optional.Field "name" Decode.string
-                                }
-                            )
-
-                        let actual = runner.Decode.fromString decoder json
-
-                        equal expected actual
-
-                    testCase
-                        "get.Optional.Field returns None value if field is missing"
-                    <| fun _ ->
-                        let json = """{ "age": 25 }"""
-
-                        let expected =
-                            Ok(
-                                {
-                                    optionalField = None
-                                }
-                            )
-
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    optionalField =
-                                        get.Optional.Field "name" Decode.string
-                                }
-                            )
-
-                        let actual = runner.Decode.fromString decoder json
-
-                        equal expected actual
-
-                    testCase "get.Optional.Field returns None if field is null"
-                    <| fun _ ->
-                        let json = """{ "name": null, "age": 25 }"""
-
-                        let expected =
-                            Ok(
-                                {
-                                    optionalField = None
-                                }
-                            )
-
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    optionalField =
-                                        get.Optional.Field "name" Decode.string
-                                }
-                            )
-
-                        let actual = runner.Decode.fromString decoder json
-
-                        equal expected actual
-
-                    testCase
-                        "get.Optional.Field returns Error value if decoder fails"
-                    <| fun _ ->
-                        let json = """{ "name": 12, "age": 25 }"""
-
-                        let expected =
-                            Error(
-                                """
-Error at: `$.name`
-Expecting a string but instead got: 12
-                        """
-                                    .Trim()
-                            )
-
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    optionalField =
-                                        get.Optional.Field "name" Decode.string
-                                }
-                            )
-
-                        let actual = runner.Decode.fromString decoder json
-
-                        equal expected actual
-
-                    testCase
-                        "nested get.Optional.Field > get.Required.Field returns None if field is null"
-                    <| fun _ ->
-                        let json = """{ "user": null, "field2": 25 }"""
-
-                        let expected =
-                            Ok(
-                                {
-                                    User = None
-                                    Field2 = 25
-                                }
-                            )
-
-                        let userDecoder =
-                            Decode.object (fun get ->
-                                {
-                                    Id = get.Required.Field "id" Decode.int
-                                    Name =
-                                        get.Required.Field "name" Decode.string
-                                    Email =
-                                        get.Required.Field
-                                            "email"
-                                            Decode.string
-                                    Followers = 0
-                                }
-                            )
-
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    User =
-                                        get.Optional.Field "user" userDecoder
-                                    Field2 =
-                                        get.Required.Field "field2" Decode.int
-                                }
-                            )
-
-                        let actual = runner.Decode.fromString decoder json
-
-                        equal expected actual
-
-                    testCase
-                        "get.Optional.Field returns Error if type is incorrect"
-                    <| fun _ ->
-                        let json = """{ "name": 12, "age": 25 }"""
-
-                        let expected =
-                            Error(
-                                """
-Error at: `$.name`
-Expecting a string but instead got: 12
-                        """
-                                    .Trim()
-                            )
-
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    optionalField =
-                                        get.Optional.Field "name" Decode.string
-                                }
-                            )
-
-                        let actual = runner.Decode.fromString decoder json
-
-                        equal expected actual
-
-
-                    testCase "get.Required.At works"
-                    <| fun _ ->
-
-                        let json =
-                            """{ "user": { "name": "maxime", "age": 25 } }"""
-
-                        let expected =
-                            Ok(
-                                {
-                                    fieldA = "maxime"
-                                }
-                            )
-
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    fieldA =
-                                        get.Required.At
-                                            [
-                                                "user"
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        fieldA =
+                                            get.Required.Field
                                                 "name"
-                                            ]
-                                            Decode.string
-                                }
-                            )
+                                                Decode.string
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "get.Required.At returns Error if non-object in path"
-                    <| fun _ ->
-                        let json = """{ "user": "maxime" }"""
+                    test (
+                        "get.Required.Field returns Error if type is incorrect",
+                        fun _ ->
+                            let json = """{ "name": 12, "age": 25 }"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
+Error at: `$.name`
+Expecting a string but instead got: 12
+                        """
+                                        .Trim()
+                                )
+
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        fieldA =
+                                            get.Required.Field
+                                                "name"
+                                                Decode.string
+                                    }
+                                )
+
+                            let actual = runner.Decode.fromString decoder json
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "get.Optional.Field works",
+                        fun _ ->
+                            let json = """{ "name": "maxime", "age": 25 }"""
+
+                            let expected =
+                                Ok(
+                                    {
+                                        optionalField = Some "maxime"
+                                    }
+                                )
+
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        optionalField =
+                                            get.Optional.Field
+                                                "name"
+                                                Decode.string
+                                    }
+                                )
+
+                            let actual = runner.Decode.fromString decoder json
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "get.Optional.Field returns None value if field is missing",
+                        fun _ ->
+                            let json = """{ "age": 25 }"""
+
+                            let expected =
+                                Ok(
+                                    {
+                                        optionalField = None
+                                    }
+                                )
+
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        optionalField =
+                                            get.Optional.Field
+                                                "name"
+                                                Decode.string
+                                    }
+                                )
+
+                            let actual = runner.Decode.fromString decoder json
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "get.Optional.Field returns None if field is null",
+                        fun _ ->
+                            let json = """{ "name": null, "age": 25 }"""
+
+                            let expected =
+                                Ok(
+                                    {
+                                        optionalField = None
+                                    }
+                                )
+
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        optionalField =
+                                            get.Optional.Field
+                                                "name"
+                                                Decode.string
+                                    }
+                                )
+
+                            let actual = runner.Decode.fromString decoder json
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "get.Optional.Field returns Error value if decoder fails",
+                        fun _ ->
+                            let json = """{ "name": 12, "age": 25 }"""
+
+                            let expected =
+                                Error(
+                                    """
+Error at: `$.name`
+Expecting a string but instead got: 12
+                        """
+                                        .Trim()
+                                )
+
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        optionalField =
+                                            get.Optional.Field
+                                                "name"
+                                                Decode.string
+                                    }
+                                )
+
+                            let actual = runner.Decode.fromString decoder json
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "nested get.Optional.Field > get.Required.Field returns None if field is null",
+                        fun _ ->
+                            let json = """{ "user": null, "field2": 25 }"""
+
+                            let expected =
+                                Ok(
+                                    {
+                                        User = None
+                                        Field2 = 25
+                                    }
+                                )
+
+                            let userDecoder =
+                                Decode.object (fun get ->
+                                    {
+                                        Id = get.Required.Field "id" Decode.int
+                                        Name =
+                                            get.Required.Field
+                                                "name"
+                                                Decode.string
+                                        Email =
+                                            get.Required.Field
+                                                "email"
+                                                Decode.string
+                                        Followers = 0
+                                    }
+                                )
+
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        User =
+                                            get.Optional.Field
+                                                "user"
+                                                userDecoder
+                                        Field2 =
+                                            get.Required.Field
+                                                "field2"
+                                                Decode.int
+                                    }
+                                )
+
+                            let actual = runner.Decode.fromString decoder json
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "get.Optional.Field returns Error if type is incorrect",
+                        fun _ ->
+                            let json = """{ "name": 12, "age": 25 }"""
+
+                            let expected =
+                                Error(
+                                    """
+Error at: `$.name`
+Expecting a string but instead got: 12
+                        """
+                                        .Trim()
+                                )
+
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        optionalField =
+                                            get.Optional.Field
+                                                "name"
+                                                Decode.string
+                                    }
+                                )
+
+                            let actual = runner.Decode.fromString decoder json
+
+                            equal expected actual
+                    )
+
+
+                    test (
+                        "get.Required.At works",
+                        fun _ ->
+
+                            let json =
+                                """{ "user": { "name": "maxime", "age": 25 } }"""
+
+                            let expected =
+                                Ok(
+                                    {
+                                        fieldA = "maxime"
+                                    }
+                                )
+
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        fieldA =
+                                            get.Required.At
+                                                [
+                                                    "user"
+                                                    "name"
+                                                ]
+                                                Decode.string
+                                    }
+                                )
+
+                            let actual = runner.Decode.fromString decoder json
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "get.Required.At returns Error if non-object in path",
+                        fun _ ->
+                            let json = """{ "user": "maxime" }"""
+
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.user`
 Expecting an object but instead got:
 "maxime"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    fieldA =
-                                        get.Required.At
-                                            [
-                                                "user"
-                                                "name"
-                                            ]
-                                            Decode.string
-                                }
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        fieldA =
+                                            get.Required.At
+                                                [
+                                                    "user"
+                                                    "name"
+                                                ]
+                                                Decode.string
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "get.Required.At returns Error if field missing"
-                    <| fun _ ->
-                        let json =
-                            """{ "user": { "name": "maxime", "age": 25 } }"""
+                    test (
+                        "get.Required.At returns Error if field missing",
+                        fun _ ->
+                            let json =
+                                """{ "user": { "name": "maxime", "age": 25 } }"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.user.firstname`
 Expecting an object with path `user.firstname` but instead got:
 {
@@ -3882,559 +4371,602 @@ Expecting an object with path `user.firstname` but instead got:
 }
 Node `firstname` is unknown.
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    fieldA =
-                                        get.Required.At
-                                            [
-                                                "user"
-                                                "firstname"
-                                            ]
-                                            Decode.string
-                                }
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        fieldA =
+                                            get.Required.At
+                                                [
+                                                    "user"
+                                                    "firstname"
+                                                ]
+                                                Decode.string
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "get.Required.At returns Error if type is incorrect"
-                    <| fun _ ->
-                        let json = """{ "user": { "name": 12, "age": 25 } }"""
+                    test (
+                        "get.Required.At returns Error if type is incorrect",
+                        fun _ ->
+                            let json =
+                                """{ "user": { "name": 12, "age": 25 } }"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.user.name`
 Expecting a string but instead got: 12
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    fieldA =
-                                        get.Required.At
-                                            [
-                                                "user"
-                                                "name"
-                                            ]
-                                            Decode.string
-                                }
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        fieldA =
+                                            get.Required.At
+                                                [
+                                                    "user"
+                                                    "name"
+                                                ]
+                                                Decode.string
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "get.Optional.At works"
-                    <| fun _ ->
+                    test (
+                        "get.Optional.At works",
+                        fun _ ->
 
-                        let json =
-                            """{ "user": { "name": "maxime", "age": 25 } }"""
+                            let json =
+                                """{ "user": { "name": "maxime", "age": 25 } }"""
 
-                        let expected =
-                            Ok(
-                                {
-                                    optionalField = Some "maxime"
-                                }
-                            )
+                            let expected =
+                                Ok(
+                                    {
+                                        optionalField = Some "maxime"
+                                    }
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    optionalField =
-                                        get.Optional.At
-                                            [
-                                                "user"
-                                                "name"
-                                            ]
-                                            Decode.string
-                                }
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        optionalField =
+                                            get.Optional.At
+                                                [
+                                                    "user"
+                                                    "name"
+                                                ]
+                                                Decode.string
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "get.Optional.At returns 'type error' if non-object in path"
-                    <| fun _ ->
-                        let json = """{ "user": "maxime" }"""
+                    test (
+                        "get.Optional.At returns 'type error' if non-object in path",
+                        fun _ ->
+                            let json = """{ "user": "maxime" }"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.user`
 Expecting an object but instead got:
 "maxime"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    optionalField =
-                                        get.Optional.At
-                                            [
-                                                "user"
-                                                "name"
-                                            ]
-                                            Decode.string
-                                }
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        optionalField =
+                                            get.Optional.At
+                                                [
+                                                    "user"
+                                                    "name"
+                                                ]
+                                                Decode.string
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "get.Optional.At returns None if field missing"
-                    <| fun _ ->
-                        let json =
-                            """{ "user": { "name": "maxime", "age": 25 } }"""
+                    test (
+                        "get.Optional.At returns None if field missing",
+                        fun _ ->
+                            let json =
+                                """{ "user": { "name": "maxime", "age": 25 } }"""
 
-                        let expected =
-                            Ok(
-                                {
-                                    optionalField = None
-                                }
-                            )
+                            let expected =
+                                Ok(
+                                    {
+                                        optionalField = None
+                                    }
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    optionalField =
-                                        get.Optional.At
-                                            [
-                                                "user"
-                                                "firstname"
-                                            ]
-                                            Decode.string
-                                }
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        optionalField =
+                                            get.Optional.At
+                                                [
+                                                    "user"
+                                                    "firstname"
+                                                ]
+                                                Decode.string
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "get.Optional.At returns Error if type is incorrect"
-                    <| fun _ ->
-                        let json = """{ "user": { "name": 12, "age": 25 } }"""
+                    test (
+                        "get.Optional.At returns Error if type is incorrect",
+                        fun _ ->
+                            let json =
+                                """{ "user": { "name": 12, "age": 25 } }"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$.user.name`
 Expecting a string but instead got: 12
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    optionalField =
-                                        get.Optional.At
-                                            [
-                                                "user"
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        optionalField =
+                                            get.Optional.At
+                                                [
+                                                    "user"
+                                                    "name"
+                                                ]
+                                                Decode.string
+                                    }
+                                )
+
+                            let actual = runner.Decode.fromString decoder json
+
+                            equal expected actual
+                    )
+
+                    test (
+                        "complex object builder works",
+                        fun _ ->
+                            let expected =
+                                Ok(User.Create 67 "" "user@mail.com" 0)
+
+                            let userDecoder =
+                                Decode.object (fun get ->
+                                    {
+                                        Id = get.Required.Field "id" Decode.int
+                                        Name =
+                                            get.Optional.Field
                                                 "name"
-                                            ]
-                                            Decode.string
-                                }
-                            )
+                                                Decode.string
+                                            |> Option.defaultValue ""
+                                        Email =
+                                            get.Required.Field
+                                                "email"
+                                                Decode.string
+                                        Followers = 0
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual =
+                                runner.Decode.fromString
+                                    userDecoder
+                                    """{ "id": 67, "email": "user@mail.com" }"""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "complex object builder works"
-                    <| fun _ ->
-                        let expected = Ok(User.Create 67 "" "user@mail.com" 0)
-
-                        let userDecoder =
-                            Decode.object (fun get ->
-                                {
-                                    Id = get.Required.Field "id" Decode.int
-                                    Name =
-                                        get.Optional.Field "name" Decode.string
-                                        |> Option.defaultValue ""
-                                    Email =
-                                        get.Required.Field
-                                            "email"
-                                            Decode.string
-                                    Followers = 0
-                                }
-                            )
-
-                        let actual =
-                            runner.Decode.fromString
-                                userDecoder
-                                """{ "id": 67, "email": "user@mail.com" }"""
-
-                        equal expected actual
-
-                    testCase "get.Field.Raw works"
-                    <| fun _ ->
-                        let json =
-                            """{
+                    test (
+                        "get.Field.Raw works",
+                        fun _ ->
+                            let json =
+                                """{
     "enabled": true,
 	"shape": "circle",
     "radius": 20
 }"""
 
-                        let shapeDecoder =
-                            Decode.field "shape" Decode.string
-                            |> Decode.andThen (
-                                function
-                                | "circle" -> Shape.DecoderCircle
-                                | "rectangle" -> Shape.DecoderRectangle
-                                | shape ->
-                                    Decode.fail (
-                                        sprintf "Unknown shape type %s" shape
-                                    )
-                            )
+                            let shapeDecoder =
+                                Decode.field "shape" Decode.string
+                                |> Decode.andThen (
+                                    function
+                                    | "circle" -> Shape.DecoderCircle
+                                    | "rectangle" -> Shape.DecoderRectangle
+                                    | shape ->
+                                        Decode.fail (
+                                            sprintf
+                                                "Unknown shape type %s"
+                                                shape
+                                        )
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    Enabled =
-                                        get.Required.Field
-                                            "enabled"
-                                            Decode.bool
-                                    Shape = get.Required.Raw shapeDecoder
-                                }
-                                : MyObj
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        Enabled =
+                                            get.Required.Field
+                                                "enabled"
+                                                Decode.bool
+                                        Shape = get.Required.Raw shapeDecoder
+                                    }
+                                    : MyObj
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        let expected =
-                            Ok(
-                                {
-                                    Enabled = true
-                                    Shape = Circle 20
-                                }
-                                : MyObj
-                            )
+                            let expected =
+                                Ok(
+                                    {
+                                        Enabled = true
+                                        Shape = Circle 20
+                                    }
+                                    : MyObj
+                                )
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "get.Field.Raw returns Error if a decoder fail"
-                    <| fun _ ->
-                        let json =
-                            """{
+                    test (
+                        "get.Field.Raw returns Error if a decoder fail",
+                        fun _ ->
+                            let json =
+                                """{
     "enabled": true,
 	"shape": "custom_shape",
     "radius": 20
 }"""
 
-                        let shapeDecoder =
-                            Decode.field "shape" Decode.string
-                            |> Decode.andThen (
-                                function
-                                | "circle" -> Shape.DecoderCircle
-                                | "rectangle" -> Shape.DecoderRectangle
-                                | shape ->
-                                    Decode.fail (
-                                        sprintf "Unknown shape type %s" shape
-                                    )
-                            )
+                            let shapeDecoder =
+                                Decode.field "shape" Decode.string
+                                |> Decode.andThen (
+                                    function
+                                    | "circle" -> Shape.DecoderCircle
+                                    | "rectangle" -> Shape.DecoderRectangle
+                                    | shape ->
+                                        Decode.fail (
+                                            sprintf
+                                                "Unknown shape type %s"
+                                                shape
+                                        )
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    Enabled =
-                                        get.Required.Field
-                                            "enabled"
-                                            Decode.bool
-                                    Shape = get.Required.Raw shapeDecoder
-                                }
-                                : MyObj
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        Enabled =
+                                            get.Required.Field
+                                                "enabled"
+                                                Decode.bool
+                                        Shape = get.Required.Raw shapeDecoder
+                                    }
+                                    : MyObj
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        let expected =
-                            Error
-                                "Error at: `$`\nThe following `failure` occurred with the decoder: Unknown shape type custom_shape"
+                            let expected =
+                                Error
+                                    "Error at: `$`\nThe following `failure` occurred with the decoder: Unknown shape type custom_shape"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "get.Field.Raw returns Error if a field is missing in the 'raw decoder'"
-                    <| fun _ ->
-                        let json =
-                            """{
+                    test (
+                        "get.Field.Raw returns Error if a field is missing in the 'raw decoder'",
+                        fun _ ->
+                            let json =
+                                """{
     "enabled": true,
 	"shape": "circle"
 }"""
 
-                        let shapeDecoder =
-                            Decode.field "shape" Decode.string
-                            |> Decode.andThen (
-                                function
-                                | "circle" -> Shape.DecoderCircle
-                                | "rectangle" -> Shape.DecoderRectangle
-                                | shape ->
-                                    Decode.fail (
-                                        sprintf "Unknown shape type %s" shape
-                                    )
-                            )
+                            let shapeDecoder =
+                                Decode.field "shape" Decode.string
+                                |> Decode.andThen (
+                                    function
+                                    | "circle" -> Shape.DecoderCircle
+                                    | "rectangle" -> Shape.DecoderRectangle
+                                    | shape ->
+                                        Decode.fail (
+                                            sprintf
+                                                "Unknown shape type %s"
+                                                shape
+                                        )
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    Enabled =
-                                        get.Required.Field
-                                            "enabled"
-                                            Decode.bool
-                                    Shape = get.Required.Raw shapeDecoder
-                                }
-                                : MyObj
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        Enabled =
+                                            get.Required.Field
+                                                "enabled"
+                                                Decode.bool
+                                        Shape = get.Required.Raw shapeDecoder
+                                    }
+                                    : MyObj
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 Error at: `$`
 Expecting an object with a field named `radius` but instead got:
 {
     "enabled": true,
     "shape": "circle"
 }                   """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "get.Optional.Raw works"
-                    <| fun _ ->
-                        let json =
-                            """{
+                    test (
+                        "get.Optional.Raw works",
+                        fun _ ->
+                            let json =
+                                """{
     "enabled": true,
 	"shape": "circle",
     "radius": 20
 }"""
 
-                        let shapeDecoder =
-                            Decode.field "shape" Decode.string
-                            |> Decode.andThen (
-                                function
-                                | "circle" -> Shape.DecoderCircle
-                                | "rectangle" -> Shape.DecoderRectangle
-                                | shape ->
-                                    Decode.fail (
-                                        sprintf "Unknown shape type %s" shape
-                                    )
-                            )
+                            let shapeDecoder =
+                                Decode.field "shape" Decode.string
+                                |> Decode.andThen (
+                                    function
+                                    | "circle" -> Shape.DecoderCircle
+                                    | "rectangle" -> Shape.DecoderRectangle
+                                    | shape ->
+                                        Decode.fail (
+                                            sprintf
+                                                "Unknown shape type %s"
+                                                shape
+                                        )
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    Enabled =
-                                        get.Required.Field
-                                            "enabled"
-                                            Decode.bool
-                                    Shape = get.Optional.Raw shapeDecoder
-                                }
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        Enabled =
+                                            get.Required.Field
+                                                "enabled"
+                                                Decode.bool
+                                        Shape = get.Optional.Raw shapeDecoder
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        let expected =
-                            Ok
-                                {
-                                    Enabled = true
-                                    Shape = Some(Circle 20)
-                                }
+                            let expected =
+                                Ok
+                                    {
+                                        Enabled = true
+                                        Shape = Some(Circle 20)
+                                    }
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "get.Optional.Raw returns None if a field is missing"
-                    <| fun _ ->
-                        let json =
-                            """{
+                    test (
+                        "get.Optional.Raw returns None if a field is missing",
+                        fun _ ->
+                            let json =
+                                """{
     "enabled": true,
 	"shape": "circle"
 }"""
 
-                        let shapeDecoder =
-                            Decode.field "shape" Decode.string
-                            |> Decode.andThen (
-                                function
-                                | "circle" -> Shape.DecoderCircle
-                                | "rectangle" -> Shape.DecoderRectangle
-                                | shape ->
-                                    Decode.fail (
-                                        sprintf "Unknown shape type %s" shape
-                                    )
-                            )
+                            let shapeDecoder =
+                                Decode.field "shape" Decode.string
+                                |> Decode.andThen (
+                                    function
+                                    | "circle" -> Shape.DecoderCircle
+                                    | "rectangle" -> Shape.DecoderRectangle
+                                    | shape ->
+                                        Decode.fail (
+                                            sprintf
+                                                "Unknown shape type %s"
+                                                shape
+                                        )
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    Enabled =
-                                        get.Required.Field
-                                            "enabled"
-                                            Decode.bool
-                                    Shape = get.Optional.Raw shapeDecoder
-                                }
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        Enabled =
+                                            get.Required.Field
+                                                "enabled"
+                                                Decode.bool
+                                        Shape = get.Optional.Raw shapeDecoder
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        let expected =
-                            Ok
-                                {
-                                    Enabled = true
-                                    Shape = None
-                                }
+                            let expected =
+                                Ok
+                                    {
+                                        Enabled = true
+                                        Shape = None
+                                    }
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "get.Optional.Raw returns an Error if a decoder fail"
-                    <| fun _ ->
-                        let json =
-                            """{
+                    test (
+                        "get.Optional.Raw returns an Error if a decoder fail",
+                        fun _ ->
+                            let json =
+                                """{
     "enabled": true,
 	"shape": "invalid_shape"
 }"""
 
-                        let shapeDecoder =
-                            Decode.field "shape" Decode.string
-                            |> Decode.andThen (
-                                function
-                                | "circle" -> Shape.DecoderCircle
-                                | "rectangle" -> Shape.DecoderRectangle
-                                | shape ->
-                                    Decode.fail (
-                                        sprintf "Unknown shape type %s" shape
-                                    )
-                            )
+                            let shapeDecoder =
+                                Decode.field "shape" Decode.string
+                                |> Decode.andThen (
+                                    function
+                                    | "circle" -> Shape.DecoderCircle
+                                    | "rectangle" -> Shape.DecoderRectangle
+                                    | shape ->
+                                        Decode.fail (
+                                            sprintf
+                                                "Unknown shape type %s"
+                                                shape
+                                        )
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    Enabled =
-                                        get.Required.Field
-                                            "enabled"
-                                            Decode.bool
-                                    Shape = get.Optional.Raw shapeDecoder
-                                }
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        Enabled =
+                                            get.Required.Field
+                                                "enabled"
+                                                Decode.bool
+                                        Shape = get.Optional.Raw shapeDecoder
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        let expected =
-                            Error
-                                "Error at: `$`\nThe following `failure` occurred with the decoder: Unknown shape type invalid_shape"
+                            let expected =
+                                Error
+                                    "Error at: `$`\nThe following `failure` occurred with the decoder: Unknown shape type invalid_shape"
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "get.Optional.Raw returns an Error if the type is invalid"
-                    <| fun _ ->
-                        let json =
-                            """{
+                    test (
+                        "get.Optional.Raw returns an Error if the type is invalid",
+                        fun _ ->
+                            let json =
+                                """{
     "enabled": true,
 	"shape": "circle",
     "radius": "maxime"
 }"""
 
-                        let shapeDecoder =
-                            Decode.field "shape" Decode.string
-                            |> Decode.andThen (
-                                function
-                                | "circle" -> Shape.DecoderCircle
-                                | "rectangle" -> Shape.DecoderRectangle
-                                | shape ->
-                                    Decode.fail (
-                                        sprintf "Unknown shape type %s" shape
-                                    )
-                            )
+                            let shapeDecoder =
+                                Decode.field "shape" Decode.string
+                                |> Decode.andThen (
+                                    function
+                                    | "circle" -> Shape.DecoderCircle
+                                    | "rectangle" -> Shape.DecoderRectangle
+                                    | shape ->
+                                        Decode.fail (
+                                            sprintf
+                                                "Unknown shape type %s"
+                                                shape
+                                        )
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    Enabled =
-                                        get.Required.Field
-                                            "enabled"
-                                            Decode.bool
-                                    Shape = get.Optional.Raw shapeDecoder
-                                }
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        Enabled =
+                                            get.Required.Field
+                                                "enabled"
+                                                Decode.bool
+                                        Shape = get.Optional.Raw shapeDecoder
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        let expected =
-                            Error
-                                "Error at: `$.radius`\nExpecting an int but instead got: \"maxime\""
+                            let expected =
+                                Error
+                                    "Error at: `$.radius`\nExpecting an int but instead got: \"maxime\""
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase
-                        "get.Optional.Raw returns None if a decoder fails with null"
-                    <| fun _ ->
-                        let json =
-                            """{
+                    test (
+                        "get.Optional.Raw returns None if a decoder fails with null",
+                        fun _ ->
+                            let json =
+                                """{
     "enabled": true,
 	"shape": null
 }"""
 
-                        let shapeDecoder =
-                            Decode.field "shape" Decode.string
-                            |> Decode.andThen (
-                                function
-                                | "circle" -> Shape.DecoderCircle
-                                | "rectangle" -> Shape.DecoderRectangle
-                                | shape ->
-                                    Decode.fail (
-                                        sprintf "Unknown shape type %s" shape
-                                    )
-                            )
+                            let shapeDecoder =
+                                Decode.field "shape" Decode.string
+                                |> Decode.andThen (
+                                    function
+                                    | "circle" -> Shape.DecoderCircle
+                                    | "rectangle" -> Shape.DecoderRectangle
+                                    | shape ->
+                                        Decode.fail (
+                                            sprintf
+                                                "Unknown shape type %s"
+                                                shape
+                                        )
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    Enabled =
-                                        get.Required.Field
-                                            "enabled"
-                                            Decode.bool
-                                    Shape = get.Optional.Raw shapeDecoder
-                                }
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        Enabled =
+                                            get.Required.Field
+                                                "enabled"
+                                                Decode.bool
+                                        Shape = get.Optional.Raw shapeDecoder
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        let expected =
-                            Ok
-                                {
-                                    Enabled = true
-                                    Shape = None
-                                }
+                            let expected =
+                                Ok
+                                    {
+                                        Enabled = true
+                                        Shape = None
+                                    }
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "Object builders returns all the Errors"
-                    <| fun _ ->
-                        let json =
-                            """{ "age": 25, "fieldC": "not_a_number", "fieldD": { "sub_field": "not_a_boolean" } }"""
+                    test (
+                        "Object builders returns all the Errors",
+                        fun _ ->
+                            let json =
+                                """{ "age": 25, "fieldC": "not_a_number", "fieldD": { "sub_field": "not_a_boolean" } }"""
 
-                        let expected =
-                            Error(
-                                """
+                            let expected =
+                                Error(
+                                    """
 The following errors were found:
 
 Error at: `$`
@@ -4464,45 +4996,49 @@ Expecting an int but instead got: "not_a_number"
 Error at: `$.fieldD.sub_field`
 Expecting a boolean but instead got: "not_a_boolean"
                         """
-                                    .Trim()
-                            )
+                                        .Trim()
+                                )
 
-                        let decoder =
-                            Decode.object (fun get ->
-                                {
-                                    FieldA =
-                                        get.Required.Field
-                                            "missing_field_1"
-                                            Decode.string
-                                    FieldB =
-                                        get.Required.At
-                                            [
-                                                "missing_field_2"
-                                                "sub_field"
-                                            ]
-                                            Decode.string
-                                    FieldC =
-                                        get.Optional.Field "fieldC" Decode.int
-                                        |> Option.defaultValue -1
-                                    FieldD =
-                                        get.Optional.At
-                                            [
-                                                "fieldD"
-                                                "sub_field"
-                                            ]
-                                            Decode.bool
-                                        |> Option.defaultValue false
-                                }
-                            )
+                            let decoder =
+                                Decode.object (fun get ->
+                                    {
+                                        FieldA =
+                                            get.Required.Field
+                                                "missing_field_1"
+                                                Decode.string
+                                        FieldB =
+                                            get.Required.At
+                                                [
+                                                    "missing_field_2"
+                                                    "sub_field"
+                                                ]
+                                                Decode.string
+                                        FieldC =
+                                            get.Optional.Field
+                                                "fieldC"
+                                                Decode.int
+                                            |> Option.defaultValue -1
+                                        FieldD =
+                                            get.Optional.At
+                                                [
+                                                    "fieldD"
+                                                    "sub_field"
+                                                ]
+                                                Decode.bool
+                                            |> Option.defaultValue false
+                                    }
+                                )
 
-                        let actual = runner.Decode.fromString decoder json
+                            let actual = runner.Decode.fromString decoder json
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
-                    testCase "Test"
-                    <| fun _ ->
-                        let json =
-                            """
+                    test (
+                        "Test",
+                        fun _ ->
+                            let json =
+                                """
                     {
                         "person": {
                             "name": "maxime"
@@ -4511,53 +5047,63 @@ Expecting a boolean but instead got: "not_a_boolean"
                     }
                     """
 
-                        let personDecoder: Decoder<Person> =
-                            Decode.object (fun get ->
-                                {
-                                    Name =
-                                        get.Required.Field "name" Decode.string
-                                }
-                            )
+                            let personDecoder: Decoder<Person> =
+                                Decode.object (fun get ->
+                                    {
+                                        Name =
+                                            get.Required.Field
+                                                "name"
+                                                Decode.string
+                                    }
+                                )
 
-                        let postDecoder: Decoder<Post> =
-                            Decode.object (fun get ->
-                                let title =
-                                    get.Required.Field "title" Decode.string
-
-                                // Accessing the value and doing something with it
-                                // To reproduce bug reported in:
-                                // https://github.com/thoth-org/Thoth.Json.Net/issues/53
-                                title |> Seq.head |> printfn "Title: %A"
-
-                                {
-                                    Title = title
-                                }
-                            )
-
-                        let dataDecoder =
-                            Decode.object (fun get ->
-                                {
-                                    Person =
+                            let postDecoder: Decoder<Post> =
+                                Decode.object (fun get ->
+                                    let title =
                                         get.Required.Field
-                                            "person"
-                                            personDecoder
-                                    Post =
-                                        get.Optional.Field "post" postDecoder
-                                }
-                            )
+                                            "title"
+                                            Decode.string
 
-                        let actual = runner.Decode.fromString dataDecoder json
+                                    // Accessing the value and doing something with it
+                                    // To reproduce bug reported in:
+                                    // https://github.com/thoth-org/Thoth.Json.Net/issues/53
+                                    title |> Seq.head |> printfn "Title: %A"
 
-                        let expected =
-                            Ok
-                                {
-                                    Person =
-                                        {
-                                            Name = "maxime"
-                                        }
-                                    Post = None
-                                }
+                                    {
+                                        Title = title
+                                    }
+                                )
 
-                        equal expected actual
+                            let dataDecoder =
+                                Decode.object (fun get ->
+                                    {
+                                        Person =
+                                            get.Required.Field
+                                                "person"
+                                                personDecoder
+                                        Post =
+                                            get.Optional.Field
+                                                "post"
+                                                postDecoder
+                                    }
+                                )
+
+                            let actual =
+                                runner.Decode.fromString dataDecoder json
+
+                            let expected =
+                                Ok
+                                    {
+                                        Person =
+                                            {
+                                                Name = "maxime"
+                                            }
+                                        Post = None
+                                    }
+
+                            equal expected actual
+                    )
                 ]
+            )
         ]
+    )

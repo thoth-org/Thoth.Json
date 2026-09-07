@@ -4,7 +4,7 @@ open Thoth.Json.Tests.Testing
 open System
 open Thoth.Json.Tests.Types
 open Thoth.Json.Core
-open Fable.Pyxpecto
+open type Scriptorium.Quill.Test
 
 type RecordWithPrivateConstructor =
     private
@@ -19,775 +19,922 @@ type UnionWithPrivateConstructor =
     | Baz
 
 let tests (runner: TestRunner<_, _>) =
-    testList
-        "Thoth.Json.Encode"
+    testList (
+        "Thoth.Json.Encode",
         [
 
-            testList
-                "Basic"
+            testList (
+                "Basic",
                 [
 
-                    testCase "a string works"
-                    <| fun _ ->
-                        let expected = "\"maxime\""
+                    test (
+                        "a string works",
+                        fun _ ->
+                            let expected = "\"maxime\""
 
-                        let actual =
-                            Encode.string "maxime" |> runner.Encode.toString 0
+                            let actual =
+                                Encode.string "maxime"
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "a string with new line works"
-                    <| fun _ ->
-                        let expected = "\"a\\nb\""
+                    test (
+                        "a string with new line works",
+                        fun _ ->
+                            let expected = "\"a\\nb\""
 
-                        let actual =
-                            Encode.string "a\nb" |> runner.Encode.toString 4
+                            let actual =
+                                Encode.string "a\nb" |> runner.Encode.toString 4
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "a string with new line character works"
-                    <| fun _ ->
-                        let expected = "\"a\\\\nb\""
+                    test (
+                        "a string with new line character works",
+                        fun _ ->
+                            let expected = "\"a\\\\nb\""
 
-                        let actual =
-                            Encode.string "a\\nb" |> runner.Encode.toString 4
+                            let actual =
+                                Encode.string "a\\nb"
+                                |> runner.Encode.toString 4
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "a string with tab works"
-                    <| fun _ ->
-                        let expected = "\"a\\tb\""
+                    test (
+                        "a string with tab works",
+                        fun _ ->
+                            let expected = "\"a\\tb\""
 
-                        let actual =
-                            Encode.string "a\tb" |> runner.Encode.toString 4
+                            let actual =
+                                Encode.string "a\tb" |> runner.Encode.toString 4
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "a string with tab character works"
-                    <| fun _ ->
-                        let expected = "\"a\\\\tb\""
+                    test (
+                        "a string with tab character works",
+                        fun _ ->
+                            let expected = "\"a\\\\tb\""
 
-                        let actual =
-                            Encode.string "a\\tb" |> runner.Encode.toString 4
+                            let actual =
+                                Encode.string "a\\tb"
+                                |> runner.Encode.toString 4
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase
-                        "a string with non ascii characters works returns the characters as is"
-                    <| fun _ ->
-                        let expected = "\"Timo Mühlhaus\""
+                    test (
+                        "a string with non ascii characters works returns the characters as is",
+                        fun _ ->
+                            let expected = "\"Timo Mühlhaus\""
 
-                        let actual =
-                            Encode.string "Timo Mühlhaus"
-                            |> runner.Encode.toString 0
+                            let actual =
+                                Encode.string "Timo Mühlhaus"
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "a char works"
-                    <| fun _ ->
-                        let expected = "\"a\""
-                        let actual = Encode.char 'a' |> runner.Encode.toString 0
+                    test (
+                        "a char works",
+                        fun _ ->
+                            let expected = "\"a\""
 
-                        equal actual expected
+                            let actual =
+                                Encode.char 'a' |> runner.Encode.toString 0
 
-                    testCase "an int works"
-                    <| fun _ ->
-                        let expected = "1"
-                        let actual = Encode.int 1 |> runner.Encode.toString 0
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "negative int keeps the sign"
-                    <| fun _ ->
-                        let expected = "-1"
-                        let actual = Encode.int -1 |> runner.Encode.toString 0
-                        equal actual expected
+                    test (
+                        "an int works",
+                        fun _ ->
+                            let expected = "1"
 
-                    testCase "a float works"
-                    <| fun _ ->
-                        let expected = "1.2"
+                            let actual =
+                                Encode.int 1 |> runner.Encode.toString 0
 
-                        let actual =
-                            Encode.float 1.2 |> runner.Encode.toString 0
+                            equal actual expected
+                    )
 
-                        equal actual expected
+                    test (
+                        "negative int keeps the sign",
+                        fun _ ->
+                            let expected = "-1"
 
-                    testCase "an array works"
-                    <| fun _ ->
-                        let expected = """["maxime",2]"""
+                            let actual =
+                                Encode.int -1 |> runner.Encode.toString 0
 
-                        let actual =
-                            Encode.array
-                                [|
-                                    Encode.string "maxime"
-                                    Encode.int 2
-                                |]
-                            |> runner.Encode.toString 0
+                            equal actual expected
+                    )
 
-                        equal actual expected
+                    test (
+                        "a float works",
+                        fun _ ->
+                            let expected = "1.2"
 
-                    testCase "a list works"
-                    <| fun _ ->
-                        let expected = """["maxime",2]"""
+                            let actual =
+                                Encode.float 1.2 |> runner.Encode.toString 0
 
-                        let actual =
-                            Encode.list
-                                [
-                                    Encode.string "maxime"
-                                    Encode.int 2
-                                ]
-                            |> runner.Encode.toString 0
+                            equal actual expected
+                    )
 
-                        equal actual expected
+                    test (
+                        "an array works",
+                        fun _ ->
+                            let expected = """["maxime",2]"""
 
-                    testCase "a seq works"
-                    <| fun _ ->
-                        let expected = """["maxime",2]"""
+                            let actual =
+                                Encode.array
+                                    [|
+                                        Encode.string "maxime"
+                                        Encode.int 2
+                                    |]
+                                |> runner.Encode.toString 0
 
-                        let actual =
-                            Encode.seq
-                                [
-                                    Encode.string "maxime"
-                                    Encode.int 2
-                                ]
-                            |> runner.Encode.toString 0
+                            equal actual expected
+                    )
 
-                        equal actual expected
+                    test (
+                        "a list works",
+                        fun _ ->
+                            let expected = """["maxime",2]"""
 
-                    testCase "a resizeArray works"
-                    <| fun _ ->
-                        let expected = """["maxime",2]"""
-
-                        let actual =
-                            Encode.resizeArray (
-                                ResizeArray
+                            let actual =
+                                Encode.list
                                     [
                                         Encode.string "maxime"
                                         Encode.int 2
                                     ]
-                            )
-                            |> runner.Encode.toString 0
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "mapList encodes a typed list using an encoder"
-                    <| fun _ ->
-                        let expected = """[1,2,3]"""
+                    test (
+                        "a seq works",
+                        fun _ ->
+                            let expected = """["maxime",2]"""
 
-                        let actual =
-                            Encode.mapList
-                                Encode.int
-                                [
-                                    1
-                                    2
-                                    3
-                                ]
-                            |> runner.Encode.toString 0
+                            let actual =
+                                Encode.seq
+                                    [
+                                        Encode.string "maxime"
+                                        Encode.int 2
+                                    ]
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "mapArray encodes a typed array using an encoder"
-                    <| fun _ ->
-                        let expected = """[1,2,3]"""
+                    test (
+                        "a resizeArray works",
+                        fun _ ->
+                            let expected = """["maxime",2]"""
 
-                        let actual =
-                            Encode.mapArray
-                                Encode.int
-                                [|
-                                    1
-                                    2
-                                    3
-                                |]
-                            |> runner.Encode.toString 0
+                            let actual =
+                                Encode.resizeArray (
+                                    ResizeArray
+                                        [
+                                            Encode.string "maxime"
+                                            Encode.int 2
+                                        ]
+                                )
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "mapSeq encodes a typed seq using an encoder"
-                    <| fun _ ->
-                        let expected = """[1,2,3]"""
+                    test (
+                        "mapList encodes a typed list using an encoder",
+                        fun _ ->
+                            let expected = """[1,2,3]"""
 
-                        let actual =
-                            Encode.mapSeq
-                                Encode.int
-                                (Seq.ofList
+                            let actual =
+                                Encode.mapList
+                                    Encode.int
                                     [
                                         1
                                         2
                                         3
-                                    ])
-                            |> runner.Encode.toString 0
+                                    ]
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase
-                        "mapResizeArray encodes a typed ResizeArray using an encoder"
-                    <| fun _ ->
-                        let expected = """[1,2,3]"""
+                    test (
+                        "mapArray encodes a typed array using an encoder",
+                        fun _ ->
+                            let expected = """[1,2,3]"""
 
-                        let actual =
-                            Encode.mapResizeArray
-                                Encode.int
-                                (ResizeArray
-                                    [
+                            let actual =
+                                Encode.mapArray
+                                    Encode.int
+                                    [|
                                         1
                                         2
                                         3
-                                    ])
-                            |> runner.Encode.toString 0
+                                    |]
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "a bool works"
-                    <| fun _ ->
-                        let expected = "false"
+                    test (
+                        "mapSeq encodes a typed seq using an encoder",
+                        fun _ ->
+                            let expected = """[1,2,3]"""
 
-                        let actual =
-                            Encode.bool false |> runner.Encode.toString 0
+                            let actual =
+                                Encode.mapSeq
+                                    Encode.int
+                                    (Seq.ofList
+                                        [
+                                            1
+                                            2
+                                            3
+                                        ])
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "a null works"
-                    <| fun _ ->
-                        let expected = "null"
-                        let actual = Encode.nil |> runner.Encode.toString 0
-                        equal actual expected
+                    test (
+                        "mapResizeArray encodes a typed ResizeArray using an encoder",
+                        fun _ ->
+                            let expected = """[1,2,3]"""
 
-                    testCase "unit works"
-                    <| fun _ ->
-                        let expected = "null"
-                        let actual = Encode.unit () |> runner.Encode.toString 0
-                        equal actual expected
+                            let actual =
+                                Encode.mapResizeArray
+                                    Encode.int
+                                    (ResizeArray
+                                        [
+                                            1
+                                            2
+                                            3
+                                        ])
+                                |> runner.Encode.toString 0
 
-                    testCase "an object works"
-                    <| fun _ ->
-                        let expected = """{"firstname":"maxime","age":25}"""
+                            equal actual expected
+                    )
 
-                        let actual =
-                            Encode.object
-                                [
-                                    ("firstname", Encode.string "maxime")
-                                    ("age", Encode.int 25)
-                                ]
-                            |> runner.Encode.toString 0
+                    test (
+                        "a bool works",
+                        fun _ ->
+                            let expected = "false"
 
-                        equal actual expected
+                            let actual =
+                                Encode.bool false |> runner.Encode.toString 0
 
-                    testCase "a dict works"
-                    <| fun _ ->
-                        let expected = """{"a":1,"b":2,"c":3}"""
+                            equal actual expected
+                    )
 
-                        let actual =
-                            Map.ofList
-                                [
-                                    ("a", Encode.int 1)
-                                    ("b", Encode.int 2)
-                                    ("c", Encode.int 3)
-                                ]
-                            |> Encode.dict
-                            |> runner.Encode.toString 0
+                    test (
+                        "a null works",
+                        fun _ ->
+                            let expected = "null"
+                            let actual = Encode.nil |> runner.Encode.toString 0
+                            equal actual expected
+                    )
 
-                        equal actual expected
+                    test (
+                        "unit works",
+                        fun _ ->
+                            let expected = "null"
 
-                    testCase "a map works"
-                    <| fun _ ->
-                        let expected = """[["a",1],["b",2],["c",3]]"""
+                            let actual =
+                                Encode.unit () |> runner.Encode.toString 0
 
-                        let actual =
-                            Map.ofList
-                                [
-                                    ("a", 1)
-                                    ("b", 2)
-                                    ("c", 3)
-                                ]
-                            |> Encode.map Encode.string Encode.int
-                            |> runner.Encode.toString 0
+                            equal actual expected
+                    )
 
-                        equal actual expected
+                    test (
+                        "an object works",
+                        fun _ ->
+                            let expected = """{"firstname":"maxime","age":25}"""
 
-                    testCase "a bigint works"
-                    <| fun _ ->
-                        let expected = "\"12\""
+                            let actual =
+                                Encode.object
+                                    [
+                                        ("firstname", Encode.string "maxime")
+                                        ("age", Encode.int 25)
+                                    ]
+                                |> runner.Encode.toString 0
 
-                        let actual =
-                            Encode.bigint 12I |> runner.Encode.toString 0
+                            equal actual expected
+                    )
 
-                        equal actual expected
+                    test (
+                        "a dict works",
+                        fun _ ->
+                            let expected = """{"a":1,"b":2,"c":3}"""
 
-                    testCase "a datetime works"
-                    <| fun _ ->
+                            let actual =
+                                Map.ofList
+                                    [
+                                        ("a", Encode.int 1)
+                                        ("b", Encode.int 2)
+                                        ("c", Encode.int 3)
+                                    ]
+                                |> Encode.dict
+                                |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "a map works",
+                        fun _ ->
+                            let expected = """[["a",1],["b",2],["c",3]]"""
+
+                            let actual =
+                                Map.ofList
+                                    [
+                                        ("a", 1)
+                                        ("b", 2)
+                                        ("c", 3)
+                                    ]
+                                |> Encode.map Encode.string Encode.int
+                                |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "a bigint works",
+                        fun _ ->
+                            let expected = "\"12\""
+
+                            let actual =
+                                Encode.bigint 12I |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "a datetime works",
+                        fun _ ->
 #if FABLE_COMPILER_JAVASCRIPT
-                        let expected = "\"2018-10-01T11:12:55.000Z\""
+                            let expected = "\"2018-10-01T11:12:55.000Z\""
 #endif
 
 #if FABLE_COMPILER_PYTHON
-                        let expected = "\"2018-10-01T11:12:55.0000000Z\""
+                            let expected = "\"2018-10-01T11:12:55.0000000Z\""
 #endif
 
 #if !FABLE_COMPILER
-                        let expected = "\"2018-10-01T11:12:55.0000000Z\""
+                            let expected = "\"2018-10-01T11:12:55.0000000Z\""
 #endif
-                        let actual =
-                            DateTime(2018, 10, 1, 11, 12, 55, DateTimeKind.Utc)
-                            |> Encode.datetime
-                            |> runner.Encode.toString 0
+                            let actual =
+                                DateTime(
+                                    2018,
+                                    10,
+                                    1,
+                                    11,
+                                    12,
+                                    55,
+                                    DateTimeKind.Utc
+                                )
+                                |> Encode.datetime
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
 #if !FABLE_COMPILER_PYTHON
-                    testCase "a datetimeOffset works"
-                    <| fun _ ->
+                    test (
+                        "a datetimeOffset works",
+                        fun _ ->
 #if FABLE_COMPILER
-                        let expected = "\"2018-07-02T12:23:45.000+02:00\""
+                            let expected = "\"2018-07-02T12:23:45.000+02:00\""
 #else
-                        let expected = "\"2018-07-02T12:23:45.0000000+02:00\""
+                            let expected =
+                                "\"2018-07-02T12:23:45.0000000+02:00\""
 #endif
-                        let actual =
-                            DateTimeOffset(
-                                2018,
-                                7,
-                                2,
-                                12,
-                                23,
-                                45,
-                                0,
-                                TimeSpan.FromHours(2.)
-                            )
-                            |> Encode.datetimeOffset
-                            |> runner.Encode.toString 0
+                            let actual =
+                                DateTimeOffset(
+                                    2018,
+                                    7,
+                                    2,
+                                    12,
+                                    23,
+                                    45,
+                                    0,
+                                    TimeSpan.FromHours(2.)
+                                )
+                                |> Encode.datetimeOffset
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 #endif
 
-                    testCase "a timeSpan works"
-                    <| fun _ ->
-                        let expected = "\"1.02:03:04.0050000\""
-
-                        let actual =
-                            TimeSpan(1, 2, 3, 4, 5)
-                            |> Encode.timespan
-                            |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "a decimal works"
-                    <| fun _ ->
-                        let expected = "\"0.7833\""
-
-                        let actual =
-                            0.7833M
-                            |> Encode.decimal
-                            |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "a guid works"
-                    <| fun _ ->
-                        let expected =
-                            "\"1e5dee25-8558-4392-a9fb-aae03f81068f\""
-
-                        let actual =
-                            Guid.Parse("1e5dee25-8558-4392-a9fb-aae03f81068f")
-                            |> Encode.guid
-                            |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "an absolute uri works"
-                    <| fun _ ->
-                        let expected = "\"http://example.com/path?q=1\""
-
-                        let actual =
-                            Uri("http://example.com/path?q=1")
-                            |> Encode.uri
-                            |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "a relative uri works"
-                    <| fun _ ->
-                        let expected = "\"/path?q=1\""
-
-                        let actual =
-                            Uri("/path?q=1", UriKind.Relative)
-                            |> Encode.uri
-                            |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "an byte works"
-                    <| fun _ ->
-                        let expected = "99"
-
-                        let actual =
-                            99uy |> Encode.byte |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "an sbyte works"
-                    <| fun _ ->
-                        let expected = "99"
-
-                        let actual =
-                            99y |> Encode.sbyte |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "negative sbyte keeps the sign"
-                    <| fun _ ->
-                        let expected = "-99"
-
-                        let actual =
-                            -99y |> Encode.sbyte |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "an int16 works"
-                    <| fun _ ->
-                        let expected = "99"
-
-                        let actual =
-                            99s |> Encode.int16 |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "negative int16 keeps the sign"
-                    <| fun _ ->
-                        let expected = "-99"
-
-                        let actual =
-                            -99s |> Encode.int16 |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "an uint16 works"
-                    <| fun _ ->
-                        let expected = "99"
-
-                        let actual =
-                            99us |> Encode.uint16 |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "an int64 works"
-                    <| fun _ ->
-                        let expected = "\"7923209\""
-
-                        let actual =
-                            7923209L |> Encode.int64 |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "an uint64 works"
-                    <| fun _ ->
-                        let expected = "\"7923209\""
-
-                        let actual =
-                            7923209UL
-                            |> Encode.uint64
-                            |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "an enum<sbyte> works"
-                    <| fun _ ->
-                        let expected = "99"
-
-                        let actual =
-                            runner.Encode.toString
-                                0
-                                (Encode.Enum.sbyte Enum_Int8.NinetyNine)
-
-                        equal actual expected
-
-                    testCase "an enum<byte> works"
-                    <| fun _ ->
-                        let expected = "99"
-
-                        let actual =
-                            runner.Encode.toString
-                                0
-                                (Encode.Enum.byte Enum_UInt8.NinetyNine)
-
-                        equal actual expected
-
-                    testCase "an enum<int> works"
-                    <| fun _ ->
-                        let expected = "1"
-
-                        let actual =
-                            runner.Encode.toString
-                                0
-                                (Encode.Enum.int Enum_Int.One)
-
-                        equal actual expected
-
-                    testCase "an enum<uint32> works"
-                    <| fun _ ->
-                        let expected = "99"
-
-                        let actual =
-                            runner.Encode.toString
-                                0
-                                (Encode.Enum.uint32 Enum_UInt32.NinetyNine)
-
-                        equal actual expected
-
-                    testCase "an enum<int16> works"
-                    <| fun _ ->
-                        let expected = "99"
-
-                        let actual =
-                            runner.Encode.toString
-                                0
-                                (Encode.Enum.int16 Enum_Int16.NinetyNine)
-
-                        equal actual expected
-
-                    testCase "an enum<uint16> works"
-                    <| fun _ ->
-                        let expected = "99"
-
-                        let actual =
-                            runner.Encode.toString
-                                0
-                                (Encode.Enum.uint16 Enum_UInt16.NinetyNine)
-
-                        equal actual expected
-
-                    testCase "a tuple2 works"
-                    <| fun _ ->
-                        let expected = """[1,"maxime"]"""
-
-                        let actual =
-                            Encode.tuple2 Encode.int Encode.string (1, "maxime")
-                            |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "a tuple3 works"
-                    <| fun _ ->
-                        let expected = """[1,"maxime",2.5]"""
-
-                        let actual =
-                            Encode.tuple3
-                                Encode.int
-                                Encode.string
-                                Encode.float
-                                (1, "maxime", 2.5)
-                            |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "a tuple4 works"
-                    <| fun _ ->
-                        let expected = """[1,"maxime",2.5,{"fieldA":"test"}]"""
-
-                        let actual =
-                            Encode.tuple4
-                                Encode.int
-                                Encode.string
-                                Encode.float
-                                SmallRecord.Encoder
-                                (1,
-                                 "maxime",
-                                 2.5,
-                                 {
-                                     fieldA = "test"
-                                 })
-                            |> runner.Encode.toString 0
-
-                        equal actual expected
-
-                    testCase "a tuple5 works"
-                    <| fun _ ->
+                    test (
+                        "a timeSpan works",
+                        fun _ ->
+                            let expected = "\"1.02:03:04.0050000\""
+
+                            let actual =
+                                TimeSpan(1, 2, 3, 4, 5)
+                                |> Encode.timespan
+                                |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "a decimal works",
+                        fun _ ->
+                            let expected = "\"0.7833\""
+
+                            let actual =
+                                0.7833M
+                                |> Encode.decimal
+                                |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "a guid works",
+                        fun _ ->
+                            let expected =
+                                "\"1e5dee25-8558-4392-a9fb-aae03f81068f\""
+
+                            let actual =
+                                Guid.Parse(
+                                    "1e5dee25-8558-4392-a9fb-aae03f81068f"
+                                )
+                                |> Encode.guid
+                                |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "an absolute uri works",
+                        fun _ ->
+                            let expected = "\"http://example.com/path?q=1\""
+
+                            let actual =
+                                Uri("http://example.com/path?q=1")
+                                |> Encode.uri
+                                |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "a relative uri works",
+                        fun _ ->
+                            let expected = "\"/path?q=1\""
+
+                            let actual =
+                                Uri("/path?q=1", UriKind.Relative)
+                                |> Encode.uri
+                                |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "an byte works",
+                        fun _ ->
+                            let expected = "99"
+
+                            let actual =
+                                99uy |> Encode.byte |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "an sbyte works",
+                        fun _ ->
+                            let expected = "99"
+
+                            let actual =
+                                99y |> Encode.sbyte |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "negative sbyte keeps the sign",
+                        fun _ ->
+                            let expected = "-99"
+
+                            let actual =
+                                -99y |> Encode.sbyte |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "an int16 works",
+                        fun _ ->
+                            let expected = "99"
+
+                            let actual =
+                                99s |> Encode.int16 |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "negative int16 keeps the sign",
+                        fun _ ->
+                            let expected = "-99"
+
+                            let actual =
+                                -99s |> Encode.int16 |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "an uint16 works",
+                        fun _ ->
+                            let expected = "99"
+
+                            let actual =
+                                99us
+                                |> Encode.uint16
+                                |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "an int64 works",
+                        fun _ ->
+                            let expected = "\"7923209\""
+
+                            let actual =
+                                7923209L
+                                |> Encode.int64
+                                |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "an uint64 works",
+                        fun _ ->
+                            let expected = "\"7923209\""
+
+                            let actual =
+                                7923209UL
+                                |> Encode.uint64
+                                |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "an enum<sbyte> works",
+                        fun _ ->
+                            let expected = "99"
+
+                            let actual =
+                                runner.Encode.toString
+                                    0
+                                    (Encode.Enum.sbyte Enum_Int8.NinetyNine)
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "an enum<byte> works",
+                        fun _ ->
+                            let expected = "99"
+
+                            let actual =
+                                runner.Encode.toString
+                                    0
+                                    (Encode.Enum.byte Enum_UInt8.NinetyNine)
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "an enum<int> works",
+                        fun _ ->
+                            let expected = "1"
+
+                            let actual =
+                                runner.Encode.toString
+                                    0
+                                    (Encode.Enum.int Enum_Int.One)
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "an enum<uint32> works",
+                        fun _ ->
+                            let expected = "99"
+
+                            let actual =
+                                runner.Encode.toString
+                                    0
+                                    (Encode.Enum.uint32 Enum_UInt32.NinetyNine)
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "an enum<int16> works",
+                        fun _ ->
+                            let expected = "99"
+
+                            let actual =
+                                runner.Encode.toString
+                                    0
+                                    (Encode.Enum.int16 Enum_Int16.NinetyNine)
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "an enum<uint16> works",
+                        fun _ ->
+                            let expected = "99"
+
+                            let actual =
+                                runner.Encode.toString
+                                    0
+                                    (Encode.Enum.uint16 Enum_UInt16.NinetyNine)
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "a tuple2 works",
+                        fun _ ->
+                            let expected = """[1,"maxime"]"""
+
+                            let actual =
+                                Encode.tuple2
+                                    Encode.int
+                                    Encode.string
+                                    (1, "maxime")
+                                |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "a tuple3 works",
+                        fun _ ->
+                            let expected = """[1,"maxime",2.5]"""
+
+                            let actual =
+                                Encode.tuple3
+                                    Encode.int
+                                    Encode.string
+                                    Encode.float
+                                    (1, "maxime", 2.5)
+                                |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "a tuple4 works",
+                        fun _ ->
+                            let expected =
+                                """[1,"maxime",2.5,{"fieldA":"test"}]"""
+
+                            let actual =
+                                Encode.tuple4
+                                    Encode.int
+                                    Encode.string
+                                    Encode.float
+                                    SmallRecord.Encoder
+                                    (1,
+                                     "maxime",
+                                     2.5,
+                                     {
+                                         fieldA = "test"
+                                     })
+                                |> runner.Encode.toString 0
+
+                            equal actual expected
+                    )
+
+                    test (
+                        "a tuple5 works",
+                        fun _ ->
 #if FABLE_COMPILER_JAVASCRIPT
-                        let expected =
-                            """[1,"maxime",2.5,{"fieldA":"test"},"2018-10-01T11:12:55.000Z"]"""
+                            let expected =
+                                """[1,"maxime",2.5,{"fieldA":"test"},"2018-10-01T11:12:55.000Z"]"""
 #endif
 
 #if FABLE_COMPILER_PYTHON
-                        let expected =
-                            """[1,"maxime",2.5,{"fieldA":"test"},"2018-10-01T11:12:55.0000000Z"]"""
+                            let expected =
+                                """[1,"maxime",2.5,{"fieldA":"test"},"2018-10-01T11:12:55.0000000Z"]"""
 #endif
 
 #if !FABLE_COMPILER
-                        let expected =
-                            """[1,"maxime",2.5,{"fieldA":"test"},"2018-10-01T11:12:55.0000000Z"]"""
+                            let expected =
+                                """[1,"maxime",2.5,{"fieldA":"test"},"2018-10-01T11:12:55.0000000Z"]"""
 #endif
 
-                        let actual =
-                            Encode.tuple5
-                                Encode.int
-                                Encode.string
-                                Encode.float
-                                SmallRecord.Encoder
-                                Encode.datetime
-                                (1,
-                                 "maxime",
-                                 2.5,
-                                 {
-                                     fieldA = "test"
-                                 },
-                                 DateTime(
-                                     2018,
-                                     10,
-                                     1,
-                                     11,
-                                     12,
-                                     55,
-                                     DateTimeKind.Utc
-                                 ))
-                            |> runner.Encode.toString 0
+                            let actual =
+                                Encode.tuple5
+                                    Encode.int
+                                    Encode.string
+                                    Encode.float
+                                    SmallRecord.Encoder
+                                    Encode.datetime
+                                    (1,
+                                     "maxime",
+                                     2.5,
+                                     {
+                                         fieldA = "test"
+                                     },
+                                     DateTime(
+                                         2018,
+                                         10,
+                                         1,
+                                         11,
+                                         12,
+                                         55,
+                                         DateTimeKind.Utc
+                                     ))
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "a tuple6 works"
-                    <| fun _ ->
-                        let expected =
-                            """[1,"maxime",2.5,{"fieldA":"test"},false,null]"""
+                    test (
+                        "a tuple6 works",
+                        fun _ ->
+                            let expected =
+                                """[1,"maxime",2.5,{"fieldA":"test"},false,null]"""
 
-                        let actual =
-                            Encode.tuple6
-                                Encode.int
-                                Encode.string
-                                Encode.float
-                                SmallRecord.Encoder
-                                Encode.bool
-                                (fun _ -> Encode.nil)
-                                (1,
-                                 "maxime",
-                                 2.5,
-                                 {
-                                     fieldA = "test"
-                                 },
-                                 false,
-                                 null)
-                            |> runner.Encode.toString 0
+                            let actual =
+                                Encode.tuple6
+                                    Encode.int
+                                    Encode.string
+                                    Encode.float
+                                    SmallRecord.Encoder
+                                    Encode.bool
+                                    (fun _ -> Encode.nil)
+                                    (1,
+                                     "maxime",
+                                     2.5,
+                                     {
+                                         fieldA = "test"
+                                     },
+                                     false,
+                                     null)
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "a tuple7 works"
-                    <| fun _ ->
-                        let expected =
-                            """[1,"maxime",2.5,{"fieldA":"test"},false,null,true]"""
+                    test (
+                        "a tuple7 works",
+                        fun _ ->
+                            let expected =
+                                """[1,"maxime",2.5,{"fieldA":"test"},false,null,true]"""
 
-                        let actual =
-                            Encode.tuple7
-                                Encode.int
-                                Encode.string
-                                Encode.float
-                                SmallRecord.Encoder
-                                Encode.bool
-                                (fun _ -> Encode.nil)
-                                Encode.bool
-                                (1,
-                                 "maxime",
-                                 2.5,
-                                 {
-                                     fieldA = "test"
-                                 },
-                                 false,
-                                 null,
-                                 true)
-                            |> runner.Encode.toString 0
+                            let actual =
+                                Encode.tuple7
+                                    Encode.int
+                                    Encode.string
+                                    Encode.float
+                                    SmallRecord.Encoder
+                                    Encode.bool
+                                    (fun _ -> Encode.nil)
+                                    Encode.bool
+                                    (1,
+                                     "maxime",
+                                     2.5,
+                                     {
+                                         fieldA = "test"
+                                     },
+                                     false,
+                                     null,
+                                     true)
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "a tuple8 works"
-                    <| fun _ ->
-                        let expected =
-                            """[1,"maxime",2.5,{"fieldA":"test"},false,null,true,98]"""
+                    test (
+                        "a tuple8 works",
+                        fun _ ->
+                            let expected =
+                                """[1,"maxime",2.5,{"fieldA":"test"},false,null,true,98]"""
 
-                        let actual =
-                            Encode.tuple8
-                                Encode.int
-                                Encode.string
-                                Encode.float
-                                SmallRecord.Encoder
-                                Encode.bool
-                                (fun _ -> Encode.nil)
-                                Encode.bool
-                                Encode.int
-                                (1,
-                                 "maxime",
-                                 2.5,
-                                 {
-                                     fieldA = "test"
-                                 },
-                                 false,
-                                 null,
-                                 true,
-                                 98)
-                            |> runner.Encode.toString 0
+                            let actual =
+                                Encode.tuple8
+                                    Encode.int
+                                    Encode.string
+                                    Encode.float
+                                    SmallRecord.Encoder
+                                    Encode.bool
+                                    (fun _ -> Encode.nil)
+                                    Encode.bool
+                                    Encode.int
+                                    (1,
+                                     "maxime",
+                                     2.5,
+                                     {
+                                         fieldA = "test"
+                                     },
+                                     false,
+                                     null,
+                                     true,
+                                     98)
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "using pretty space works"
-                    <| fun _ ->
-                        let expected =
-                            "{\n    \"firstname\": \"maxime\",\n    \"age\": 25\n}"
+                    test (
+                        "using pretty space works",
+                        fun _ ->
+                            let expected =
+                                "{\n    \"firstname\": \"maxime\",\n    \"age\": 25\n}"
 
-                        let actual =
-                            Encode.object
-                                [
-                                    ("firstname", Encode.string "maxime")
-                                    ("age", Encode.int 25)
-                                ]
-                            |> runner.Encode.toString 4
+                            let actual =
+                                Encode.object
+                                    [
+                                        ("firstname", Encode.string "maxime")
+                                        ("age", Encode.int 25)
+                                    ]
+                                |> runner.Encode.toString 4
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "complex structure works"
-                    <| fun _ ->
-                        let expected =
-                            "{\n    \"firstname\": \"maxime\",\n    \"age\": 25,\n    \"address\": {\n        \"street\": \"main road\",\n        \"city\": \"Bordeaux\"\n    }\n}"
+                    test (
+                        "complex structure works",
+                        fun _ ->
+                            let expected =
+                                "{\n    \"firstname\": \"maxime\",\n    \"age\": 25,\n    \"address\": {\n        \"street\": \"main road\",\n        \"city\": \"Bordeaux\"\n    }\n}"
 
-                        let actual =
-                            Encode.object
-                                [
-                                    ("firstname", Encode.string "maxime")
-                                    ("age", Encode.int 25)
-                                    ("address",
-                                     Encode.object
-                                         [
-                                             "street", Encode.string "main road"
-                                             "city", Encode.string "Bordeaux"
-                                         ])
-                                ]
-                            |> runner.Encode.toString 4
+                            let actual =
+                                Encode.object
+                                    [
+                                        ("firstname", Encode.string "maxime")
+                                        ("age", Encode.int 25)
+                                        ("address",
+                                         Encode.object
+                                             [
+                                                 "street",
+                                                 Encode.string "main road"
+                                                 "city",
+                                                 Encode.string "Bordeaux"
+                                             ])
+                                    ]
+                                |> runner.Encode.toString 4
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "option with a value `Some ...` works"
-                    <| fun _ ->
-                        let expected = """{"id":1,"operator":"maxime"}"""
+                    test (
+                        "option with a value `Some ...` works",
+                        fun _ ->
+                            let expected = """{"id":1,"operator":"maxime"}"""
 
-                        let actual =
-                            Encode.object
-                                [
-                                    ("id", Encode.int 1)
-                                    ("operator",
-                                     Encode.lossyOption
-                                         Encode.string
-                                         (Some "maxime"))
-                                ]
-                            |> runner.Encode.toString 0
+                            let actual =
+                                Encode.object
+                                    [
+                                        ("id", Encode.int 1)
+                                        ("operator",
+                                         Encode.lossyOption
+                                             Encode.string
+                                             (Some "maxime"))
+                                    ]
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "option without a value `None` works"
-                    <| fun _ ->
-                        let expected = """{"id":1,"operator":null}"""
+                    test (
+                        "option without a value `None` works",
+                        fun _ ->
+                            let expected = """{"id":1,"operator":null}"""
 
-                        let actual =
-                            Encode.object
-                                [
-                                    ("id", Encode.int 1)
-                                    ("operator",
-                                     Encode.lossyOption Encode.string None)
-                                ]
-                            |> runner.Encode.toString 0
+                            let actual =
+                                Encode.object
+                                    [
+                                        ("id", Encode.int 1)
+                                        ("operator",
+                                         Encode.lossyOption Encode.string None)
+                                    ]
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
                 //             testCase "by default, we keep the case defined in type" <| fun _ ->
                 //                 let expected =
@@ -1076,104 +1223,114 @@ let tests (runner: TestRunner<_, _>) =
 #endif
     *)
                 ]
+            )
 
 
-            testList
-                "option related encoders"
+            testList (
+                "option related encoders",
                 [
-                    testCase "lossyOption can encode None"
-                    <| fun _ ->
-                        let expected = "null"
+                    test (
+                        "lossyOption can encode None",
+                        fun _ ->
+                            let expected = "null"
 
-                        let actual =
-                            Encode.lossyOption Encode.int None
-                            |> runner.Encode.toString 0
+                            let actual =
+                                Encode.lossyOption Encode.int None
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "lossyOption can encode Some"
-                    <| fun _ ->
-                        let expected = "1"
+                    test (
+                        "lossyOption can encode Some",
+                        fun _ ->
+                            let expected = "1"
 
-                        let actual =
-                            Encode.lossyOption Encode.int (Some 1)
-                            |> runner.Encode.toString 0
+                            let actual =
+                                Encode.lossyOption Encode.int (Some 1)
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase
-                        "lossyOption doesn't make a difference between option and nested option"
-                    <| fun _ ->
-                        let expected = "null"
+                    test (
+                        "lossyOption doesn't make a difference between option and nested option",
+                        fun _ ->
+                            let expected = "null"
 
-                        let actual =
-                            Encode.lossyOption
-                                (Encode.lossyOption Encode.int)
-                                None
-                            |> runner.Encode.toString 0
+                            let actual =
+                                Encode.lossyOption
+                                    (Encode.lossyOption Encode.int)
+                                    None
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
 
-                        let expected = "1"
+                            let expected = "1"
 
-                        let actual =
-                            Encode.lossyOption
-                                (Encode.lossyOption (
-                                    Encode.lossyOption Encode.int
-                                ))
-                                (Some(Some(Some 1)))
-                            |> runner.Encode.toString 0
+                            let actual =
+                                Encode.lossyOption
+                                    (Encode.lossyOption (
+                                        Encode.lossyOption Encode.int
+                                    ))
+                                    (Some(Some(Some 1)))
+                                |> runner.Encode.toString 0
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "losslessOption can encode None"
-                    <| fun _ ->
-                        let expected =
-                            """{
+                    test (
+                        "losslessOption can encode None",
+                        fun _ ->
+                            let expected =
+                                """{
     "$type": "option",
     "$case": "none"
 }"""
 
-                        let actual =
-                            Encode.losslessOption Encode.int None
-                            |> runner.Encode.toString 4
+                            let actual =
+                                Encode.losslessOption Encode.int None
+                                |> runner.Encode.toString 4
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase "losslessOption can encode Some"
-                    <| fun _ ->
-                        let expected =
-                            """{
+                    test (
+                        "losslessOption can encode Some",
+                        fun _ ->
+                            let expected =
+                                """{
     "$type": "option",
     "$case": "some",
     "$value": 1
 }"""
 
-                        let actual =
-                            Encode.losslessOption Encode.int (Some 1)
-                            |> runner.Encode.toString 4
+                            let actual =
+                                Encode.losslessOption Encode.int (Some 1)
+                                |> runner.Encode.toString 4
 
-                        equal actual expected
+                            equal actual expected
+                    )
 
-                    testCase
-                        "losslessOption can distinguish between different nested options"
-                    <| fun _ ->
-                        let expected =
-                            """{
+                    test (
+                        "losslessOption can distinguish between different nested options",
+                        fun _ ->
+                            let expected =
+                                """{
     "$type": "option",
     "$case": "none"
 }"""
 
-                        let actual =
-                            Encode.losslessOption
-                                (Encode.losslessOption Encode.int)
-                                None
-                            |> runner.Encode.toString 4
+                            let actual =
+                                Encode.losslessOption
+                                    (Encode.losslessOption Encode.int)
+                                    None
+                                |> runner.Encode.toString 4
 
-                        equal expected actual
+                            equal expected actual
 
-                        let expected =
-                            """{
+                            let expected =
+                                """{
     "$type": "option",
     "$case": "some",
     "$value": {
@@ -1182,23 +1339,26 @@ let tests (runner: TestRunner<_, _>) =
     }
 }"""
 
-                        let actual =
-                            Encode.losslessOption
-                                (Encode.losslessOption Encode.int)
-                                (Some None)
-                            |> runner.Encode.toString 4
+                            let actual =
+                                Encode.losslessOption
+                                    (Encode.losslessOption Encode.int)
+                                    (Some None)
+                                |> runner.Encode.toString 4
 
-                        equal expected actual
+                            equal expected actual
+                    )
 
                 ]
+            )
 
-            testList
-                "Fancy encoding"
+            testList (
+                "Fancy encoding",
                 [
-                    testCase "value works for the kitchen sink"
-                    <| fun _ ->
-                        let expected =
-                            """{
+                    test (
+                        "value works for the kitchen sink",
+                        fun _ ->
+                            let expected =
+                                """{
     "foo": true,
     "bar": {
         "qux": [
@@ -1209,25 +1369,28 @@ let tests (runner: TestRunner<_, _>) =
     }
 }"""
 
-                        let actual =
-                            Json.Object
-                                [
-                                    "foo", Json.Boolean true
-                                    "bar",
-                                    Json.Object
-                                        [
-                                            "qux",
-                                            Json.Array
-                                                [
-                                                    Json.Number 1.23
-                                                    Json.String "abc"
-                                                ]
-                                            "baz", Json.Null
-                                        ]
-                                ]
-                            |> Encode.value
-                            |> runner.Encode.toString 4
+                            let actual =
+                                Json.Object
+                                    [
+                                        "foo", Json.Boolean true
+                                        "bar",
+                                        Json.Object
+                                            [
+                                                "qux",
+                                                Json.Array
+                                                    [
+                                                        Json.Number 1.23
+                                                        Json.String "abc"
+                                                    ]
+                                                "baz", Json.Null
+                                            ]
+                                    ]
+                                |> Encode.value
+                                |> runner.Encode.toString 4
 
-                        equal expected actual
+                            equal expected actual
+                    )
                 ]
+            )
         ]
+    )

@@ -5,7 +5,9 @@ open Thoth.Json.Core
 open Thoth.Json.Core.Auto
 open Thoth.Json.JavaScript
 open Fable.Core.JsInterop
-open Fable.Pyxpecto
+open Scriptorium.Nib.Assertion
+open type Scriptorium.Quill.Test
+open type Scriptorium.Quill.Runner
 
 type JavaScriptEncode() =
     interface IEncode with
@@ -40,35 +42,39 @@ type JavascriptTestRunner() =
 let main args =
     let runner = JavascriptTestRunner()
 
-    testList
-        "All"
-        [
+    runTests (
+        testList (
+            "All",
+            [
 
-            testCase "circular structure are supported when reporting error"
-            <| fun _ ->
-                let a = createObj []
-                let b = createObj []
-                a?child <- b
-                b?child <- a
+                test (
+                    "circular structure are supported when reporting error",
+                    fun _ ->
+                        let a = createObj []
+                        let b = createObj []
+                        a?child <- b
+                        b?child <- a
 
-                let expected: Result<float, string> =
-                    Error
-                        "Error at: ``\nExpecting a float but decoder failed. Couldn\'t report given value due to circular structure. "
+                        let expected: Result<float, string> =
+                            Error
+                                "Error at: ``\nExpecting a float but decoder failed. Couldn\'t report given value due to circular structure. "
 
-                let actual = Decode.fromValue Decode.float b
+                        let actual = Decode.fromValue Decode.float b
 
-                equal expected actual
+                        equal expected actual
+                )
 
-            Decoders.tests runner
-            Encoders.tests runner
-            BackAndForth.tests runner
-            DecoderCE.tests runner
-            Auto.tests runner
-            Codec.Primitives.tests runner
-            Codec.Combinators.tests runner
-            Codec.ObjectCodec.tests runner
-            Codec.VariantCodec.tests runner
-            Codec.AutoCodec.tests runner
+                Decoders.tests runner
+                Encoders.tests runner
+                BackAndForth.tests runner
+                DecoderCE.tests runner
+                Auto.tests runner
+                Codec.Primitives.tests runner
+                Codec.Combinators.tests runner
+                Codec.ObjectCodec.tests runner
+                Codec.VariantCodec.tests runner
+                Codec.AutoCodec.tests runner
 
-        ]
-    |> Pyxpecto.runTests [||]
+            ]
+        )
+    )
