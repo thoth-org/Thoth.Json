@@ -61,7 +61,7 @@ let main args =
 
                         let actual = Decode.fromValue Decode.float b
 
-                        equal expected actual
+                        equal actual expected
                 )
 
                 Decoders.tests runner

@@ -32,7 +32,7 @@ let tests (runner: TestRunner<_, _>) =
                             })
                             json
 
-                    equal (Ok expected) decoded
+                    equal decoded (Ok expected)
             )
 
             test (
@@ -60,7 +60,7 @@ let tests (runner: TestRunner<_, _>) =
                             })
                             json
 
-                    equal (Ok expected) decoded
+                    equal decoded (Ok expected)
             )
 
             test (
@@ -88,7 +88,7 @@ let tests (runner: TestRunner<_, _>) =
                             })
                             json
 
-                    equal (Ok expected) decoded
+                    equal decoded (Ok expected)
             )
 
         ]

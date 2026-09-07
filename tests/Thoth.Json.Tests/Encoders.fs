@@ -1327,7 +1327,7 @@ let tests (runner: TestRunner<_, _>) =
                                     None
                                 |> runner.Encode.toString 4
 
-                            equal expected actual
+                            equal actual expected
 
                             let expected =
                                 """{
@@ -1345,7 +1345,7 @@ let tests (runner: TestRunner<_, _>) =
                                     (Some None)
                                 |> runner.Encode.toString 4
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                 ]
@@ -1388,7 +1388,7 @@ let tests (runner: TestRunner<_, _>) =
                                 |> Encode.value
                                 |> runner.Encode.toString 4
 
-                            equal expected actual
+                            equal actual expected
                     )
                 ]
             )

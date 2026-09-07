@@ -95,7 +95,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                             let actual =
                                 runner.Decode.fromString Decode.float "maxime"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     // testCase "invalid json #2 - Special case for Thoth.Json.Net" <| fun _ ->
@@ -156,7 +156,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                                     Decode.float
                                     incorrectJson
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -181,7 +181,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                                 with CustomException ->
                                     true
 
-                            equal expected actual
+                            equal actual expected
                     )
                 ]
             )
@@ -209,7 +209,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                                     (Decode.field "value" Decode.int)
                                     value
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -229,7 +229,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                                     (Decode.field "value" Decode.int)
                                     value
 
-                            equal expected actual
+                            equal actual expected
                     )
                 ]
             )
@@ -248,7 +248,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                                     Decode.string
                                     "\"maxime\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -285,7 +285,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                                 |> ignore // Ignore the result as we only want to trigger the decoder and capture the exception
 
                             with ex ->
-                                equal expected ex.Message
+                                equal ex.Message expected
                     )
                 ]
             )
@@ -302,7 +302,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                             let actual =
                                 runner.Decode.fromString Decode.unit "null"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -315,7 +315,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                                     Decode.string
                                     "\"maxime\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -328,7 +328,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                                     Decode.string
                                     "\"a\\nb\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -341,7 +341,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                                     Decode.string
                                     "\"a\\\\nb\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -354,7 +354,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                                     Decode.string
                                     "\"a\\tb\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -367,7 +367,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                                     Decode.string
                                     "\"a\\\\tb\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -378,7 +378,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                             let actual =
                                 runner.Decode.fromString Decode.char "\"a\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -396,7 +396,7 @@ Expecting a single character string but instead got: "ab"
                             let actual =
                                 runner.Decode.fromString Decode.char "\"ab\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -407,7 +407,7 @@ Expecting a single character string but instead got: "ab"
                             let actual =
                                 runner.Decode.fromString Decode.float "1.2"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -418,7 +418,7 @@ Expecting a single character string but instead got: "ab"
                             let actual =
                                 runner.Decode.fromString Decode.float "1"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     // https://github.com/thoth-org/Thoth.Json/issues/212
@@ -436,7 +436,7 @@ Expecting a single character string but instead got: "ab"
                             let actual =
                                 runner.Decode.fromString Decode.float json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -447,7 +447,7 @@ Expecting a single character string but instead got: "ab"
                             let actual =
                                 runner.Decode.fromString Decode.bool "true"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -461,7 +461,7 @@ Expecting a single character string but instead got: "ab"
                             let actual =
                                 runner.Decode.fromString Decode.bool "2"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -472,7 +472,7 @@ Expecting a single character string but instead got: "ab"
                             let actual =
                                 runner.Decode.fromString Decode.int "25"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -486,7 +486,7 @@ Expecting a single character string but instead got: "ab"
                             let actual =
                                 runner.Decode.fromString Decode.int "2147483648"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
 
@@ -503,7 +503,7 @@ Expecting a single character string but instead got: "ab"
                                     Decode.int
                                     "-2147483649"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -514,7 +514,7 @@ Expecting a single character string but instead got: "ab"
                             let actual =
                                 runner.Decode.fromString Decode.int16 "25"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
 #if !FABLE_COMPILER_JAVASCRIPT
@@ -531,7 +531,7 @@ Reason: Value is not an integral value"""
                             let actual =
                                 runner.Decode.fromString Decode.int16 "25.0"
 
-                            equal expected actual
+                            equal actual expected
                     )
 #endif
 
@@ -548,7 +548,7 @@ Reason: Value is not an integral value"""
                             let actual =
                                 runner.Decode.fromString Decode.int16 "25.001"
 
-                            equal expected actual
+                            equal actual expected
                     )
 #endif
 
@@ -560,7 +560,7 @@ Reason: Value is not an integral value"""
                             let actual =
                                 runner.Decode.fromString Decode.int16 "\"-25\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -579,7 +579,7 @@ Reason: Value was either too large or too small for an int16
                             let actual =
                                 runner.Decode.fromString Decode.int16 "32768"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -598,7 +598,7 @@ Reason: Value was either too large or too small for an int16
                             let actual =
                                 runner.Decode.fromString Decode.int16 "-32769"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -618,7 +618,7 @@ Expecting an int16 but instead got: "maxime"
                                     Decode.int16
                                     "\"maxime\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -629,7 +629,7 @@ Expecting an int16 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.uint16 "25"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -640,7 +640,7 @@ Expecting an int16 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.uint16 "\"25\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -659,7 +659,7 @@ Reason: Value was either too large or too small for an uint16
                             let actual =
                                 runner.Decode.fromString Decode.uint16 "65536"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -678,7 +678,7 @@ Reason: Value was either too large or too small for an uint16
                             let actual =
                                 runner.Decode.fromString Decode.uint16 "-1"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -698,7 +698,7 @@ Expecting an uint16 but instead got: "maxime"
                                     Decode.uint16
                                     "\"maxime\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -709,7 +709,7 @@ Expecting an uint16 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.int64 "1000"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -720,7 +720,7 @@ Expecting an uint16 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.int64 "\"99\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -731,7 +731,7 @@ Expecting an uint16 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.int64 "\"-99\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -742,7 +742,7 @@ Expecting an uint16 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.int64 "\"+99\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     // This is beyond the range of `JSON.parse`
@@ -757,7 +757,7 @@ Expecting an uint16 but instead got: "maxime"
                                     Decode.int64
                                     "9223372036854775806"
 
-                            equal expected actual
+                            equal actual expected
                     )
 #endif
 
@@ -771,7 +771,7 @@ Expecting an uint16 but instead got: "maxime"
                                     Decode.int64
                                     "\"9223372036854775806\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -782,7 +782,7 @@ Expecting an uint16 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.int64 "1e3"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -799,7 +799,7 @@ Expecting an uint16 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString reprDecoder "1e3"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -819,7 +819,7 @@ Expecting an int64 but instead got: "maxime"
                                     Decode.int64
                                     "\"maxime\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -830,7 +830,7 @@ Expecting an int64 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.uint32 "1000"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -843,7 +843,7 @@ Expecting an int64 but instead got: "maxime"
                                     Decode.uint32
                                     "\"1000\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -863,7 +863,7 @@ Expecting an uint32 but instead got: "maxime"
                                     Decode.uint32
                                     "\"maxime\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -874,7 +874,7 @@ Expecting an uint32 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.uint64 "1000"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -887,7 +887,7 @@ Expecting an uint32 but instead got: "maxime"
                                     Decode.uint64
                                     "\"1000\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -898,7 +898,7 @@ Expecting an uint32 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.uint64 "\"+99\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     // This is beyond the range of `JSON.parse`
@@ -913,7 +913,7 @@ Expecting an uint32 but instead got: "maxime"
                                     Decode.uint64
                                     "9223372036854775806"
 
-                            equal expected actual
+                            equal actual expected
                     )
 #endif
 
@@ -927,7 +927,7 @@ Expecting an uint32 but instead got: "maxime"
                                     Decode.uint64
                                     "\"9223372036854775806\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -938,7 +938,7 @@ Expecting an uint32 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.uint64 "1e3"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -958,7 +958,7 @@ Expecting an uint64 but instead got: "maxime"
                                     Decode.uint64
                                     "\"maxime\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -969,7 +969,7 @@ Expecting an uint64 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.byte "25"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -980,7 +980,7 @@ Expecting an uint64 but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.byte "\"25\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -999,7 +999,7 @@ Reason: Value was either too large or too small for a byte
                             let actual =
                                 runner.Decode.fromString Decode.byte "256"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1018,7 +1018,7 @@ Reason: Value was either too large or too small for a byte
                             let actual =
                                 runner.Decode.fromString Decode.byte "-1"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1038,7 +1038,7 @@ Expecting a byte but instead got: "maxime"
                                     Decode.byte
                                     "\"maxime\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
 
@@ -1050,7 +1050,7 @@ Expecting a byte but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.sbyte "25"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1061,7 +1061,7 @@ Expecting a byte but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.sbyte "\"-25\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1080,7 +1080,7 @@ Reason: Value was either too large or too small for a sbyte
                             let actual =
                                 runner.Decode.fromString Decode.sbyte "128"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1099,7 +1099,7 @@ Reason: Value was either too large or too small for a sbyte
                             let actual =
                                 runner.Decode.fromString Decode.sbyte "-129"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1119,7 +1119,7 @@ Expecting a sbyte but instead got: "maxime"
                                     Decode.sbyte
                                     "\"maxime\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1130,7 +1130,7 @@ Expecting a sbyte but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.bigint "12"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1141,7 +1141,7 @@ Expecting a sbyte but instead got: "maxime"
                             let actual =
                                 runner.Decode.fromString Decode.bigint "\"12\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1161,7 +1161,7 @@ Expecting a bigint but instead got: "maxime"
                                     Decode.bigint
                                     "\"maxime\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
 #if !FABLE_COMPILER_JAVASCRIPT && !FABLE_COMPILER_PYTHON
@@ -1202,7 +1202,7 @@ Expecting a bigint but instead got: "maxime"
                                                  Decode.decimal
                                                  $"\"-1234.75\""
 
-                                         equal (Ok -1234.75M) actual
+                                         equal actual (Ok -1234.75M)
                                      finally
                                          Globalization.CultureInfo.CurrentCulture <-
                                              previousCulture
@@ -1224,7 +1224,7 @@ Expecting a bigint but instead got: "maxime"
                                     Decode.string
                                     "\"2018-10-01T11:12:55.00Z\""
 
-                            equal (Ok expected) actual
+                            equal actual (Ok expected)
                     )
 
 #if !FABLE_COMPILER_PYTHON
@@ -1247,7 +1247,7 @@ Expecting a bigint but instead got: "maxime"
                                     Decode.datetimeUtc
                                     "\"2018-10-01T11:12:55.00Z\""
 
-                            equal (Ok expected) actual
+                            equal actual (Ok expected)
                     )
 #endif
 
@@ -1262,7 +1262,7 @@ Expecting a bigint but instead got: "maxime"
                                     Decode.datetimeLocal
                                     "\"2018-10-01T11:12:55\""
 
-                            equal (Ok expected) actual
+                            equal actual (Ok expected)
                     )
 
                     test (
@@ -1282,7 +1282,7 @@ Expecting a datetime but instead got: "invalid_string"
                                     Decode.datetimeUtc
                                     "\"invalid_string\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1307,7 +1307,7 @@ Expecting a datetime but instead got: "invalid_string"
                             let actual =
                                 runner.Decode.fromString Decode.datetimeUtc json
 
-                            equal expected actual
+                            equal actual expected
                     )
 #endif
 
@@ -1335,7 +1335,7 @@ Expecting a datetime but instead got: "invalid_string"
                                     Decode.datetimeOffset
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1357,7 +1357,7 @@ Expecting a datetimeoffset but instead got: "NOT A DATETIMEOFFSET"
                                     Decode.datetimeOffset
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 #endif
 
@@ -1370,7 +1370,7 @@ Expecting a datetimeoffset but instead got: "NOT A DATETIMEOFFSET"
                             let actual =
                                 runner.Decode.fromString Decode.timespan json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1390,7 +1390,7 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                             let actual =
                                 runner.Decode.fromString Decode.timespan json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1406,7 +1406,7 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                                 runner.Decode.fromString Decode.uri json
                                 |> Result.map _.OriginalString
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1419,7 +1419,7 @@ Expecting a timespan but instead got: "NOT A TimeSpan"
                                 runner.Decode.fromString Decode.uri json
                                 |> Result.map _.OriginalString
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1439,7 +1439,7 @@ Expecting a URI but instead got: 42
                             let actual =
                                 runner.Decode.fromString Decode.uri json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1450,7 +1450,7 @@ Expecting a URI but instead got: 42
                             let actual =
                                 runner.Decode.fromString Decode.Enum.sbyte "99"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1461,7 +1461,7 @@ Expecting a URI but instead got: 42
                             let actual =
                                 runner.Decode.fromString Decode.Enum.byte "99"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1472,7 +1472,7 @@ Expecting a URI but instead got: 42
                             let actual =
                                 runner.Decode.fromString Decode.Enum.int "1"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1483,7 +1483,7 @@ Expecting a URI but instead got: 42
                             let actual =
                                 runner.Decode.fromString Decode.Enum.uint32 "99"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1494,7 +1494,7 @@ Expecting a URI but instead got: 42
                             let actual =
                                 runner.Decode.fromString Decode.Enum.int16 "99"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1505,7 +1505,7 @@ Expecting a URI but instead got: 42
                             let actual =
                                 runner.Decode.fromString Decode.Enum.uint16 "99"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                 ]
@@ -1525,7 +1525,7 @@ Expecting a URI but instead got: 42
                                     (Decode.tuple2 Decode.int Decode.string)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1542,7 +1542,7 @@ Expecting a URI but instead got: 42
                                         Decode.float)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1570,7 +1570,7 @@ Expecting a URI but instead got: 42
                                         SmallRecord.Decoder)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1600,7 +1600,7 @@ Expecting a URI but instead got: 42
                                         Decode.bool)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1632,7 +1632,7 @@ Expecting a URI but instead got: 42
                                         (Decode.nil null))
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1666,7 +1666,7 @@ Expecting a URI but instead got: 42
                                         Decode.int)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1702,7 +1702,7 @@ Expecting a URI but instead got: 42
                                         Decode.int)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1724,7 +1724,7 @@ Expecting a string but instead got: false
                                     (Decode.tuple2 Decode.int Decode.string)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1749,7 +1749,7 @@ Expecting a float but instead got: false
                                         Decode.float)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1780,7 +1780,7 @@ Expecting a longer array. Need index `3` but there are only `3` entries.
                                         SmallRecord.Decoder)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1807,7 +1807,7 @@ Expecting a string but instead got: false
                                         SmallRecord.Decoder)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
 #if !FABLE_COMPILER_PYTHON
@@ -1836,7 +1836,7 @@ Expecting a datetime but instead got: false
                                         Decode.datetimeUtc)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1865,7 +1865,7 @@ Expecting null but instead got: false
                                         (Decode.nil null))
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1895,7 +1895,7 @@ Expecting an int but instead got: false
                                         Decode.int)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1926,7 +1926,7 @@ Expecting an int but instead got: "maxime"
                                         Decode.int)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 #endif
                 ]
@@ -1947,7 +1947,7 @@ Expecting an int but instead got: "maxime"
                                     (Decode.field "name" Decode.string)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1969,7 +1969,7 @@ Expecting an int but instead got: null
                                     (Decode.field "name" Decode.int)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -1995,7 +1995,7 @@ Expecting an object with a field named `height` but instead got:
                                     (Decode.field "height" Decode.float)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2017,7 +2017,7 @@ Expecting an object with a field named `height` but instead got:
                                         Decode.string)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2052,7 +2052,7 @@ Node `firstname` is unknown.
                                         Decode.string)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2074,7 +2074,7 @@ Expecting an int but instead got: null
                                     (Decode.at [ "name" ] Decode.int)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2088,7 +2088,7 @@ Expecting an int but instead got: null
                                     (Decode.index 1 Decode.string)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2115,7 +2115,7 @@ Expecting a longer array. Need index `5` but there are only `3` entries.
                                     (Decode.index 5 Decode.string)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2137,7 +2137,7 @@ Expecting an array but instead got: 1
                                     (Decode.index 5 Decode.string)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                 ]
@@ -2165,7 +2165,7 @@ Expecting an array but instead got: 1
                                     (Decode.list Decode.int)
                                     "[1, 2, 3]"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2198,7 +2198,7 @@ Expecting an array but instead got: 1
                                     (Decode.list Decode.int)
                                     "1"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2214,7 +2214,7 @@ Expecting an array but instead got: 1
                                     (Decode.list Decode.int)
                                     "[1, 2, \"maxime\"]"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2240,7 +2240,7 @@ Expecting an array but instead got: 1
                                     (Decode.array Decode.int)
                                     "[1, 2, 3]"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2256,7 +2256,7 @@ Expecting an array but instead got: 1
                                     (Decode.array Decode.int)
                                     "1"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2281,8 +2281,8 @@ Expecting an array but instead got: 1
                             match actual with
                             | Ok actual ->
                                 equal
-                                    (expected |> Seq.toArray)
                                     (actual |> Seq.toArray)
+                                    (expected |> Seq.toArray)
                             | Error error -> failwith error
                     )
 
@@ -2299,9 +2299,9 @@ Expecting an array but instead got: 1
                             // See https://stackoverflow.com/questions/17101329/f-sequence-comparison
                             match actual with
                             | Ok actual ->
-                                equal 1 actual.[0]
-                                equal 2 actual.[1]
-                                equal 3 actual.[2]
+                                equal actual.[0] 1
+                                equal actual.[1] 2
+                                equal actual.[2] 3
 
                             | Error error -> failwith error
                     )
@@ -2319,7 +2319,7 @@ Expecting an array but instead got: 1
                                     (Decode.resizeArray Decode.int)
                                     "1"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2339,7 +2339,7 @@ Expecting an array but instead got: 1
                                     Decode.keys
                                     """{ "a": 1, "b": 2, "c": 3 }"""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2353,7 +2353,7 @@ Expecting an array but instead got: 1
                             let actual =
                                 runner.Decode.fromString Decode.keys "1"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2373,7 +2373,7 @@ Expecting an array but instead got: 1
                                     (Decode.keyValuePairs Decode.int)
                                     """{ "a": 1, "b": 2, "c": 3 }"""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2411,7 +2411,7 @@ Expecting a boolean but instead got: 123"""
                                     (Decode.dict Decode.int)
                                     """{ "a": 1, "b": 2, "c": 3 }"""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2457,7 +2457,7 @@ Expecting a boolean but instead got: 123"""
 }
                         """
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2473,7 +2473,7 @@ Expecting a boolean but instead got: 123"""
                                     (Decode.dict Decode.int)
                                     "1"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2495,7 +2495,7 @@ Expecting a boolean but instead got: 123"""
                                     (Decode.map' Decode.int Decode.string)
                                     """[ [ 1, "x" ], [ 2, "y" ], [ 3, "z" ] ]"""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2547,7 +2547,7 @@ Expecting a boolean but instead got: 123"""
 ]
                         """
 
-                            equal expected actual
+                            equal actual expected
                     )
                 ]
             )
@@ -2565,7 +2565,7 @@ Expecting a boolean but instead got: 123"""
                                     (Decode.lossyOption Decode.int)
                                     "1"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2578,7 +2578,7 @@ Expecting a boolean but instead got: 123"""
                                     (Decode.lossyOption Decode.int)
                                     "null"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2593,7 +2593,7 @@ Expecting a boolean but instead got: 123"""
                                     ))
                                     "null"
 
-                            notEqual expected actual
+                            notEqual actual expected
                     )
 
                     test (
@@ -2612,7 +2612,7 @@ Expecting a boolean but instead got: 123"""
 }
 """
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2630,7 +2630,7 @@ Expecting a boolean but instead got: 123"""
 }
 """
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2660,8 +2660,8 @@ Expecting a boolean but instead got: 123"""
 }
 """
 
-                            notEqual (Ok(Some None)) actual
-                            equal (Ok(Some(Some None))) actual
+                            notEqual actual (Ok(Some None))
+                            equal actual (Ok(Some(Some None)))
                     )
                 ]
             )
@@ -2695,7 +2695,7 @@ Expecting a boolean but instead got: 123"""
                                     (Decode.list badInt)
                                     "[1,2,null,4]"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2733,7 +2733,7 @@ Expecting a boolean but instead got: 123"""
 
                             let actual = runner.Decode.fromString decoder2 json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2799,7 +2799,7 @@ Expecting an object but instead got:
                                     (Decode.list badInt)
                                     "[1,2,null,4]"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2815,7 +2815,7 @@ Expecting an object but instead got:
                                     (Decode.optional "name" Decode.string)
                                     json
 
-                            equal expectedValid actualValid
+                            equal actualValid expectedValid
 
                             match
                                 runner.Decode.fromString
@@ -2833,7 +2833,7 @@ Expecting an object but instead got:
                                     (Decode.optional "height" Decode.int)
                                     json
 
-                            equal expectedMissingField actualMissingField
+                            equal actualMissingField expectedMissingField
 
                             let expectedUndefinedField = Ok(None)
 
@@ -2844,7 +2844,7 @@ Expecting an object but instead got:
                                         Decode.string)
                                     json
 
-                            equal expectedUndefinedField actualUndefinedField
+                            equal actualUndefinedField expectedUndefinedField
                     )
 
                     test (
@@ -2866,7 +2866,7 @@ Expecting a string but instead got: 12
                                     (Decode.optional "name" Decode.string)
                                     json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -2887,7 +2887,7 @@ Expecting a string but instead got: 12
                                         Decode.string)
                                     json
 
-                            equal expectedValid actualValid
+                            equal actualValid expectedValid
 
                             match
                                 runner.Decode.fromString
@@ -2915,7 +2915,7 @@ Expecting a string but instead got: 12
                                         Decode.int)
                                     json
 
-                            equal expectedMissingField actualMissingField
+                            equal actualMissingField expectedMissingField
 
                             let expectedUndefinedField = Ok(None)
 
@@ -2929,7 +2929,7 @@ Expecting a string but instead got: 12
                                         Decode.string)
                                     json
 
-                            equal expectedUndefinedField actualUndefinedField
+                            equal actualUndefinedField expectedUndefinedField
 
                             let expectedUndefinedField = Ok(None)
 
@@ -2944,7 +2944,7 @@ Expecting a string but instead got: 12
                                         Decode.string)
                                     json
 
-                            equal expectedUndefinedField actualUndefinedField
+                            equal actualUndefinedField expectedUndefinedField
                     )
 
                     test (
@@ -2962,7 +2962,7 @@ Expecting a string but instead got: 12
                                         (Decode.lossyOption Decode.string))
                                     json
 
-                            equal expectedValid actualValid
+                            equal actualValid expectedValid
 
                             match
                                 runner.Decode.fromString
@@ -2979,7 +2979,7 @@ Expecting an int but instead got: "maxime"
                         """
                                         .Trim()
 
-                                equal expected msg
+                                equal msg expected
                             | Ok _ ->
                                 failwith
                                     "Expected type error for `name` field #1"
@@ -3004,7 +3004,7 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
                         """
                                         .Trim()
 
-                                equal expected msg
+                                equal msg expected
                             | Ok _ ->
                                 failwith
                                     "Expected type error for `name` field #2"
@@ -3032,7 +3032,7 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
                                     ))
                                     json
 
-                            equal expectedValid2 actualValid2
+                            equal actualValid2 expectedValid2
 
                             match
                                 runner.Decode.fromString
@@ -3049,7 +3049,7 @@ Expecting an int but instead got: "maxime"
                         """
                                         .Trim()
 
-                                equal expected msg
+                                equal msg expected
                             | Ok _ ->
                                 failwith
                                     "Expected type error for `name` field #3"
@@ -3076,7 +3076,7 @@ Expecting an object with a field named `this_field_do_not_exist` but instead got
                         """
                                         .Trim()
 
-                                equal expected msg
+                                equal msg expected
                             | Ok _ ->
                                 failwith
                                     "Expected type error for `name` field #4"
@@ -3098,7 +3098,7 @@ Expecting an int but instead got: null
                         """
                                         .Trim()
 
-                                equal expected msg
+                                equal msg expected
                             | Ok _ ->
                                 failwith "Expected type error for `name` field"
 
@@ -3133,7 +3133,7 @@ Expecting an object with a field named `height` but instead got:
                         """
                                         .Trim()
 
-                                equal expected msg
+                                equal msg expected
 
                             | Ok _ ->
                                 failwith
@@ -3148,7 +3148,7 @@ Expecting an object with a field named `height` but instead got:
                                         (Decode.lossyOption Decode.string))
                                     json
 
-                            equal expectedUndefinedField actualUndefinedField
+                            equal actualUndefinedField expectedUndefinedField
                     )
 
                 ]
@@ -3166,7 +3166,7 @@ Expecting an object with a field named `height` but instead got:
                             let actual =
                                 runner.Decode.fromString (Decode.nil 20) "null"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3179,7 +3179,7 @@ Expecting an object with a field named `height` but instead got:
                                     (Decode.nil false)
                                     "null"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3192,7 +3192,7 @@ Expecting an object with a field named `height` but instead got:
                                     (Decode.succeed 7)
                                     "true"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3234,7 +3234,7 @@ Expecting an object with a field named `height` but instead got:
                                     (Decode.succeed 7)
                                     "maxime"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3253,7 +3253,7 @@ Expecting an object with a field named `height` but instead got:
                                     (Decode.fail msg)
                                     "true"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3296,7 +3296,7 @@ Expecting an object with a field named `height` but instead got:
                                         k = 11
                                     }
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3323,7 +3323,7 @@ Expecting an object with a field named `height` but instead got:
                                     info
                                     """{ "version": 3, "data": 2 }"""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
 
@@ -3362,7 +3362,7 @@ Expecting an object with a field named `version` but instead got:
                                     info
                                     """{ "info": 3, "data": 2 }"""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
 
@@ -3387,7 +3387,7 @@ Expecting an object with a field named `version` but instead got:
 
                             let actual = runner.Decode.fromString decodeAll "{}"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3417,7 +3417,7 @@ Expecting an object with a field named `version` but instead got:
                                     decoder
                                     """{ "a": 1, "b": 2, "c": 3 }"""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3430,7 +3430,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString decodeNone "{}"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
 
@@ -3452,7 +3452,7 @@ Expecting an object with a field named `version` but instead got:
 
                             let actual = runner.Decode.fromString decodeAll "{}"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
 
@@ -3495,7 +3495,7 @@ Expecting an object with a field named `version` but instead got:
                                     decoder
                                     "[ null, 3, [ [ null, 5, null ], 4, null ]]"
 
-                            equal expected actual
+                            equal actual expected
                     )
                 ]
             )
@@ -3516,7 +3516,7 @@ Expecting an object with a field named `version` but instead got:
                                      |> Decode.requireSome "expected a value")
                                     "42"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3534,7 +3534,7 @@ Expecting an object with a field named `version` but instead got:
                                      |> Decode.requireSome "invalid email")
                                     "\"a\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                 ]
@@ -3556,7 +3556,7 @@ Expecting an object with a field named `version` but instead got:
                                      |> Decode.notNone)
                                     "\"hello\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3574,7 +3574,7 @@ Expecting an object with a field named `version` but instead got:
                                      |> Decode.notNone)
                                     "\"a\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                 ]
@@ -3594,7 +3594,7 @@ Expecting an object with a field named `version` but instead got:
                                     Decode.value
                                     "\"abcdef\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3605,7 +3605,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString Decode.value "\"a\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3616,7 +3616,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString Decode.value "1.23"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3627,7 +3627,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString Decode.value "0"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3638,7 +3638,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString Decode.value "-1"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3649,7 +3649,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString Decode.value "12345"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3660,7 +3660,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString Decode.value "1.5e10"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3671,7 +3671,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString Decode.value "null"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3682,7 +3682,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString Decode.value "true"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
 
@@ -3708,7 +3708,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString Decode.value json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3746,7 +3746,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString Decode.value json
 
-                            equal expected actual
+                            equal actual expected
                     )
                 ]
             )
@@ -3768,7 +3768,7 @@ Expecting an object with a field named `version` but instead got:
                                     stringLength
                                     "\"maxime\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
 
@@ -3793,7 +3793,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString decodePoint jsonRecord
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3819,7 +3819,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString decodePoint jsonRecord
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3847,7 +3847,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString decodePoint jsonRecord
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3877,7 +3877,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString decodePoint jsonRecord
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3909,7 +3909,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString decodePoint jsonRecord
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3943,7 +3943,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString decodePoint jsonRecord
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -3979,7 +3979,7 @@ Expecting an object with a field named `version` but instead got:
                             let actual =
                                 runner.Decode.fromString decodePoint jsonRecord
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4001,7 +4001,7 @@ Expecting an object with a field named `version` but instead got:
                                     decodePoint
                                     jsonRecordInvalid
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                 ]
@@ -4035,7 +4035,7 @@ Expecting an object with a field named `version` but instead got:
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4067,7 +4067,7 @@ Expecting an object with a field named `name` but instead got:
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4096,7 +4096,7 @@ Expecting a string but instead got: 12
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4123,7 +4123,7 @@ Expecting a string but instead got: 12
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4150,7 +4150,7 @@ Expecting a string but instead got: 12
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4177,7 +4177,7 @@ Expecting a string but instead got: 12
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4206,7 +4206,7 @@ Expecting a string but instead got: 12
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4254,7 +4254,7 @@ Expecting a string but instead got: 12
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4283,7 +4283,7 @@ Expecting a string but instead got: 12
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
 
@@ -4316,7 +4316,7 @@ Expecting a string but instead got: 12
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4349,7 +4349,7 @@ Expecting an object but instead got:
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4389,7 +4389,7 @@ Node `firstname` is unknown.
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4422,7 +4422,7 @@ Expecting a string but instead got: 12
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4454,7 +4454,7 @@ Expecting a string but instead got: 12
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4487,7 +4487,7 @@ Expecting an object but instead got:
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4518,7 +4518,7 @@ Expecting an object but instead got:
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4551,7 +4551,7 @@ Expecting a string but instead got: 12
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4582,7 +4582,7 @@ Expecting a string but instead got: 12
                                     userDecoder
                                     """{ "id": 67, "email": "user@mail.com" }"""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4632,7 +4632,7 @@ Expecting a string but instead got: 12
                                     : MyObj
                                 )
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4677,7 +4677,7 @@ Expecting a string but instead got: 12
                                 Error
                                     "Error at: `$`\nThe following `failure` occurred with the decoder: Unknown shape type custom_shape"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4729,7 +4729,7 @@ Expecting an object with a field named `radius` but instead got:
                                         .Trim()
                                 )
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4776,7 +4776,7 @@ Expecting an object with a field named `radius` but instead got:
                                         Shape = Some(Circle 20)
                                     }
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4822,7 +4822,7 @@ Expecting an object with a field named `radius` but instead got:
                                         Shape = None
                                     }
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4865,7 +4865,7 @@ Expecting an object with a field named `radius` but instead got:
                                 Error
                                     "Error at: `$`\nThe following `failure` occurred with the decoder: Unknown shape type invalid_shape"
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4909,7 +4909,7 @@ Expecting an object with a field named `radius` but instead got:
                                 Error
                                     "Error at: `$.radius`\nExpecting an int but instead got: \"maxime\""
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -4955,7 +4955,7 @@ Expecting an object with a field named `radius` but instead got:
                                         Shape = None
                                     }
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -5031,7 +5031,7 @@ Expecting a boolean but instead got: "not_a_boolean"
 
                             let actual = runner.Decode.fromString decoder json
 
-                            equal expected actual
+                            equal actual expected
                     )
 
                     test (
@@ -5101,7 +5101,7 @@ Expecting a boolean but instead got: "not_a_boolean"
                                         Post = None
                                     }
 
-                            equal expected actual
+                            equal actual expected
                     )
                 ]
             )

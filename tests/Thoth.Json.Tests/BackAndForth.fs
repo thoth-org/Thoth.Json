@@ -25,7 +25,7 @@ let tests (runner: TestRunner<_, _>) =
                             (Decode.losslessOption Decode.int)
                             json
 
-                    equal (Ok expected) decoded
+                    equal decoded (Ok expected)
 
                     // Simple None
 
@@ -41,7 +41,7 @@ let tests (runner: TestRunner<_, _>) =
                             (Decode.losslessOption Decode.int)
                             json
 
-                    equal (Ok expected) decoded
+                    equal decoded (Ok expected)
 
                     // Nested option with value
 
@@ -65,7 +65,7 @@ let tests (runner: TestRunner<_, _>) =
                             ))
                             json
 
-                    equal (Ok expected) decoded
+                    equal decoded (Ok expected)
 
                     // Nested option with None
 
@@ -89,7 +89,7 @@ let tests (runner: TestRunner<_, _>) =
                             ))
                             json
 
-                    equal (Ok expected) decoded
+                    equal decoded (Ok expected)
             )
 
             test (
@@ -114,7 +114,7 @@ let tests (runner: TestRunner<_, _>) =
 
                         let decoded = runner.Decode.fromString Decode.float json
 
-                        equal (Ok expected) decoded
+                        equal decoded (Ok expected)
 
                     // nan is never equal to itself, so it is checked apart.
                     let json =
@@ -147,7 +147,7 @@ let tests (runner: TestRunner<_, _>) =
                         let decoded =
                             runner.Decode.fromString Decode.float32 json
 
-                        equal (Ok expected) decoded
+                        equal decoded (Ok expected)
 
                     let json =
                         System.Single.NaN
@@ -190,7 +190,7 @@ let tests (runner: TestRunner<_, _>) =
                         let decoded =
                             runner.Decode.fromString Decode.decimal json
 
-                        equal (Ok expected) decoded
+                        equal decoded (Ok expected)
             )
 
             test (
@@ -219,7 +219,7 @@ let tests (runner: TestRunner<_, _>) =
                         let decoded =
                             runner.Decode.fromString Decode.bigint json
 
-                        equal (Ok expected) decoded
+                        equal decoded (Ok expected)
             )
 
             test (
@@ -227,81 +227,81 @@ let tests (runner: TestRunner<_, _>) =
                 fun _ ->
                     // Not a string: anything that round-trips through a 64 bit float stays a number.
                     equal
-                        "127"
                         (System.SByte.MaxValue
                          |> Encode.sbyte
                          |> runner.Encode.toString 0)
+                        "127"
 
                     equal
-                        "-128"
                         (System.SByte.MinValue
                          |> Encode.sbyte
                          |> runner.Encode.toString 0)
+                        "-128"
 
                     equal
-                        "255"
                         (System.Byte.MaxValue
                          |> Encode.byte
                          |> runner.Encode.toString 0)
+                        "255"
 
                     equal
-                        "32767"
                         (System.Int16.MaxValue
                          |> Encode.int16
                          |> runner.Encode.toString 0)
+                        "32767"
 
                     equal
-                        "-32768"
                         (System.Int16.MinValue
                          |> Encode.int16
                          |> runner.Encode.toString 0)
+                        "-32768"
 
                     equal
-                        "65535"
                         (System.UInt16.MaxValue
                          |> Encode.uint16
                          |> runner.Encode.toString 0)
+                        "65535"
 
                     equal
-                        "2147483647"
                         (System.Int32.MaxValue
                          |> Encode.int
                          |> runner.Encode.toString 0)
+                        "2147483647"
 
                     equal
-                        "-2147483648"
                         (System.Int32.MinValue
                          |> Encode.int
                          |> runner.Encode.toString 0)
+                        "-2147483648"
 
                     equal
-                        "4294967295"
                         (System.UInt32.MaxValue
                          |> Encode.uint32
                          |> runner.Encode.toString 0)
+                        "4294967295"
             )
 
             test (
                 "the types that do not fit a float are written as JSON strings",
                 fun _ ->
                     equal
-                        "\"9223372036854775807\""
                         (System.Int64.MaxValue
                          |> Encode.int64
                          |> runner.Encode.toString 0)
+                        "\"9223372036854775807\""
 
                     equal
-                        "\"18446744073709551615\""
                         (System.UInt64.MaxValue
                          |> Encode.uint64
                          |> runner.Encode.toString 0)
+                        "\"18446744073709551615\""
 
 #if !FABLE_COMPILER_PYTHON
                     equal
-                        "\"79228162514264337593543950335\""
                         (System.Decimal.MaxValue
                          |> Encode.decimal
                          |> runner.Encode.toString 0)
+                        "\"79228162514264337593543950335\""
 #endif
             )
 
@@ -309,53 +309,53 @@ let tests (runner: TestRunner<_, _>) =
                 "the boundary types survive a round trip",
                 fun _ ->
                     equal
-                        (Ok System.Int32.MaxValue)
                         (System.Int32.MaxValue
                          |> Encode.int
                          |> runner.Encode.toString 0
                          |> runner.Decode.fromString Decode.int)
+                        (Ok System.Int32.MaxValue)
 
                     equal
-                        (Ok System.Int32.MinValue)
                         (System.Int32.MinValue
                          |> Encode.int
                          |> runner.Encode.toString 0
                          |> runner.Decode.fromString Decode.int)
+                        (Ok System.Int32.MinValue)
 
                     equal
-                        (Ok System.UInt32.MaxValue)
                         (System.UInt32.MaxValue
                          |> Encode.uint32
                          |> runner.Encode.toString 0
                          |> runner.Decode.fromString Decode.uint32)
+                        (Ok System.UInt32.MaxValue)
 
                     equal
-                        (Ok System.Int16.MaxValue)
                         (System.Int16.MaxValue
                          |> Encode.int16
                          |> runner.Encode.toString 0
                          |> runner.Decode.fromString Decode.int16)
+                        (Ok System.Int16.MaxValue)
 
                     equal
-                        (Ok System.UInt16.MaxValue)
                         (System.UInt16.MaxValue
                          |> Encode.uint16
                          |> runner.Encode.toString 0
                          |> runner.Decode.fromString Decode.uint16)
+                        (Ok System.UInt16.MaxValue)
 
                     equal
-                        (Ok System.Byte.MaxValue)
                         (System.Byte.MaxValue
                          |> Encode.byte
                          |> runner.Encode.toString 0
                          |> runner.Decode.fromString Decode.byte)
+                        (Ok System.Byte.MaxValue)
 
                     equal
-                        (Ok System.SByte.MinValue)
                         (System.SByte.MinValue
                          |> Encode.sbyte
                          |> runner.Encode.toString 0
                          |> runner.Decode.fromString Decode.sbyte)
+                        (Ok System.SByte.MinValue)
             )
 
             test (
@@ -382,7 +382,7 @@ let tests (runner: TestRunner<_, _>) =
 
                         let decoded = runner.Decode.fromString Decode.int64 json
 
-                        equal (Ok expected) decoded
+                        equal decoded (Ok expected)
             )
 
 #if !FABLE_COMPILER_PYTHON
@@ -411,7 +411,7 @@ let tests (runner: TestRunner<_, _>) =
                         let decoded =
                             runner.Decode.fromString Decode.uint64 json
 
-                        equal (Ok expected) decoded
+                        equal decoded (Ok expected)
             )
 #endif
         ]

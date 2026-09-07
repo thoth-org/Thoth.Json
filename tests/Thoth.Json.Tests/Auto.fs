@@ -174,52 +174,53 @@ let tests (runner: TestRunner<_, _>) =
                     let r2: Record9 =
                         autoDecodeUnsafeWithOptions json PascalCase extra
 
-                    equal 5 r2.a
-                    equal "bar" r2.b
+                    equal r2.a 5
+                    equal r2.b "bar"
 
                     equal
+                        r2.c
                         [
                             false, 3
                             true, 5
                             false, 10
                         ]
-                        r2.c
 
-                    equal (Some(Foo 14)) r2.d.[0]
-                    equal None r2.d.[1]
-                    equal -1.5 (Map.find "ah" r2.e).a
-                    equal 2. (Map.find "oh" r2.e).b
+                    equal r2.d.[0] (Some(Foo 14))
+                    equal r2.d.[1] None
+                    equal (Map.find "ah" r2.e).a -1.5
+                    equal (Map.find "oh" r2.e).b 2.
                     equal (now.ToString()) (value.f.ToString())
 
                     equal
-                        true
                         (Set.contains
                             {
                                 a = -1.5
                                 b = 0.
                             }
                             r2.g)
+                        true
 
                     equal
-                        false
                         (Set.contains
                             {
                                 a = 1.5
                                 b = 0.
                             }
                             r2.g)
+                        false
 
                     equal 5000. value.h.TotalMilliseconds
-                    equal 120y r2.i
-                    equal 120uy r2.j
-                    equal 250s r2.k
-                    equal 250us r2.l
-                    equal 99u r2.m
-                    equal 99L r2.n
-                    equal 999UL r2.o
-                    equal () r2.p
+                    equal r2.i 120y
+                    equal r2.j 120uy
+                    equal r2.k 250s
+                    equal r2.l 250us
+                    equal r2.m 99u
+                    equal r2.n 99L
+                    equal r2.o 999UL
+                    equal r2.p ()
 
                     equal
+                        r2.r
                         (Map
                             [
                                 ({
@@ -233,9 +234,8 @@ let tests (runner: TestRunner<_, _>) =
                                  },
                                  "value 2")
                             ])
-                        r2.r
 
-                    equal 'y' r2.s
+                    equal r2.s 'y'
             )
             // equal ((seq [ "item n°1"; "item n°2"]) |> Seq.toList) (r2.s |> Seq.toList)
 
@@ -267,7 +267,7 @@ let tests (runner: TestRunner<_, _>) =
                     let value = "maxime"
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -276,7 +276,7 @@ let tests (runner: TestRunner<_, _>) =
                     let value = Guid.NewGuid()
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -287,7 +287,7 @@ let tests (runner: TestRunner<_, _>) =
                     let res: Uri = autoDecodeUnsafe json
                     // Compare on OriginalString because Fable's Uri does not
                     // implement structural equality
-                    equal value.OriginalString res.OriginalString
+                    equal res.OriginalString value.OriginalString
             )
 
             test (
@@ -296,7 +296,7 @@ let tests (runner: TestRunner<_, _>) =
                     let value = 12
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -308,7 +308,7 @@ let tests (runner: TestRunner<_, _>) =
 
                     let res = autoDecodeUnsafeWithExtra json extra
 
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -317,7 +317,7 @@ let tests (runner: TestRunner<_, _>) =
                     let value = 12u
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -329,7 +329,7 @@ let tests (runner: TestRunner<_, _>) =
 
                     let res = autoDecodeUnsafeWithExtra json extra
 
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -341,7 +341,7 @@ let tests (runner: TestRunner<_, _>) =
 
                     let res = autoDecodeUnsafeWithExtra json extra
 
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -350,7 +350,7 @@ let tests (runner: TestRunner<_, _>) =
                     let value = false
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -359,7 +359,7 @@ let tests (runner: TestRunner<_, _>) =
                     let value = 12.
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -370,7 +370,7 @@ let tests (runner: TestRunner<_, _>) =
                     let json = autoEncodeWithExtra value extra
                     let res = autoDecodeUnsafeWithExtra json extra
 
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -392,7 +392,7 @@ let tests (runner: TestRunner<_, _>) =
 
                     let res = autoDecodeUnsafeWithExtra json extra
 
-                    equal 12 res
+                    equal res 12
             )
 
             // testCase "Auto decoders works for datetime"
@@ -411,10 +411,10 @@ let tests (runner: TestRunner<_, _>) =
                     let value = DateTime.UtcNow
                     let json = autoEncode value
                     let res: DateTime = autoDecodeUnsafe json
-                    equal value.Date res.Date
-                    equal value.Hour res.Hour
-                    equal value.Minute res.Minute
-                    equal value.Second res.Second
+                    equal res.Date value.Date
+                    equal res.Hour value.Hour
+                    equal res.Minute value.Minute
+                    equal res.Second value.Second
             )
 
             test (
@@ -426,10 +426,10 @@ let tests (runner: TestRunner<_, _>) =
                     let res: DateTimeOffset = autoDecodeUnsafe json
                     // let res = res.ToLocalTime()
 
-                    equal value.Date res.Date
-                    equal value.Hour res.Hour
-                    equal value.Minute res.Minute
-                    equal value.Second res.Second
+                    equal res.Date value.Date
+                    equal res.Hour value.Hour
+                    equal res.Minute value.Minute
+                    equal res.Second value.Second
             )
 
             test (
@@ -441,10 +441,10 @@ let tests (runner: TestRunner<_, _>) =
                     let res: DateTimeOffset = autoDecodeUnsafe json
                     let res = res.ToUniversalTime()
 
-                    equal value.Date res.Date
-                    equal value.Hour res.Hour
-                    equal value.Minute res.Minute
-                    equal value.Second res.Second
+                    equal res.Date value.Date
+                    equal res.Hour value.Hour
+                    equal res.Minute value.Minute
+                    equal res.Second value.Second
             )
 
             test (
@@ -453,11 +453,11 @@ let tests (runner: TestRunner<_, _>) =
                     let value = TimeSpan(1, 2, 3, 4, 5)
                     let json = autoEncode value
                     let res: TimeSpan = autoDecodeUnsafe json
-                    equal value.Days res.Days
-                    equal value.Hours res.Hours
-                    equal value.Minutes res.Minutes
-                    equal value.Seconds res.Seconds
-                    equal value.Milliseconds res.Milliseconds
+                    equal res.Days value.Days
+                    equal res.Hours value.Hours
+                    equal res.Minutes value.Minutes
+                    equal res.Seconds value.Seconds
+                    equal res.Milliseconds value.Milliseconds
             )
 
             test (
@@ -473,7 +473,7 @@ let tests (runner: TestRunner<_, _>) =
 
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -489,7 +489,7 @@ let tests (runner: TestRunner<_, _>) =
 
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -505,7 +505,7 @@ let tests (runner: TestRunner<_, _>) =
 
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -523,7 +523,7 @@ let tests (runner: TestRunner<_, _>) =
 
                     let res = autoDecodeUnsafe json
 
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -532,7 +532,7 @@ let tests (runner: TestRunner<_, _>) =
                     let value: int option = None
                     let json = autoEncode value
                     let res: int option = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -541,7 +541,7 @@ let tests (runner: TestRunner<_, _>) =
                     let value = Some 5
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -550,14 +550,14 @@ let tests (runner: TestRunner<_, _>) =
                     let value = ()
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
                 "Auto decoders works for enum<int8>",
                 fun _ ->
                     let res: Enum_Int8 = autoDecodeUnsafe "99"
-                    equal Enum_Int8.NinetyNine res
+                    equal res Enum_Int8.NinetyNine
             )
 
             test (
@@ -586,14 +586,14 @@ Reason: Unknown value provided for the enum
 #endif
 
                     let res: Result<Enum_Int8, string> = autoDecode "2"
-                    equal value res
+                    equal res value
             )
 
             test (
                 "Auto decoders works for enum<uint8>",
                 fun _ ->
                     let res: Enum_UInt8 = autoDecodeUnsafe "99"
-                    equal Enum_UInt8.NinetyNine res
+                    equal res Enum_UInt8.NinetyNine
             )
 
             test (
@@ -622,14 +622,14 @@ Reason: Unknown value provided for the enum
 #endif
 
                     let res: Result<Enum_UInt8, string> = autoDecode "2"
-                    equal value res
+                    equal res value
             )
 
             test (
                 "Auto decoders works for enum<int16>",
                 fun _ ->
                     let res: Enum_Int16 = autoDecodeUnsafe "99"
-                    equal Enum_Int16.NinetyNine res
+                    equal res Enum_Int16.NinetyNine
             )
 
             test (
@@ -658,14 +658,14 @@ Reason: Unknown value provided for the enum
 #endif
 
                     let res: Result<Enum_Int16, string> = autoDecode "2"
-                    equal value res
+                    equal res value
             )
 
             test (
                 "Auto decoders works for enum<uint16>",
                 fun _ ->
                     let res: Enum_UInt16 = autoDecodeUnsafe "99"
-                    equal Enum_UInt16.NinetyNine res
+                    equal res Enum_UInt16.NinetyNine
             )
 
             test (
@@ -694,14 +694,14 @@ Reason: Unknown value provided for the enum
 #endif
 
                     let res: Result<Enum_UInt16, string> = autoDecode "2"
-                    equal value res
+                    equal res value
             )
 
             test (
                 "Auto decoders works for enum<int>",
                 fun _ ->
                     let res: Enum_Int = autoDecodeUnsafe "1"
-                    equal Enum_Int.One res
+                    equal res Enum_Int.One
             )
 
             test (
@@ -730,14 +730,14 @@ Reason: Unknown value provided for the enum
 #endif
 
                     let res: Result<Enum_Int, string> = autoDecode "4"
-                    equal value res
+                    equal res value
             )
 
             test (
                 "Auto decoders works for enum<uint32>",
                 fun _ ->
                     let res: Enum_UInt32 = autoDecodeUnsafe "99"
-                    equal Enum_UInt32.NinetyNine res
+                    equal res Enum_UInt32.NinetyNine
             )
 
             test (
@@ -766,7 +766,7 @@ Reason: Unknown value provided for the enum
 #endif
 
                     let res: Result<Enum_UInt32, string> = autoDecode "2"
-                    equal value res
+                    equal res value
             )
 
             (*
@@ -797,7 +797,7 @@ Reason: Unknown value provided for the enum
 
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -813,7 +813,7 @@ Reason: Unknown value provided for the enum
 
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -829,7 +829,7 @@ Reason: Unknown value provided for the enum
 
                     let json = autoEncode value
                     let res = autoDecodeUnsafe json
-                    equal value res
+                    equal res value
             )
 
             test (
@@ -841,10 +841,10 @@ Reason: Unknown value provided for the enum
                     let user: User =
                         autoDecodeUnsafeWithOptions json CamelCase Extra.empty
 
-                    equal "maxime" user.Name
-                    equal 0 user.Id
-                    equal 0 user.Followers
-                    equal "mail@domain.com" user.Email
+                    equal user.Name "maxime"
+                    equal user.Id 0
+                    equal user.Followers 0
+                    equal user.Email "mail@domain.com"
             )
 
             test (
@@ -863,7 +863,7 @@ Reason: Unknown value provided for the enum
                             ThreePartField = 3
                         }
 
-                    equal expected decoded
+                    equal decoded expected
             )
 
             test (
@@ -881,7 +881,7 @@ Reason: Unknown value provided for the enum
                             Must = "must value"
                         }
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -898,7 +898,7 @@ Reason: Unknown value provided for the enum
                             Must = "must value"
                         }
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -916,7 +916,7 @@ Reason: Unknown value provided for the enum
                             Must = "must value"
                         }
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -933,7 +933,7 @@ Reason: Unknown value provided for the enum
                             Must = "must value"
                         }
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -968,7 +968,7 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
                     let actual: BaseClass option = autoDecodeUnsafe json
 
                     let expected = None
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -1007,7 +1007,7 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
                             Must = "must value"
                         }
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -1030,7 +1030,7 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
 
                     let json = """{"ah":{"a":-1.5,"b":0},"oh":{"a":2,"b":2}}"""
                     let actual = autoDecode json
-                    equal (Ok expected) actual
+                    equal actual (Ok expected)
             )
 
             test (
@@ -1055,7 +1055,7 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
                         """[[{"a":-1.5,"b":0},"ah"],[{"a":2,"b":2},"oh"]]"""
 
                     let actual = autoDecode json
-                    equal (Ok expected) actual
+                    equal actual (Ok expected)
             )
 
             test (
@@ -1073,7 +1073,7 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
                             """{"bigintField":"9999999999999999999999"}"""
                             extra
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -1096,7 +1096,7 @@ Documentation available at: https://thoth-org.github.io/Thoth.Json/documentation
                             """{"ParentField":"bumbabon"}"""
                             extra
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -1232,8 +1232,8 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
 
                     let actual1 = runner.Decode.fromString decoder1 json
                     let actual2 = runner.Decode.fromString decoder2 json
-                    equal expected actual1
-                    equal expected actual2
+                    equal actual1 expected
+                    equal actual2 expected
                     equal actual1 actual2
             )
 
@@ -1266,7 +1266,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                             Followers = 5
                         }
 
-                    equal expected res1
+                    equal res1 expected
             )
 
             test (
@@ -1315,7 +1315,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                 fun _ ->
                     let json = Encode.unit () |> runner.Encode.toString 4
                     let res: unit = autoDecodeUnsafe json
-                    equal () res
+                    equal res ()
             )
 
             test (
@@ -1326,7 +1326,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
 
                     let actual: NoAllocAttributeId = autoDecodeUnsafe json
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -1350,7 +1350,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                     let actual: TestStringWithHTML =
                         autoDecodeUnsafe articleJson
 
-                    equal expected actual
+                    equal actual expected
             )
 
             // =====================
@@ -1414,7 +1414,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                     let json = encoder expected |> runner.Encode.toString 4
                     let actual = runner.Decode.unsafeFromString decoder json
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -1435,7 +1435,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                     let json = encoder expected |> runner.Encode.toString 4
                     let actual = runner.Decode.unsafeFromString decoder json
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -1483,7 +1483,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                     let json = encoder expected |> runner.Encode.toString 4
                     let actual = runner.Decode.unsafeFromString decoder json
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -1504,7 +1504,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                     let json = encoder expected |> runner.Encode.toString 4
                     let actual = runner.Decode.unsafeFromString decoder json
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -1529,7 +1529,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                     let json = encoder expected |> runner.Encode.toString 4
                     let actual = runner.Decode.unsafeFromString decoder json
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -1552,7 +1552,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                         losslessEncoder value |> runner.Encode.toString 4
 
                     // Lossy should just be the value
-                    equal "42" lossyJson
+                    equal lossyJson "42"
                     // Lossless should be different
                     notEqual lossyJson losslessJson
             )
@@ -1575,7 +1575,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                     let json = encoder expected |> runner.Encode.toString 4
                     let actual = runner.Decode.unsafeFromString decoder json
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -1600,11 +1600,11 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                         losslessEncoder value |> runner.Encode.toString 0
 
                     // Verify they produce different outputs
-                    equal "123" lossyJson
+                    equal lossyJson "123"
 
                     equal
-                        """{"$type":"option","$case":"some","$value":123}"""
                         losslessJson
+                        """{"$type":"option","$case":"some","$value":123}"""
             )
 
             // =====================
@@ -1649,7 +1649,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                     let json = encoder value |> runner.Encode.toString 4
 
                     // The JSON should only contain the node value (1234), not the source field
-                    equal "1234" json
+                    equal json "1234"
             )
 
             test (
@@ -1688,7 +1688,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                     let json = encoder value |> runner.Encode.toString 4
 
                     // The JSON should only contain the node value ("hello"), not the source field
-                    equal "\"hello\"" json
+                    equal json "\"hello\""
             )
 
             test (
@@ -1732,7 +1732,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                             Source = []
                         }
 
-                    equal (Ok expected) result
+                    equal result (Ok expected)
             )
 
             test (
@@ -1771,7 +1771,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                     let json = encoder value |> runner.Encode.toString 4
 
                     // Should only contain the list [1,2,3], not the Source field
-                    equal "[\n    1,\n    2,\n    3\n]" json
+                    equal json "[\n    1,\n    2,\n    3\n]"
             )
 
             // =====================
@@ -2268,7 +2268,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                     let json = encoder expected |> runner.Encode.toString 0
                     let actual = runner.Decode.unsafeFromString decoder json
 
-                    equal expected actual
+                    equal actual expected
             )
 
             test (
@@ -2321,7 +2321,7 @@ Expecting a longer array. Need index `1` but there are only `1` entries.
                     let json = encoder expected |> runner.Encode.toString 0
                     let actual = runner.Decode.unsafeFromString decoder json
 
-                    equal expected actual
+                    equal actual expected
             )
         ]
     )

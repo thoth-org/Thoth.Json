@@ -64,7 +64,7 @@ let backendSpecificTests =
                             (settings, nestedDecoder 80)
                             json
 
-                    equal (Ok 1) actual
+                    equal actual (Ok 1)
             )
 
             test (
@@ -84,7 +84,7 @@ let backendSpecificTests =
                             (settings, nestedCodec 80)
                             json
 
-                    equal (Ok 1) actual
+                    equal actual (Ok 1)
             )
 
             test (
@@ -99,7 +99,7 @@ let backendSpecificTests =
 
                     let actual = Encode.toStringWithOptions settings value
 
-                    equal "{\n  \"a\": 1\n}" actual
+                    equal actual "{\n  \"a\": 1\n}"
             )
         ]
     )
