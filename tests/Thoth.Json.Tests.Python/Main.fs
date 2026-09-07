@@ -49,6 +49,7 @@ let main args =
                 Codec.Combinators.tests runner
                 Codec.ObjectCodec.tests runner
                 Codec.VariantCodec.tests runner
+                Properties.tests runner
             // Auto.tests runner // Python does not pass all the tests yet so we disable it
             // Codec.AutoCodec.tests runner // Depends on the Auto API which is disabled above
             ]

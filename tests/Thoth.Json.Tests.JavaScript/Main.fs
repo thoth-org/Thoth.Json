@@ -74,6 +74,9 @@ let main args =
                 Codec.ObjectCodec.tests runner
                 Codec.VariantCodec.tests runner
                 Codec.AutoCodec.tests runner
+#if !FABLE_COMPILER_TYPESCRIPT
+                Properties.tests runner
+#endif
 
             ]
         )

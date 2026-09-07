@@ -11,6 +11,7 @@
     </PackageVersion>
     <PackageVersion Include="Fable.Package.SDK" Version="1.4.0" />
     <PackageVersion Include="Fable.Python" Version="5.0.0" />
+    <PackageVersion Include="Scriptorium.Hedgehog" Version="0.4.0" />
     <PackageVersion Include="Scriptorium.Nib" Version="0.4.1" />
     <PackageVersion Include="Scriptorium.Quill" Version="0.7.0" />
     <PackageVersion Include="FSharp.Core" Version="10.1.203" />

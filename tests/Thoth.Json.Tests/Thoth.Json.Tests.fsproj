@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="Util.fs" />
@@ -15,6 +15,7 @@
         <Compile Include="Codec/ObjectCodec.fs" />
         <Compile Include="Codec/VariantCodec.fs" />
         <Compile Include="Codec/AutoCodec.fs" />
+        <Compile Include="Properties.fs" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\packages\Thoth.Json.Core\Thoth.Json.Core.fsproj" />
@@ -22,6 +23,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Fable.Core" VersionOverride="5.2.0" />
+        <PackageReference Include="Scriptorium.Hedgehog" />
         <PackageReference Include="Scriptorium.Nib" />
         <PackageReference Include="Scriptorium.Quill" />
     </ItemGroup>

@@ -145,6 +145,7 @@ let main args =
                 Codec.ObjectCodec.tests runner
                 Codec.VariantCodec.tests runner
                 Codec.AutoCodec.tests runner
+                Properties.tests runner
                 backendSpecificTests
             ]
         )

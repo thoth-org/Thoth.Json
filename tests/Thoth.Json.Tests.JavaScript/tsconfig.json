@@ -10,5 +10,5 @@
         "allowImportingTsExtensions": true,
         "noEmit": true
     },
-    "include": ["globals.d.ts", "fableBuild/**/*.ts"]
+    "include": ["globals.d.ts", "fableBuild/Main.ts"]
 }
