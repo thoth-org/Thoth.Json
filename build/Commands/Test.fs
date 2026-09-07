@@ -22,6 +22,16 @@ let cleanUp (dir: string) =
 
 let private outDir = "fableBuild"
 
+// Pinned and fetched on demand so the repository needs no package.json.
+let private typeScriptPackage = "typescript@5.9.3"
+let private tsxPackage = "tsx@4.23.13"
+
+let private npx =
+    if System.OperatingSystem.IsWindows() then
+        "npx.cmd"
+    else
+        "npx"
+
 type TestJavaScriptCommand() =
     inherit Command<TestSettings>()
     interface ICommandLimiter<TestSettings>
@@ -179,21 +189,52 @@ type TestTypeScriptCommand() =
         cleanUp
             VirtualWorkspace.tests.``Thoth.Json.Tests.JavaScript``.fableBuild.``.``
 
-        Command.Run(
-            "dotnet",
+        let workingDirectory =
+            Workspace.tests.``Thoth.Json.Tests.JavaScript``.``.``
+
+        let runTestsArgs =
             CmdLine.empty
-            |> CmdLine.appendRaw "fable"
-            |> CmdLine.appendPrefix "--outDir" outDir
-            |> CmdLine.appendPrefix "--lang" "typescript"
-            |> CmdLine.appendRaw "--noCache"
-            // |> CmdLine.appendRaw "--test:MSBuildCracker"
-            |> CmdLine.appendIf settings.IsWatch "--watch"
-            |> CmdLine.appendRaw "--runWatch"
-            |> CmdLine.appendRaw "npx tsc"
-            |> CmdLine.toString,
-            workingDirectory =
-                Workspace.tests.``Thoth.Json.Tests.JavaScript``.``.``
-        )
+            |> CmdLine.appendRaw "-y"
+            |> CmdLine.appendRaw tsxPackage
+            |> CmdLine.appendRaw "fableBuild/Main.ts"
+
+        let fableArgs =
+            CmdLine.concat
+                [
+                    CmdLine.empty
+                    |> CmdLine.appendRaw "fable"
+                    |> CmdLine.appendPrefix "--outDir" outDir
+                    |> CmdLine.appendPrefix "--lang" "typescript"
+                    |> CmdLine.appendRaw "--noCache"
+
+                    if settings.IsWatch then
+                        CmdLine.empty
+                        |> CmdLine.appendRaw "--watch"
+                        |> CmdLine.appendRaw "--runWatch"
+                        |> CmdLine.appendRaw (
+                            npx + " " + CmdLine.toString runTestsArgs
+                        )
+                ]
+            |> CmdLine.toString
+
+        Command.Run("dotnet", fableArgs, workingDirectory = workingDirectory)
+
+        if not settings.IsWatch then
+            Command.Run(
+                npx,
+                CmdLine.empty
+                |> CmdLine.appendRaw "-y"
+                |> CmdLine.appendPrefix "-p" typeScriptPackage
+                |> CmdLine.appendRaw "tsc"
+                |> CmdLine.toString,
+                workingDirectory = workingDirectory
+            )
+
+            Command.Run(
+                npx,
+                CmdLine.toString runTestsArgs,
+                workingDirectory = workingDirectory
+            )
 
         0
 
@@ -203,8 +244,7 @@ type TestCommand() =
 
     override _.Execute(context: CommandContext, settings: TestSettings) =
         TestJavaScriptCommand().Execute(context, settings) |> ignore
-        // Not stable offically supported, yet as there are bugs that needs to be fixed in Fable
-        // TestTypeScriptCommand().Execute(context, settings) |> ignore
+        TestTypeScriptCommand().Execute(context, settings) |> ignore
         TestNewtonsoftCommand().Execute(context, settings) |> ignore
         TestSystemTextJsonCommand().Execute(context, settings) |> ignore
         TestPythonCommand().Execute(context, settings) |> ignore
