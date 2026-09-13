@@ -865,15 +865,12 @@ module Decode =
                 (fun x ->
                     let values =
                         getNestedTupleFields x (Array.length recordFields)
-#if FABLE_COMPILER_PYTHON
-                    FSharpValue.MakeRecord(ty, values)
-#else
+
                     FSharpValue.MakeRecord(
                         ty,
                         values,
                         allowAccessToPrivateRepresentation = true
                     )
-#endif
                 )
 
         let decoder = Decode.Generic.map tupleType ty tupleToRecord decoder
@@ -913,15 +910,11 @@ module Decode =
 
                     if Array.isEmpty caseFields then
                         let caseObject =
-#if FABLE_COMPILER_PYTHON
-                            FSharpValue.MakeUnion(case, [||])
-#else
                             FSharpValue.MakeUnion(
                                 case,
                                 [||],
                                 allowAccessToPrivateRepresentation = true
                             )
-#endif
 
                         let funcImpl: obj -> obj =
                             fun x ->
@@ -972,16 +965,13 @@ module Decode =
                                         getNestedTupleFields
                                             x
                                             (Array.length caseFields)
-#if FABLE_COMPILER_PYTHON
-                                    FSharpValue.MakeUnion(case, values)
-#else
+
                                     FSharpValue.MakeUnion(
                                         case,
                                         values,
                                         allowAccessToPrivateRepresentation =
                                             true
                                     )
-#endif
                                 )
 
                         let prefix =

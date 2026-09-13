@@ -265,12 +265,6 @@ module internal Prelude =
                 None
 
         let (|FSharpRecordType|_|) (ty: Type) =
-#if FABLE_COMPILER_PYTHON
-            if FSharpType.IsRecord(ty) then
-                Some(FSharpType.GetRecordFields(ty))
-            else
-                None
-#else
             if FSharpType.IsRecord(ty, true) then
                 Some(
                     FSharpType.GetRecordFields(
@@ -280,15 +274,8 @@ module internal Prelude =
                 )
             else
                 None
-#endif
 
         let (|FSharpUnionType|_|) (ty: Type) =
-#if FABLE_COMPILER_PYTHON
-            if FSharpType.IsUnion(ty) then
-                Some(FSharpType.GetUnionCases(ty))
-            else
-                None
-#else
             if FSharpType.IsUnion(ty, true) then
                 Some(
                     FSharpType.GetUnionCases(
@@ -298,7 +285,6 @@ module internal Prelude =
                 )
             else
                 None
-#endif
 
         let (|FSharpTupleType|_|) (ty: Type) =
             if FSharpType.IsTuple(ty) then
