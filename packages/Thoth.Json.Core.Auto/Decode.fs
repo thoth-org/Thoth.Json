@@ -703,15 +703,8 @@ module Decode =
             | GuidType _ -> box Decode.guid
             | TimeSpanType _ -> box Decode.timespan
             | UriType _ -> box Decode.uri
-            | DateTimeType _ ->
-#if FABLE_COMPILER_PYTHON
-                box Decode.datetimeLocal
-#else
-                box Decode.datetimeUtc
-#endif
-#if !FABLE_COMPILER_PYTHON
+            | DateTimeType _ -> box Decode.datetimeUtc
             | DateTimeOffsetType _ -> box Decode.datetimeOffset
-#endif
             | OptionType inner ->
                 Decode.Generic.option
                     losslessOption

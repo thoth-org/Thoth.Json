@@ -73,11 +73,9 @@ module Codec =
     /// <summary>A codec for decimal, using the same representation as <c>Encode.decimal</c> and <c>Decode.decimal</c>.</summary>
     let decimal: Codec<decimal> = create Encode.decimal Decode.decimal
 
-#if !FABLE_COMPILER_PYTHON
     /// <summary>A codec for DateTimeOffset, using the same representation as <c>Encode.datetimeOffset</c> and <c>Decode.datetimeOffset</c>.</summary>
     let datetimeOffset: Codec<DateTimeOffset> =
         create Encode.datetimeOffset Decode.datetimeOffset
-#endif
 
     /// <summary>A codec for TimeSpan, using the same representation as <c>Encode.timespan</c> and <c>Decode.timespan</c>.</summary>
     let timespan: Codec<TimeSpan> = create Encode.timespan Decode.timespan

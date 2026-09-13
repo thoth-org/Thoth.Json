@@ -477,7 +477,6 @@ module Decode =
                     ("", BadPrimitive("a decimal", value)) |> Error
         }
 
-#if !FABLE_COMPILER_PYTHON
     /// Decode a System.DateTime value using Sytem.DateTime.TryParse, then convert it to UTC.
     let datetimeUtc: Decoder<System.DateTime> =
         { new Decoder<System.DateTime> with
@@ -489,7 +488,6 @@ module Decode =
                 else
                     ("", BadPrimitive("a datetime", value)) |> Error
         }
-#endif
 
     /// Decode a System.DateTime with DateTime.TryParse; uses default System.DateTimeStyles.
     let datetimeLocal: Decoder<System.DateTime> =
@@ -503,7 +501,6 @@ module Decode =
                     ("", BadPrimitive("a datetime", value)) |> Error
         }
 
-#if !FABLE_COMPILER_PYTHON
     /// <summary>Decode a JSON string into a DateTimeOffset.</summary>
     let datetimeOffset: Decoder<System.DateTimeOffset> =
         { new Decoder<System.DateTimeOffset> with
@@ -518,7 +515,6 @@ module Decode =
                 else
                     ("", BadPrimitive("a datetime", value)) |> Error
         }
-#endif
 
     /// <summary>Decode a JSON string into a TimeSpan.</summary>
     let timespan: Decoder<System.TimeSpan> =
