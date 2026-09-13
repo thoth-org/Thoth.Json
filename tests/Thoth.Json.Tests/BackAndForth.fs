@@ -169,16 +169,13 @@ let tests (runner: TestRunner<_, _>) =
                             -1m
                             0.1m
                             123456789.123456789m
-#if !FABLE_COMPILER_PYTHON
-                            // Full 28 digit precision, which a float cannot hold. Fable's Python
-                            // backend caps Decimal well below this.
+                            // Full 28 digit precision, which a float cannot hold.
                             79228162514264337593543950335m
                             -79228162514264337593543950335m
                             0.0000000000000000000000000001m
                             123456789012345678901234567.8m
                             System.Decimal.MaxValue
                             System.Decimal.MinValue
-#endif
                         ]
 
                     for expected in cases do
@@ -295,14 +292,16 @@ let tests (runner: TestRunner<_, _>) =
                          |> Encode.uint64
                          |> runner.Encode.toString 0)
                         "\"18446744073709551615\""
+            )
 
-#if !FABLE_COMPILER_PYTHON
+            test (
+                "Decimal.MaxValue is written as a JSON string",
+                fun _ ->
                     equal
                         (System.Decimal.MaxValue
                          |> Encode.decimal
                          |> runner.Encode.toString 0)
                         "\"79228162514264337593543950335\""
-#endif
             )
 
             test (
@@ -385,7 +384,6 @@ let tests (runner: TestRunner<_, _>) =
                         equal decoded (Ok expected)
             )
 
-#if !FABLE_COMPILER_PYTHON
             test (
                 "uint64 is symmetric",
                 fun _ ->
@@ -413,6 +411,5 @@ let tests (runner: TestRunner<_, _>) =
 
                         equal decoded (Ok expected)
             )
-#endif
         ]
     )

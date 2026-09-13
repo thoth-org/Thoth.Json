@@ -208,7 +208,6 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                     equal actual expected
             )
 
-#if !FABLE_COMPILER_PYTHON
             test (
                 "Codec.datetimeOffset works for simple case 1",
                 fun _ ->
@@ -219,6 +218,5 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 
                     equal actual expected
             )
-#endif
         ]
     )

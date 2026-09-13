@@ -1,9 +1,5 @@
 module Thoth.Json.Tests.Properties
 
-// Fable emits Hedgehog's RecheckData as an FSharpRef in its TypeScript
-// output, so Property.fs does not type check there.
-#if !FABLE_COMPILER_TYPESCRIPT
-
 open System
 open Thoth.Json.Tests.Testing
 open Thoth.Json.Tests.Types
@@ -12,7 +8,6 @@ open Thoth.Json.Core.Auto
 open Hedgehog
 open Hedgehog.FSharp
 open Scriptorium.Nib.Assertion
-open Scriptorium.Quill
 open Scriptorium.Hedgehog
 open type Scriptorium.Quill.Test
 open type Scriptorium.Hedgehog.Test
@@ -35,14 +30,6 @@ let private codec (runner: TestRunner<_, _>) (codec: Codec<'T>) (value: 'T) =
 
 let private smallSize = Range.linear 0 20
 
-// Fable's Python runtime rejects UInt64.TryParse above Int64.MaxValue.
-let private uint64Range =
-#if FABLE_COMPILER_PYTHON
-    Range.exponentialFrom 0UL 0UL (uint64 Int64.MaxValue)
-#else
-    Range.exponentialBounded ()
-#endif
-
 let private dateTimeRange =
     Range.constant (DateTime(1970, 1, 1)) (DateTime(2100, 1, 1))
 
@@ -55,24 +42,6 @@ let private dateTimeOffsetRange =
 let private bigintRange =
     let bound = bigint Int64.MaxValue * 1000I
     Range.exponentialFrom 0I -bound bound
-
-// Hedgehog's Gen.guid builds a Guid from a byte array, which Fable's Python
-// runtime does not implement.
-let private guidGen =
-    Gen.string (Range.singleton 32) (Gen.item (List.ofSeq "0123456789abcdef"))
-    |> Gen.map (fun hex ->
-        Guid.Parse(
-            hex.Substring(0, 8)
-            + "-"
-            + hex.Substring(8, 4)
-            + "-"
-            + hex.Substring(12, 4)
-            + "-"
-            + hex.Substring(16, 4)
-            + "-"
-            + hex.Substring(20, 12)
-        )
-    )
 
 // Hedgehog's Gen.timeSpan is .NET only.
 let private timeSpanGen =
@@ -112,7 +81,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 
                     testProperty (
                         "Encode.uint64 / Decode.uint64",
-                        Gen.uint64 uint64Range,
+                        Gen.uint64 (Range.exponentialBounded ()),
                         pair runner Encode.uint64 Decode.uint64
                     )
 
@@ -166,7 +135,7 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
 
                     testProperty (
                         "Encode.guid / Decode.guid",
-                        guidGen,
+                        Gen.guid,
                         pair runner Encode.guid Decode.guid
                     )
 
@@ -194,8 +163,6 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                         pair runner Encode.timespan Decode.timespan
                     )
 
-                // Thoth.Json.Core does not expose these decoders under Python.
-#if !FABLE_COMPILER_PYTHON
                     testProperty (
                         "Encode.datetimeOffset / Decode.datetimeOffset",
                         Gen.dateTimeOffset dateTimeOffsetRange,
@@ -207,7 +174,6 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                         Gen.dateTimeUtc dateTimeRange,
                         pair runner Encode.datetime Decode.datetimeUtc
                     )
-#endif
                 ]
             )
 
@@ -292,10 +258,8 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
                 ]
             )
 
-            // The Auto API does not pass its own suite under Python yet.
             testList (
                 "Auto round-trip",
-                skipIfPython,
                 [
                     testProperty (
                         "a record",
@@ -317,5 +281,3 @@ let tests (runner: TestRunner<'DecoderJsonValue, 'EncoderJsonValue>) =
             )
         ]
     )
-
-#endif

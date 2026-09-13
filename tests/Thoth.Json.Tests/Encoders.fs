@@ -404,11 +404,10 @@ let tests (runner: TestRunner<_, _>) =
                             equal actual expected
                     )
 
-#if !FABLE_COMPILER_PYTHON
                     test (
                         "a datetimeOffset works",
                         fun _ ->
-#if FABLE_COMPILER
+#if FABLE_COMPILER_JAVASCRIPT
                             let expected = "\"2018-07-02T12:23:45.000+02:00\""
 #else
                             let expected =
@@ -430,7 +429,6 @@ let tests (runner: TestRunner<_, _>) =
 
                             equal actual expected
                     )
-#endif
 
                     test (
                         "a timeSpan works",

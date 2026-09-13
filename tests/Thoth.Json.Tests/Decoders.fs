@@ -6,6 +6,7 @@ open Fable.Core
 
 open Thoth.Json.Tests.Testing
 open System
+open Scriptorium.Quill
 open type Scriptorium.Quill.Test
 
 open Thoth.Json.Core
@@ -517,10 +518,10 @@ Expecting a single character string but instead got: "ab"
                             equal actual expected
                     )
 
-#if !FABLE_COMPILER_JAVASCRIPT
                     // I don't know how to differentiate between 1.0 and 1 in JS
                     test (
                         "validate that Helpers.isIntegral is implemented correctly for 25.0",
+                        skipIfJavaScript,
                         fun _ -> // int16 is using Helpers.isIntegral under the hood
                             let expected =
                                 Error
@@ -533,9 +534,7 @@ Reason: Value is not an integral value"""
 
                             equal actual expected
                     )
-#endif
 
-#if !FABLE_COMPILER_JAVASCRIPT
                     test (
                         "validate that Helpers.isIntegral is implemented correctly for 25.001",
                         fun _ -> // int16 is using Helpers.isIntegral under the hood
@@ -550,7 +549,6 @@ Reason: Value is not an integral value"""
 
                             equal actual expected
                     )
-#endif
 
                     test (
                         "an int16 works from string",
@@ -746,9 +744,9 @@ Expecting an uint16 but instead got: "maxime"
                     )
 
                     // This is beyond the range of `JSON.parse`
-#if !FABLE_COMPILER_JAVASCRIPT
                     test (
                         "an int64 works from large number",
+                        skipIfJavaScript,
                         fun _ ->
                             let expected = Ok 9223372036854775806L
 
@@ -759,7 +757,6 @@ Expecting an uint16 but instead got: "maxime"
 
                             equal actual expected
                     )
-#endif
 
                     test (
                         "an int64 works from large string",
@@ -902,9 +899,9 @@ Expecting an uint32 but instead got: "maxime"
                     )
 
                     // This is beyond the range of `JSON.parse`
-#if !FABLE_COMPILER_JAVASCRIPT
                     test (
                         "an uint64 works from large number",
+                        skipIfJavaScript,
                         fun _ ->
                             let expected = Ok 9223372036854775806UL
 
@@ -915,7 +912,6 @@ Expecting an uint32 but instead got: "maxime"
 
                             equal actual expected
                     )
-#endif
 
                     test (
                         "an uint64 works from large string",
@@ -1227,7 +1223,6 @@ Expecting a bigint but instead got: "maxime"
                             equal actual (Ok expected)
                     )
 
-#if !FABLE_COMPILER_PYTHON
                     test (
                         "a datetime works",
                         fun _ ->
@@ -1249,9 +1244,7 @@ Expecting a bigint but instead got: "maxime"
 
                             equal actual (Ok expected)
                     )
-#endif
 
-#if !FABLE_COMPILER_PYTHON
                     test (
                         "a non-UTC datetime works",
                         fun _ ->
@@ -1309,9 +1302,7 @@ Expecting a datetime but instead got: "invalid_string"
 
                             equal actual expected
                     )
-#endif
 
-#if !FABLE_COMPILER_PYTHON
                     test (
                         "a datetimeOffset works",
                         fun _ ->
@@ -1359,7 +1350,6 @@ Expecting a datetimeoffset but instead got: "NOT A DATETIMEOFFSET"
 
                             equal actual expected
                     )
-#endif
 
                     test (
                         "a timespan works",
@@ -1810,7 +1800,6 @@ Expecting a string but instead got: false
                             equal actual expected
                     )
 
-#if !FABLE_COMPILER_PYTHON
                     test (
                         "tuple5 returns an error if invalid json",
                         fun _ ->
@@ -1928,7 +1917,6 @@ Expecting an int but instead got: "maxime"
 
                             equal actual expected
                     )
-#endif
                 ]
             )
 
