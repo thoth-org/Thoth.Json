@@ -1563,7 +1563,7 @@ class FixDecoder$1 {
         const this$ = new FSharpRef(defaultOf());
         this$.contents = this;
         this.self = make(this$.contents);
-        this["init@1673"] = 1;
+        this["init@1669"] = 1;
     }
     Decode(helpers, value_1) {
         const this$ = this;
