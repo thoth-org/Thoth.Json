@@ -249,6 +249,7 @@ let theme =
                     Menu.page "documentation/advanced/introduction.md"
                     Menu.page "documentation/advanced/unknown-fields.md"
                     Menu.page "documentation/advanced/custom-runtime.md"
+                    Menu.page "documentation/advanced/exact-numbers.md"
                 ]
         ]
     |> Theme.editUrl "https://github.com/thoth-org/Thoth.Json/edit/main/docs"
