@@ -132,4 +132,4 @@ type Decode =
     /// message on failure.
     /// </summary>
     static member unsafeFromString(codec: Codec<'T>) =
-        codec |> Decode.codec |> Decode.fromString
+        codec |> Decode.codec |> Decode.unsafeFromString
