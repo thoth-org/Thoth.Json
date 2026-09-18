@@ -22,6 +22,9 @@
     <loc>https://thoth-org.github.io/Thoth.Json/documentation/advanced/custom-runtime/</loc>
   </url>
   <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/documentation/advanced/exact-numbers/</loc>
+  </url>
+  <url>
     <loc>https://thoth-org.github.io/Thoth.Json/documentation/advanced/introduction/</loc>
   </url>
   <url>
@@ -248,6 +251,9 @@
   </url>
   <url>
     <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-javascript/thoth-json-javascript/decode/interop/</loc>
+  </url>
+  <url>
+    <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-javascript/thoth-json-javascript/decodeoptions/</loc>
   </url>
   <url>
     <loc>https://thoth-org.github.io/Thoth.Json/reference/thoth-json-javascript/thoth-json-javascript/encode/</loc>

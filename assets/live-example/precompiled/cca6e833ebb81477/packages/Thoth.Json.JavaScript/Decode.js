@@ -1,16 +1,36 @@
 
+import { Record } from "fable-library-js/Types.js";
+import { class_type, record_type, bool_type } from "fable-library-js/Reflection.js";
 import { Operators_IsNull } from "fable-library-js/FSharp.Core.js";
-import { class_type } from "fable-library-js/Reflection.js";
 import { errorToString, Helpers_prependPath, codec as codec_2, Advanced_fromValue } from "../Thoth.Json.Core/Decode.js";
 import { FSharpResult$2 } from "fable-library-js/Result.js";
 import { Exception } from "fable-library-js/Util.js";
+
+/**
+ * Controls how a JSON string is parsed before the decoder runs.
+ */
+export class DecodeOptions extends Record {
+    constructor(ExactNumbers) {
+        super();
+        this.ExactNumbers = ExactNumbers;
+    }
+}
+
+export function DecodeOptions_$reflection() {
+    return record_type("Thoth.Json.JavaScript.DecodeOptions", [], DecodeOptions, () => [["ExactNumbers", bool_type]]);
+}
+
+export const DecodeOptionsModule_defaults = new DecodeOptions(false);
+
+const DecodeModule_numberSources = new WeakMap();
 
 export const DecodeModule_helpers = {
     isString(jsonValue) {
         return typeof jsonValue === "string";
     },
     isNumber(jsonValue_1) {
-        return (typeof jsonValue_1) === "number";
+        return typeof jsonValue_1 === "number" || jsonValue_1 instanceof Number
+                    ;
     },
     isBoolean(jsonValue_2) {
         return typeof jsonValue_2 === "boolean";
@@ -30,7 +50,10 @@ export const DecodeModule_helpers = {
                     ;
     },
     isIntegralValue(jsonValue_7) {
-        return isFinite(jsonValue_7) && Math.floor(jsonValue_7) === jsonValue_7
+        const source = DecodeModule_numberSources.get(jsonValue_7);
+return typeof source === "string"
+    ? source.indexOf(".") === -1
+    : (isFinite(jsonValue_7) && Math.floor(jsonValue_7) === jsonValue_7)
                     ;
     },
     asString(jsonValue_8) {
@@ -43,13 +66,13 @@ export const DecodeModule_helpers = {
         return jsonValue_10;
     },
     asFloat(jsonValue_11) {
-        return jsonValue_11;
+        return Number(jsonValue_11);
     },
     asFloat32(jsonValue_12) {
-        return jsonValue_12;
+        return Number(jsonValue_12);
     },
     asInt(jsonValue_13) {
-        return jsonValue_13 | 0;
+        return (Number(jsonValue_13)) | 0;
     },
     getProperties(jsonValue_14) {
         return Object.keys(jsonValue_14);
@@ -58,14 +81,29 @@ export const DecodeModule_helpers = {
         return jsonValue_15[fieldName_1];
     },
     anyToString(jsonValue_16) {
-        return JSON.stringify(jsonValue_16, null, 4) + ''
+        const source = DecodeModule_numberSources.get(jsonValue_16);
+return typeof source === "string"
+    ? source
+    : JSON.stringify(jsonValue_16, null, 4) + ''
                     ;
     },
     numberToString(jsonValue_17) {
-        return String(jsonValue_17)
+        const source = DecodeModule_numberSources.get(jsonValue_17);
+return typeof source === "string" ? source : String(jsonValue_17)
                     ;
     },
 };
+
+const DecodeModule_numberLiteralReviverFunc = (_key, value, context) => ((context && typeof value === "number" && context.source !== String(value))
+    ? (function () {
+        const boxed = new Number(value);
+        DecodeModule_numberSources.set(boxed, context.source);
+        return boxed;
+      })()
+    : value
+                );
+
+export const DecodeModule_numberLiteralReviver = DecodeModule_numberLiteralReviverFunc;
 
 /**
  * Runs a decoder against JavaScript.
@@ -94,12 +132,12 @@ export function Decode_fromValue_Z2BB4EEE8(codec) {
 }
 
 /**
- * Parse a JSON string and run the decoder against it.
+ * Parse a JSON string with the given options and run the decoder against it.
  */
-export function Decode_fromString_1FBE35A8(decoder) {
+export function Decode_fromStringWithOptions_31A24E5B(options, decoder) {
     return (value) => {
         try {
-            const json = JSON.parse(value);
+            const json = options.ExactNumbers ? (JSON.parse(value, DecodeModule_numberLiteralReviver)) : JSON.parse(value);
             const matchValue = decoder.Decode(DecodeModule_helpers, json);
             if (matchValue.tag === 1) {
                 let finalError;
@@ -120,6 +158,20 @@ export function Decode_fromString_1FBE35A8(decoder) {
             }
         }
     };
+}
+
+/**
+ * Parse a JSON string with the given options and run the decoder half of a codec against it.
+ */
+export function Decode_fromStringWithOptions_Z5A89515(options, codec) {
+    return Decode_fromStringWithOptions_31A24E5B(options, codec_2(codec));
+}
+
+/**
+ * Parse a JSON string and run the decoder against it.
+ */
+export function Decode_fromString_1FBE35A8(decoder) {
+    return Decode_fromStringWithOptions_31A24E5B(DecodeOptionsModule_defaults, decoder);
 }
 
 /**
@@ -150,6 +202,30 @@ export function Decode_unsafeFromString_1FBE35A8(decoder) {
  * message on failure.
  */
 export function Decode_unsafeFromString_Z2BB4EEE8(codec) {
-    return Decode_fromString_1FBE35A8(codec_2(codec));
+    return Decode_unsafeFromString_1FBE35A8(codec_2(codec));
+}
+
+/**
+ * Parse a JSON string with the given options and run the decoder, raising an exception
+ * carrying the message on failure.
+ */
+export function Decode_unsafeFromStringWithOptions_31A24E5B(options, decoder) {
+    return (value) => {
+        const matchValue = Decode_fromStringWithOptions_31A24E5B(options, decoder)(value);
+        if (matchValue.tag === 1) {
+            throw new Exception(matchValue.fields[0]);
+        }
+        else {
+            return matchValue.fields[0];
+        }
+    };
+}
+
+/**
+ * Parse a JSON string with the given options and run the decoder half of a codec, raising an
+ * exception carrying the message on failure.
+ */
+export function Decode_unsafeFromStringWithOptions_Z5A89515(options, codec) {
+    return Decode_unsafeFromStringWithOptions_31A24E5B(options, codec_2(codec));
 }
 
