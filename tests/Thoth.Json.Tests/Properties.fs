@@ -31,7 +31,9 @@ let private codec (runner: TestRunner<_, _>) (codec: Codec<'T>) (value: 'T) =
 let private smallSize = Range.linear 0 20
 
 let private dateTimeRange =
-    Range.constant (DateTime(1970, 1, 1)) (DateTime(2100, 1, 1))
+    Range.constant
+        (DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+        (DateTime(2100, 1, 1, 0, 0, 0, DateTimeKind.Utc))
 
 let private dateTimeOffsetRange =
     Range.constant
