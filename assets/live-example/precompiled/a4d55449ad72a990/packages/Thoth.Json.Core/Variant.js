@@ -5,8 +5,8 @@ import { containsKey, tryFind, toSeq, ofSeq } from "fable-library-js/Map.js";
 import { map, tryExactlyOne, filter, append, delay, toList } from "fable-library-js/Seq.js";
 import { Exception, comparePrimitives } from "fable-library-js/Util.js";
 import { map as map_1, string, index, keys as keys_1, field, andThen, fail } from "./Decode.js";
-import { join, concat } from "fable-library-js/String.js";
 import { create } from "./Codec.js";
+import { join, concat } from "fable-library-js/String.js";
 import { tuple2 } from "./Encode.js";
 
 /**
@@ -54,7 +54,7 @@ export function VariantCase_complete(variantEncoding, f, x) {
     const decodeForTag = (tag, descend) => {
         const matchValue = tryFind(tag, x.Decoders);
         if (matchValue == null) {
-            return fail(concat("The tag \"", tag, "\" was not recognized"));
+            return fail(("The tag \"" + tag) + "\" was not recognized");
         }
         else {
             return descend(matchValue);

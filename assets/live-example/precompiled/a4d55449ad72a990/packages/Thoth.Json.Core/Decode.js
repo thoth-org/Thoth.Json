@@ -899,7 +899,7 @@ class ValueDecoder {
                 const value_2 = item(i, tokens);
                 const matchValue = decoder.Decode(helpers, value_2);
                 if (matchValue.tag === 1) {
-                    const x = (tupledArg = matchValue.fields[0], Helpers_prependPath(`.[${i}]`, tupledArg[0], tupledArg[1]));
+                    const x = (tupledArg = matchValue.fields[0], Helpers_prependPath((".[" + int32ToString(i)) + "]", tupledArg[0], tupledArg[1]));
                     error = x;
                 }
                 else {
@@ -1563,7 +1563,7 @@ class FixDecoder$1 {
         const this$ = new FSharpRef(defaultOf());
         this$.contents = this;
         this.self = make(this$.contents);
-        this["init@1669"] = 1;
+        this["init@1672"] = 1;
     }
     Decode(helpers, value_1) {
         const this$ = this;
