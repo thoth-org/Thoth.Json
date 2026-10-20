@@ -224,8 +224,8 @@ module Decode =
     let inline private integral
         (name: string)
         (tryParse: (string -> bool * 'T))
-        (min: unit -> 'T)
-        (max: unit -> 'T)
+        (min: unit -> float)
+        (max: unit -> float)
         (conv: float -> 'T)
         : Decoder<'T>
         =
@@ -236,10 +236,7 @@ module Decode =
                     if helpers.isIntegralValue value then
                         let floatValue: float = helpers.asFloat value
 
-                        if
-                            (float (min ())) <= floatValue
-                            && floatValue <= (float (max ()))
-                        then
+                        if (min ()) <= floatValue && floatValue <= (max ()) then
                             Ok(conv floatValue)
                         else
                             ("",
@@ -292,8 +289,8 @@ module Decode =
         integral
             "a sbyte"
             System.SByte.TryParse
-            (fun () -> System.SByte.MinValue)
-            (fun () -> System.SByte.MaxValue)
+            (fun () -> float System.SByte.MinValue)
+            (fun () -> float System.SByte.MaxValue)
             sbyte
 
     /// Alias to Decode.uint8
@@ -301,8 +298,8 @@ module Decode =
         integral
             "a byte"
             System.Byte.TryParse
-            (fun () -> System.Byte.MinValue)
-            (fun () -> System.Byte.MaxValue)
+            (fun () -> float System.Byte.MinValue)
+            (fun () -> float System.Byte.MaxValue)
             byte
 
     /// <summary>Decode a JSON number or string into an int16.</summary>
@@ -310,8 +307,8 @@ module Decode =
         integral
             "an int16"
             System.Int16.TryParse
-            (fun () -> System.Int16.MinValue)
-            (fun () -> System.Int16.MaxValue)
+            (fun () -> float System.Int16.MinValue)
+            (fun () -> float System.Int16.MaxValue)
             int16
 
     /// <summary>Decode a JSON number or string into a uint16.</summary>
@@ -319,8 +316,8 @@ module Decode =
         integral
             "an uint16"
             System.UInt16.TryParse
-            (fun () -> System.UInt16.MinValue)
-            (fun () -> System.UInt16.MaxValue)
+            (fun () -> float System.UInt16.MinValue)
+            (fun () -> float System.UInt16.MaxValue)
             uint16
 
     /// <summary>Decode a JSON number or string into an int.</summary>
@@ -328,8 +325,8 @@ module Decode =
         integral
             "an int"
             System.Int32.TryParse
-            (fun () -> System.Int32.MinValue)
-            (fun () -> System.Int32.MaxValue)
+            (fun () -> float System.Int32.MinValue)
+            (fun () -> float System.Int32.MaxValue)
             int
 
     /// <summary>Decode a JSON number or string into a uint32.</summary>
@@ -337,8 +334,8 @@ module Decode =
         integral
             "an uint32"
             System.UInt32.TryParse
-            (fun () -> System.UInt32.MinValue)
-            (fun () -> System.UInt32.MaxValue)
+            (fun () -> float System.UInt32.MinValue)
+            (fun () -> float System.UInt32.MaxValue)
             uint32
 
     /// <summary>Decode a JSON string or number into an int64.</summary>
@@ -1000,7 +997,13 @@ module Decode =
                         match decoder.Decode(helpers, value) with
                         | Ok value -> result[i] <- value
                         | Error er ->
-                            let x = Some(er |> Helpers.prependPath $".[%i{i}]")
+                            let x =
+                                Some(
+                                    er
+                                    |> Helpers.prependPath (
+                                        ".[" + i.ToString() + "]"
+                                    )
+                                )
 
                             error <- x
 

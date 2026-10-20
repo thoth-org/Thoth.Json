@@ -57,7 +57,8 @@ module VariantCodecBuilder =
                 =
                 match Map.tryFind tag x.Decoders with
                 | Some decoder -> descend decoder
-                | None -> Decode.fail $"The tag \"%s{tag}\" was not recognized"
+                | None ->
+                    Decode.fail ("The tag \"" + tag + "\" was not recognized")
 
             Codec.create
                 (fun (v: 'v) -> f x.Value v variantEncoding)
